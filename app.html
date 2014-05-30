@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <title>Haika.js</title>
+    <!-- jQuery -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <!-- Bootstrap3 -->
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/shelf.css" rel="stylesheet">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-2" style="text-align:center;padding-top: 60px;width: 120px;">
+          <input type="button" class="totop btn btn-default" value="↑" /><br />
+          <input type="button" class="toleft btn btn-default" value="←" />
+          <input type="button" class="toright btn btn-default" value="→" /><br />
+          <input type="button" class="tobottom btn btn-default" value="↓" />
+        </div>
+        <div class="col-md-10">
+          <label for="count">count:
+              <input type="text" id="count" class="form-control" value="3" style="width: 60px;" />
+          </label>
+          <label for="sid">side:
+              <select id="side" class="form-control">
+                  <option value="one">one</option>
+                  <option value="both">both</option>
+              </select>
+          </label>
+          <input type="button" class="add btn btn-default" value="add" />
+          <input type="button" class="remove btn btn-default" value="remove" />
+          <input type="button" class="zoomin btn btn-default" value="+zoomIn" />
+          <span class="zoom">100%</span>
+          <input type="button" class="zoomout btn btn-default" value="-zoomOut" />
+          <input type="button" class="zoomreset btn btn-default" value="zoomReset" />
+          <input type="button" class="bringtofront btn btn-default" value="bringToFront " />
+          <input type="button" class="save btn btn-default" value="Save " />
+          <canvas id="canvas" width="800" height="600"></canvas>
+          <div class="rotate"></div>
+        </div>
+      </div>
+    </div>
+    <!-- External script dependencies  -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<!--    <script type="text/javascript" src="vendor/fabric.min.js"></script>-->
+    <script type="text/javascript" src="bower_components/jquery-mousewheel/jquery.mousewheel.min.js"></script>
+    <script type="text/javascript" src="bower_components/jquery.hotkeys/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="vendor/fabric.js"></script>
+    <script type="text/javascript" src="vendor/aligning_guidelines.js"></script>
+    <script type="text/javascript" src="vendor/centering_guidelines.js"></script>
+    <script type="text/javascript" src="js/shelf.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript" src="js/init.js"></script>
+  </body>
+</html>

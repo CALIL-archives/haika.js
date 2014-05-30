@@ -1,0 +1,139 @@
+初期設計
+
+キャンバスの大きさ
+
+width
+height
+
+現在の座標
+
+x
+y
+
+倍率
+
+zoom
+
+
+オブジェクト
+
+objects
+
+width
+height
+top
+left
+scaleX
+scaleY
+
+オブジェクトの追加
+object:added
+
+オブジェクトの削除
+object:removed
+
+オブジェクトの移動
+object:moving
+
+オブジェクトの拡大縮小
+object:scaling
+
+オブジェクトの回転
+object:rotating
+
+書き換え
+after:render
+
+
+obj.on({
+        moving: setCoords,
+        scaling: setCoords,
+        rotating: setCoords
+      });
+
+
+# Zoom In
+app.zoomIn = ->
+  
+  # TODO limit the max canvas zoom in
+  canvasScale = canvasScale * SCALE_FACTOR
+  objects = canvas.getObjects()
+  for i of objects
+    scaleX = objects[i].scaleX
+    scaleY = objects[i].scaleY
+    left = objects[i].left
+    top = objects[i].top
+    tempScaleX = scaleX * SCALE_FACTOR
+    tempScaleY = scaleY * SCALE_FACTOR
+    tempLeft = left * SCALE_FACTOR
+    tempTop = top * SCALE_FACTOR
+    objects[i].scaleX = tempScaleX
+    objects[i].scaleY = tempScaleY
+    objects[i].left = tempLeft
+    objects[i].top = tempTop
+    objects[i].setCoords()
+  width = canvas.getWidth()
+  height = canvas.getHeight()
+  tempWidth = width * SCALE_FACTOR
+  tempHeight = height * SCALE_FACTOR
+  canvas.setWidth tempWidth
+  canvas.setHeight tempHeight
+  canvas.renderAll()
+  return
+
+
+# Zoom Out
+app.zoomOut = ->
+  
+  # TODO limit max cavas zoom out
+  canvasScale = canvasScale / SCALE_FACTOR
+  objects = canvas.getObjects()
+  for i of objects
+    scaleX = objects[i].scaleX
+    scaleY = objects[i].scaleY
+    left = objects[i].left
+    top = objects[i].top
+    tempScaleX = scaleX * (1 / SCALE_FACTOR)
+    tempScaleY = scaleY * (1 / SCALE_FACTOR)
+    tempLeft = left * (1 / SCALE_FACTOR)
+    tempTop = top * (1 / SCALE_FACTOR)
+    objects[i].scaleX = tempScaleX
+    objects[i].scaleY = tempScaleY
+    objects[i].left = tempLeft
+    objects[i].top = tempTop
+    objects[i].setCoords()
+  width = canvas.getWidth()
+  height = canvas.getHeight()
+  tempWidth = width * (1 / SCALE_FACTOR)
+  tempHeight = height * (1 / SCALE_FACTOR)
+  canvas.setWidth tempWidth
+  canvas.setHeight tempHeight
+  canvas.renderAll()
+  return
+
+# Reset Zoom
+app.resetZoom = ->
+  objects = canvas.getObjects()
+  for i of objects
+    scaleX = objects[i].scaleX
+    scaleY = objects[i].scaleY
+    left = objects[i].left
+    top = objects[i].top
+    tempScaleX = scaleX * (1 / canvasScale)
+    tempScaleY = scaleY * (1 / canvasScale)
+    tempLeft = left * (1 / canvasScale)
+    tempTop = top * (1 / canvasScale)
+    objects[i].scaleX = tempScaleX
+    objects[i].scaleY = tempScaleY
+    objects[i].left = tempLeft
+    objects[i].top = tempTop
+    objects[i].setCoords()
+  width = canvas.getWidth()
+  height = canvas.getHeight()
+  tempWidth = width * (1 / canvasScale)
+  tempHeight = height * (1 / canvasScale)
+  canvas.setWidth tempWidth
+  canvas.setHeight tempHeight
+  canvas.renderAll()
+  canvasScale = 1
+  return
