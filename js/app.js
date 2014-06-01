@@ -14,7 +14,7 @@ app = {
   height: 800,
   x: 0,
   y: 0,
-  scale: 0.1,
+  scale: 1,
   objects: [],
   object_id: 1,
   canvas: false,

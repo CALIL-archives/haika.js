@@ -1,0 +1,32 @@
+{
+  "name": "jquery.finger",
+  "version": "0.1.0",
+  "main": "dist/jquery.finger.js",
+  "ignore": [
+    ".gitignore",
+    ".jshintrc",
+    ".travis.yml",
+    "Gruntfile.js",
+    "LICENSE-MIT",
+    "package.json",
+    "*.md",
+    "examples",
+    "libs",
+    "src",
+    "test"
+  ],
+  "dependencies": {
+    "jquery": "~1.7.0"
+  },
+  "homepage": "https://github.com/ngryman/jquery.finger",
+  "_release": "0.1.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.0",
+    "commit": "752f00e6e1ffe1d9def312d857f6467401093850"
+  },
+  "_source": "git://github.com/ngryman/jquery.finger.git",
+  "_target": "~0.1.0",
+  "_originalSource": "jquery.finger",
+  "_direct": true
+}

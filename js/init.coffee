@@ -74,12 +74,12 @@ $ ->
         app.canvas.renderAll()
   $(".save").click ->
     app.save()
-    $(@options.canvas).on 'mousewheel', (event)=>
-      #console.log(event.deltaX, event.deltaY, event.deltaFactor);
-      if event.deltaY==1
-        @zoomIn()
-      if event.deltaY==-1
-        @zoomOut()
+  $('canvas').on 'mousewheel', (event)=>
+    #console.log(event.deltaX, event.deltaY, event.deltaFactor);
+    if event.deltaY==1
+      app.zoomIn()
+    if event.deltaY==-1
+      app.zoomOut()
   @shiftKey = false
   $(document.body).keydown (e)=>
     @shiftKey = e.shiftKey

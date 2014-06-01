@@ -103,16 +103,15 @@ $(function() {
     }
   });
   $(".save").click(function() {
-    var _this = this;
-    app.save();
-    return $(this.options.canvas).on('mousewheel', function(event) {
-      if (event.deltaY === 1) {
-        _this.zoomIn();
-      }
-      if (event.deltaY === -1) {
-        return _this.zoomOut();
-      }
-    });
+    return app.save();
+  });
+  $('canvas').on('mousewheel', function(event) {
+    if (event.deltaY === 1) {
+      app.zoomIn();
+    }
+    if (event.deltaY === -1) {
+      return app.zoomOut();
+    }
   });
   this.shiftKey = false;
   $(document.body).keydown(function(e) {
