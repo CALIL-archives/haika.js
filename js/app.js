@@ -40,8 +40,8 @@ app = {
       bgscale: 1
     };
     this.options = $.extend(default_options, options);
-    this.x = this.options.max_width / 2;
-    this.y = this.options.max_height / 2;
+    this.x = this.options.max_width / 2 - this.options.canvas_width;
+    this.y = this.options.max_height / 2 - this.options.canvas_width;
     canvas = new fabric.Canvas(this.options.canvas);
     canvas.setWidth(this.options.canvas_width);
     canvas.setHeight(this.options.canvas_height);
@@ -225,12 +225,6 @@ app = {
       tempScaleY = scaleY * this.scale;
       tempLeft = left * this.scale - app.x * this.scale;
       tempTop = top * this.scale - app.y * this.scale;
-      if (tempLeft > this.width) {
-        continue;
-      }
-      if (tempTop > this.height) {
-        continue;
-      }
       object = this.objects[o]['object'];
       object.scaleX = tempScaleX;
       object.scaleY = tempScaleY;
@@ -258,21 +252,33 @@ app = {
     }
   },
   zoomIn: function() {
+    var x, y;
     this.scale += 0.1;
     this.scale = (this.scale * 100).toFixed(0) / 100;
-    this.x += this.options.canvas_width / 2 / 2;
-    this.y += this.options.canvas_height / 2 / 2;
+    x = this.x + this.canvas.getWidth() / 2;
+    y = this.y + this.canvas.getHeight() / 2;
+    this.x = x - (this.canvas.getWidth() * this.scale / 2);
+    this.y = y - (this.canvas.getHeight() * this.scale / 2);
     this.render();
     return $('.zoom').html((this.scale * 100).toFixed(0) + '%');
   },
   zoomOut: function() {
+    var x, y;
     if (this.scale <= 0.1) {
       return;
     }
     this.scale -= 0.1;
     this.scale = (this.scale * 100).toFixed(0) / 100;
-    this.x -= this.options.canvas_width / 2 / 2;
-    this.y -= this.options.canvas_height / 2 / 2;
+    x = this.x + this.canvas.getWidth() / 2;
+    y = this.y + this.canvas.getHeight() / 2;
+    this.x = x - (this.canvas.getWidth() * this.scale / 2);
+    this.y = y - (this.canvas.getHeight() * this.scale / 2);
+    if (this.x < 0) {
+      this.x = 0;
+    }
+    if (this.y < 0) {
+      this.y = 0;
+    }
     this.render();
     return $('.zoom').html((this.scale * 100).toFixed(0) + '%');
   },
@@ -281,23 +287,35 @@ app = {
     this.render();
     return $('.zoom').html('100%');
   },
-  toTop: function() {
+  toTop: function(y) {
+    if (y == null) {
+      y = 100;
+    }
     if (this.y > 0) {
-      this.y -= 100;
+      this.y -= y;
       return this.render();
     }
   },
-  toBottom: function() {
-    this.y += 100;
+  toBottom: function(y) {
+    if (y == null) {
+      y = 100;
+    }
+    this.y += y;
     return this.render();
   },
-  toRight: function() {
-    this.x += 100;
+  toRight: function(x) {
+    if (x == null) {
+      x = 100;
+    }
+    this.x += x;
     return this.render();
   },
-  toLeft: function() {
+  toLeft: function(x) {
+    if (x == null) {
+      x = 100;
+    }
     if (this.x > 0) {
-      this.x -= 100;
+      this.x -= x;
       return this.render();
     }
   },

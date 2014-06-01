@@ -31,12 +31,11 @@ app =
       bgopacity: 1
       bgscale  : 1
     @options = $.extend(default_options, options)
-    @x = @options.max_width / 2
-    @y = @options.max_height / 2
+    @x = @options.max_width / 2 - @options.canvas_width
+    @y = @options.max_height / 2 - @options.canvas_width
     canvas = new fabric.Canvas(@options.canvas)
     canvas.setWidth(@options.canvas_width)
     canvas.setHeight(@options.canvas_height)
-    #canvas.selection = false
     initAligningGuidelines(canvas)
 #    initCenteringGuidelines(canvas)
     @canvas = canvas
@@ -160,10 +159,10 @@ app =
       tempScaleY = scaleY * @scale
       tempLeft   = left * @scale - app.x * @scale
       tempTop    = top * @scale - app.y * @scale
-      if tempLeft > @width
-        continue
-      if tempTop > @height
-        continue
+#      if tempLeft > @width 
+#        continue
+#      if tempTop > @height
+#        continue
       object = @objects[o]['object']
       object.scaleX = tempScaleX
       object.scaleY = tempScaleY
@@ -201,8 +200,12 @@ app =
   zoomIn : ->
     @scale += 0.1
     @scale = (@scale*100).toFixed(0)/100
-    @x += @options.canvas_width / 2 / 2
-    @y += @options.canvas_height / 2 / 2
+    x = @x + @canvas.getWidth() / 2
+    y = @y + @canvas.getHeight() / 2
+    @x = x - (@canvas.getWidth() * @scale / 2)
+    @y = y - (@canvas.getHeight() * @scale / 2)
+    #@x += (@canvas.getWidth() * @scale - @canvas.getWidth()) / 2
+    #@y += (@canvas.getHeight() * @scale - @canvas.getHeight()) / 2
     @render()
     $('.zoom').html((@scale*100).toFixed(0)+'%')
   zoomOut : ->
@@ -210,27 +213,35 @@ app =
       return
     @scale -= 0.1
     @scale = (@scale*100).toFixed(0)/100
-    @x -= @options.canvas_width / 2 / 2
-    @y -= @options.canvas_height / 2 / 2
+    x = @x + @canvas.getWidth() / 2
+    y = @y + @canvas.getHeight() / 2
+    @x = x - (@canvas.getWidth() * @scale / 2)
+    @y = y - (@canvas.getHeight() * @scale / 2)
+    #@x -= (@canvas.getWidth() - @canvas.getWidth() * @scale) / 2
+    if @x<0
+      @x = 0
+    #@y -= (@canvas.getHeight() - @canvas.getHeight() * @scale) / 2
+    if @y<0
+      @y = 0
     @render()
     $('.zoom').html((@scale*100).toFixed(0)+'%')
   zoomReset : ->
     @scale = 1
     @render()
     $('.zoom').html('100%')
-  toTop : ->
+  toTop :(y=100) ->
     if @y>0
-      @y -= 100
+      @y -= y
       @render()
-  toBottom : ->
-    @y += 100
+  toBottom : (y=100)->
+    @y += y
     @render()
-  toRight : ->
-    @x += 100
+  toRight : (x=100)->
+    @x += x
     @render()
-  toLeft : ->
+  toLeft : (x=100)->
     if @x>0
-      @x -= 100
+      @x -= x
       @render()
   save : ->
     canvas = document.createElement('canvas')

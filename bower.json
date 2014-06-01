@@ -18,6 +18,7 @@
     "bootstrap": "~3.1.1",
     "jquery.hotkeys": "*",
     "jquery-mousewheel": "~3.1.11",
-    "jquery-ui": "~1.10.4"
+    "jquery-ui": "~1.10.4",
+    "jquery.finger": "~0.1.0"
   }
 }

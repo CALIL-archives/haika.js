@@ -5,7 +5,7 @@ app.init(
   max_width: 10000
   max_height: 10000
   #bgurl  : 'http://office.nanzan-u.ac.jp/TOSHOKAN/publication/bulletin/kiyo7/03-01.jpg'
-  bgurl  : 'meidai2.png'
+  bgurl  : 'img/meidai2.png'
   bgopacity: 0.5
   bgscale  : 4
 )
@@ -74,3 +74,51 @@ $ ->
         app.canvas.renderAll()
   $(".save").click ->
     app.save()
+    $(@options.canvas).on 'mousewheel', (event)=>
+      #console.log(event.deltaX, event.deltaY, event.deltaFactor);
+      if event.deltaY==1
+        @zoomIn()
+      if event.deltaY==-1
+        @zoomOut()
+  @shiftKey = false
+  $(document.body).keydown (e)=>
+    @shiftKey = e.shiftKey
+
+  $('#canvas').on 'doubletap', (e)=>
+    if @shiftKey
+      @zoomOut()
+    else
+      @zoomIn()
+###  $(@options.canvas).on 'drag', (e)=>
+    if $(".is_visible .btn-primary").find('input').val()=='edit'
+      return
+    console.log(this, e)
+    console.log(this, e.adx)
+    if e.orientation=='vertical'
+      if e.dx > 1
+        @toTop(500)
+      if e.dx < -1
+        @toBottom(500)
+    else
+      if e.dy > 1
+        @toLeft(500)
+      if e.dy < -1
+        @toRight(500)
+  $(".is_visible input").change ->
+    if $(".is_visible .btn-primary").find('input').val()=='move'
+        #app.canvas.selection = false
+        #app.render()
+        $('canvas').css('cursor', 'move')
+    if $(".is_visible .btn-primary").find('input').val()=='edit'
+        #app.canvas.selection = true
+        #app.render()
+        $('canvas').css('cursor', 'pointer')
+    is_visible = $(this).attr("id")
+    buttons = $(this).closest(".btn-group").find(".btn")
+    buttons.each (i, e) ->
+      $(e).removeClass("btn-primary").removeClass("btn-default")
+      if is_visible==$(e).find("input").attr("id")
+        $(e).addClass "btn-primary"
+      else
+        $(e).addClass "btn-default"
+###

@@ -1,11 +1,8 @@
 <html>
   <head>
+    <meta charset="UTF-8">
     <title>Haika.js</title>
-    <!-- jQuery -->
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <!-- Bootstrap3 -->
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="css/shelf.css" rel="stylesheet">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
@@ -20,6 +17,16 @@
           <input type="button" class="tobottom btn btn-default" value="↓" />
         </div>
         <div class="col-md-10">
+<!--
+          <div class="btn-group btn-group-sm is_visible" data-toggle="buttons">
+            <label class="btn btn-sm btn-default">
+              <input type="radio" name="display" id="true" value="move">移動
+            </label>
+            <label class="btn btn-sm btn-primary">
+              <input type="radio" name="display" id="false" value="edit">編集
+            </label>
+          </div>
+-->
           <label for="count">count:
               <input type="text" id="count" class="form-control" value="3" style="width: 60px;" />
           </label>
@@ -43,11 +50,15 @@
       </div>
     </div>
     <!-- External script dependencies  -->
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
     <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
 <!--    <script type="text/javascript" src="vendor/fabric.min.js"></script>-->
     <script type="text/javascript" src="bower_components/jquery-mousewheel/jquery.mousewheel.min.js"></script>
     <script type="text/javascript" src="bower_components/jquery.hotkeys/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="bower_components/jquery.finger/dist/jquery.finger.min.js"></script>
     <script type="text/javascript" src="vendor/fabric.js"></script>
     <script type="text/javascript" src="vendor/aligning_guidelines.js"></script>
     <script type="text/javascript" src="vendor/centering_guidelines.js"></script>
