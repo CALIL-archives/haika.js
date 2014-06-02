@@ -1,0 +1,12 @@
+
+.canvas_panel {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  color: white;
+  padding: 30px;
+  background: #000000;
+}
+.canvas_panel input {
+  color: #000000;
+}

@@ -5,12 +5,13 @@
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="css/shelf.css" rel="stylesheet">
+    <link href="css/app.css" rel="stylesheet">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   </head>
   <body>
     <div class="container">
       <div class="row">
-        <div class="col-md-2" style="text-align:center;padding-top: 60px;width: 120px;">
+        <div class="col-md-2" style="text-align:center;width: 120px;">
           <input type="button" class="totop btn btn-default" value="↑" /><br />
           <input type="button" class="toleft btn btn-default" value="←" />
           <input type="button" class="toright btn btn-default" value="→" /><br />
@@ -44,29 +45,30 @@
           <input type="button" class="zoomreset btn btn-default" value="zoomReset" />
           <input type="button" class="bringtofront btn btn-default" value="bringToFront " />
           <input type="button" class="save btn btn-default" value="Save " />
-          <canvas id="canvas" width="800" height="600"></canvas>
-          <div class="rotate"></div>
         </div>
       </div>
     </div>
+    <canvas id="canvas" width="800" height="600"></canvas>
     <div class="canvas_panel">
       <h3>Canvas</h3>
       <label for="canvas_width">
         Width:
-        <input type="text" id="canvas_width" value="" />
+        <input type="text" id="canvas_width" class="form-control" value="0" />
       </label>
       <label for="canvas_height">
-        Width:
-        <input type="text" id="canvas_height" value="" />
+        Height:
+        <input type="text" id="canvas_height" class="form-control" value="0" />
       </label>
-      <label for="canvas_width">
-        Width:
-        <input type="text" id="canvas_width" value="" />
+      <label for="canvas_centerX">
+        centerX:
+        <input type="text" id="canvas_centerX" class="form-control" value="0" />
       </label>
-      <label for="canvas_width">
-        Width:
-        <input type="text" id="canvas_width" value="" />
+      <label for="canvas_centerY">
+        centerY:
+        <input type="text" id="canvas_centerY" class="form-control" value="0" />
       </label>
+      <input type="button" id="canvas_render" class="btn btn-default" value="render">
+      <div class="rotate"></div>
     </div>
     <!-- External script dependencies  -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -82,7 +84,7 @@
     <script type="text/javascript" src="vendor/aligning_guidelines.js"></script>
     <script type="text/javascript" src="vendor/centering_guidelines.js"></script>
     <script type="text/javascript" src="js/shelf.js"></script>
-    <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript" src="js/canvas.js"></script>
     <script type="text/javascript" src="js/init.js"></script>
   </body>
 </html>
