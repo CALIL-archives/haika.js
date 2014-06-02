@@ -138,14 +138,13 @@ app =
       count = @match(object)
       if count!=null
         if group
-          @objects[count].scaleX = @objects[count].scaleX * group.scaleX
-          @objects[count].scaleY = @objects[count].scaleY * group.scaleY
+          return
         else
           @objects[count].scaleX = object.scaleX / @scale
           @objects[count].scaleY = object.scaleY / @scale
         @objects[count].top_cm    = @transformY_px2cm(object.top)
         @objects[count].left_cm   = @transformX_px2cm(object.left)
-  rotating : (object)->
+  rotating : (object, group)->
     log 'rotating'
     @bind (object)=>
       count = @match(object)

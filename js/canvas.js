@@ -196,8 +196,7 @@ app = {
       count = _this.match(object);
       if (count !== null) {
         if (group) {
-          _this.objects[count].scaleX = _this.objects[count].scaleX * group.scaleX;
-          _this.objects[count].scaleY = _this.objects[count].scaleY * group.scaleY;
+          return;
         } else {
           _this.objects[count].scaleX = object.scaleX / _this.scale;
           _this.objects[count].scaleY = object.scaleY / _this.scale;
@@ -207,7 +206,7 @@ app = {
       }
     });
   },
-  rotating: function(object) {
+  rotating: function(object, group) {
     var _this = this;
     log('rotating');
     return this.bind(function(object) {
