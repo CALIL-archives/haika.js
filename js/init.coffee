@@ -25,6 +25,7 @@ add = (top=300, left=300, angle=0)->
     fill: "#CFE2F3"
     stroke: "#000000"
     angle: angle
+    #lockScalingY: true
   )
   app.add(shelf)
 setTimeout(->

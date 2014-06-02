@@ -37,7 +37,7 @@ app =
     canvas.setHeight(@options.canvas_height)
     $('#canvas_height').val(@options.canvas_height)
     initAligningGuidelines(canvas)
-#    initCenteringGuidelines(canvas)
+    initCenteringGuidelines(canvas)
     @canvas = canvas
     #@canvas.centeredRotation = true
     if @options.bgurl
@@ -47,35 +47,32 @@ app =
         @bgimg_height = img.height
     @canvas.on('object:selected', (e)=>
         object = e.target
+        if object._objects?
+          object.lockScalingX  = true
+          object.lockScalingY  = true
     )
-    @canvas.on('object:modified', (e)=>
-        object = e.target
-        log 'modified'
-        if @is_moving
-          @moving(object)
-        if @is_scaling
-          @scaling(object)
-        if @is_rotating
-          @rotating(object)
-        @is_moving  = false
-        @is_scaling = false
-        @is_rotating= false
+    @canvas.on('before:selection:cleared', (e)=>
+      object = e.target
+      log 'before_unselect'
+      @canvas.deactivateAll().renderAll()
+      if object._objects?
+        group = object
+        objects = object._objects
+        for object in objects
+          @save_prop(object, group)
+      else
+        @save_prop(object)
     )
-    @canvas.on('object:moving', (e)=>
-        object = e.target
-        log 'moving'
-        @is_moving  = true
-    )
-    @canvas.on('object:scaling', (e)=>
-        object = e.target
-        log 'scaling'
-        @is_scaling = true
-    )
-    @canvas.on('object:rotating', (e)=>
-        object = e.target
-        log 'rotating'
-        @is_rotating= true
-    )
+  save_prop : (object, group=false)->
+      count = @match(object)
+      if count!=null
+        @objects[count].top_cm  = @transformY_px2cm(object.top)
+        @objects[count].left_cm = @transformX_px2cm(object.left)
+        scaleX = if group then group.scaleX else 0
+        scaleY = if group then group.scaleY else 0
+        @objects[count].scaleX = object.scaleX / @scale * scaleX
+        @objects[count].scaleY = object.scaleY / @scale * scaleY
+        @objects[count].angle    = object.angle
   add : (object)->
     object.__id = @object_id
     @object_id += 1
@@ -92,18 +89,6 @@ app =
       o[prop] = object[prop]
     @objects.push(o)
     return o
-  bind : (func, unselect=true)->
-    object = @canvas.getActiveObject()
-    if object
-      func(object)
-    group = @canvas.getActiveGroup()
-    if group
-      objects = group._objects
-      if unselect
-        @canvas.deactivateAll().renderAll();
-      for object in objects
-        func(object, group)
-    @render()
   remove : ->
     @bind (object)=>
       @canvas.remove(object)
@@ -125,33 +110,6 @@ app =
         return count
       count += 1
     return null
-  moving : (object)->
-    log 'moving'
-    @bind (object)=>
-      count = @match(object)
-      if count!=null
-        @objects[count].top_cm  = @transformY_px2cm(object.top)
-        @objects[count].left_cm = @transformX_px2cm(object.left)
-  scaling : (object)->
-    log 'scaling'
-    @bind (object, group)=>
-      count = @match(object)
-      if count!=null
-        if group
-          return
-        else
-          @objects[count].scaleX = object.scaleX / @scale
-          @objects[count].scaleY = object.scaleY / @scale
-        @objects[count].top_cm    = @transformY_px2cm(object.top)
-        @objects[count].left_cm   = @transformX_px2cm(object.left)
-  rotating : (object, group)->
-    log 'rotating'
-    @bind (object)=>
-      count = @match(object)
-      if count!=null
-        @objects[count].angle = object.angle
-        @objects[count].top_cm   = @transformY_px2cm(object.top)
-        @objects[count].left_cm  = @transformX_px2cm(object.left)
   transformX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale
@@ -169,6 +127,12 @@ app =
     #return @canvas.getHeight() / 2 - (px + @centerY) * @scale 
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
   render : ->
+    object = app.canvas.getActiveObject()
+    if not object
+      object = app.canvas.getActiveGroup()
+    if object
+      @canvas.fire('before:selection:cleared', { target: object })
+      @canvas.fire('selection:cleared', { target: object })
     if @objects.length<=0
       return
     @canvas.clear()
@@ -244,10 +208,10 @@ app =
     @render()
     $('.zoom').html('100%')
   toTop :(y=100) ->
-    @centerY -= y
+    @centerY += y
     @render()
   toBottom : (y=100)->
-    @centerY += y
+    @centerY -= y
     @render()
   toRight : (x=100)->
     @centerX -= x

@@ -137,3 +137,99 @@ app.resetZoom = ->
   canvas.renderAll()
   canvasScale = 1
   return
+
+    @canvas.on('after:render', (e)=>
+        log 'rendered'
+        object = @canvas.getActiveObject()
+        if object
+          @rotating(object)
+        group = @canvas.getActiveGroup()
+        if group
+          objects = group._objects
+          log objects
+          for object in objects
+            @rotating(object)
+    )
+    
+            #if @is_moving
+        #  @moving(object)
+        #if @is_scaling
+        #  @scaling(object)
+        #if @is_rotating
+        #  @rotating(object)
+        #@is_moving  = false
+        #@is_scaling = false
+        #@is_rotating= false
+    @canvas.on('object:selected', (e)=>
+        object = e.target
+    )
+    @canvas.on('object:modified', (e)=>
+        object = e.target
+        log 'modified'
+    )
+    @canvas.on('object:moving', (e)=>
+        object = e.target
+        log 'moving'
+        @is_moving  = true
+    )
+    @canvas.on('object:scaling', (e)=>
+        object = e.target
+        log 'scaling'
+        @is_scaling = true
+    )
+    @canvas.on('object:rotating', (e)=>
+        object = e.target
+        log 'rotating'
+        @is_rotating= true
+    )
+    @canvas.on('selection:cleared', (e)=>
+      log 'unselect'
+      log e.target
+    )
+  bind : (func)->
+    object = @canvas.getActiveObject()
+    if object
+      func(object)
+    group = @canvas.getActiveGroup()
+    if group
+      objects = group._objects
+#      @canvas.deactivateAll().renderAll()
+#      for object in objects
+#        func(object, group)
+#      objects = group._objects.map((object) ->
+#        object.set "active", true
+#      )
+#      group = new fabric.Group(objects,
+#        originX: "center"
+#        originY: "center"
+#      )
+      @canvas._activeObject = null
+      @canvas.setActiveGroup(group.setCoords()).renderAll()
+    #@render()
+
+  moving : ()->
+    log 'moving'
+    @bind (object)=>
+      count = @match(object)
+      if count!=null
+        log object.top
+        @objects[count].top_cm  = @transformY_px2cm(object.top)
+        @objects[count].left_cm = @transformX_px2cm(object.left)
+  scaling : ()->
+    log 'scaling'
+    @bind (object, group)=>
+      count = @match(object)
+      if count!=null
+        @objects[count].scaleX = object.scaleX / @scale
+        @objects[count].scaleY = object.scaleY / @scale
+        @objects[count].top_cm    = @transformY_px2cm(object.top)
+        @objects[count].left_cm   = @transformX_px2cm(object.left)
+  rotating : ()->
+    log 'rotating'
+    @bind (object)=>
+      count = @match(object)
+      if count!=null
+        @objects[count].angle    = object.angle
+        @objects[count].top_cm   = @transformY_px2cm(object.top)
+        @objects[count].left_cm  = @transformX_px2cm(object.left)
+
