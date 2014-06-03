@@ -127,7 +127,11 @@
     y: 0,
     width: 90,
     height: 25,
+    maxWidth: 900,
+    maxHeight: 50,
     count: 1,
+    side: 1,
+    minScaleLimit: 1,
     strokeDashArray: null,
     initialize: function(options) {
       options = options || {};
@@ -136,8 +140,7 @@
       this.x = options.x || 0;
       this.y = options.y || 0;
       this.width = this.width * this.count;
-      this._side = (this.side === "one" ? 1 : 2);
-      this.height = this.height * this._side;
+      this.height = this.height * this.side;
     },
     _initRxRy: function() {
       if (this.rx && !this.ry) {
@@ -157,9 +160,9 @@
       rx = (this.rx ? Math.min(this.rx, this.width / 2) : 0);
       ry = (this.ry ? Math.min(this.ry, this.height / 2) : 0);
       w = this.width / this.count;
-      h = this.height / this._side;
+      h = this.height / this.side;
       x = -w / 2 * this.count;
-      y = -h / 2 * this._side;
+      y = -h / 2 * this.side;
       isInPathGroup = this.group && this.group.type === "path-group";
       isRounded = rx !== 0 || ry !== 0;
       k = 1 - 0.5522847498;
@@ -173,9 +176,9 @@
       }
       i = 0;
       while (i < this.count) {
-        if (this.side === "one") {
+        if (this.side === 1) {
           this.__renderShelf(ctx, x + i * w, y, w, h);
-        } else if (this.side === "both") {
+        } else if (this.side === 2) {
           this.__renderShelf(ctx, x + i * w, y, w, h);
           this.__renderShelf(ctx, x + i * w, y + h, w, h);
         }
@@ -191,6 +194,40 @@
       ctx.lineTo(x, y + h);
       ctx.lineTo(x, y);
       ctx.closePath();
+    },
+    __resizeShelf: function() {
+      var actualHeight, actualWidth, count, maxHeight, maxWidth, side;
+      maxWidth = this.maxWidth;
+      maxHeight = this.maxHeight;
+      actualWidth = this.scaleX * this.width;
+      actualHeight = this.scaleY * this.height;
+      if (!isNaN(maxWidth) && actualWidth >= maxWidth) {
+        this.set({
+          scaleX: maxWidth / this.width
+        });
+      }
+      if (!isNaN(maxHeight) && actualHeight >= maxHeight) {
+        this.set({
+          scaleY: maxHeight / this.height
+        });
+      }
+      count = Math.round(this.currentWidth * this.scaleX / 90);
+      count = count < 1 ? 1 : count;
+      side = Math.round(this.currentHeight * this.scaleY / 25);
+      side = side < 1 ? 1 : side;
+      return this.set({
+        count: count,
+        side: side,
+        minScaleLimit: 1 / this.count
+      });
+    },
+    __modifiedShelf: function() {
+      log(this.scaleY);
+      log(this.currentHeight);
+      this.width = this.currentWidth;
+      this.scaleX = 1;
+      this.height = this.currentHeight;
+      return this.scaleY = 1;
     },
     _renderDashedStroke: function(ctx) {
       var h, w, x, y;

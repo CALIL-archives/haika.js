@@ -19,7 +19,7 @@ app.scale = 1
 add = (top=300, left=300, angle=0)->
   shelf = new fabric.Shelf(
     count: parseInt($('#count').val())
-    side: $('#side').val()
+    side: parseInt($('#side').val())
     top: app.transformX_cm2px(top)
     left: app.transformY_cm2px(left)
     fill: "#CFE2F3"
@@ -35,17 +35,6 @@ setTimeout(->
   app.render()
 , 500)
 
-app.scale = 1
-x_cm = -125
-log x_cm
-x_px = app.transformX_cm2px(x_cm)
-log x_px
-
-x_cm = app.transformX_px2cm(x_px)
-log x_cm
-
-x_px = app.transformX_cm2px(x_cm)
-log x_px
 
 
 #    fabric.Shelf.async = true;
@@ -95,7 +84,6 @@ $ ->
         app.canvas.renderAll()
   $(".save").click ->
     app.save()
-  
 #  $('canvas').on 'mousewheel', (event)=>
 #    #console.log(event.deltaX, event.deltaY, event.deltaFactor);
 #    if event.deltaY==1
@@ -122,36 +110,3 @@ $ ->
     app.centerY = $(this).val()
   $('#canvas_render').click ->
     app.render()
-###  $(@options.canvas).on 'drag', (e)=>
-    if $(".is_visible .btn-primary").find('input').val()=='edit'
-      return
-    console.log(this, e)
-    console.log(this, e.adx)
-    if e.orientation=='vertical'
-      if e.dx > 1
-        @toTop(500)
-      if e.dx < -1
-        @toBottom(500)
-    else
-      if e.dy > 1
-        @toLeft(500)
-      if e.dy < -1
-        @toRight(500)
-  $(".is_visible input").change ->
-    if $(".is_visible .btn-primary").find('input').val()=='move'
-        #app.canvas.selection = false
-        #app.render()
-        $('canvas').css('cursor', 'move')
-    if $(".is_visible .btn-primary").find('input').val()=='edit'
-        #app.canvas.selection = true
-        #app.render()
-        $('canvas').css('cursor', 'pointer')
-    is_visible = $(this).attr("id")
-    buttons = $(this).closest(".btn-group").find(".btn")
-    buttons.each (i, e) ->
-      $(e).removeClass("btn-primary").removeClass("btn-default")
-      if is_visible==$(e).find("input").attr("id")
-        $(e).addClass "btn-primary"
-      else
-        $(e).addClass "btn-default"
-###

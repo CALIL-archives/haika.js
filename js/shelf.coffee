@@ -115,7 +115,11 @@
     y: 0
     width: 90
     height: 25
+    maxWidth : 900
+    maxHeight : 50
     count: 1
+    side : 1
+    minScaleLimit: 1
     strokeDashArray: null
     initialize: (options) ->
       options = options or {}
@@ -124,8 +128,7 @@
       @x = options.x or 0
       @y = options.y or 0
       @width = @width * @count
-      @_side = (if (@side is "one") then 1 else 2)
-      @height = @height * @_side
+      @height = @height * @side
       return
 
     _initRxRy: ->
@@ -140,10 +143,12 @@
         return
       rx = (if @rx then Math.min(@rx, @width / 2) else 0)
       ry = (if @ry then Math.min(@ry, @height / 2) else 0)
+      #@count = Math.round(@currentWidth / 90)
+      #@currentWidth = @count * @width
       w = @width / @count
-      h = @height / @_side
+      h = @height / @side
       x = -w / 2 * @count
-      y = -h / 2 * @_side
+      y = -h / 2 * @side
       isInPathGroup = @group and @group.type is "path-group"
       isRounded = rx isnt 0 or ry isnt 0
       k = 1 - 0.5522847498
@@ -153,10 +158,11 @@
       ctx.translate -@group.width / 2 + @width / 2 + @x, -@group.height / 2 + @height / 2 + @y  if not @transformMatrix and isInPathGroup
       i = 0
 
+#      @__renderShelf ctx, x + i * w, y, w, h
       while i < @count
-        if @side is "one"
+        if @side is 1
           @__renderShelf ctx, x + i * w, y, w, h
-        else if @side is "both"
+        else if @side is 2
           @__renderShelf ctx, x + i * w, y, w, h
           @__renderShelf ctx, x + i * w, y + h, w, h
         i++
@@ -172,6 +178,33 @@
       ctx.lineTo x, y
       ctx.closePath()
       return
+    
+    __resizeShelf: () ->
+      maxWidth = @maxWidth
+      maxHeight = @maxHeight
+      actualWidth = @scaleX * @width
+      actualHeight = @scaleY * @height
+
+      # dividing maxWidth by the @width gives us our 'max scale' 
+      if not isNaN(maxWidth) and actualWidth >= maxWidth
+        @set scaleX: maxWidth / @width
+      if not isNaN(maxHeight) and actualHeight >= maxHeight 
+        @set scaleY: maxHeight / @height
+      #log @get("currentWidth") * @scaleX
+      count = Math.round(@currentWidth * @scaleX / 90)
+      count = if count<1 then 1 else count
+      side = Math.round(@currentHeight * @scaleY / 25)
+      side = if side<1 then 1 else side
+      @set(count: count, side: side, minScaleLimit: 1 / @count)
+      #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
+
+    __modifiedShelf: () ->
+      log @scaleY
+      log @currentHeight
+      @width = @currentWidth
+      @scaleX = 1
+      @height = @currentHeight
+      @scaleY = 1
 
     _renderDashedStroke: (ctx) ->
       x = -@width / 2

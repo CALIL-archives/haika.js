@@ -6,9 +6,9 @@ SCALE_FACTOR = 2
 app = 
   width      : 800
   height     : 800
-  x          : 0
-  y          : 0
-  scale      : 1
+  centerX    : 0
+  centerY    : 0
+  scale      : 10
   objects    : []
   object_id  : 1 
   canvas     : false
@@ -31,15 +31,13 @@ app =
       bgopacity: 1
       bgscale  : 1
     @options = $.extend(default_options, options)
-    @x = @options.max_width / 2 - @options.canvas_width
-    @y = @options.max_height / 2 - @options.canvas_width
     canvas = new fabric.Canvas(@options.canvas)
     canvas.setWidth(@options.canvas_width)
     $('#canvas_width').val(@options.canvas_width)
     canvas.setHeight(@options.canvas_height)
-    $('#canvas_width').val(@options.canvas_width)
+    $('#canvas_height').val(@options.canvas_height)
     initAligningGuidelines(canvas)
-#    initCenteringGuidelines(canvas)
+    initCenteringGuidelines(canvas)
     @canvas = canvas
     #@canvas.centeredRotation = true
     if @options.bgurl
@@ -49,35 +47,46 @@ app =
         @bgimg_height = img.height
     @canvas.on('object:selected', (e)=>
         object = e.target
+        if object._objects?
+          object.lockScalingX  = true
+          object.lockScalingY  = true
+        #else
+        #  object.lockScalingY  = true
     )
+    @canvas.on('before:selection:cleared', (e)=>
+      object = e.target
+      log 'before_unselect'
+      @canvas.deactivateAll().renderAll()
+      if object._objects?
+        group = object
+        objects = object._objects
+        for object in objects
+          @save_prop(object, group)
+      else
+        @save_prop(object)
+    )
+    @canvas.on 'object:scaling', (e) =>
+      object = e.target
+      if object.__resizeShelf?
+        object.__resizeShelf()
+
     @canvas.on('object:modified', (e)=>
         object = e.target
         log 'modified'
-        if @is_moving
-          @moving(object)
-        if @is_scaling
-          @scaling(object)
-        if @is_rotating
-          @rotating(object)
-        @is_moving  = false
-        @is_scaling = false
-        @is_rotating= false
+        if object.__modifiedShelf?
+          object.__modifiedShelf()
     )
-    @canvas.on('object:moving', (e)=>
-        object = e.target
-        log 'moving'
-        @is_moving  = true
-    )
-    @canvas.on('object:scaling', (e)=>
-        object = e.target
-        log 'scaling'
-        @is_scaling = true
-    )
-    @canvas.on('object:rotating', (e)=>
-        object = e.target
-        log 'rotating'
-        @is_rotating= true
-    )
+
+  save_prop : (object, group=false)->
+      count = @match(object)
+      if count!=null
+        @objects[count].top_cm  = @transformY_px2cm(object.top)
+        @objects[count].left_cm = @transformX_px2cm(object.left)
+        scaleX = if group then group.scaleX else 0
+        scaleY = if group then group.scaleY else 0
+        @objects[count].scaleX = object.scaleX / @scale * scaleX
+        @objects[count].scaleY = object.scaleY / @scale * scaleY
+        @objects[count].angle  = object.angle
   add : (object)->
     object.__id = @object_id
     @object_id += 1
@@ -85,21 +94,24 @@ app =
       object : object 
     props = 'width height scaleX scaleY left top angle fill stroke'.split(' ')
     for prop in props
+      if prop=='top'
+        o.top_cm = @transformX_px2cm(object.top)
+        continue
+      if prop=='left'
+        o.left_cm = @transformY_px2cm(object.left)
+        continue
       o[prop] = object[prop]
     @objects.push(o)
     return o
-  bind : (func, unselect=true)->
+  bind : (func)->
     object = @canvas.getActiveObject()
     if object
-      return func(object)
+      func(object)
     group = @canvas.getActiveGroup()
     if group
       objects = group._objects
-      if unselect
-        @canvas.deactivateAll().renderAll();
-      for object in objects
-        func(object)
-    @render()
+      @canvas._activeObject = null
+      @canvas.setActiveGroup(group.setCoords()).renderAll()
   remove : ->
     @bind (object)=>
       @canvas.remove(object)
@@ -121,46 +133,42 @@ app =
         return count
       count += 1
     return null
-  moving : (object)->
-    log 'moving'
-    @bind (object)=>
-      count = @match(object)
-      if count!=null
-        @objects[count].top  = object.top / @scale + app.y
-        @objects[count].left = object.left / @scale + app.x
-  scaling : (object)->
-    log 'scaling'
-    @bind (object)=>
-      log object
-      count = @match(object)
-      if count!=null
-        log object.scaleX
-        @objects[count].scaleX = object.scaleX / @scale
-        @objects[count].scaleY = object.scaleY / @scale
-        @objects[count].top    = object.top / @scale + app.y
-        @objects[count].left   = object.left / @scale + app.x
-  rotating : (object)->
-    log 'rotating'
-    @bind (object)=>
-      count = @match(object)
-      if count!=null
-        @objects[count].angle = object.angle
-        @objects[count].top   = object.top / @scale + app.y
-        @objects[count].left  = object.left / @scale + app.x
+  transformX_cm2px : (cm)->
+    # centerX(cm) => px
+    return @canvas.getWidth()/2+(@centerX-cm)*@scale
+    #return @centerX * @scale + @canvas.getWidth()  / 2 - cm * @scale
+  transformY_cm2px : (cm)->
+    return @canvas.getHeight()/2+(@centerY-cm)*@scale
+    #return @centerY * @scale + @canvas.getHeight() / 2 - cm * @scale
+  transformX_px2cm : (px)->
+    # left(px) => x(cm)
+    #return (px+@centerX)/@scale-@canvas.getWidth()/2
+    #return @canvas.getWidth() / 2 - (px + @centerX) * @scale
+    return @centerX - (px - @canvas.getWidth() / 2) / @scale
+  transformY_px2cm : (px)->
+    #return (px+@centerY)/@scale-@canvas.getHeight()/2
+    #return @canvas.getHeight() / 2 - (px + @centerY) * @scale 
+    return @centerY - (px - @canvas.getHeight() / 2) / @scale
   render : ->
+    object = app.canvas.getActiveObject()
+    if not object
+      object = app.canvas.getActiveGroup()
+    if object
+      @canvas.fire('before:selection:cleared', { target: object })
+      @canvas.fire('selection:cleared', { target: object })
     if @objects.length<=0
       return
     @canvas.clear()
     for o of @objects
-      scaleX = @objects[o].scaleX
-      scaleY = @objects[o].scaleY
-      left   = @objects[o].left
-      top    = @objects[o].top
+      scaleX  = @objects[o].scaleX
+      scaleY  = @objects[o].scaleY
+      left_cm = @objects[o].left_cm
+      top_cm  = @objects[o].top_cm
       angle   = @objects[o].angle
       tempScaleX = scaleX * @scale
       tempScaleY = scaleY * @scale
-      tempLeft   = left * @scale - app.x * @scale
-      tempTop    = top * @scale - app.y * @scale
+      tempLeft   = @transformX_cm2px(left_cm)
+      tempTop    = @transformY_cm2px(top_cm)
 #      if tempLeft > @width 
 #        continue
 #      if tempTop > @height
@@ -180,12 +188,19 @@ app =
       fabric.drawGridLines(@canvas)
     @canvas.renderAll()
     if @bgimg
-      @bgimg.left   = -(@x*@scale)
-      @bgimg.top    = -(@y*@scale)
+      @bgimg.left   = -(@centerX*@scale)
+      @bgimg.top    = -(@centerY*@scale)
       @bgimg.width  = @bgimg_width*@options.bgscale*@scale
       @bgimg.height = @bgimg_height*@options.bgscale*@scale
       @bgimg.opacity= @options.bgopacity
       @canvas.setBackgroundImage @bgimg, @canvas.renderAll.bind(@canvas)
+    @debug()
+  #デバッグパネル
+  debug : ->
+    $('#canvas_width').val(@canvas.getWidth())
+    $('#canvas_height').val(@canvas.getHeight())
+    $('#canvas_centerX').val(@centerX)
+    $('#canvas_centerY').val(@centerY)
 
 #    object.on(
 #      modified: =>
@@ -202,12 +217,6 @@ app =
   zoomIn : ->
     @scale += 0.1
     @scale = (@scale*100).toFixed(0)/100
-    x = @x + @canvas.getWidth() / 2
-    y = @y + @canvas.getHeight() / 2
-    @x = x - (@canvas.getWidth() * @scale / 2)
-    @y = y - (@canvas.getHeight() * @scale / 2)
-    #@x += (@canvas.getWidth() * @scale - @canvas.getWidth()) / 2
-    #@y += (@canvas.getHeight() * @scale - @canvas.getHeight()) / 2
     @render()
     $('.zoom').html((@scale*100).toFixed(0)+'%')
   zoomOut : ->
@@ -215,16 +224,6 @@ app =
       return
     @scale -= 0.1
     @scale = (@scale*100).toFixed(0)/100
-    x = @x + @canvas.getWidth() / 2
-    y = @y + @canvas.getHeight() / 2
-    @x = x - (@canvas.getWidth() * @scale / 2)
-    @y = y - (@canvas.getHeight() * @scale / 2)
-    #@x -= (@canvas.getWidth() - @canvas.getWidth() * @scale) / 2
-    if @x<0
-      @x = 0
-    #@y -= (@canvas.getHeight() - @canvas.getHeight() * @scale) / 2
-    if @y<0
-      @y = 0
     @render()
     $('.zoom').html((@scale*100).toFixed(0)+'%')
   zoomReset : ->
@@ -232,19 +231,17 @@ app =
     @render()
     $('.zoom').html('100%')
   toTop :(y=100) ->
-    if @y>0
-      @y -= y
-      @render()
+    @centerY += y
+    @render()
   toBottom : (y=100)->
-    @y += y
+    @centerY -= y
     @render()
   toRight : (x=100)->
-    @x += x
+    @centerX -= x
     @render()
   toLeft : (x=100)->
-    if @x>0
-      @x -= x
-      @render()
+    @centerX += x
+    @render()
   save : ->
     canvas = document.createElement('canvas')
     canvas = new fabric.Canvas(canvas);

@@ -12,9 +12,9 @@ SCALE_FACTOR = 2;
 app = {
   width: 800,
   height: 800,
-  x: 0,
-  y: 0,
-  scale: 1,
+  centerX: 0,
+  centerY: 0,
+  scale: 10,
   objects: [],
   object_id: 1,
   canvas: false,
@@ -40,14 +40,13 @@ app = {
       bgscale: 1
     };
     this.options = $.extend(default_options, options);
-    this.x = this.options.max_width / 2 - this.options.canvas_width;
-    this.y = this.options.max_height / 2 - this.options.canvas_width;
     canvas = new fabric.Canvas(this.options.canvas);
     canvas.setWidth(this.options.canvas_width);
     $('#canvas_width').val(this.options.canvas_width);
     canvas.setHeight(this.options.canvas_height);
-    $('#canvas_width').val(this.options.canvas_width);
+    $('#canvas_height').val(this.options.canvas_height);
     initAligningGuidelines(canvas);
+    initCenteringGuidelines(canvas);
     this.canvas = canvas;
     if (this.options.bgurl) {
       fabric.Image.fromURL(this.options.bgurl, function(img) {
@@ -58,43 +57,61 @@ app = {
     }
     this.canvas.on('object:selected', function(e) {
       var object;
-      return object = e.target;
-    });
-    this.canvas.on('object:modified', function(e) {
-      var object;
       object = e.target;
-      log('modified');
-      if (_this.is_moving) {
-        _this.moving(object);
+      if (object._objects != null) {
+        object.lockScalingX = true;
+        return object.lockScalingY = true;
       }
-      if (_this.is_scaling) {
-        _this.scaling(object);
-      }
-      if (_this.is_rotating) {
-        _this.rotating(object);
-      }
-      _this.is_moving = false;
-      _this.is_scaling = false;
-      return _this.is_rotating = false;
     });
-    this.canvas.on('object:moving', function(e) {
-      var object;
+    this.canvas.on('before:selection:cleared', function(e) {
+      var group, object, objects, _i, _len, _results;
       object = e.target;
-      log('moving');
-      return _this.is_moving = true;
+      log('before_unselect');
+      _this.canvas.deactivateAll().renderAll();
+      if (object._objects != null) {
+        group = object;
+        objects = object._objects;
+        _results = [];
+        for (_i = 0, _len = objects.length; _i < _len; _i++) {
+          object = objects[_i];
+          _results.push(_this.save_prop(object, group));
+        }
+        return _results;
+      } else {
+        return _this.save_prop(object);
+      }
     });
     this.canvas.on('object:scaling', function(e) {
       var object;
       object = e.target;
-      log('scaling');
-      return _this.is_scaling = true;
+      if (object.__resizeShelf != null) {
+        return object.__resizeShelf();
+      }
     });
-    return this.canvas.on('object:rotating', function(e) {
+    return this.canvas.on('object:modified', function(e) {
       var object;
       object = e.target;
-      log('rotating');
-      return _this.is_rotating = true;
+      log('modified');
+      if (object.__modifiedShelf != null) {
+        return object.__modifiedShelf();
+      }
     });
+  },
+  save_prop: function(object, group) {
+    var count, scaleX, scaleY;
+    if (group == null) {
+      group = false;
+    }
+    count = this.match(object);
+    if (count !== null) {
+      this.objects[count].top_cm = this.transformY_px2cm(object.top);
+      this.objects[count].left_cm = this.transformX_px2cm(object.left);
+      scaleX = group ? group.scaleX : 0;
+      scaleY = group ? group.scaleY : 0;
+      this.objects[count].scaleX = object.scaleX / this.scale * scaleX;
+      this.objects[count].scaleY = object.scaleY / this.scale * scaleY;
+      return this.objects[count].angle = object.angle;
+    }
   },
   add: function(object) {
     var o, prop, props, _i, _len;
@@ -106,32 +123,31 @@ app = {
     props = 'width height scaleX scaleY left top angle fill stroke'.split(' ');
     for (_i = 0, _len = props.length; _i < _len; _i++) {
       prop = props[_i];
+      if (prop === 'top') {
+        o.top_cm = this.transformX_px2cm(object.top);
+        continue;
+      }
+      if (prop === 'left') {
+        o.left_cm = this.transformY_px2cm(object.left);
+        continue;
+      }
       o[prop] = object[prop];
     }
     this.objects.push(o);
     return o;
   },
-  bind: function(func, unselect) {
-    var group, object, objects, _i, _len;
-    if (unselect == null) {
-      unselect = true;
-    }
+  bind: function(func) {
+    var group, object, objects;
     object = this.canvas.getActiveObject();
     if (object) {
-      return func(object);
+      func(object);
     }
     group = this.canvas.getActiveGroup();
     if (group) {
       objects = group._objects;
-      if (unselect) {
-        this.canvas.deactivateAll().renderAll();
-      }
-      for (_i = 0, _len = objects.length; _i < _len; _i++) {
-        object = objects[_i];
-        func(object);
-      }
+      this.canvas._activeObject = null;
+      return this.canvas.setActiveGroup(group.setCoords()).renderAll();
     }
-    return this.render();
   },
   remove: function() {
     var _this = this;
@@ -170,49 +186,32 @@ app = {
     }
     return null;
   },
-  moving: function(object) {
-    var _this = this;
-    log('moving');
-    return this.bind(function(object) {
-      var count;
-      count = _this.match(object);
-      if (count !== null) {
-        _this.objects[count].top = object.top / _this.scale + app.y;
-        return _this.objects[count].left = object.left / _this.scale + app.x;
-      }
-    });
+  transformX_cm2px: function(cm) {
+    return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scale;
   },
-  scaling: function(object) {
-    var _this = this;
-    log('scaling');
-    return this.bind(function(object) {
-      var count;
-      log(object);
-      count = _this.match(object);
-      if (count !== null) {
-        log(object.scaleX);
-        _this.objects[count].scaleX = object.scaleX / _this.scale;
-        _this.objects[count].scaleY = object.scaleY / _this.scale;
-        _this.objects[count].top = object.top / _this.scale + app.y;
-        return _this.objects[count].left = object.left / _this.scale + app.x;
-      }
-    });
+  transformY_cm2px: function(cm) {
+    return this.canvas.getHeight() / 2 + (this.centerY - cm) * this.scale;
   },
-  rotating: function(object) {
-    var _this = this;
-    log('rotating');
-    return this.bind(function(object) {
-      var count;
-      count = _this.match(object);
-      if (count !== null) {
-        _this.objects[count].angle = object.angle;
-        _this.objects[count].top = object.top / _this.scale + app.y;
-        return _this.objects[count].left = object.left / _this.scale + app.x;
-      }
-    });
+  transformX_px2cm: function(px) {
+    return this.centerX - (px - this.canvas.getWidth() / 2) / this.scale;
+  },
+  transformY_px2cm: function(px) {
+    return this.centerY - (px - this.canvas.getHeight() / 2) / this.scale;
   },
   render: function() {
-    var angle, left, o, object, scaleX, scaleY, tempLeft, tempScaleX, tempScaleY, tempTop, top;
+    var angle, left_cm, o, object, scaleX, scaleY, tempLeft, tempScaleX, tempScaleY, tempTop, top_cm;
+    object = app.canvas.getActiveObject();
+    if (!object) {
+      object = app.canvas.getActiveGroup();
+    }
+    if (object) {
+      this.canvas.fire('before:selection:cleared', {
+        target: object
+      });
+      this.canvas.fire('selection:cleared', {
+        target: object
+      });
+    }
     if (this.objects.length <= 0) {
       return;
     }
@@ -220,13 +219,13 @@ app = {
     for (o in this.objects) {
       scaleX = this.objects[o].scaleX;
       scaleY = this.objects[o].scaleY;
-      left = this.objects[o].left;
-      top = this.objects[o].top;
+      left_cm = this.objects[o].left_cm;
+      top_cm = this.objects[o].top_cm;
       angle = this.objects[o].angle;
       tempScaleX = scaleX * this.scale;
       tempScaleY = scaleY * this.scale;
-      tempLeft = left * this.scale - app.x * this.scale;
-      tempTop = top * this.scale - app.y * this.scale;
+      tempLeft = this.transformX_cm2px(left_cm);
+      tempTop = this.transformY_cm2px(top_cm);
       object = this.objects[o]['object'];
       object.scaleX = tempScaleX;
       object.scaleY = tempScaleY;
@@ -245,42 +244,33 @@ app = {
     }
     this.canvas.renderAll();
     if (this.bgimg) {
-      this.bgimg.left = -(this.x * this.scale);
-      this.bgimg.top = -(this.y * this.scale);
+      this.bgimg.left = -(this.centerX * this.scale);
+      this.bgimg.top = -(this.centerY * this.scale);
       this.bgimg.width = this.bgimg_width * this.options.bgscale * this.scale;
       this.bgimg.height = this.bgimg_height * this.options.bgscale * this.scale;
       this.bgimg.opacity = this.options.bgopacity;
-      return this.canvas.setBackgroundImage(this.bgimg, this.canvas.renderAll.bind(this.canvas));
+      this.canvas.setBackgroundImage(this.bgimg, this.canvas.renderAll.bind(this.canvas));
     }
+    return this.debug();
+  },
+  debug: function() {
+    $('#canvas_width').val(this.canvas.getWidth());
+    $('#canvas_height').val(this.canvas.getHeight());
+    $('#canvas_centerX').val(this.centerX);
+    return $('#canvas_centerY').val(this.centerY);
   },
   zoomIn: function() {
-    var x, y;
     this.scale += 0.1;
     this.scale = (this.scale * 100).toFixed(0) / 100;
-    x = this.x + this.canvas.getWidth() / 2;
-    y = this.y + this.canvas.getHeight() / 2;
-    this.x = x - (this.canvas.getWidth() * this.scale / 2);
-    this.y = y - (this.canvas.getHeight() * this.scale / 2);
     this.render();
     return $('.zoom').html((this.scale * 100).toFixed(0) + '%');
   },
   zoomOut: function() {
-    var x, y;
     if (this.scale <= 0.1) {
       return;
     }
     this.scale -= 0.1;
     this.scale = (this.scale * 100).toFixed(0) / 100;
-    x = this.x + this.canvas.getWidth() / 2;
-    y = this.y + this.canvas.getHeight() / 2;
-    this.x = x - (this.canvas.getWidth() * this.scale / 2);
-    this.y = y - (this.canvas.getHeight() * this.scale / 2);
-    if (this.x < 0) {
-      this.x = 0;
-    }
-    if (this.y < 0) {
-      this.y = 0;
-    }
     this.render();
     return $('.zoom').html((this.scale * 100).toFixed(0) + '%');
   },
@@ -293,33 +283,29 @@ app = {
     if (y == null) {
       y = 100;
     }
-    if (this.y > 0) {
-      this.y -= y;
-      return this.render();
-    }
+    this.centerY += y;
+    return this.render();
   },
   toBottom: function(y) {
     if (y == null) {
       y = 100;
     }
-    this.y += y;
+    this.centerY -= y;
     return this.render();
   },
   toRight: function(x) {
     if (x == null) {
       x = 100;
     }
-    this.x += x;
+    this.centerX -= x;
     return this.render();
   },
   toLeft: function(x) {
     if (x == null) {
       x = 100;
     }
-    if (this.x > 0) {
-      this.x -= x;
-      return this.render();
-    }
+    this.centerX += x;
+    return this.render();
   },
   save: function() {
     var a, blob, canvas, svg, tmp_canvas;
