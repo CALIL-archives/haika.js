@@ -125,8 +125,8 @@
     ry: 0,
     x: 0,
     y: 0,
-    width: 90,
-    height: 25,
+    __width: 90,
+    __height: 25,
     maxWidth: 900,
     maxHeight: 50,
     count: 1,
@@ -139,8 +139,8 @@
       this._initRxRy();
       this.x = options.x || 0;
       this.y = options.y || 0;
-      this.width = this.width * this.count;
-      this.height = this.height * this.side;
+      this.width = this.__width * this.count;
+      this.height = this.__height * this.side;
     },
     _initRxRy: function() {
       if (this.rx && !this.ry) {
@@ -211,9 +211,9 @@
           scaleY: maxHeight / this.height
         });
       }
-      count = Math.round(this.currentWidth * this.scaleX / 90);
+      count = Math.round(this.currentWidth * this.scaleX / this.__width);
       count = count < 1 ? 1 : count;
-      side = Math.round(this.currentHeight * this.scaleY / 25);
+      side = Math.round(this.currentHeight * this.scaleY / this.__height);
       side = side < 1 ? 1 : side;
       return this.set({
         count: count,

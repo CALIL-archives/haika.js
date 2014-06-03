@@ -113,8 +113,8 @@
     ry: 0
     x: 0
     y: 0
-    width: 90
-    height: 25
+    __width: 90
+    __height: 25
     maxWidth : 900
     maxHeight : 50
     count: 1
@@ -127,8 +127,8 @@
       @_initRxRy()
       @x = options.x or 0
       @y = options.y or 0
-      @width = @width * @count
-      @height = @height * @side
+      @width = @__width * @count
+      @height = @__height * @side
       return
 
     _initRxRy: ->
@@ -191,9 +191,9 @@
       if not isNaN(maxHeight) and actualHeight >= maxHeight 
         @set scaleY: maxHeight / @height
       #log @get("currentWidth") * @scaleX
-      count = Math.round(@currentWidth * @scaleX / 90)
+      count = Math.round(@currentWidth * @scaleX / @__width)
       count = if count<1 then 1 else count
-      side = Math.round(@currentHeight * @scaleY / 25)
+      side = Math.round(@currentHeight * @scaleY / @__height)
       side = if side<1 then 1 else side
       @set(count: count, side: side, minScaleLimit: 1 / @count)
       #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
