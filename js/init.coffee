@@ -30,13 +30,16 @@ add = (left=300, top=300, angle=0)->
   app.add(shelf)
 setTimeout(->
   #addmany()
-  add(250, 250)
-  $('#count').val(5)
-  $('#side').val(2)
-  add(160, 200)
+  #add(250, 250)
+  #$('#count').val(5)
+  #$('#side').val(2)
+  #add(160, 200)
+  objects = JSON.parse(localStorage.getItem('app_data'))
+  log objects
+  for object in objects
+    add(app.transformY_cm2px(object.left_cm), 250)
   app.render()
 , 500)
-
 
 
 #    fabric.Shelf.async = true;

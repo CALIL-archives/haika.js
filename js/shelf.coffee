@@ -167,15 +167,20 @@
           @__renderShelf ctx, x + i * w, y + h, w, h
         i++
 
-      ctx.lineWidth = 1
-      ctx.globalAlpha = 1 #塗りつぶしの透明度設定
-      ctx.fillStyle = '#000000'
-      ctx.beginPath()
-      #arc(x座標,y,直径,円弧の描き始めの位置,書き終わりの位置,円弧を描く方向(true:反時計回り))
-      ctx.arc(-@width/2+10,-@height/2+@height/2/@side,1,0,2*Math.PI,true)
-      @_renderFill ctx
-      @_renderStroke ctx
+#      ctx.lineWidth = 1
+#      ctx.globalAlpha = 1 #塗りつぶしの透明度設定
+#      ctx.fillStyle = '#000000'
+#      ctx.beginPath()
+#      #arc(x座標,y,直径,円弧の描き始めの位置,書き終わりの位置,円弧を描く方向(true:反時計回り))
+#      ctx.arc(@width-@width/2-10,-@height/2+@height/2/@side,1,0,2*Math.PI,true)
+#      @_renderFill ctx
+#      @_renderStroke ctx
 
+      ctx.font = "30px FontAwesome";
+      ctx.textAlign = "right"
+      ctx.textBaseline  = "middle"
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.fillText( "\uf177", @width-@width/2-10, -@height/2+@height/2/@side);
       return
 
     __renderShelf: (ctx, x, y, w, h) ->

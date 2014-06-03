@@ -185,13 +185,11 @@
         }
         i++;
       }
-      ctx.lineWidth = 1;
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = '#000000';
-      ctx.beginPath();
-      ctx.arc(-this.width / 2 + 10, -this.height / 2 + this.height / 2 / this.side, 1, 0, 2 * Math.PI, true);
-      this._renderFill(ctx);
-      this._renderStroke(ctx);
+      ctx.font = "30px FontAwesome";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.fillText("\uf177", this.width - this.width / 2 - 10, -this.height / 2 + this.height / 2 / this.side);
     },
     __renderShelf: function(ctx, x, y, w, h) {
       ctx.moveTo(x, y);

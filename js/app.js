@@ -107,8 +107,9 @@ app = {
       this.objects[count].left_cm = this.transformX_px2cm(object.left);
       this.objects[count].scaleX = object.scaleX / this.scale;
       this.objects[count].scaleY = object.scaleY / this.scale;
-      return this.objects[count].angle = object.angle;
+      this.objects[count].angle = object.angle;
     }
+    return localStorage.setItem('app_data', JSON.stringify(this.objects));
   },
   add: function(object) {
     var o, prop, props, _i, _len;

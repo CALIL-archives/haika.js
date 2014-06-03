@@ -46,10 +46,13 @@ add = function(left, top, angle) {
 };
 
 setTimeout(function() {
-  add(250, 250);
-  $('#count').val(5);
-  $('#side').val(2);
-  add(160, 200);
+  var object, objects, _i, _len;
+  objects = JSON.parse(localStorage.getItem('app_data'));
+  log(objects);
+  for (_i = 0, _len = objects.length; _i < _len; _i++) {
+    object = objects[_i];
+    add(app.transformY_cm2px(object.left_cm), 250);
+  }
   return app.render();
 }, 500);
 

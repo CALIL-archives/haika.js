@@ -85,6 +85,8 @@ app =
         @objects[count].scaleX = object.scaleX / @scale
         @objects[count].scaleY = object.scaleY / @scale
         @objects[count].angle  = object.angle
+      localStorage.setItem('app_data', JSON.stringify(@objects))
+
   add : (object)->
     object.__id = @object_id
     @object_id += 1
