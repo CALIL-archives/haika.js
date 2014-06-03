@@ -178,22 +178,40 @@
       while (i < this.count) {
         if (this.side === 1) {
           this.__renderShelf(ctx, x + i * w, y, w, h);
+          this.__renderSide(ctx, x + i * w, y, w, h);
         } else if (this.side === 2) {
           this.__renderShelf(ctx, x + i * w, y, w, h);
           this.__renderShelf(ctx, x + i * w, y + h, w, h);
         }
         i++;
       }
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.arc(-this.width / 2 + 10, -this.height / 2 + this.height / 2 / this.side, 1, 0, 2 * Math.PI, true);
       this._renderFill(ctx);
       this._renderStroke(ctx);
     },
     __renderShelf: function(ctx, x, y, w, h) {
       ctx.moveTo(x, y);
+      ctx.lineWidth = 1;
       ctx.lineTo(x + w, y);
       ctx.lineTo(x + w, y + h);
       ctx.lineTo(x, y + h);
       ctx.lineTo(x, y);
       ctx.closePath();
+      this._renderFill(ctx);
+      return this._renderStroke(ctx);
+    },
+    __renderSide: function(ctx, x, y, w, h) {
+      ctx.beginPath();
+      ctx.lineWidth = 5;
+      ctx.moveTo(x, y + h - 1);
+      ctx.lineTo(x + w, y + h - 1);
+      ctx.closePath();
+      this._renderFill(ctx);
+      return this._renderStroke(ctx);
     },
     __resizeShelf: function() {
       var actualHeight, actualWidth, count, maxHeight, maxWidth, side;
@@ -218,7 +236,9 @@
       return this.set({
         count: count,
         side: side,
-        minScaleLimit: 1 / this.count
+        minScaleLimit: 1 / this.count,
+        flipX: false,
+        flipY: false
       });
     },
     __modifiedShelf: function() {

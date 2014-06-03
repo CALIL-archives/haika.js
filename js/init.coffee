@@ -16,7 +16,7 @@ $(window).resize ->
   app.centerY = -app.canvas.getHeight() / 2
   app.render()
 app.scale = 1
-add = (top=300, left=300, angle=0)->
+add = (left=300, top=300, angle=0)->
   shelf = new fabric.Shelf(
     count: parseInt($('#count').val())
     side: parseInt($('#side').val())
@@ -30,8 +30,10 @@ add = (top=300, left=300, angle=0)->
   app.add(shelf)
 setTimeout(->
   #addmany()
-  add(250)
-  add(200, 300)
+  add(250, 250)
+  $('#count').val(5)
+  $('#side').val(2)
+  add(160, 200)
   app.render()
 , 500)
 

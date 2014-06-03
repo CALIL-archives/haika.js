@@ -158,27 +158,46 @@
       ctx.translate -@group.width / 2 + @width / 2 + @x, -@group.height / 2 + @height / 2 + @y  if not @transformMatrix and isInPathGroup
       i = 0
 
-#      @__renderShelf ctx, x + i * w, y, w, h
       while i < @count
         if @side is 1
           @__renderShelf ctx, x + i * w, y, w, h
+          @__renderSide  ctx, x + i * w, y, w, h
         else if @side is 2
           @__renderShelf ctx, x + i * w, y, w, h
           @__renderShelf ctx, x + i * w, y + h, w, h
         i++
+
+      ctx.lineWidth = 1
+      ctx.globalAlpha = 1 #塗りつぶしの透明度設定
+      ctx.fillStyle = '#000000'
+      ctx.beginPath()
+      #arc(x座標,y,直径,円弧の描き始めの位置,書き終わりの位置,円弧を描く方向(true:反時計回り))
+      ctx.arc(-@width/2+10,-@height/2+@height/2/@side,1,0,2*Math.PI,true)
       @_renderFill ctx
       @_renderStroke ctx
+
       return
 
     __renderShelf: (ctx, x, y, w, h) ->
       ctx.moveTo x, y
+      ctx.lineWidth = 1
       ctx.lineTo x + w, y
       ctx.lineTo x + w, y + h
       ctx.lineTo x, y + h
       ctx.lineTo x, y
       ctx.closePath()
-      return
-    
+      @_renderFill ctx
+      @_renderStroke ctx
+
+    __renderSide: (ctx, x, y, w, h) ->
+      ctx.beginPath()
+      ctx.lineWidth = 5
+      ctx.moveTo x, y + h - 1
+      ctx.lineTo x + w, y + h - 1
+      ctx.closePath()
+      @_renderFill ctx
+      @_renderStroke ctx
+
     __resizeShelf: () ->
       maxWidth = @maxWidth
       maxHeight = @maxHeight
@@ -195,7 +214,9 @@
       count = if count<1 then 1 else count
       side = Math.round(@currentHeight * @scaleY / @__height)
       side = if side<1 then 1 else side
-      @set(count: count, side: side, minScaleLimit: 1 / @count)
+#      if @flipY
+#        @angle = @originalState.angle + 180
+      @set(count: count, side: side, minScaleLimit: 1 / @count, flipX : false, flipY:false)
       #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
 
     __modifiedShelf: () ->

@@ -22,13 +22,13 @@ $(window).resize(function() {
 
 app.scale = 1;
 
-add = function(top, left, angle) {
+add = function(left, top, angle) {
   var shelf;
-  if (top == null) {
-    top = 300;
-  }
   if (left == null) {
     left = 300;
+  }
+  if (top == null) {
+    top = 300;
   }
   if (angle == null) {
     angle = 0;
@@ -46,8 +46,10 @@ add = function(top, left, angle) {
 };
 
 setTimeout(function() {
-  add(250);
-  add(200, 300);
+  add(250, 250);
+  $('#count').val(5);
+  $('#side').val(2);
+  add(160, 200);
   return app.render();
 }, 500);
 

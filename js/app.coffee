@@ -37,7 +37,7 @@ app =
     canvas.setHeight(@options.canvas_height)
     $('#canvas_height').val(@options.canvas_height)
     initAligningGuidelines(canvas)
-    initCenteringGuidelines(canvas)
+    #initCenteringGuidelines(canvas)
     @canvas = canvas
     #@canvas.centeredRotation = true
     if @options.bgurl
@@ -82,10 +82,8 @@ app =
       if count!=null
         @objects[count].top_cm  = @transformY_px2cm(object.top)
         @objects[count].left_cm = @transformX_px2cm(object.left)
-        scaleX = if group then group.scaleX else 0
-        scaleY = if group then group.scaleY else 0
-        @objects[count].scaleX = object.scaleX / @scale * scaleX
-        @objects[count].scaleY = object.scaleY / @scale * scaleY
+        @objects[count].scaleX = object.scaleX / @scale
+        @objects[count].scaleY = object.scaleY / @scale
         @objects[count].angle  = object.angle
   add : (object)->
     object.__id = @object_id

@@ -46,7 +46,6 @@ app = {
     canvas.setHeight(this.options.canvas_height);
     $('#canvas_height').val(this.options.canvas_height);
     initAligningGuidelines(canvas);
-    initCenteringGuidelines(canvas);
     this.canvas = canvas;
     if (this.options.bgurl) {
       fabric.Image.fromURL(this.options.bgurl, function(img) {
@@ -98,7 +97,7 @@ app = {
     });
   },
   save_prop: function(object, group) {
-    var count, scaleX, scaleY;
+    var count;
     if (group == null) {
       group = false;
     }
@@ -106,10 +105,8 @@ app = {
     if (count !== null) {
       this.objects[count].top_cm = this.transformY_px2cm(object.top);
       this.objects[count].left_cm = this.transformX_px2cm(object.left);
-      scaleX = group ? group.scaleX : 0;
-      scaleY = group ? group.scaleY : 0;
-      this.objects[count].scaleX = object.scaleX / this.scale * scaleX;
-      this.objects[count].scaleY = object.scaleY / this.scale * scaleY;
+      this.objects[count].scaleX = object.scaleX / this.scale;
+      this.objects[count].scaleY = object.scaleY / this.scale;
       return this.objects[count].angle = object.angle;
     }
   },
