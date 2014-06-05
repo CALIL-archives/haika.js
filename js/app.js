@@ -270,12 +270,14 @@ app = {
     return $('#canvas_centerY').val(this.centerY);
   },
   zoomIn: function() {
+    this.render();
     this.scale += 0.1;
     this.scale = (this.scale * 100).toFixed(0) / 100;
     this.render();
     return $('.zoom').html((this.scale * 100).toFixed(0) + '%');
   },
   zoomOut: function() {
+    this.render();
     if (this.scale <= 0.1) {
       return;
     }

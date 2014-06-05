@@ -3,8 +3,8 @@ var add;
 
 app.init({
   canvas: 'canvas',
-  canvas_width: $(window).width(),
-  canvas_height: $(window).height() - 100,
+  canvas_width: window.innerWidth,
+  canvas_height: window.innerHeight - 100,
   scale: 1,
   max_width: 10000,
   max_height: 10000,
@@ -14,8 +14,8 @@ app.init({
 });
 
 $(window).resize(function() {
-  app.canvas.setWidth($(window).width());
-  app.canvas.setHeight($(window).height() - 100);
+  app.canvas.setWidth(window.innerWidth);
+  app.canvas.setHeight(window.innerHeight - 100);
   return app.render();
 });
 
@@ -49,8 +49,6 @@ setTimeout(function() {
   if (objects) {
     for (_i = 0, _len = objects.length; _i < _len; _i++) {
       object = objects[_i];
-      log(object.count);
-      log(object.side);
       shelf = new fabric.Shelf({
         count: object.count,
         side: object.side,

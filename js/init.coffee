@@ -2,8 +2,8 @@ app.init(
   canvas : 'canvas'
   #canvas_width : 800
   #canvas_height : 600
-  canvas_width : $(window).width()
-  canvas_height : $(window).height() - 100
+  canvas_width : window.innerWidth
+  canvas_height : window.innerHeight - 100
   scale : 1
   max_width: 10000
   max_height: 10000
@@ -13,8 +13,8 @@ app.init(
   bgscale  : 4
 )
 $(window).resize ->
-  app.canvas.setWidth($(window).width())
-  app.canvas.setHeight($(window).height() - 100)
+  app.canvas.setWidth(window.innerWidth)
+  app.canvas.setHeight(window.innerHeight - 100)
   #app.canvas.setWidth(800)
   #app.canvas.setHeight(600)
   #app.centerX = -app.canvas.getWidth() / 2
@@ -45,8 +45,6 @@ setTimeout(->
   log objects
   if objects
     for object in objects
-      log object.count
-      log object.side
       #add(object.left_cm, object.top_cm, object.angle)
       shelf = new fabric.Shelf(
         count: object.count

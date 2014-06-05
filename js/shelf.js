@@ -166,7 +166,6 @@
       isInPathGroup = this.group && this.group.type === "path-group";
       isRounded = rx !== 0 || ry !== 0;
       k = 1 - 0.5522847498;
-      ctx.beginPath();
       ctx.globalAlpha = (isInPathGroup ? ctx.globalAlpha * this.opacity : this.opacity);
       if (this.transformMatrix && isInPathGroup) {
         ctx.translate(this.width / 2 + this.x, this.height / 2 + this.y);
@@ -192,6 +191,7 @@
       ctx.fillText("\uf177", this.width - this.width / 2 - 10, -this.height / 2 + this.height / 2 / this.side);
     },
     __renderShelf: function(ctx, x, y, w, h) {
+      ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineWidth = 1;
       ctx.lineTo(x + w, y);

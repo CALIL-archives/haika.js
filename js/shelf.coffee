@@ -154,12 +154,13 @@
       isInPathGroup = @group and @group.type is "path-group"
       isRounded = rx isnt 0 or ry isnt 0
       k = 1 - 0.5522847498
-      ctx.beginPath()
       ctx.globalAlpha = (if isInPathGroup then (ctx.globalAlpha * @opacity) else @opacity)
-      ctx.translate @width / 2 + @x, @height / 2 + @y  if @transformMatrix and isInPathGroup
-      ctx.translate -@group.width / 2 + @width / 2 + @x, -@group.height / 2 + @height / 2 + @y  if not @transformMatrix and isInPathGroup
-      i = 0
+      if @transformMatrix and isInPathGroup
+        ctx.translate @width / 2 + @x, @height / 2 + @y
+      if not @transformMatrix and isInPathGroup
+        ctx.translate -@group.width / 2 + @width / 2 + @x, -@group.height / 2 + @height / 2 + @y
 
+      i = 0
       while i < @count
         if @side is 1
           @__renderShelf ctx, x + i * w, y, w, h
@@ -186,6 +187,7 @@
       return
 
     __renderShelf: (ctx, x, y, w, h) ->
+      ctx.beginPath()
       ctx.moveTo x, y
       ctx.lineWidth = 1
       ctx.lineTo x + w, y

@@ -240,11 +240,13 @@ app =
 #        @rotating(object)
 #    )
   zoomIn : ->
+    @render()
     @scale += 0.1
     @scale = (@scale*100).toFixed(0)/100
     @render()
     $('.zoom').html((@scale*100).toFixed(0)+'%')
   zoomOut : ->
+    @render()
     if @scale<=0.1
       return
     @scale -= 0.1
