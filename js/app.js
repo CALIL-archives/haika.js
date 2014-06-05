@@ -114,6 +114,8 @@ app = {
       this.objects[count].scaleX = object.scaleX / this.scale;
       this.objects[count].scaleY = object.scaleY / this.scale;
       this.objects[count].angle = object.angle;
+      this.objects[count].count = object.count;
+      this.objects[count].side = object.side;
     }
     return localStorage.setItem('app_data', JSON.stringify(this.objects));
   },
@@ -124,7 +126,7 @@ app = {
     o = {
       object: object
     };
-    props = 'width height scaleX scaleY left top angle fill stroke'.split(' ');
+    props = 'width height scaleX scaleY left top angle fill stroke count side'.split(' ');
     for (_i = 0, _len = props.length; _i < _len; _i++) {
       prop = props[_i];
       if (prop === 'top') {
@@ -308,7 +310,7 @@ app = {
     this.centerX += x;
     return this.render();
   },
-  save: function() {
+  getSVG: function() {
     var a, blob, canvas, svg, tmp_canvas;
     canvas = document.createElement('canvas');
     canvas = new fabric.Canvas(canvas);

@@ -43,13 +43,24 @@ add = function(left, top, angle) {
 };
 
 setTimeout(function() {
-  var object, objects, _i, _len;
+  var object, objects, shelf, _i, _len;
   objects = JSON.parse(localStorage.getItem('app_data'));
   log(objects);
   if (objects) {
     for (_i = 0, _len = objects.length; _i < _len; _i++) {
       object = objects[_i];
-      add(object.left_cm, object.top_cm);
+      log(object.count);
+      log(object.side);
+      shelf = new fabric.Shelf({
+        count: object.count,
+        side: object.side,
+        top: app.transformX_cm2px(object.top_cm),
+        left: app.transformY_cm2px(object.left_cm),
+        fill: "#CFE2F3",
+        stroke: "#000000",
+        angle: object.angle
+      });
+      app.add(shelf);
     }
   }
   return app.render();
@@ -115,8 +126,12 @@ $(function() {
       }
     }
   });
-  $(".save").click(function() {
-    return app.save();
+  $(".svg").click(function() {
+    return app.getSVG();
+  });
+  $(".reset").click(function() {
+    localStorage.clear();
+    return location.reload();
   });
   $('#canvas_width').change(function() {
     return app.canvas.setWidth($(this).val());

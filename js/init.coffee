@@ -45,7 +45,19 @@ setTimeout(->
   log objects
   if objects
     for object in objects
-      add(object.left_cm, object.top_cm)
+      log object.count
+      log object.side
+      #add(object.left_cm, object.top_cm, object.angle)
+      shelf = new fabric.Shelf(
+        count: object.count
+        side: object.side
+        top: app.transformX_cm2px(object.top_cm)
+        left: app.transformY_cm2px(object.left_cm)
+        fill: "#CFE2F3"
+        stroke: "#000000"
+        angle: object.angle
+      )
+      app.add(shelf)
   app.render()
 , 500)
 
@@ -95,8 +107,11 @@ $ ->
         activeObject.angle = ui.value
         activeObject.setCoords()
         app.canvas.renderAll()
-  $(".save").click ->
-    app.save()
+  $(".svg").click ->
+    app.getSVG()
+  $(".reset").click ->
+    localStorage.clear()
+    location.reload()
 #  $('canvas').on 'mousewheel', (event)=>
 #    #console.log(event.deltaX, event.deltaY, event.deltaFactor);
 #    if event.deltaY==1

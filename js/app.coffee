@@ -91,6 +91,8 @@ app =
         @objects[count].scaleX = object.scaleX / @scale
         @objects[count].scaleY = object.scaleY / @scale
         @objects[count].angle  = object.angle
+        @objects[count].count  = object.count
+        @objects[count].side  = object.side
       localStorage.setItem('app_data', JSON.stringify(@objects))
 
   add : (object)->
@@ -98,7 +100,7 @@ app =
     @object_id += 1
     o = 
       object : object 
-    props = 'width height scaleX scaleY left top angle fill stroke'.split(' ')
+    props = 'width height scaleX scaleY left top angle fill stroke count side'.split(' ')
     for prop in props
       if prop=='top'
         o.top_cm = @transformX_px2cm(object.top)
@@ -248,7 +250,7 @@ app =
   toLeft : (x=100)->
     @centerX += x
     @render()
-  save : ->
+  getSVG : ->
     canvas = document.createElement('canvas')
     canvas = new fabric.Canvas(canvas);
     canvas.setWidth @options.max_width
