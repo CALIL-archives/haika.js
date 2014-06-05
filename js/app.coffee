@@ -47,6 +47,9 @@ app =
         @bgimg = img
         @bgimg_width  = img.width
         @bgimg_height = img.height
+    setTimeout =>
+      @load()
+    , 500
     @canvas.on('object:selected', (e)=>
         object = e.target
         log 'selected'
@@ -81,6 +84,7 @@ app =
     )
     $(window).on 'beforeunload', (event)=>
       @render()
+      @save()
       return
 
   add : (object)->
@@ -113,7 +117,34 @@ app =
       o[prop] = object[prop]
     @objects.push(o)
     return o
-
+  load : ()->
+    objects = JSON.parse(localStorage.getItem('app_data'))
+    log objects
+    if objects
+      for object in objects
+        shelf = new fabric.Shelf(
+          count: object.count
+          side: object.side
+          top: app.transformX_cm2px(object.top_cm)
+          left: app.transformY_cm2px(object.left_cm)
+          fill: "#CFE2F3"
+          stroke: "#000000"
+          angle: object.angle
+        )
+        @add(shelf)
+    canvas = JSON.parse(localStorage.getItem('canvas'))
+    if canvas
+      log canvas
+      @scale   = canvas.scale
+      @centerX = canvas.centerX
+      @centerY = canvas.centerY
+    @render()
+  save : ->
+    canvas = 
+      scale : @scale
+      centerX : @centerX
+      centerY : @centerY
+    localStorage.setItem('canvas', JSON.stringify(canvas))
   save_prop : (object, group=false)->
       count = @match(object)
       if count!=null
@@ -212,15 +243,17 @@ app =
     if @scale==1 and @drawguideline
       fabric.drawGridLines(@canvas)
     @canvas.renderAll()
-    if @bgimg
-      @bgimg.left   = -(@centerX*@scale)
-      @bgimg.top    = -(@centerY*@scale)
-      @bgimg.width  = @bgimg_width*@options.bgscale*@scale
-      @bgimg.height = @bgimg_height*@options.bgscale*@scale
-      @bgimg.opacity= @options.bgopacity
-      @canvas.setBackgroundImage @bgimg, @canvas.renderAll.bind(@canvas)
+    @render_bg()
     @debug()
-  #デバッグパネル
+  render_bg : ->
+    if @bgimg
+      @bgimg.left    = @canvas.getWidth()/2 + (-@bgimg_width*@options.bgscale/2 + @centerX) * @scale
+      @bgimg.top     = @canvas.getHeight()/2 + (-@bgimg_height*@options.bgscale/2 + @centerY) * @scale
+      @bgimg.width   = @bgimg_width*@options.bgscale*@scale
+      @bgimg.height  = @bgimg_height*@options.bgscale*@scale
+      @bgimg.opacity = @options.bgopacity
+      @canvas.setBackgroundImage @bgimg, @canvas.renderAll.bind(@canvas)
+  #debgu pannel
   debug : ->
     $('#canvas_width').val(@canvas.getWidth())
     $('#canvas_height').val(@canvas.getHeight())

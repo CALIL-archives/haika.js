@@ -42,28 +42,6 @@ add = function(left, top, angle) {
   return app.add(shelf);
 };
 
-setTimeout(function() {
-  var object, objects, shelf, _i, _len;
-  objects = JSON.parse(localStorage.getItem('app_data'));
-  log(objects);
-  if (objects) {
-    for (_i = 0, _len = objects.length; _i < _len; _i++) {
-      object = objects[_i];
-      shelf = new fabric.Shelf({
-        count: object.count,
-        side: object.side,
-        top: app.transformX_cm2px(object.top_cm),
-        left: app.transformY_cm2px(object.left_cm),
-        fill: "#CFE2F3",
-        stroke: "#000000",
-        angle: object.angle
-      });
-      app.add(shelf);
-    }
-  }
-  return app.render();
-}, 500);
-
 $(function() {
   window.addmany = function() {
     var x, y;

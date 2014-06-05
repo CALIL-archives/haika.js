@@ -9,6 +9,7 @@ app.init(
   max_height: 10000
   #bgurl  : 'http://office.nanzan-u.ac.jp/TOSHOKAN/publication/bulletin/kiyo7/03-01.jpg'
   bgurl  : 'img/meidai2.png'
+  #bgurl  : 'img/sample.png'
   bgopacity: 1
   bgscale  : 4
 )
@@ -33,7 +34,7 @@ add = (left=0, top=0, angle=0)->
     #lockScalingY: true
   )
   app.add(shelf)
-setTimeout(->
+#setTimeout(->
   #addmany()
   #add(250, 250)
   #$('#count').val(5)
@@ -41,23 +42,7 @@ setTimeout(->
   #add(160, 200)
   #add(-10, -10)
   #add(0, 0)
-  objects = JSON.parse(localStorage.getItem('app_data'))
-  log objects
-  if objects
-    for object in objects
-      #add(object.left_cm, object.top_cm, object.angle)
-      shelf = new fabric.Shelf(
-        count: object.count
-        side: object.side
-        top: app.transformX_cm2px(object.top_cm)
-        left: app.transformY_cm2px(object.left_cm)
-        fill: "#CFE2F3"
-        stroke: "#000000"
-        angle: object.angle
-      )
-      app.add(shelf)
-  app.render()
-, 500)
+#, 500)
 
 
 #    fabric.Shelf.async = true;

@@ -56,6 +56,9 @@ app = {
         return _this.bgimg_height = img.height;
       });
     }
+    setTimeout(function() {
+      return _this.load();
+    }, 500);
     this.canvas.on('object:selected', function(e) {
       var object;
       object = e.target;
@@ -100,6 +103,7 @@ app = {
     });
     return $(window).on('beforeunload', function(event) {
       _this.render();
+      _this.save();
     });
   },
   add: function(object) {
@@ -128,6 +132,43 @@ app = {
     }
     this.objects.push(o);
     return o;
+  },
+  load: function() {
+    var canvas, object, objects, shelf, _i, _len;
+    objects = JSON.parse(localStorage.getItem('app_data'));
+    log(objects);
+    if (objects) {
+      for (_i = 0, _len = objects.length; _i < _len; _i++) {
+        object = objects[_i];
+        shelf = new fabric.Shelf({
+          count: object.count,
+          side: object.side,
+          top: app.transformX_cm2px(object.top_cm),
+          left: app.transformY_cm2px(object.left_cm),
+          fill: "#CFE2F3",
+          stroke: "#000000",
+          angle: object.angle
+        });
+        this.add(shelf);
+      }
+    }
+    canvas = JSON.parse(localStorage.getItem('canvas'));
+    if (canvas) {
+      log(canvas);
+      this.scale = canvas.scale;
+      this.centerX = canvas.centerX;
+      this.centerY = canvas.centerY;
+    }
+    return this.render();
+  },
+  save: function() {
+    var canvas;
+    canvas = {
+      scale: this.scale,
+      centerX: this.centerX,
+      centerY: this.centerY
+    };
+    return localStorage.setItem('canvas', JSON.stringify(canvas));
   },
   save_prop: function(object, group) {
     var count;
@@ -253,15 +294,18 @@ app = {
       fabric.drawGridLines(this.canvas);
     }
     this.canvas.renderAll();
+    this.render_bg();
+    return this.debug();
+  },
+  render_bg: function() {
     if (this.bgimg) {
-      this.bgimg.left = -(this.centerX * this.scale);
-      this.bgimg.top = -(this.centerY * this.scale);
+      this.bgimg.left = this.canvas.getWidth() / 2 + (-this.bgimg_width * this.options.bgscale / 2 + this.centerX) * this.scale;
+      this.bgimg.top = this.canvas.getHeight() / 2 + (-this.bgimg_height * this.options.bgscale / 2 + this.centerY) * this.scale;
       this.bgimg.width = this.bgimg_width * this.options.bgscale * this.scale;
       this.bgimg.height = this.bgimg_height * this.options.bgscale * this.scale;
       this.bgimg.opacity = this.options.bgopacity;
-      this.canvas.setBackgroundImage(this.bgimg, this.canvas.renderAll.bind(this.canvas));
+      return this.canvas.setBackgroundImage(this.bgimg, this.canvas.renderAll.bind(this.canvas));
     }
-    return this.debug();
   },
   debug: function() {
     $('#canvas_width').val(this.canvas.getWidth());
