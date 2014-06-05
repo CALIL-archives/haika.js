@@ -60,13 +60,20 @@ app = {
       return _this.load();
     }, 500);
     this.canvas.on('object:selected', function(e) {
-      var object;
+      var object, _i, _len, _ref, _results;
       object = e.target;
       log('selected');
       if (object._objects != null) {
         object.lockScalingX = true;
-        return object.lockScalingY = true;
+        object.lockScalingY = true;
       }
+      _ref = app.objects;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        _results.push(_this.save_prop(object.object));
+      }
+      return _results;
     });
     this.canvas.on('before:selection:cleared', function(e) {
       var group, object, objects, _i, _len, _results;
@@ -156,6 +163,7 @@ app = {
     if (canvas) {
       log(canvas);
       this.scale = canvas.scale;
+      $('.zoom').html((this.scale * 100).toFixed(0) + '%');
       this.centerX = canvas.centerX;
       this.centerY = canvas.centerY;
     }

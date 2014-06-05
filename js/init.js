@@ -22,10 +22,10 @@ $(window).resize(function() {
 add = function(left, top, angle) {
   var shelf;
   if (left == null) {
-    left = 0;
+    left = -100;
   }
   if (top == null) {
-    top = 0;
+    top = -100;
   }
   if (angle == null) {
     angle = 0;
@@ -33,8 +33,8 @@ add = function(left, top, angle) {
   shelf = new fabric.Shelf({
     count: parseInt($('#count').val()),
     side: parseInt($('#side').val()),
-    top: app.transformX_cm2px(top),
-    left: app.transformY_cm2px(left),
+    top: app.transformX_cm2px(top - app.centerX),
+    left: app.transformY_cm2px(left - app.centerY),
     fill: "#CFE2F3",
     stroke: "#000000",
     angle: angle
@@ -116,10 +116,10 @@ $(function() {
     return app.canvas.setHeight($(this).val());
   });
   $('#canvas_centerX').change(function() {
-    return app.centerX = $(this).val();
+    return app.centerX = parseInt($(this).val());
   });
   $('#canvas_centerY').change(function() {
-    return app.centerY = $(this).val();
+    return app.centerY = parseInt($(this).val());
   });
   return $('#canvas_render').click(function() {
     return app.render();

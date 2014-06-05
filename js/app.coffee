@@ -58,6 +58,8 @@ app =
           object.lockScalingY  = true
         #else
         #  object.lockScalingY  = true
+        for object in app.objects
+          @save_prop(object.object)
     )
     @canvas.on('before:selection:cleared', (e)=>
       object = e.target
@@ -136,6 +138,7 @@ app =
     if canvas
       log canvas
       @scale   = canvas.scale
+      $('.zoom').html((@scale*100).toFixed(0)+'%')
       @centerX = canvas.centerX
       @centerY = canvas.centerY
     @render()
