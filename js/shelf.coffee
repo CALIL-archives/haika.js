@@ -159,7 +159,8 @@
         ctx.translate @width / 2 + @x, @height / 2 + @y
       if not @transformMatrix and isInPathGroup
         ctx.translate -@group.width / 2 + @width / 2 + @x, -@group.height / 2 + @height / 2 + @y
-
+      
+      
       i = 0
       while i < @count
         if @side is 1

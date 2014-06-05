@@ -339,6 +339,7 @@ app = {
     if (y == null) {
       y = 100;
     }
+    this.render();
     this.centerY += y;
     return this.render();
   },
@@ -346,6 +347,7 @@ app = {
     if (y == null) {
       y = 100;
     }
+    this.render();
     this.centerY -= y;
     return this.render();
   },
@@ -353,6 +355,7 @@ app = {
     if (x == null) {
       x = 100;
     }
+    this.render();
     this.centerX -= x;
     return this.render();
   },
@@ -360,6 +363,7 @@ app = {
     if (x == null) {
       x = 100;
     }
+    this.render();
     this.centerX += x;
     return this.render();
   },

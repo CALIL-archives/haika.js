@@ -291,15 +291,19 @@ app =
     @render()
     $('.zoom').html('100%')
   toTop :(y=100) ->
+    @render()
     @centerY += y
     @render()
   toBottom : (y=100)->
+    @render()
     @centerY -= y
     @render()
   toRight : (x=100)->
+    @render()
     @centerX -= x
     @render()
   toLeft : (x=100)->
+    @render()
     @centerX += x
     @render()
   getSVG : ->
