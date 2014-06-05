@@ -101,9 +101,7 @@ app =
     props = 'width height scaleX scaleY left top angle fill stroke'.split(' ')
     for prop in props
       if prop=='top'
-        log object.top
         o.top_cm = @transformX_px2cm(object.top)
-        log o.top_cm
         continue
       if prop=='left'
         o.left_cm = @transformY_px2cm(object.left)
@@ -165,8 +163,6 @@ app =
     if object
       @canvas.fire('before:selection:cleared', { target: object })
       @canvas.fire('selection:cleared', { target: object })
-    if @objects.length<=0
-      return
     @canvas.clear()
     for o of @objects
       scaleX  = @objects[o].scaleX

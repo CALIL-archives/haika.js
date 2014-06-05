@@ -128,9 +128,7 @@ app = {
     for (_i = 0, _len = props.length; _i < _len; _i++) {
       prop = props[_i];
       if (prop === 'top') {
-        log(object.top);
         o.top_cm = this.transformX_px2cm(object.top);
-        log(o.top_cm);
         continue;
       }
       if (prop === 'left') {
@@ -216,9 +214,6 @@ app = {
       this.canvas.fire('selection:cleared', {
         target: object
       });
-    }
-    if (this.objects.length <= 0) {
-      return;
     }
     this.canvas.clear();
     for (o in this.objects) {

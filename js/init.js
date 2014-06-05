@@ -46,9 +46,11 @@ setTimeout(function() {
   var object, objects, _i, _len;
   objects = JSON.parse(localStorage.getItem('app_data'));
   log(objects);
-  for (_i = 0, _len = objects.length; _i < _len; _i++) {
-    object = objects[_i];
-    add(object.left_cm, object.top_cm);
+  if (objects) {
+    for (_i = 0, _len = objects.length; _i < _len; _i++) {
+      object = objects[_i];
+      add(object.left_cm, object.top_cm);
+    }
   }
   return app.render();
 }, 500);

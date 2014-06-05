@@ -43,8 +43,9 @@ setTimeout(->
   #add(0, 0)
   objects = JSON.parse(localStorage.getItem('app_data'))
   log objects
-  for object in objects
-    add(object.left_cm, object.top_cm)
+  if objects
+    for object in objects
+      add(object.left_cm, object.top_cm)
   app.render()
 , 500)
 
