@@ -8,7 +8,7 @@ app =
   height     : 800
   centerX    : 0
   centerY    : 0
-  scale      : 10
+  scale      : 1
   objects    : []
   object_id  : 1 
   canvas     : false
@@ -27,6 +27,7 @@ app =
       canvas_height: 600
       max_width    : 10000
       max_height   : 10000
+      scale        : 1
       bgurl    : null
       bgopacity: 1
       bgscale  : 1
@@ -40,6 +41,7 @@ app =
     #initCenteringGuidelines(canvas)
     @canvas = canvas
     #@canvas.centeredRotation = true
+    @scale = options.scale
     if @options.bgurl
       fabric.Image.fromURL @options.bgurl, (img)=>
         @bgimg = img
@@ -47,6 +49,7 @@ app =
         @bgimg_height = img.height
     @canvas.on('object:selected', (e)=>
         object = e.target
+        log 'selected'
         if object._objects?
           object.lockScalingX  = true
           object.lockScalingY  = true
@@ -76,6 +79,9 @@ app =
         if object.__modifiedShelf?
           object.__modifiedShelf()
     )
+    $(window).on 'beforeunload', (event)=>
+      @render()
+      return
 
   save_prop : (object, group=false)->
       count = @match(object)
@@ -95,7 +101,9 @@ app =
     props = 'width height scaleX scaleY left top angle fill stroke'.split(' ')
     for prop in props
       if prop=='top'
+        log object.top
         o.top_cm = @transformX_px2cm(object.top)
+        log o.top_cm
         continue
       if prop=='left'
         o.left_cm = @transformY_px2cm(object.left)
@@ -110,8 +118,8 @@ app =
     group = @canvas.getActiveGroup()
     if group
       objects = group._objects
-      @canvas._activeObject = null
-      @canvas.setActiveGroup(group.setCoords()).renderAll()
+      #@canvas._activeObject = null
+      #@canvas.setActiveGroup(group.setCoords()).renderAll()
   remove : ->
     @bind (object)=>
       @canvas.remove(object)
@@ -150,6 +158,7 @@ app =
     #return @canvas.getHeight() / 2 - (px + @centerY) * @scale 
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
   render : ->
+    log 'render'
     object = app.canvas.getActiveObject()
     if not object
       object = app.canvas.getActiveGroup()
@@ -161,6 +170,7 @@ app =
     @canvas.clear()
     for o of @objects
       scaleX  = @objects[o].scaleX
+      log 'scaleX:'+scaleX
       scaleY  = @objects[o].scaleY
       left_cm = @objects[o].left_cm
       top_cm  = @objects[o].top_cm

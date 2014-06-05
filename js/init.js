@@ -5,30 +5,27 @@ app.init({
   canvas: 'canvas',
   canvas_width: $(window).width(),
   canvas_height: $(window).height() - 100,
+  scale: 1,
   max_width: 10000,
   max_height: 10000,
   bgurl: 'img/meidai2.png',
-  bgopacity: 0.5,
+  bgopacity: 1,
   bgscale: 4
 });
 
 $(window).resize(function() {
   app.canvas.setWidth($(window).width());
   app.canvas.setHeight($(window).height() - 100);
-  app.centerX = -app.canvas.getWidth() / 2;
-  app.centerY = -app.canvas.getHeight() / 2;
   return app.render();
 });
-
-app.scale = 1;
 
 add = function(left, top, angle) {
   var shelf;
   if (left == null) {
-    left = 300;
+    left = 0;
   }
   if (top == null) {
-    top = 300;
+    top = 0;
   }
   if (angle == null) {
     angle = 0;
@@ -51,7 +48,7 @@ setTimeout(function() {
   log(objects);
   for (_i = 0, _len = objects.length; _i < _len; _i++) {
     object = objects[_i];
-    add(app.transformY_cm2px(object.left_cm), 250);
+    add(object.left_cm, object.top_cm);
   }
   return app.render();
 }, 500);

@@ -1,22 +1,27 @@
 app.init(
   canvas : 'canvas'
+  #canvas_width : 800
+  #canvas_height : 600
   canvas_width : $(window).width()
   canvas_height : $(window).height() - 100
+  scale : 1
   max_width: 10000
   max_height: 10000
   #bgurl  : 'http://office.nanzan-u.ac.jp/TOSHOKAN/publication/bulletin/kiyo7/03-01.jpg'
   bgurl  : 'img/meidai2.png'
-  bgopacity: 0.5
+  bgopacity: 1
   bgscale  : 4
 )
 $(window).resize ->
   app.canvas.setWidth($(window).width())
   app.canvas.setHeight($(window).height() - 100)
-  app.centerX = -app.canvas.getWidth() / 2
-  app.centerY = -app.canvas.getHeight() / 2
+  #app.canvas.setWidth(800)
+  #app.canvas.setHeight(600)
+  #app.centerX = -app.canvas.getWidth() / 2
+  #app.centerY = -app.canvas.getHeight() / 2
   app.render()
-app.scale = 1
-add = (left=300, top=300, angle=0)->
+
+add = (left=0, top=0, angle=0)->
   shelf = new fabric.Shelf(
     count: parseInt($('#count').val())
     side: parseInt($('#side').val())
@@ -34,10 +39,12 @@ setTimeout(->
   #$('#count').val(5)
   #$('#side').val(2)
   #add(160, 200)
+  #add(-10, -10)
+  #add(0, 0)
   objects = JSON.parse(localStorage.getItem('app_data'))
   log objects
   for object in objects
-    add(app.transformY_cm2px(object.left_cm), 250)
+    add(object.left_cm, object.top_cm)
   app.render()
 , 500)
 

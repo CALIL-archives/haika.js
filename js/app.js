@@ -14,7 +14,7 @@ app = {
   height: 800,
   centerX: 0,
   centerY: 0,
-  scale: 10,
+  scale: 1,
   objects: [],
   object_id: 1,
   canvas: false,
@@ -35,6 +35,7 @@ app = {
       canvas_height: 600,
       max_width: 10000,
       max_height: 10000,
+      scale: 1,
       bgurl: null,
       bgopacity: 1,
       bgscale: 1
@@ -47,6 +48,7 @@ app = {
     $('#canvas_height').val(this.options.canvas_height);
     initAligningGuidelines(canvas);
     this.canvas = canvas;
+    this.scale = options.scale;
     if (this.options.bgurl) {
       fabric.Image.fromURL(this.options.bgurl, function(img) {
         _this.bgimg = img;
@@ -57,6 +59,7 @@ app = {
     this.canvas.on('object:selected', function(e) {
       var object;
       object = e.target;
+      log('selected');
       if (object._objects != null) {
         object.lockScalingX = true;
         return object.lockScalingY = true;
@@ -87,13 +90,16 @@ app = {
         return object.__resizeShelf();
       }
     });
-    return this.canvas.on('object:modified', function(e) {
+    this.canvas.on('object:modified', function(e) {
       var object;
       object = e.target;
       log('modified');
       if (object.__modifiedShelf != null) {
         return object.__modifiedShelf();
       }
+    });
+    return $(window).on('beforeunload', function(event) {
+      _this.render();
     });
   },
   save_prop: function(object, group) {
@@ -122,7 +128,9 @@ app = {
     for (_i = 0, _len = props.length; _i < _len; _i++) {
       prop = props[_i];
       if (prop === 'top') {
+        log(object.top);
         o.top_cm = this.transformX_px2cm(object.top);
+        log(o.top_cm);
         continue;
       }
       if (prop === 'left') {
@@ -142,9 +150,7 @@ app = {
     }
     group = this.canvas.getActiveGroup();
     if (group) {
-      objects = group._objects;
-      this.canvas._activeObject = null;
-      return this.canvas.setActiveGroup(group.setCoords()).renderAll();
+      return objects = group._objects;
     }
   },
   remove: function() {
@@ -198,6 +204,7 @@ app = {
   },
   render: function() {
     var angle, left_cm, o, object, scaleX, scaleY, tempLeft, tempScaleX, tempScaleY, tempTop, top_cm;
+    log('render');
     object = app.canvas.getActiveObject();
     if (!object) {
       object = app.canvas.getActiveGroup();
@@ -216,6 +223,7 @@ app = {
     this.canvas.clear();
     for (o in this.objects) {
       scaleX = this.objects[o].scaleX;
+      log('scaleX:' + scaleX);
       scaleY = this.objects[o].scaleY;
       left_cm = this.objects[o].left_cm;
       top_cm = this.objects[o].top_cm;

@@ -138,6 +138,7 @@
       return
 
     _render: (ctx) ->
+      #log '_render'
       if @width is 1 and @height is 1
         ctx.fillRect 0, 0, 1, 1
         return
@@ -145,6 +146,7 @@
       ry = (if @ry then Math.min(@ry, @height / 2) else 0)
       #@count = Math.round(@currentWidth / 90)
       #@currentWidth = @count * @width
+      #log @scaleX
       w = @width / @count
       h = @height / @side
       x = -w / 2 * @count
@@ -225,8 +227,9 @@
       #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
 
     __modifiedShelf: () ->
-      log @scaleY
-      log @currentHeight
+      log '__modifiedShelf'
+      log @scaleX
+      #log @currentHeight
       @width = @currentWidth
       @scaleX = 1
       @height = @currentHeight

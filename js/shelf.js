@@ -240,8 +240,8 @@
       });
     },
     __modifiedShelf: function() {
-      log(this.scaleY);
-      log(this.currentHeight);
+      log('__modifiedShelf');
+      log(this.scaleX);
       this.width = this.currentWidth;
       this.scaleX = 1;
       this.height = this.currentHeight;
