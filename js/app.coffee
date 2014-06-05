@@ -205,14 +205,16 @@ app =
     #return (px+@centerY)/@scale-@canvas.getHeight()/2
     #return @canvas.getHeight() / 2 - (px + @centerY) * @scale 
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
-  render : ->
-    log 'render'
+  unselect : ->
     object = app.canvas.getActiveObject()
     if not object
       object = app.canvas.getActiveGroup()
     if object
       @canvas.fire('before:selection:cleared', { target: object })
       @canvas.fire('selection:cleared', { target: object })
+  render : ->
+    log 'render'
+    @unselect()
     @canvas.clear()
     for o of @objects
       scaleX  = @objects[o].scaleX
@@ -273,13 +275,13 @@ app =
 #        @rotating(object)
 #    )
   zoomIn : ->
-    @render()
+    @unselect()
     @scale += 0.1
     @scale = (@scale*100).toFixed(0)/100
     @render()
     $('.zoom').html((@scale*100).toFixed(0)+'%')
   zoomOut : ->
-    @render()
+    @unselect()
     if @scale<=0.1
       return
     @scale -= 0.1
@@ -287,26 +289,28 @@ app =
     @render()
     $('.zoom').html((@scale*100).toFixed(0)+'%')
   zoomReset : ->
+    @unselect()
     @scale = 1
     @render()
     $('.zoom').html('100%')
   toTop :(y=100) ->
-    @render()
+    @unselect()
     @centerY += y
     @render()
   toBottom : (y=100)->
-    @render()
+    @unselect()
     @centerY -= y
     @render()
   toRight : (x=100)->
-    @render()
+    @unselect()
     @centerX -= x
     @render()
   toLeft : (x=100)->
-    @render()
+    @unselect()
     @centerX += x
     @render()
   getSVG : ->
+    @unselect()
     canvas = document.createElement('canvas')
     canvas = new fabric.Canvas(canvas);
     canvas.setWidth @options.max_width

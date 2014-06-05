@@ -250,9 +250,8 @@ app = {
   transformY_px2cm: function(px) {
     return this.centerY - (px - this.canvas.getHeight() / 2) / this.scale;
   },
-  render: function() {
-    var angle, left_cm, o, object, scaleX, scaleY, tempLeft, tempScaleX, tempScaleY, tempTop, top_cm;
-    log('render');
+  unselect: function() {
+    var object;
     object = app.canvas.getActiveObject();
     if (!object) {
       object = app.canvas.getActiveGroup();
@@ -261,10 +260,15 @@ app = {
       this.canvas.fire('before:selection:cleared', {
         target: object
       });
-      this.canvas.fire('selection:cleared', {
+      return this.canvas.fire('selection:cleared', {
         target: object
       });
     }
+  },
+  render: function() {
+    var angle, left_cm, o, object, scaleX, scaleY, tempLeft, tempScaleX, tempScaleY, tempTop, top_cm;
+    log('render');
+    this.unselect();
     this.canvas.clear();
     for (o in this.objects) {
       scaleX = this.objects[o].scaleX;
@@ -314,14 +318,14 @@ app = {
     return $('#canvas_centerY').val(this.centerY);
   },
   zoomIn: function() {
-    this.render();
+    this.unselect();
     this.scale += 0.1;
     this.scale = (this.scale * 100).toFixed(0) / 100;
     this.render();
     return $('.zoom').html((this.scale * 100).toFixed(0) + '%');
   },
   zoomOut: function() {
-    this.render();
+    this.unselect();
     if (this.scale <= 0.1) {
       return;
     }
@@ -331,6 +335,7 @@ app = {
     return $('.zoom').html((this.scale * 100).toFixed(0) + '%');
   },
   zoomReset: function() {
+    this.unselect();
     this.scale = 1;
     this.render();
     return $('.zoom').html('100%');
@@ -339,7 +344,7 @@ app = {
     if (y == null) {
       y = 100;
     }
-    this.render();
+    this.unselect();
     this.centerY += y;
     return this.render();
   },
@@ -347,7 +352,7 @@ app = {
     if (y == null) {
       y = 100;
     }
-    this.render();
+    this.unselect();
     this.centerY -= y;
     return this.render();
   },
@@ -355,7 +360,7 @@ app = {
     if (x == null) {
       x = 100;
     }
-    this.render();
+    this.unselect();
     this.centerX -= x;
     return this.render();
   },
@@ -363,12 +368,13 @@ app = {
     if (x == null) {
       x = 100;
     }
-    this.render();
+    this.unselect();
     this.centerX += x;
     return this.render();
   },
   getSVG: function() {
     var a, blob, canvas, svg, tmp_canvas;
+    this.unselect();
     canvas = document.createElement('canvas');
     canvas = new fabric.Canvas(canvas);
     canvas.setWidth(this.options.max_width);
