@@ -83,24 +83,26 @@ app =
       @render()
       return
 
-  save_prop : (object, group=false)->
-      count = @match(object)
-      if count!=null
-        @objects[count].top_cm  = @transformY_px2cm(object.top)
-        @objects[count].left_cm = @transformX_px2cm(object.left)
-        @objects[count].scaleX = object.scaleX / @scale
-        @objects[count].scaleY = object.scaleY / @scale
-        @objects[count].angle  = object.angle
-        @objects[count].count  = object.count
-        @objects[count].side  = object.side
-      localStorage.setItem('app_data', JSON.stringify(@objects))
-
   add : (object)->
     object.__id = @object_id
     @object_id += 1
     o = 
       object : object 
-    props = 'width height scaleX scaleY left top angle fill stroke count side'.split(' ')
+    props = [
+      'type'
+      'widt'
+      'height'
+      'scaleX'
+      'scaleY'
+      'left'
+      'top'
+      'angle'
+      'fill'
+      'stroke'
+    ]
+    if object.type=='shelf'
+      props.push('count')
+      props.push('side')
     for prop in props
       if prop=='top'
         o.top_cm = @transformX_px2cm(object.top)
@@ -111,6 +113,21 @@ app =
       o[prop] = object[prop]
     @objects.push(o)
     return o
+
+  save_prop : (object, group=false)->
+      count = @match(object)
+      if count!=null
+        @objects[count].type  = object.type
+        @objects[count].top_cm  = @transformY_px2cm(object.top)
+        @objects[count].left_cm = @transformX_px2cm(object.left)
+        @objects[count].scaleX = object.scaleX / @scale
+        @objects[count].scaleY = object.scaleY / @scale
+        @objects[count].angle  = object.angle
+        if object.type=='shelf'
+          @objects[count].count = object.count
+          @objects[count].side  = object.side
+      localStorage.setItem('app_data', JSON.stringify(@objects))
+
   bind : (func)->
     object = @canvas.getActiveObject()
     if object

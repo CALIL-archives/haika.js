@@ -102,23 +102,6 @@ app = {
       _this.render();
     });
   },
-  save_prop: function(object, group) {
-    var count;
-    if (group == null) {
-      group = false;
-    }
-    count = this.match(object);
-    if (count !== null) {
-      this.objects[count].top_cm = this.transformY_px2cm(object.top);
-      this.objects[count].left_cm = this.transformX_px2cm(object.left);
-      this.objects[count].scaleX = object.scaleX / this.scale;
-      this.objects[count].scaleY = object.scaleY / this.scale;
-      this.objects[count].angle = object.angle;
-      this.objects[count].count = object.count;
-      this.objects[count].side = object.side;
-    }
-    return localStorage.setItem('app_data', JSON.stringify(this.objects));
-  },
   add: function(object) {
     var o, prop, props, _i, _len;
     object.__id = this.object_id;
@@ -126,7 +109,11 @@ app = {
     o = {
       object: object
     };
-    props = 'width height scaleX scaleY left top angle fill stroke count side'.split(' ');
+    props = ['type', 'widt', 'height', 'scaleX', 'scaleY', 'left', 'top', 'angle', 'fill', 'stroke'];
+    if (object.type === 'shelf') {
+      props.push('count');
+      props.push('side');
+    }
     for (_i = 0, _len = props.length; _i < _len; _i++) {
       prop = props[_i];
       if (prop === 'top') {
@@ -141,6 +128,26 @@ app = {
     }
     this.objects.push(o);
     return o;
+  },
+  save_prop: function(object, group) {
+    var count;
+    if (group == null) {
+      group = false;
+    }
+    count = this.match(object);
+    if (count !== null) {
+      this.objects[count].type = object.type;
+      this.objects[count].top_cm = this.transformY_px2cm(object.top);
+      this.objects[count].left_cm = this.transformX_px2cm(object.left);
+      this.objects[count].scaleX = object.scaleX / this.scale;
+      this.objects[count].scaleY = object.scaleY / this.scale;
+      this.objects[count].angle = object.angle;
+      if (object.type === 'shelf') {
+        this.objects[count].count = object.count;
+        this.objects[count].side = object.side;
+      }
+    }
+    return localStorage.setItem('app_data', JSON.stringify(this.objects));
   },
   bind: function(func) {
     var group, object, objects;
