@@ -38,6 +38,7 @@ app =
     initAligningGuidelines(canvas)
     #initCenteringGuidelines(canvas)
     @canvas = canvas
+    @canvas.rotationCursor = 'crosshair'
     #@canvas.centeredRotation = true
     @scale = options.scale
     if @options.bgurl
@@ -120,8 +121,6 @@ app =
     @objects.push(o)
     return o
   load : ()->
-    @render()
-    return
     objects = JSON.parse(localStorage.getItem('app_data'))
     log objects
     if objects

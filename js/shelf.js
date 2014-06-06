@@ -191,18 +191,22 @@
       while (i < this.count) {
         if (this.side === 1) {
           this.__renderShelf(ctx, x + i * w, y, w, h);
-          this.__renderSide(ctx, x + i * w, y, w, h);
+          if (app.scale > 0.5) {
+            this.__renderSide(ctx, x + i * w, y, w, h);
+          }
         } else if (this.side === 2) {
           this.__renderShelf(ctx, x + i * w, y, w, h);
           this.__renderShelf(ctx, x + i * w, y + h, w, h);
         }
         i++;
       }
-      ctx.font = "30px FontAwesome";
-      ctx.textAlign = "right";
-      ctx.textBaseline = "middle";
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-      ctx.fillText("\uf177", this.width - this.width / 2 - 10, -this.height / 2 + this.height / 2 / this.side);
+      if (app.scale > 0.5) {
+        ctx.font = "30px FontAwesome";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        ctx.fillText("\uf177", this.width - this.width / 2 - 10, -this.height / 2 + this.height / 2 / this.side);
+      }
     },
     __renderShelf: function(ctx, x, y, w, h) {
       ctx.beginPath();

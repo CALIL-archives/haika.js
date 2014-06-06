@@ -45,6 +45,7 @@ app = {
     $('#canvas_height').val(this.options.canvas_height);
     initAligningGuidelines(canvas);
     this.canvas = canvas;
+    this.canvas.rotationCursor = 'crosshair';
     this.scale = options.scale;
     if (this.options.bgurl) {
       fabric.Image.fromURL(this.options.bgurl, function(img) {
@@ -144,8 +145,6 @@ app = {
   },
   load: function() {
     var canvas, object, objects, shelf, _i, _len;
-    this.render();
-    return;
     objects = JSON.parse(localStorage.getItem('app_data'));
     log(objects);
     if (objects) {

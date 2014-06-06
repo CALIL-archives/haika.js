@@ -172,7 +172,8 @@
       while i < @count
         if @side is 1
           @__renderShelf ctx, x + i * w, y, w, h
-          @__renderSide  ctx, x + i * w, y, w, h
+          if app.scale>0.5
+            @__renderSide  ctx, x + i * w, y, w, h
         else if @side is 2
           @__renderShelf ctx, x + i * w, y, w, h
           @__renderShelf ctx, x + i * w, y + h, w, h
@@ -186,12 +187,13 @@
 #      ctx.arc(@width-@width/2-10,-@height/2+@height/2/@side,1,0,2*Math.PI,true)
 #      @_renderFill ctx
 #      @_renderStroke ctx
-
-      ctx.font = "30px FontAwesome";
-      ctx.textAlign = "right"
-      ctx.textBaseline  = "middle"
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-      ctx.fillText( "\uf177", @width-@width/2-10, -@height/2+@height/2/@side);
+      
+      if app.scale>0.5
+        ctx.font = "30px FontAwesome";
+        ctx.textAlign = "right"
+        ctx.textBaseline  = "middle"
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        ctx.fillText( "\uf177", @width-@width/2-10, -@height/2+@height/2/@side);
       return
 
     __renderShelf: (ctx, x, y, w, h) ->
