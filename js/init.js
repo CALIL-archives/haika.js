@@ -33,13 +33,14 @@ add = function(left, top, angle) {
   shelf = new fabric.Shelf({
     count: parseInt($('#count').val()),
     side: parseInt($('#side').val()),
-    top: app.transformX_cm2px(top - app.centerX),
-    left: app.transformY_cm2px(left - app.centerY),
+    top: app.transformX_cm2px(app.centerY),
+    left: app.transformY_cm2px(app.centerX),
     fill: "#CFE2F3",
     stroke: "#000000",
     angle: angle
   });
-  return app.add(shelf);
+  app.add(shelf);
+  return app.render();
 };
 
 $(function() {

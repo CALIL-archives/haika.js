@@ -26,14 +26,15 @@ add = (left=0, top=0, angle=0)->
   shelf = new fabric.Shelf(
     count: parseInt($('#count').val())
     side: parseInt($('#side').val())
-    top: app.transformX_cm2px(top-app.centerX)
-    left: app.transformY_cm2px(left-app.centerY)
+    top: app.transformX_cm2px(app.centerY)
+    left: app.transformY_cm2px(app.centerX)
     fill: "#CFE2F3"
     stroke: "#000000"
     angle: angle
     #lockScalingY: true
   )
   app.add(shelf)
+  app.render()
 #setTimeout(->
   #addmany()
   #add(250, 250)

@@ -29,8 +29,11 @@ app =
       bgurl    : null
       bgopacity: 1
       bgscale  : 1
+      
     @options = $.extend(default_options, options)
-    canvas = new fabric.Canvas(@options.canvas)
+    canvas = new fabric.Canvas(@options.canvas, {
+      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
+    })
     canvas.setWidth(@options.canvas_width)
     $('#canvas_width').val(@options.canvas_width)
     canvas.setHeight(@options.canvas_height)
@@ -38,7 +41,6 @@ app =
     initAligningGuidelines(canvas)
     #initCenteringGuidelines(canvas)
     @canvas = canvas
-    @canvas.rotationCursor = 'crosshair'
     #@canvas.centeredRotation = true
     @scale = options.scale
     if @options.bgurl
