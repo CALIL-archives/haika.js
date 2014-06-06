@@ -22,7 +22,7 @@ $(window).resize ->
   #app.centerY = -app.canvas.getHeight() / 2
   app.render()
 
-add = (left=0, top=0, angle=0)->
+add = (left=0, top=0)->
   shelf = new fabric.Shelf(
     count: parseInt($('#count').val())
     side: parseInt($('#side').val())
@@ -30,7 +30,7 @@ add = (left=0, top=0, angle=0)->
     left: app.transformY_cm2px(app.centerX)
     fill: "#CFE2F3"
     stroke: "#000000"
-    angle: angle
+    angle: parseInt($('#angle').val())
     #lockScalingY: true
   )
   app.add(shelf)

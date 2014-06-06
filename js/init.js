@@ -19,16 +19,13 @@ $(window).resize(function() {
   return app.render();
 });
 
-add = function(left, top, angle) {
+add = function(left, top) {
   var shelf;
   if (left == null) {
     left = 0;
   }
   if (top == null) {
     top = 0;
-  }
-  if (angle == null) {
-    angle = 0;
   }
   shelf = new fabric.Shelf({
     count: parseInt($('#count').val()),
@@ -37,7 +34,7 @@ add = function(left, top, angle) {
     left: app.transformY_cm2px(app.centerX),
     fill: "#CFE2F3",
     stroke: "#000000",
-    angle: angle
+    angle: parseInt($('#angle').val())
   });
   app.add(shelf);
   return app.render();
