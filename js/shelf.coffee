@@ -113,10 +113,18 @@
     ry: 0
     x: 0
     y: 0
-    __width: 90
-    __height: 25
-    maxWidth : 900
-    maxHeight : 50
+    __width: ->
+      @__eachwidth() * @count
+    __height: ->
+      @__eachheight() * @side
+    __eachwidth: ->
+      90*app.scale
+    __eachheight: ->
+      25*app.scale
+    __maxwidth: ->
+      @__eachwidth()*10
+    __maxheight: ->
+      @__eachheight()*2
     count: 1
     side : 1
     minScaleLimit: 1
@@ -127,8 +135,8 @@
       @_initRxRy()
       @x = options.x or 0
       @y = options.y or 0
-      @width = @__width * @count
-      @height = @__height * @side
+      @width = @__width()
+      @height = @__height()
       return
 
     _initRxRy: ->
@@ -159,7 +167,6 @@
         ctx.translate @width / 2 + @x, @height / 2 + @y
       if not @transformMatrix and isInPathGroup
         ctx.translate -@group.width / 2 + @width / 2 + @x, -@group.height / 2 + @height / 2 + @y
-      
       
       i = 0
       while i < @count
@@ -209,20 +216,17 @@
       @_renderStroke ctx
 
     __resizeShelf: () ->
-      maxWidth = @maxWidth
-      maxHeight = @maxHeight
-      actualWidth = @scaleX * @width
-      actualHeight = @scaleY * @height
-
+      actualWidth = @scaleX * @currentWidth
+      actualHeight = @scaleY * @currentHeight
       # dividing maxWidth by the @width gives us our 'max scale' 
-      if not isNaN(maxWidth) and actualWidth >= maxWidth
-        @set scaleX: maxWidth / @width
-      if not isNaN(maxHeight) and actualHeight >= maxHeight 
-        @set scaleY: maxHeight / @height
+      if actualWidth >= @__maxwidth()
+        @set scaleX: @__maxwidth() / @width
+      if actualHeight >= @__maxheight() 
+        @set scaleY: @__maxheight() / @height
       #log @get("currentWidth") * @scaleX
-      count = Math.round(@currentWidth * @scaleX / @__width)
+      count = Math.round(actualWidth / @__eachwidth())
       count = if count<1 then 1 else count
-      side = Math.round(@currentHeight * @scaleY / @__height)
+      side = Math.round(actualHeight / @__eachheight())
       side = if side<1 then 1 else side
 #      if @flipY
 #        @angle = @originalState.angle + 180
@@ -230,8 +234,8 @@
       #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
 
     __modifiedShelf: () ->
-      log '__modifiedShelf'
-      log @scaleX
+      #log '__modifiedShelf'
+      #log @scaleX
       #log @currentHeight
       @width = @currentWidth
       @scaleX = 1
@@ -287,7 +291,7 @@
     complexity: ->
       1
   )
-  fabric.Shelf.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat("x y rx ry width height".split(" "))
+  fabric.Shelf.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat("x y rx ry width height count side".split(" "))
   fabric.Shelf.fromElement = (element, options) ->
     return null  unless element
     parsedAttributes = fabric.parseAttributes(element, fabric.Shelf.ATTRIBUTE_NAMES)

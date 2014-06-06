@@ -125,10 +125,24 @@
     ry: 0,
     x: 0,
     y: 0,
-    __width: 90,
-    __height: 25,
-    maxWidth: 900,
-    maxHeight: 50,
+    __width: function() {
+      return this.__eachwidth() * this.count;
+    },
+    __height: function() {
+      return this.__eachheight() * this.side;
+    },
+    __eachwidth: function() {
+      return 90 * app.scale;
+    },
+    __eachheight: function() {
+      return 25 * app.scale;
+    },
+    __maxwidth: function() {
+      return this.__eachwidth() * 10;
+    },
+    __maxheight: function() {
+      return this.__eachheight() * 2;
+    },
     count: 1,
     side: 1,
     minScaleLimit: 1,
@@ -139,8 +153,8 @@
       this._initRxRy();
       this.x = options.x || 0;
       this.y = options.y || 0;
-      this.width = this.__width * this.count;
-      this.height = this.__height * this.side;
+      this.width = this.__width();
+      this.height = this.__height();
     },
     _initRxRy: function() {
       if (this.rx && !this.ry) {
@@ -212,24 +226,22 @@
       return this._renderStroke(ctx);
     },
     __resizeShelf: function() {
-      var actualHeight, actualWidth, count, maxHeight, maxWidth, side;
-      maxWidth = this.maxWidth;
-      maxHeight = this.maxHeight;
-      actualWidth = this.scaleX * this.width;
-      actualHeight = this.scaleY * this.height;
-      if (!isNaN(maxWidth) && actualWidth >= maxWidth) {
+      var actualHeight, actualWidth, count, side;
+      actualWidth = this.scaleX * this.currentWidth;
+      actualHeight = this.scaleY * this.currentHeight;
+      if (actualWidth >= this.__maxwidth()) {
         this.set({
-          scaleX: maxWidth / this.width
+          scaleX: this.__maxwidth() / this.width
         });
       }
-      if (!isNaN(maxHeight) && actualHeight >= maxHeight) {
+      if (actualHeight >= this.__maxheight()) {
         this.set({
-          scaleY: maxHeight / this.height
+          scaleY: this.__maxheight() / this.height
         });
       }
-      count = Math.round(this.currentWidth * this.scaleX / this.__width);
+      count = Math.round(actualWidth / this.__eachwidth());
       count = count < 1 ? 1 : count;
-      side = Math.round(this.currentHeight * this.scaleY / this.__height);
+      side = Math.round(actualHeight / this.__eachheight());
       side = side < 1 ? 1 : side;
       return this.set({
         count: count,
@@ -240,8 +252,6 @@
       });
     },
     __modifiedShelf: function() {
-      log('__modifiedShelf');
-      log(this.scaleX);
       this.width = this.currentWidth;
       this.scaleX = 1;
       this.height = this.currentHeight;
@@ -307,7 +317,7 @@
       return 1;
     }
   });
-  fabric.Shelf.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat("x y rx ry width height".split(" "));
+  fabric.Shelf.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat("x y rx ry width height count side".split(" "));
   fabric.Shelf.fromElement = function(element, options) {
     var parsedAttributes, shelf;
     if (!element) {

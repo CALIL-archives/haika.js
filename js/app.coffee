@@ -1,7 +1,6 @@
 log = (obj) ->
   try
     console.log obj
-SCALE_FACTOR = 2
 
 app = 
   width      : 800
@@ -10,7 +9,6 @@ app =
   centerY    : 0
   scale      : 1
   objects    : []
-  object_id  : 1 
   canvas     : false
   drawguideline : true
   is_moving  : false
@@ -58,8 +56,9 @@ app =
           object.lockScalingY  = true
         #else
         #  object.lockScalingY  = true
-        for object in app.objects
-          @save_prop(object.object)
+        for object in @canvas.getObjects()
+          if object.id?
+            @save_prop(object)
     )
     @canvas.on('before:selection:cleared', (e)=>
       object = e.target
@@ -90,13 +89,14 @@ app =
       return
 
   add : (object)->
-    object.__id = @object_id
+    id = @objects.length
+    object.id = id
+    o =
+      id : id
     @object_id += 1
-    o = 
-      object : object 
     props = [
       'type'
-      'widt'
+      'width'
       'height'
       'scaleX'
       'scaleY'
@@ -120,6 +120,8 @@ app =
     @objects.push(o)
     return o
   load : ()->
+    @render()
+    return
     objects = JSON.parse(localStorage.getItem('app_data'))
     log objects
     if objects
@@ -149,18 +151,18 @@ app =
       centerY : @centerY
     localStorage.setItem('canvas', JSON.stringify(canvas))
   save_prop : (object, group=false)->
-      count = @match(object)
-      if count!=null
-        @objects[count].type  = object.type
-        @objects[count].top_cm  = @transformY_px2cm(object.top)
-        @objects[count].left_cm = @transformX_px2cm(object.left)
-        @objects[count].scaleX = object.scaleX / @scale
-        @objects[count].scaleY = object.scaleY / @scale
-        @objects[count].angle  = object.angle
-        if object.type=='shelf'
-          @objects[count].count = object.count
-          @objects[count].side  = object.side
-      localStorage.setItem('app_data', JSON.stringify(@objects))
+    log 'object.top:'+object.top
+    count = object.id
+    @objects[count].type  = object.type
+    @objects[count].top_cm  = @transformY_px2cm(object.top)
+    @objects[count].left_cm = @transformX_px2cm(object.left)
+    @objects[count].scaleX = object.scaleX / @scale
+    @objects[count].scaleY = object.scaleY / @scale
+    @objects[count].angle  = object.angle
+    if object.type=='shelf'
+      @objects[count].count = object.count
+      @objects[count].side  = object.side
+    localStorage.setItem('app_data', JSON.stringify(@objects))
 
   bind : (func)->
     object = @canvas.getActiveObject()
@@ -174,24 +176,15 @@ app =
   remove : ->
     @bind (object)=>
       @canvas.remove(object)
-      count = @match(object)
-      if count!=null
-        @objects.splice(count, 1)
+      count = object.id
+      @objects.splice(count, 1)
   bringToFront : ->
     @bind (object)=>
-      count = @match(object)
-      if count!=null
-        object.bringToFront()
-        obj = @objects[count]
-        @objects.splice(count, 1)
-        @objects.push(obj) 
-  match : (object)->
-    count = 0
-    for o in @objects
-      if o['object'].__id==object.__id
-        return count
-      count += 1
-    return null
+      count = object.id
+      object.bringToFront()
+      obj = @objects[count]
+      @objects.splice(count, 1)
+      @objects.push(obj) 
   transformX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale
@@ -219,30 +212,26 @@ app =
     log 'render'
     @unselect()
     @canvas.clear()
-    for o of @objects
-      scaleX  = @objects[o].scaleX
-      log 'scaleX:'+scaleX
-      scaleY  = @objects[o].scaleY
-      left_cm = @objects[o].left_cm
-      top_cm  = @objects[o].top_cm
-      angle   = @objects[o].angle
-      tempScaleX = scaleX * @scale
-      tempScaleY = scaleY * @scale
-      tempLeft   = @transformX_cm2px(left_cm)
-      tempTop    = @transformY_cm2px(top_cm)
-#      if tempLeft > @width 
-#        continue
-#      if tempTop > @height
-#        continue
-      object = @objects[o]['object']
-      object.scaleX = tempScaleX
-      object.scaleY = tempScaleY
-      object.left   = tempLeft
-      object.top    = tempTop
-      if angle > 0
-        object.angle  = angle
+    for i of @objects
+      log @objects[i].type
+      if @objects[i].type=='shelf'
+        object = new fabric.Shelf()
+        log @objects[i].count
+        object.side  = @objects[i].side
+        object.count = @objects[i].count
+      object.id     = @objects[i].id
+      object.scaleX = 1
+      object.scaleY = 1
+      object.width  = object.__width()
+      object.height = object.__height()
+      object.left   = @transformX_cm2px(@objects[i].left_cm)
+      object.top    = @transformY_cm2px(@objects[i].top_cm)
+      if @objects[i].angle > 0
+        object.angle  = @objects[i].angle
       object.originX = 'center'
       object.originY = 'center'
+      object.fill = "#CFE2F3"
+      object.stroke = "#000000"
       object.setCoords()
       @canvas.add(object)
     if @scale==1 and @drawguideline

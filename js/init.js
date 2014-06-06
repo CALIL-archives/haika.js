@@ -22,10 +22,10 @@ $(window).resize(function() {
 add = function(left, top, angle) {
   var shelf;
   if (left == null) {
-    left = -100;
+    left = 0;
   }
   if (top == null) {
-    top = -100;
+    top = 0;
   }
   if (angle == null) {
     angle = 0;

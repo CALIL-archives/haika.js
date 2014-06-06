@@ -280,3 +280,50 @@ log x_cm
 x_px = app.transformX_cm2px(x_cm)
 log x_px
 
+###
+  render : ->
+    log 'render'
+    @unselect()
+    @canvas.clear()
+    for o of @objects
+      scaleX  = @objects[o].scaleX
+      log 'scaleX:'+scaleX
+      scaleY  = @objects[o].scaleY
+      left_cm = @objects[o].left_cm
+      top_cm  = @objects[o].top_cm
+      angle   = @objects[o].angle
+      tempScaleX = scaleX * @scale
+      log 'tempScaleX:'+tempScaleX
+      tempScaleY = scaleY * @scale
+      tempLeft   = @transformX_cm2px(left_cm)
+      tempTop    = @transformY_cm2px(top_cm)
+#      if tempLeft > @width 
+#        continue
+#      if tempTop > @height
+#        continue
+      object = @objects[o]['object']
+      object.scaleX = tempScaleX
+      object.scaleY = tempScaleY
+      object.left   = tempLeft
+      object.top    = tempTop
+      if angle > 0
+        object.angle  = angle
+      object.originX = 'center'
+      object.originY = 'center'
+      object.setCoords()
+      @canvas.add(object)
+    if @scale==1 and @drawguideline
+      fabric.drawGridLines(@canvas)
+    @canvas.renderAll()
+    @render_bg()
+    @debug()
+###
+
+  match : (object)->
+    count = 0
+    for o in @objects
+      if o['object'].id==object.id
+        return count
+      count += 1
+    return null
+
