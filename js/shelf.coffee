@@ -18,7 +18,7 @@
     height = canvas.height
     line = null
     rect = []
-    size = 50 # 50px = 1m = 100cm / 2 = 50px
+    size = 100*app.scale # 50px = 1m = 100cm / 2 = 50px
 
     #格子線を描画する
     i = 1

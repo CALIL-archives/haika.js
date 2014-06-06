@@ -29,8 +29,11 @@ app =
       bgurl    : null
       bgopacity: 1
       bgscale  : 1
+      
     @options = $.extend(default_options, options)
-    canvas = new fabric.Canvas(@options.canvas)
+    canvas = new fabric.Canvas(@options.canvas, {
+      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
+    })
     canvas.setWidth(@options.canvas_width)
     $('#canvas_width').val(@options.canvas_width)
     canvas.setHeight(@options.canvas_height)
@@ -38,7 +41,6 @@ app =
     initAligningGuidelines(canvas)
     #initCenteringGuidelines(canvas)
     @canvas = canvas
-    @canvas.rotationCursor = 'crosshair'
     #@canvas.centeredRotation = true
     @scale = options.scale
     if @options.bgurl
@@ -187,18 +189,12 @@ app =
   transformX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale
-    #return @centerX * @scale + @canvas.getWidth()  / 2 - cm * @scale
   transformY_cm2px : (cm)->
     return @canvas.getHeight()/2+(@centerY-cm)*@scale
-    #return @centerY * @scale + @canvas.getHeight() / 2 - cm * @scale
   transformX_px2cm : (px)->
     # left(px) => x(cm)
-    #return (px+@centerX)/@scale-@canvas.getWidth()/2
-    #return @canvas.getWidth() / 2 - (px + @centerX) * @scale
     return @centerX - (px - @canvas.getWidth() / 2) / @scale
   transformY_px2cm : (px)->
-    #return (px+@centerY)/@scale-@canvas.getHeight()/2
-    #return @canvas.getHeight() / 2 - (px + @centerY) * @scale 
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
   unselect : ->
     object = app.canvas.getActiveObject()
@@ -252,6 +248,7 @@ app =
     $('#canvas_height').val(@canvas.getHeight())
     $('#canvas_centerX').val(@centerX)
     $('#canvas_centerY').val(@centerY)
+    $('#canvas_bgscale').val(@options.bgscale)
 
 #    object.on(
 #      modified: =>

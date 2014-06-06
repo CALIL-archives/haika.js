@@ -38,14 +38,15 @@ app = {
       bgscale: 1
     };
     this.options = $.extend(default_options, options);
-    canvas = new fabric.Canvas(this.options.canvas);
+    canvas = new fabric.Canvas(this.options.canvas, {
+      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
+    });
     canvas.setWidth(this.options.canvas_width);
     $('#canvas_width').val(this.options.canvas_width);
     canvas.setHeight(this.options.canvas_height);
     $('#canvas_height').val(this.options.canvas_height);
     initAligningGuidelines(canvas);
     this.canvas = canvas;
-    this.canvas.rotationCursor = 'crosshair';
     this.scale = options.scale;
     if (this.options.bgurl) {
       fabric.Image.fromURL(this.options.bgurl, function(img) {
@@ -309,7 +310,8 @@ app = {
     $('#canvas_width').val(this.canvas.getWidth());
     $('#canvas_height').val(this.canvas.getHeight());
     $('#canvas_centerX').val(this.centerX);
-    return $('#canvas_centerY').val(this.centerY);
+    $('#canvas_centerY').val(this.centerY);
+    return $('#canvas_bgscale').val(this.options.bgscale);
   },
   zoomIn: function() {
     this.unselect();

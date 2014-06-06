@@ -11,7 +11,7 @@ app.init(
   bgurl  : 'img/meidai2.png'
   #bgurl  : 'img/sample.png'
   bgopacity: 1
-  bgscale  : 4
+  bgscale  : 4.425
 )
 $(window).resize ->
   app.canvas.setWidth(window.innerWidth)
@@ -22,18 +22,19 @@ $(window).resize ->
   #app.centerY = -app.canvas.getHeight() / 2
   app.render()
 
-add = (left=0, top=0, angle=0)->
+add = (left=0, top=0)->
   shelf = new fabric.Shelf(
     count: parseInt($('#count').val())
     side: parseInt($('#side').val())
-    top: app.transformX_cm2px(top-app.centerX)
-    left: app.transformY_cm2px(left-app.centerY)
+    top: app.transformX_cm2px(app.centerY)
+    left: app.transformY_cm2px(app.centerX)
     fill: "#CFE2F3"
     stroke: "#000000"
-    angle: angle
+    angle: parseInt($('#angle').val())
     #lockScalingY: true
   )
   app.add(shelf)
+  app.render()
 #setTimeout(->
   #addmany()
   #add(250, 250)
@@ -114,5 +115,7 @@ $ ->
     app.centerX = parseInt($(this).val())
   $('#canvas_centerY').change ->
     app.centerY = parseInt($(this).val())
+  $('#canvas_bgscale').change ->
+    app.options.bgscale = parseInt($(this).val())
   $('#canvas_render').click ->
     app.render()

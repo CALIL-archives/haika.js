@@ -31,10 +31,18 @@
           <label for="count">count:
               <input type="text" id="count" class="form-control" value="3" style="width: 60px;" />
           </label>
-          <label for="sid">side:
+          <label for="side">side:
               <select id="side" class="form-control">
                   <option value="1">one</option>
                   <option value="2">both</option>
+              </select>
+          </label>
+          <label for="angle">angle:
+              <select id="angle" class="form-control">
+                  <option value="0">0</option>
+                  <option value="90">90</option>
+                  <option value="180">180</option>
+                  <option value="270">270</option>
               </select>
           </label>
           <input type="button" class="add btn btn-default" value="add" />
@@ -67,6 +75,10 @@
       <label for="canvas_centerY">
         centerY:
         <input type="text" id="canvas_centerY" class="form-control" value="0" />
+      </label>
+      <label for="canvas_bgscale">
+        bgscale:
+        <input type="text" id="canvas_bgscale" class="form-control" value="0" />
       </label>
       <input type="button" id="canvas_render" class="btn btn-default" value="render">
       <div class="rotate"></div>

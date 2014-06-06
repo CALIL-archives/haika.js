@@ -10,7 +10,7 @@ app.init({
   max_height: 10000,
   bgurl: 'img/meidai2.png',
   bgopacity: 1,
-  bgscale: 4
+  bgscale: 4.425
 });
 
 $(window).resize(function() {
@@ -19,7 +19,7 @@ $(window).resize(function() {
   return app.render();
 });
 
-add = function(left, top, angle) {
+add = function(left, top) {
   var shelf;
   if (left == null) {
     left = 0;
@@ -27,19 +27,17 @@ add = function(left, top, angle) {
   if (top == null) {
     top = 0;
   }
-  if (angle == null) {
-    angle = 0;
-  }
   shelf = new fabric.Shelf({
     count: parseInt($('#count').val()),
     side: parseInt($('#side').val()),
-    top: app.transformX_cm2px(top - app.centerX),
-    left: app.transformY_cm2px(left - app.centerY),
+    top: app.transformX_cm2px(app.centerY),
+    left: app.transformY_cm2px(app.centerX),
     fill: "#CFE2F3",
     stroke: "#000000",
-    angle: angle
+    angle: parseInt($('#angle').val())
   });
-  return app.add(shelf);
+  app.add(shelf);
+  return app.render();
 };
 
 $(function() {
@@ -120,6 +118,9 @@ $(function() {
   });
   $('#canvas_centerY').change(function() {
     return app.centerY = parseInt($(this).val());
+  });
+  $('#canvas_bgscale').change(function() {
+    return app.options.bgscale = parseInt($(this).val());
   });
   return $('#canvas_render').click(function() {
     return app.render();
