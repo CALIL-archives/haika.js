@@ -310,7 +310,8 @@ app = {
     $('#canvas_width').val(this.canvas.getWidth());
     $('#canvas_height').val(this.canvas.getHeight());
     $('#canvas_centerX').val(this.centerX);
-    return $('#canvas_centerY').val(this.centerY);
+    $('#canvas_centerY').val(this.centerY);
+    return $('#canvas_bgscale').val(this.options.bgscale);
   },
   zoomIn: function() {
     this.unselect();

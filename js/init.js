@@ -10,7 +10,7 @@ app.init({
   max_height: 10000,
   bgurl: 'img/meidai2.png',
   bgopacity: 1,
-  bgscale: 4
+  bgscale: 4.425
 });
 
 $(window).resize(function() {
@@ -121,6 +121,9 @@ $(function() {
   });
   $('#canvas_centerY').change(function() {
     return app.centerY = parseInt($(this).val());
+  });
+  $('#canvas_bgscale').change(function() {
+    return app.options.bgscale = parseInt($(this).val());
   });
   return $('#canvas_render').click(function() {
     return app.render();

@@ -24,7 +24,7 @@
     height = canvas.height;
     line = null;
     rect = [];
-    size = 50;
+    size = 100 * app.scale;
     i = 1;
     while (i < Math.ceil(width / size)) {
       rect[0] = i * size;

@@ -11,7 +11,7 @@ app.init(
   bgurl  : 'img/meidai2.png'
   #bgurl  : 'img/sample.png'
   bgopacity: 1
-  bgscale  : 4
+  bgscale  : 4.425
 )
 $(window).resize ->
   app.canvas.setWidth(window.innerWidth)
@@ -115,5 +115,7 @@ $ ->
     app.centerX = parseInt($(this).val())
   $('#canvas_centerY').change ->
     app.centerY = parseInt($(this).val())
+  $('#canvas_bgscale').change ->
+    app.options.bgscale = parseInt($(this).val())
   $('#canvas_render').click ->
     app.render()
