@@ -122,6 +122,13 @@
       90 * app.scale
     __eachheight: ->
       25 * app.scale
+<<<<<<< HEAD
+=======
+    __maxwidth: ->
+      @__eachwidth() * 10
+    __maxheight: ->
+      @__eachheight() * 2
+>>>>>>> 7724a192b26f21edc073a19991f22522a307f127
     count: 1
     side: 1
     minScaleLimit: 1
