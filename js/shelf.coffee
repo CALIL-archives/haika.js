@@ -18,7 +18,7 @@
     height = canvas.height
     line = null
     rect = []
-    size = 100*app.scale # 50px = 1m = 100cm / 2 = 50px
+    size = 100 * app.scale # 50px = 1m = 100cm / 2 = 50px
 
     #格子線を描画する
     i = 1
@@ -57,19 +57,20 @@
       ++i
     #縮尺を表示する
     canvas.renderOnAddRemove = true
-    points = [{'x':0,'y':0},
-      {'x':0,'y':size*0.1},
-      {'x':size,'y':size*0.1},
-      {'x':size,'y':0},
+    points = [
+      {'x': 0, 'y': 0},
+      {'x': 0, 'y': size * 0.1},
+      {'x': size, 'y': size * 0.1},
+      {'x': size, 'y': 0},
     ]
 
     line = new fabric.Polyline(points,
       stroke: "#000"
       opacity: 0.3
-      top:size*0.2,
-      left:size,
-      fill:"#fff",
-      strokeWidth:2,
+      top: size * 0.2,
+      left: size,
+      fill: "#fff",
+      strokeWidth: 2,
       selectable: false
       hasControls: false
       hasBorders: false
@@ -77,29 +78,29 @@
     canvas.add line
     text = new fabric.Text('1m',
       opacity: 0.3
-      left: size*1.3
-      top: size*0.35
+      left: size * 1.3
+      top: size * 0.35
       fontSize: 12
       selectable: false
       hasControls: false
       hasBorders: false
       fontWeight: 'bold'
-      fontFamily:  'Open Sans'
+      fontFamily: 'Open Sans'
       useNative: true
       fill: "#000"
     )
     canvas.add text
     #図面のサイズ
-    text = new fabric.Text("SIZE = "+(width*2/100)+"m x "+(height*2/100)+"m",
+    text = new fabric.Text("SIZE = " + (width * 2 / 100) + "m x " + (height * 2 / 100) + "m",
       opacity: 0.3
-      left: size+size*1.3
-      top: size*0.2
+      left: size + size * 1.3
+      top: size * 0.2
       fontSize: 12
       selectable: false
       hasControls: false
       hasBorders: false
       fontWeight: 'bold'
-      fontFamily:  'Open Sans'
+      fontFamily: 'Open Sans'
       useNative: true
       fill: "#000"
     )
@@ -118,15 +119,15 @@
     __height: ->
       @__eachheight() * @side
     __eachwidth: ->
-      90*app.scale
+      90 * app.scale
     __eachheight: ->
-      25*app.scale
+      25 * app.scale
     __maxwidth: ->
-      @__eachwidth()*10
+      @__eachwidth() * 10
     __maxheight: ->
-      @__eachheight()*2
+      @__eachheight() * 2
     count: 1
-    side : 1
+    side: 1
     minScaleLimit: 1
     strokeDashArray: null
     initialize: (options) ->
@@ -150,50 +151,59 @@
       if @width is 1 and @height is 1
         ctx.fillRect 0, 0, 1, 1
         return
-      rx = (if @rx then Math.min(@rx, @width / 2) else 0)
-      ry = (if @ry then Math.min(@ry, @height / 2) else 0)
-      #@count = Math.round(@currentWidth / 90)
-      #@currentWidth = @count * @width
-      #log @scaleX
-      w = @width / @count
-      h = @height / @side
-      x = -w / 2 * @count
+      ctx.scale 1 / @scaleX, 1 / @scaleY
+      #スケール変更中は位置をドラックした反対側に寄せる
+      sx=0
+      if @scaleX != 0 && @__corner=='mr' then sx=(@count*@__eachwidth()-@width*@scaleX)/2
+      if @scaleX != 0 && @__corner=='ml' then sx=-1*(@count*@__eachwidth()-@width*@scaleX)/2
+      w = @__eachwidth() #/ @scaleX
+      h = @__eachheight() #/ @scaleY
+      x = -w / 2 * @count + sx
       y = -h / 2 * @side
       isInPathGroup = @group and @group.type is "path-group"
-      isRounded = rx isnt 0 or ry isnt 0
-      k = 1 - 0.5522847498
+      #isRounded = rx isnt 0 or ry isnt 0
+      #k = 1 - 0.5522847498
       ctx.globalAlpha = (if isInPathGroup then (ctx.globalAlpha * @opacity) else @opacity)
       if @transformMatrix and isInPathGroup
         ctx.translate @width / 2 + @x, @height / 2 + @y
       if not @transformMatrix and isInPathGroup
         ctx.translate -@group.width / 2 + @width / 2 + @x, -@group.height / 2 + @height / 2 + @y
-      
+
       i = 0
       while i < @count
         if @side is 1
           @__renderShelf ctx, x + i * w, y, w, h
-          if app.scale>0.5
-            @__renderSide  ctx, x + i * w, y, w, h
+          if app.scale > 0.5
+            @__renderSide ctx, x + i * w, y, w, h
         else if @side is 2
           @__renderShelf ctx, x + i * w, y, w, h
           @__renderShelf ctx, x + i * w, y + h, w, h
         i++
 
-#      ctx.lineWidth = 1
-#      ctx.globalAlpha = 1 #塗りつぶしの透明度設定
-#      ctx.fillStyle = '#000000'
-#      ctx.beginPath()
-#      #arc(x座標,y,直径,円弧の描き始めの位置,書き終わりの位置,円弧を描く方向(true:反時計回り))
-#      ctx.arc(@width-@width/2-10,-@height/2+@height/2/@side,1,0,2*Math.PI,true)
-#      @_renderFill ctx
-#      @_renderStroke ctx
-      
-      if app.scale>0.5
+      #      ctx.lineWidth = 1
+      #      ctx.globalAlpha = 1 #塗りつぶしの透明度設定
+      #      ctx.fillStyle = '#000000'
+      #      ctx.beginPath()
+      #      #arc(x座標,y,直径,円弧の描き始めの位置,書き終わりの位置,円弧を描く方向(true:反時計回り))
+      #      ctx.arc(@width-@width/2-10,-@height/2+@height/2/@side,1,0,2*Math.PI,true)
+      #      @_renderFill ctx
+      #      @_renderStroke ctx
+
+      ctx.font = "20px Arial";
+      ctx.textAlign = "right"
+      ctx.textBaseline = "middle"
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.fillText(@__corner, @width - @width / 2 - 10, -@height / 2 + @height / 2 / @side);
+
+
+      if app.scale > 0.5
         ctx.font = "30px FontAwesome";
         ctx.textAlign = "right"
-        ctx.textBaseline  = "middle"
+        ctx.textBaseline = "middle"
         ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-        ctx.fillText( "\uf177", @width-@width/2-10, -@height/2+@height/2/@side);
+        ctx.fillText("\uf177", @width - @width / 2 - 10, -@height / 2 + @height / 2 / @side);
+
+      ctx.scale @scaleX, @scaleY
       return
 
     __renderShelf: (ctx, x, y, w, h) ->
@@ -220,29 +230,31 @@
     __resizeShelf: () ->
       actualWidth = @scaleX * @currentWidth
       actualHeight = @scaleY * @currentHeight
-      # dividing maxWidth by the @width gives us our 'max scale' 
-      if actualWidth >= @__maxwidth()
-        @set scaleX: @__maxwidth() / @width
-      if actualHeight >= @__maxheight() 
-        @set scaleY: @__maxheight() / @height
-      #log @get("currentWidth") * @scaleX
-      count = Math.round(actualWidth / @__eachwidth())
-      count = if count<1 then 1 else count
+      count = Math.floor(actualWidth / @__eachwidth())
+      if count < 1 then count = 1
+      if count > 10 then count = 10
       side = Math.round(actualHeight / @__eachheight())
-      side = if side<1 then 1 else side
-#      if @flipY
-#        @angle = @originalState.angle + 180
-      @set(count: count, side: side, minScaleLimit: 1 / @count, flipX : false, flipY:false)
+      if side < 1 then side = 1
+      if side > 2 then side = 2
+      @set(count: count, side: side, minScaleLimit: 0.01, flipX: false, flipY: false)
       #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
 
     __modifiedShelf: () ->
+      if @scaleX != 0 && @__corner=='mr'
+         th = @angle * (Math.PI / 180)
+         @top = @top + Math.sin(th)*(@count*@__eachwidth()-@width*@scaleX)/2
+         @left = @left + Math.cos(th)*(@count*@__eachwidth()-@width*@scaleX)/2
+      if @scaleX != 0 && @__corner=='ml'
+         th = @angle * (Math.PI / 180)
+         @top = @top - Math.sin(th)*(@count*@__eachwidth()-@width*@scaleX)/2
+         @left = @left - Math.cos(th)*(@count*@__eachwidth()-@width*@scaleX)/2
       #log '__modifiedShelf'
       #log @scaleX
       #log @currentHeight
-      @width = @currentWidth
-      @scaleX = 1
-      @height = @currentHeight
-      @scaleY = 1
+      @scaleX = @scaleY = 1
+      @width = @count * @__eachwidth()
+      @height = @side * @__eachheight()
+      @setCoords()
 
     _renderDashedStroke: (ctx) ->
       x = -@width / 2
@@ -280,14 +292,14 @@
       i = 0
       k = 0
       count = @get("count")
-      row   = if @get("row")=='one' then 1 else 2
+      row = if @get("row") == 'one' then 1 else 2
       while i < count
 #        while k < row
         markup.push """<rect x="#{(-1 * @width / 2) + @width / count * i}" y="#{(-1 * @height / 2)}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@width / count}" height="#{@height}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
         #  k++
         i++
       markup.push "</g>"
-      
+
       (if reviver then reviver(markup.join("")) else markup.join(""))
 
     complexity: ->
