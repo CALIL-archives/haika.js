@@ -160,6 +160,7 @@ app =
     @objects[count].scaleX = object.scaleX / @scale
     @objects[count].scaleY = object.scaleY / @scale
     @objects[count].angle  = object.angle
+
     if object.type=='shelf'
       @objects[count].count = object.count
       @objects[count].side  = object.side
@@ -227,6 +228,12 @@ app =
       object.originY = 'center'
       object.fill = "#CFE2F3"
       object.stroke = "#000000"
+      object.padding = 0
+      object.transparentCorners = false
+      object.cornerColor = "#488BD4"
+      object.borderOpacityWhenMoving = 0.8
+      object.borderColor = "#000000"
+      object.cornerSize = 10
       object.setCoords()
       @canvas.add(object)
     if @scale==1 and @drawguideline

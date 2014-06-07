@@ -13,6 +13,7 @@ app.init(
   bgopacity: 1
   bgscale  : 4.425
 )
+
 $(window).resize ->
   app.canvas.setWidth(window.innerWidth)
   app.canvas.setHeight(window.innerHeight - 100)
