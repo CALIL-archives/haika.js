@@ -382,20 +382,63 @@ app = {
     this.centerX += x;
     return this.render();
   },
-  getSVG: function() {
-    var a, blob, canvas, svg, tmp_canvas;
+  toGeoJSON: function() {
+    var data, features, object, _i, _len, _ref;
+    features = [];
+    _ref = this.canvas.getObjects();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      features.push(object.toGeoJSON());
+    }
+    data = {
+      "type": "FeatureCollection",
+      "features": features
+    };
+    return JSON.stringify(data);
+  },
+  getGeoJSON: function() {
+    var a, blob, canvas, geojson, tmp_canvas, tmp_scale;
     this.unselect();
     canvas = document.createElement('canvas');
     canvas = new fabric.Canvas(canvas);
     canvas.setWidth(this.options.max_width);
     canvas.setHeight(this.options.max_height);
     tmp_canvas = this.canvas;
+    tmp_scale = this.scale;
     this.canvas = canvas;
+    this.scale = 1;
+    this.drawguideline = false;
+    this.render();
+    this.drawguideline = true;
+    geojson = this.toGeoJSON();
+    this.canvas = tmp_canvas;
+    this.scale = tmp_scale;
+    a = document.createElement('a');
+    a.download = 'sample.geojson';
+    a.type = 'application/json';
+    blob = new Blob([geojson], {
+      "type": "application/json"
+    });
+    a.href = (window.URL || webkitURL).createObjectURL(blob);
+    return a.click();
+  },
+  getSVG: function() {
+    var a, blob, canvas, svg, tmp_canvas, tmp_scale;
+    this.unselect();
+    canvas = document.createElement('canvas');
+    canvas = new fabric.Canvas(canvas);
+    canvas.setWidth(this.options.max_width);
+    canvas.setHeight(this.options.max_height);
+    tmp_canvas = this.canvas;
+    tmp_scale = this.scale;
+    this.canvas = canvas;
+    this.scale = 1;
     this.drawguideline = false;
     this.render();
     this.drawguideline = true;
     svg = this.canvas.toSVG();
     this.canvas = tmp_canvas;
+    this.scale = tmp_scale;
     a = document.createElement('a');
     a.download = 'sample.svg';
     a.type = 'image/svg+xml';

@@ -352,6 +352,29 @@
       }
       return object;
     },
+    toGeoJSON: function() {
+      var center, data, h, w, x, y;
+      w = this.__eachWidth() * this.count / 100;
+      h = this.__eachHeight() * this.side / 100;
+      log(h);
+      center = this.getCenterPoint();
+      log(center);
+      x = (-w / 2 * this.count + center.x) / 100;
+      y = (-h / 2 * this.side + center.y) / 100;
+      data = {
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]]
+        },
+        "properties": {
+          "count": this.count,
+          "side": this.side,
+          "center": this.getCenterPoint()
+        }
+      };
+      return data;
+    },
     toSVG: function(reviver) {
       var count, h, i, k, markup, side, w, x, y;
       markup = this._createBaseSVGMarkup();

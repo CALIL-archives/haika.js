@@ -93,6 +93,8 @@ $ ->
         app.canvas.renderAll()
   $(".svg").click ->
     app.getSVG()
+  $(".geojson").click ->
+    app.getGeoJSON()
   $(".reset").click ->
     localStorage.clear()
     location.reload()
