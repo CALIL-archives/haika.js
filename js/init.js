@@ -109,6 +109,9 @@ $(function() {
   $(".svg").click(function() {
     return app.getSVG();
   });
+  $(".geojson").click(function() {
+    return app.getGeoJSON();
+  });
   $(".reset").click(function() {
     localStorage.clear();
     return location.reload();

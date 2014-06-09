@@ -319,6 +319,41 @@ app =
     @unselect()
     @centerX += x
     @render()
+  toGeoJSON : ->
+    data = 
+      "type": "FeatureCollection"
+      "features": [
+        "type": "Feature"
+        "geometry":
+          "type": "Polygon",
+          "coordinates": [
+            [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0]]
+          ]
+        "properties": 
+          "count": 3
+          "side": 1
+      ]
+    return JSON.stringify(data)
+  getGeoJSON : ->
+    @unselect()
+#    canvas = document.createElement('canvas')
+#    canvas = new fabric.Canvas(canvas);
+#    canvas.setWidth @options.max_width
+#    canvas.setHeight @options.max_height
+#    tmp_canvas = @canvas
+#    @canvas = canvas
+#    @drawguideline = false
+#    @render()
+#    @drawguideline = true
+#    svg = @canvas.toSVG()
+#    @canvas = tmp_canvas
+    geojson = @toGeoJSON()
+    a = document.createElement('a')
+    a.download = 'sample.geojson'
+    a.type = 'application/json'
+    blob = new Blob([geojson], {"type": "application/json"})
+    a.href = (window.URL || webkitURL).createObjectURL(blob)
+    a.click()
   getSVG : ->
     @unselect()
     canvas = document.createElement('canvas')

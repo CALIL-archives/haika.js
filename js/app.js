@@ -382,6 +382,39 @@ app = {
     this.centerX += x;
     return this.render();
   },
+  toGeoJSON: function() {
+    var data;
+    data = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0]]]
+          },
+          "properties": {
+            "count": 3,
+            "side": 1
+          }
+        }
+      ]
+    };
+    return JSON.stringify(data);
+  },
+  getGeoJSON: function() {
+    var a, blob, geojson;
+    this.unselect();
+    geojson = this.toGeoJSON();
+    a = document.createElement('a');
+    a.download = 'sample.geojson';
+    a.type = 'application/json';
+    blob = new Blob([geojson], {
+      "type": "application/json"
+    });
+    a.href = (window.URL || webkitURL).createObjectURL(blob);
+    return a.click();
+  },
   getSVG: function() {
     var a, blob, canvas, svg, tmp_canvas;
     this.unselect();
