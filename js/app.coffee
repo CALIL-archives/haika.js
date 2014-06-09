@@ -66,8 +66,8 @@ app =
       @load()
     , 500
     @canvas.on('object:selected', (e)=>
+        #log 'selected'
         object = e.target
-        log 'selected'
         if object._objects?
           object.lockScalingX  = true
           object.lockScalingY  = true
@@ -78,8 +78,8 @@ app =
             @save_prop(object)
     )
     @canvas.on('before:selection:cleared', (e)=>
+      #log 'before_unselect'
       object = e.target
-      log 'before_unselect'
       @canvas.deactivateAll().renderAll()
       if object._objects?
         group = object
@@ -95,8 +95,8 @@ app =
         object.__resizeShelf()
 
     @canvas.on('object:modified', (e)=>
+        #log 'modified'
         object = e.target
-        log 'modified'
         if object.__modifiedShelf?
           object.__modifiedShelf()
     )
@@ -138,7 +138,7 @@ app =
     return o
   load : ()->
     objects = JSON.parse(localStorage.getItem('app_data'))
-    log objects
+#    log objects
     if objects
       for object in objects
         shelf = new fabric.Shelf(
@@ -153,7 +153,7 @@ app =
         @add(shelf)
     canvas = JSON.parse(localStorage.getItem('canvas'))
     if canvas
-      log canvas
+#      log canvas
       @scale   = canvas.scale
       $('.zoom').html((@scale*100).toFixed(0)+'%')
       @centerX = canvas.centerX
@@ -166,7 +166,6 @@ app =
       centerY : @centerY
     localStorage.setItem('canvas', JSON.stringify(canvas))
   save_prop : (object, group=false)->
-    log 'object.top:'+object.top
     count = object.id
     @objects[count].type  = object.type
     @objects[count].top_cm  = @transformY_px2cm(object.top)
@@ -219,15 +218,14 @@ app =
       @canvas.fire('before:selection:cleared', { target: object })
       @canvas.fire('selection:cleared', { target: object })
   render : ->
-    log 'render'
+#    log 'render'
     @unselect()
     @canvas.clear()
-    log @objects
+#    log @objects
     for i of @objects
-      log @objects[i].type
+#      log @objects[i].type
       if @objects[i].type=='shelf'
         object = new fabric.Shelf()
-        log @objects[i].count
         object.side  = @objects[i].side
         object.count = @objects[i].count
       if @objects[i].type=='curved_shelf'

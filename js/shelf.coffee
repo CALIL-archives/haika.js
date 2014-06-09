@@ -167,16 +167,22 @@
       if not @transformMatrix and isInPathGroup
         ctx.translate -@group.width / 2 + @width / 2 + @x, -@group.height / 2 + @height / 2 + @y
 
-      i = 0
-      while i < @count
-        if @side is 1
-          @__renderShelf ctx, x + i * w, y, w, h
-          if app.scale > 0.5
-            @__renderSide ctx, x + i * w, y, w, h
-        else if @side is 2
-          @__renderShelf ctx, x + i * w, y, w, h
-          @__renderShelf ctx, x + i * w, y + h, w, h
-        i++
+      if @side is 1
+        @__renderShelf ctx, x, y, w, h
+        if app.scale > 0.5
+          @__renderSide ctx, x, y, w, h
+      if @side is 2
+        @__renderShelf ctx, x, y, w, h
+#      i = 0
+#      while i < @count
+#        if @side is 1
+#          @__renderShelf ctx, x + i * w, y, w, h
+#          if app.scale > 0.5
+#            @__renderSide ctx, x + i * w, y, w, h
+#        if @side is 2
+#          @__renderShelf ctx, x + i * w, y, w, h
+#          @__renderShelf ctx, x + i * w, y + h, w, h
+#        i++
 
       #      ctx.lineWidth = 1
       #      ctx.globalAlpha = 1 #塗りつぶしの透明度設定
@@ -208,7 +214,15 @@
       return
 
     __renderShelf: (ctx, x, y, w, h) ->
+      total_width = w * @count
+      @__renderRect(ctx, x, y, total_width, h)
+      @__renderPartition(ctx, x, y, w, h)
+      if @side==2
+        @__renderRect(ctx, x, y+h, total_width, h)
+        @__renderPartition(ctx, x, y+h, w, h)
+    __renderRect: (ctx, x, y, w, h) ->
       ctx.beginPath()
+      ctx.strokeStyle = 'black'
       ctx.moveTo x, y
       ctx.lineWidth = 1
       ctx.lineTo x + w, y
@@ -218,12 +232,25 @@
       ctx.closePath()
       @_renderFill ctx
       @_renderStroke ctx
-
+    __renderPartition: (ctx, x, y, w, h) ->
+      if @count<=1
+        return
+      i = 1
+      while i < @count
+        ctx.beginPath()
+        ctx.strokeStyle = 'red'
+        ctx.lineWidth = 1
+        ctx.moveTo x + w * i, y
+        ctx.lineTo x + w * i, y + h
+        ctx.closePath()
+        @_renderFill ctx
+        @_renderStroke ctx
+        i++
     __renderSide: (ctx, x, y, w, h) ->
       ctx.beginPath()
       ctx.lineWidth = 5
       ctx.moveTo x, y + h - 1
-      ctx.lineTo x + w, y + h - 1
+      ctx.lineTo x + w * @count, y + h - 1
       ctx.closePath()
       @_renderFill ctx
       @_renderStroke ctx
@@ -287,9 +314,12 @@
         ry: @get("ry") or 0
         x: @get("x")
         y: @get("y")
+        count: @get("count")        
+        side: @get("side")
       )
-      @_removeDefaultValues object  unless @includeDefaultValues
-      object
+      if not @includeDefaultValues
+        @_removeDefaultValues object  
+      return object
 
     toSVG: (reviver) ->
       markup = @_createBaseSVGMarkup()
@@ -297,7 +327,7 @@
       i = 0
       k = 0
       count = @get("count")
-      row = if @get("row") == 'one' then 1 else 2
+      side  = @get("side")
       while i < count
 #        while k < row
         markup.push """<rect x="#{(-1 * @width / 2) + @width / count * i}" y="#{(-1 * @height / 2)}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@width / count}" height="#{@height}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""

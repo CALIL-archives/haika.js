@@ -75,7 +75,6 @@ app = {
     this.canvas.on('object:selected', function(e) {
       var object, _i, _len, _ref, _results;
       object = e.target;
-      log('selected');
       if (object._objects != null) {
         object.lockScalingX = true;
         object.lockScalingY = true;
@@ -95,7 +94,6 @@ app = {
     this.canvas.on('before:selection:cleared', function(e) {
       var group, object, objects, _i, _len, _results;
       object = e.target;
-      log('before_unselect');
       _this.canvas.deactivateAll().renderAll();
       if (object._objects != null) {
         group = object;
@@ -120,7 +118,6 @@ app = {
     this.canvas.on('object:modified', function(e) {
       var object;
       object = e.target;
-      log('modified');
       if (object.__modifiedShelf != null) {
         return object.__modifiedShelf();
       }
@@ -161,7 +158,6 @@ app = {
   load: function() {
     var canvas, object, objects, shelf, _i, _len;
     objects = JSON.parse(localStorage.getItem('app_data'));
-    log(objects);
     if (objects) {
       for (_i = 0, _len = objects.length; _i < _len; _i++) {
         object = objects[_i];
@@ -179,7 +175,6 @@ app = {
     }
     canvas = JSON.parse(localStorage.getItem('canvas'));
     if (canvas) {
-      log(canvas);
       this.scale = canvas.scale;
       $('.zoom').html((this.scale * 100).toFixed(0) + '%');
       this.centerX = canvas.centerX;
@@ -201,7 +196,6 @@ app = {
     if (group == null) {
       group = false;
     }
-    log('object.top:' + object.top);
     count = object.id;
     this.objects[count].type = object.type;
     this.objects[count].top_cm = this.transformY_px2cm(object.top);
@@ -275,15 +269,11 @@ app = {
   },
   render: function() {
     var i, object;
-    log('render');
     this.unselect();
     this.canvas.clear();
-    log(this.objects);
     for (i in this.objects) {
-      log(this.objects[i].type);
       if (this.objects[i].type === 'shelf') {
         object = new fabric.Shelf();
-        log(this.objects[i].count);
         object.side = this.objects[i].side;
         object.count = this.objects[i].count;
       }
