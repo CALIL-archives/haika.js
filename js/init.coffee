@@ -17,14 +17,18 @@ app.init(
 $(window).resize ->
   app.canvas.setWidth(window.innerWidth)
   app.canvas.setHeight(window.innerHeight - 100)
-  #app.canvas.setWidth(800)
-  #app.canvas.setHeight(600)
-  #app.centerX = -app.canvas.getWidth() / 2
-  #app.centerY = -app.canvas.getHeight() / 2
+#  app.canvas.setWidth(800)
+#  app.canvas.setHeight(600)
+#  app.centerX = -app.canvas.getWidth() / 2
+#  app.centerY = -app.canvas.getHeight() / 2
   app.render()
 
 add = (left=0, top=0)->
-  shelf = new fabric.Shelf(
+  if $('#type').val()=='shelf'
+    object = fabric.Shelf
+  if $('#type').val()=='curvedShelf'
+    object = fabric.curvedShelf
+  shelf = new object(
     count: parseInt($('#count').val())
     side: parseInt($('#side').val())
     top: app.transformX_cm2px(app.centerY)

@@ -6,12 +6,14 @@
     attributes
   fabric = global.fabric or (global.fabric = {})
   extend = fabric.util.object.extend
-  if fabric.Shelf
+  if fabric.curvedShelf
     console.warn "fabric.curvedShelf is already defined"
     return
+  stateProperties = fabric.Object::stateProperties.concat()
+  stateProperties.push "rx", "ry", "x", "y"
   fabric.curvedShelf = fabric.util.createClass(fabric.Object,
     stateProperties: stateProperties
-    type: "shelf"
+    type: "curved_shelf"
     rx: 0
     ry: 0
     x: 0
@@ -96,7 +98,7 @@
 
 
         label = if @side==1 then "単式" else "複式"
-        label = "[" + @id + "] " + label + @count + "連"
+        label = "カーブ[" + @id + "] " + label + @count + "連"
         ctx.fillText(label,0,(@height*@scaleY)/2+15);
 
       #if app.scale > 0.5

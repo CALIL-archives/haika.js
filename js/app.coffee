@@ -222,6 +222,7 @@ app =
     log 'render'
     @unselect()
     @canvas.clear()
+    log @objects
     for i of @objects
       log @objects[i].type
       if @objects[i].type=='shelf'
@@ -229,6 +230,8 @@ app =
         log @objects[i].count
         object.side  = @objects[i].side
         object.count = @objects[i].count
+      if @objects[i].type=='curved_shelf'
+        object = new fabric.curvedShelf()
       object.id     = @objects[i].id
       object.scaleX = 1
       object.scaleY = 1
