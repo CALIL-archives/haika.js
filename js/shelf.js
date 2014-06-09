@@ -125,6 +125,8 @@
     ry: 0,
     x: 0,
     y: 0,
+    __const_width: 90,
+    __const_hegiht: 25,
     __width: function() {
       return this.__eachWidth() * this.count;
     },
@@ -132,10 +134,10 @@
       return this.__eachHeight() * this.side;
     },
     __eachWidth: function() {
-      return 90 * app.scale;
+      return this.__const_width * app.scale;
     },
     __eachHeight: function() {
-      return 25 * app.scale;
+      return this.__const_hegiht * app.scale;
     },
     count: 1,
     side: 1,
@@ -209,15 +211,14 @@
       var total_width;
       total_width = w * this.count;
       this.__renderRect(ctx, x, y, total_width, h);
-      this.__renderPartition(ctx, x, y, w, h);
+      this.__renderPartitionLine(ctx, x, y, w, h);
       if (this.side === 2) {
         this.__renderRect(ctx, x, y + h, total_width, h);
-        return this.__renderPartition(ctx, x, y + h, w, h);
+        return this.__renderPartitionLine(ctx, x, y + h, w, h);
       }
     },
     __renderRect: function(ctx, x, y, w, h) {
       ctx.beginPath();
-      ctx.strokeStyle = 'black';
       ctx.moveTo(x, y);
       ctx.lineWidth = 1;
       ctx.lineTo(x + w, y);
@@ -228,7 +229,7 @@
       this._renderFill(ctx);
       return this._renderStroke(ctx);
     },
-    __renderPartition: function(ctx, x, y, w, h) {
+    __renderPartitionLine: function(ctx, x, y, w, h) {
       var i, _results;
       if (this.count <= 1) {
         return;
@@ -237,7 +238,6 @@
       _results = [];
       while (i < this.count) {
         ctx.beginPath();
-        ctx.strokeStyle = 'red';
         ctx.lineWidth = 1;
         ctx.moveTo(x + w * i, y);
         ctx.lineTo(x + w * i, y + h);
@@ -353,16 +353,27 @@
       return object;
     },
     toSVG: function(reviver) {
-      var count, i, k, markup, side;
+      var count, h, i, k, markup, side, w, x, y;
       markup = this._createBaseSVGMarkup();
       markup.push("<g>");
-      i = 0;
-      k = 0;
       count = this.get("count");
       side = this.get("side");
+      w = this.__const_width;
+      h = this.__const_hegiht;
+      x = -w / 2 * this.count;
+      y = -h / 2 * this.side;
+      i = 0;
+      k = 0;
       while (i < count) {
-        markup.push("<rect x=\"" + ((-1 * this.width / 2) + this.width / count * i) + "\" y=\"" + (-1 * this.height / 2) + "\" rx=\"" + (this.get("rx")) + "\" ry=\"" + (this.get("ry")) + "\" width=\"" + (this.width / count) + "\" height=\"" + this.height + "\" style=\"" + (this.getSvgStyles()) + "\" transform=\"" + (this.getSvgTransform()) + "\"/>");
+        markup.push("<rect x=\"" + ((-1 * this.width / 2) + this.width / count * i) + "\" y=\"" + (-1 * this.height / 2) + "\" rx=\"" + (this.get("rx")) + "\" ry=\"" + (this.get("ry")) + "\" width=\"" + (this.width / count) + "\" height=\"" + (this.height / 2) + "\" style=\"" + (this.getSvgStyles()) + "\" transform=\"" + (this.getSvgTransform()) + "\"/>");
         i++;
+      }
+      if (side === 2) {
+        i = 0;
+        while (i < count) {
+          markup.push("<rect x=\"" + ((-1 * this.width / 2) + this.width / count * i) + "\" y=\"" + ((-1 * this.height / 2) + this.__const_hegiht) + "\" rx=\"" + (this.get("rx")) + "\" ry=\"" + (this.get("ry")) + "\" width=\"" + (this.width / count) + "\" height=\"" + (this.height / 2) + "\" style=\"" + (this.getSvgStyles()) + "\" transform=\"" + (this.getSvgTransform()) + "\"/>");
+          i++;
+        }
       }
       markup.push("</g>");
       if (reviver) {

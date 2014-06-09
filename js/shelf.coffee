@@ -114,14 +114,16 @@
     ry: 0
     x: 0
     y: 0
+    __const_width: 90
+    __const_hegiht: 25
     __width: ->
       @__eachWidth() * @count
     __height: ->
       @__eachHeight() * @side
     __eachWidth: ->
-      90 * app.scale
+      @__const_width * app.scale
     __eachHeight: ->
-      25 * app.scale
+      @__const_hegiht * app.scale
     count: 1
     side: 1
     minScaleLimit: 1
@@ -173,16 +175,6 @@
           @__renderSide ctx, x, y, w, h
       if @side is 2
         @__renderShelf ctx, x, y, w, h
-#      i = 0
-#      while i < @count
-#        if @side is 1
-#          @__renderShelf ctx, x + i * w, y, w, h
-#          if app.scale > 0.5
-#            @__renderSide ctx, x + i * w, y, w, h
-#        if @side is 2
-#          @__renderShelf ctx, x + i * w, y, w, h
-#          @__renderShelf ctx, x + i * w, y + h, w, h
-#        i++
 
       #      ctx.lineWidth = 1
       #      ctx.globalAlpha = 1 #塗りつぶしの透明度設定
@@ -216,13 +208,12 @@
     __renderShelf: (ctx, x, y, w, h) ->
       total_width = w * @count
       @__renderRect(ctx, x, y, total_width, h)
-      @__renderPartition(ctx, x, y, w, h)
+      @__renderPartitionLine(ctx, x, y, w, h)
       if @side==2
         @__renderRect(ctx, x, y+h, total_width, h)
-        @__renderPartition(ctx, x, y+h, w, h)
+        @__renderPartitionLine(ctx, x, y+h, w, h)
     __renderRect: (ctx, x, y, w, h) ->
       ctx.beginPath()
-      ctx.strokeStyle = 'black'
       ctx.moveTo x, y
       ctx.lineWidth = 1
       ctx.lineTo x + w, y
@@ -232,13 +223,12 @@
       ctx.closePath()
       @_renderFill ctx
       @_renderStroke ctx
-    __renderPartition: (ctx, x, y, w, h) ->
+    __renderPartitionLine: (ctx, x, y, w, h) ->
       if @count<=1
         return
       i = 1
       while i < @count
         ctx.beginPath()
-        ctx.strokeStyle = 'red'
         ctx.lineWidth = 1
         ctx.moveTo x + w * i, y
         ctx.lineTo x + w * i, y + h
@@ -324,19 +314,29 @@
     toSVG: (reviver) ->
       markup = @_createBaseSVGMarkup()
       markup.push("<g>")
-      i = 0
-      k = 0
       count = @get("count")
       side  = @get("side")
+      w = @__const_width
+      h = @__const_hegiht
+      x = -w / 2 * @count
+      y = -h / 2 * @side
+      i = 0
+      k = 0
       while i < count
 #        while k < row
-        markup.push """<rect x="#{(-1 * @width / 2) + @width / count * i}" y="#{(-1 * @height / 2)}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@width / count}" height="#{@height}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
-        #  k++
+#        markup.push """<rect x="#{x}" y="#{y}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@w}" height="#{@h}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
+        markup.push """<rect x="#{(-1 * @width / 2) + @width / count * i}" y="#{(-1 * @height / 2)}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@width / count}" height="#{@height / 2}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
         i++
+      if side==2
+        i = 0
+        while i < count
+#          markup.push """<rect x="#{x}" y="#{y}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@w}" height="#{@h}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
+          markup.push """<rect x="#{(-1 * @width / 2) + @width / count * i}" y="#{(-1 * @height / 2) + @__const_hegiht}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@width / count}" height="#{@height / 2}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
+          i++
       markup.push "</g>"
 
       (if reviver then reviver(markup.join("")) else markup.join(""))
-
+    
     complexity: ->
       1
   )
