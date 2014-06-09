@@ -320,34 +320,29 @@ app =
     @centerX += x
     @render()
   toGeoJSON : ->
+    features = []
+    for object in @canvas.getObjects()
+      features.push(object.toGeoJSON())
     data = 
       "type": "FeatureCollection"
-      "features": [
-        "type": "Feature"
-        "geometry":
-          "type": "Polygon",
-          "coordinates": [
-            [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0]]
-          ]
-        "properties": 
-          "count": 3
-          "side": 1
-      ]
+      "features": features
     return JSON.stringify(data)
   getGeoJSON : ->
     @unselect()
-#    canvas = document.createElement('canvas')
-#    canvas = new fabric.Canvas(canvas);
-#    canvas.setWidth @options.max_width
-#    canvas.setHeight @options.max_height
-#    tmp_canvas = @canvas
-#    @canvas = canvas
-#    @drawguideline = false
-#    @render()
-#    @drawguideline = true
-#    svg = @canvas.toSVG()
-#    @canvas = tmp_canvas
+    canvas = document.createElement('canvas')
+    canvas = new fabric.Canvas(canvas);
+    canvas.setWidth @options.max_width
+    canvas.setHeight @options.max_height
+    tmp_canvas = @canvas
+    tmp_scale = @scale
+    @canvas = canvas
+    @scale = 1
+    @drawguideline = false
+    @render()
+    @drawguideline = true
     geojson = @toGeoJSON()
+    @canvas = tmp_canvas
+    @scale = tmp_scale
     a = document.createElement('a')
     a.download = 'sample.geojson'
     a.type = 'application/json'
@@ -361,12 +356,15 @@ app =
     canvas.setWidth @options.max_width
     canvas.setHeight @options.max_height
     tmp_canvas = @canvas
+    tmp_scale = @scale
     @canvas = canvas
+    @scale = 1
     @drawguideline = false
     @render()
     @drawguideline = true
     svg = @canvas.toSVG()
     @canvas = tmp_canvas
+    @scale = tmp_scale
     a = document.createElement('a')
     a.download = 'sample.svg'
     a.type = 'image/svg+xml'

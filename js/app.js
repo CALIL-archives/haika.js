@@ -383,29 +383,36 @@ app = {
     return this.render();
   },
   toGeoJSON: function() {
-    var data;
+    var data, features, object, _i, _len, _ref;
+    features = [];
+    _ref = this.canvas.getObjects();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      features.push(object.toGeoJSON());
+    }
     data = {
       "type": "FeatureCollection",
-      "features": [
-        {
-          "type": "Feature",
-          "geometry": {
-            "type": "Polygon",
-            "coordinates": [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0]]]
-          },
-          "properties": {
-            "count": 3,
-            "side": 1
-          }
-        }
-      ]
+      "features": features
     };
     return JSON.stringify(data);
   },
   getGeoJSON: function() {
-    var a, blob, geojson;
+    var a, blob, canvas, geojson, tmp_canvas, tmp_scale;
     this.unselect();
+    canvas = document.createElement('canvas');
+    canvas = new fabric.Canvas(canvas);
+    canvas.setWidth(this.options.max_width);
+    canvas.setHeight(this.options.max_height);
+    tmp_canvas = this.canvas;
+    tmp_scale = this.scale;
+    this.canvas = canvas;
+    this.scale = 1;
+    this.drawguideline = false;
+    this.render();
+    this.drawguideline = true;
     geojson = this.toGeoJSON();
+    this.canvas = tmp_canvas;
+    this.scale = tmp_scale;
     a = document.createElement('a');
     a.download = 'sample.geojson';
     a.type = 'application/json';
@@ -416,19 +423,22 @@ app = {
     return a.click();
   },
   getSVG: function() {
-    var a, blob, canvas, svg, tmp_canvas;
+    var a, blob, canvas, svg, tmp_canvas, tmp_scale;
     this.unselect();
     canvas = document.createElement('canvas');
     canvas = new fabric.Canvas(canvas);
     canvas.setWidth(this.options.max_width);
     canvas.setHeight(this.options.max_height);
     tmp_canvas = this.canvas;
+    tmp_scale = this.scale;
     this.canvas = canvas;
+    this.scale = 1;
     this.drawguideline = false;
     this.render();
     this.drawguideline = true;
     svg = this.canvas.toSVG();
     this.canvas = tmp_canvas;
+    this.scale = tmp_scale;
     a = document.createElement('a');
     a.download = 'sample.svg';
     a.type = 'image/svg+xml';
