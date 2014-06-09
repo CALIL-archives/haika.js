@@ -115,12 +115,12 @@
     x: 0
     y: 0
     __width: ->
-      @__eachwidth() * @count
+      @__eachWidth() * @count
     __height: ->
-      @__eachheight() * @side
-    __eachwidth: ->
+      @__eachHeight() * @side
+    __eachWidth: ->
       90 * app.scale
-    __eachheight: ->
+    __eachHeight: ->
       25 * app.scale
     count: 1
     side: 1
@@ -150,10 +150,12 @@
       ctx.scale 1 / @scaleX, 1 / @scaleY
       #スケール変更中は位置をドラックした反対側に寄せる
       sx=0
-      if @scaleX != 0 && @__corner=='mr' then sx=(@count*@__eachwidth()-@width*@scaleX)/2
-      if @scaleX != 0 && @__corner=='ml' then sx=-1*(@count*@__eachwidth()-@width*@scaleX)/2
-      w = @__eachwidth() #/ @scaleX
-      h = @__eachheight() #/ @scaleY
+      if @scaleX != 0 && (@__corner=='mr' || @__corner=='tr' || @__corner=='br')
+          sx=(@count*@__eachWidth()-@width*@scaleX)/2
+      if @scaleX != 0 && (@__corner=='ml' || @__corner=='tl' || @__corner=='bl')
+          sx=-1*(@count*@__eachWidth()-@width*@scaleX)/2
+      w = @__eachWidth()
+      h = @__eachHeight()
       x = -w / 2 * @count + sx
       y = -h / 2 * @side
       isInPathGroup = @group and @group.type is "path-group"
@@ -184,20 +186,23 @@
       #      ctx.arc(@width-@width/2-10,-@height/2+@height/2/@side,1,0,2*Math.PI,true)
       #      @_renderFill ctx
       #      @_renderStroke ctx
-
-      ctx.font = "20px Arial";
-      ctx.textAlign = "right"
-      ctx.textBaseline = "middle"
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-      ctx.fillText(@__corner, @width - @width / 2 - 10, -@height / 2 + @height / 2 / @side);
-
-
-      if app.scale > 0.5
-        ctx.font = "30px FontAwesome";
-        ctx.textAlign = "right"
+      if @active
+        ctx.font = "13.5px Arial";
+        ctx.textAlign = "center"
         ctx.textBaseline = "middle"
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-        ctx.fillText("\uf177", @width - @width / 2 - 10, -@height / 2 + @height / 2 / @side);
+        ctx.fillStyle = 'rgba(0, 0, 0,1)';
+
+
+        label = if @side==1 then "単式" else "複式"
+        label = "[" + @id + "] " + label + @count + "連"
+        ctx.fillText(label,0,(@height*@scaleY)/2+15);
+
+      #if app.scale > 0.5
+      #  ctx.font = "30px FontAwesome";
+      #  ctx.textAlign = "right"
+      #  ctx.textBaseline = "middle"
+      #  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      #  ctx.fillText("\uf177", @width - @width / 2 - 10, -@height / 2 + @height / 2 / @side);
 
       ctx.scale @scaleX, @scaleY
       return
@@ -226,30 +231,34 @@
     __resizeShelf: () ->
       actualWidth = @scaleX * @currentWidth
       actualHeight = @scaleY * @currentHeight
-      count = Math.floor(actualWidth / @__eachwidth())
+      count = Math.floor(actualWidth / @__eachWidth())
       if count < 1 then count = 1
       if count > 10 then count = 10
-      side = Math.round(actualHeight / @__eachheight())
+      side = Math.round(actualHeight / @__eachHeight())
       if side < 1 then side = 1
       if side > 2 then side = 2
       @set(count: count, side: side, minScaleLimit: 0.01, flipX: false, flipY: false)
       #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
 
     __modifiedShelf: () ->
-      if @scaleX != 0 && @__corner=='mr'
-         th = @angle * (Math.PI / 180)
-         @top = @top + Math.sin(th)*(@count*@__eachwidth()-@width*@scaleX)/2
-         @left = @left + Math.cos(th)*(@count*@__eachwidth()-@width*@scaleX)/2
-      if @scaleX != 0 && @__corner=='ml'
-         th = @angle * (Math.PI / 180)
-         @top = @top - Math.sin(th)*(@count*@__eachwidth()-@width*@scaleX)/2
-         @left = @left - Math.cos(th)*(@count*@__eachwidth()-@width*@scaleX)/2
       #log '__modifiedShelf'
-      #log @scaleX
-      #log @currentHeight
+      @angle = @angle % 360
+      if @angle >=350 || @angle <= 10 then @angle=0
+      if @angle >=80  && @angle <= 100 then @angle=90
+      if @angle >=170 && @angle <=190 then @angle=180
+      if @angle >=260 && @angle <=280 then @angle=270
+
+      if @scaleX != 0 && (@__corner=='mr' || @__corner=='tr' || @__corner=='br')
+         th = @angle * (Math.PI / 180)
+         @top = @top + Math.sin(th)*(@count*@__eachWidth()-@width*@scaleX)/2
+         @left = @left + Math.cos(th)*(@count*@__eachWidth()-@width*@scaleX)/2
+      if @scaleX != 0 && (@__corner=='ml' || @__corner=='tl' || @__corner=='bl')
+         th = @angle * (Math.PI / 180)
+         @top = @top - Math.sin(th)*(@count*@__eachWidth()-@width*@scaleX)/2
+         @left = @left - Math.cos(th)*(@count*@__eachWidth()-@width*@scaleX)/2
       @scaleX = @scaleY = 1
-      @width = @count * @__eachwidth()
-      @height = @side * @__eachheight()
+      @width = @__width()
+      @height = @__height()
       @setCoords()
 
     _renderDashedStroke: (ctx) ->

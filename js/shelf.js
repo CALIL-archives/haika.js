@@ -124,15 +124,15 @@
     x: 0,
     y: 0,
     __width: function() {
-      return this.__eachwidth() * this.count;
+      return this.__eachWidth() * this.count;
     },
     __height: function() {
-      return this.__eachheight() * this.side;
+      return this.__eachHeight() * this.side;
     },
-    __eachwidth: function() {
+    __eachWidth: function() {
       return 90 * app.scale;
     },
-    __eachheight: function() {
+    __eachHeight: function() {
       return 25 * app.scale;
     },
     count: 1,
@@ -158,21 +158,21 @@
       }
     },
     _render: function(ctx) {
-      var h, i, isInPathGroup, sx, w, x, y;
+      var h, i, isInPathGroup, label, sx, w, x, y;
       if (this.width === 1 && this.height === 1) {
         ctx.fillRect(0, 0, 1, 1);
         return;
       }
       ctx.scale(1 / this.scaleX, 1 / this.scaleY);
       sx = 0;
-      if (this.scaleX !== 0 && this.__corner === 'mr') {
-        sx = (this.count * this.__eachwidth() - this.width * this.scaleX) / 2;
+      if (this.scaleX !== 0 && (this.__corner === 'mr' || this.__corner === 'tr' || this.__corner === 'br')) {
+        sx = (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
       }
-      if (this.scaleX !== 0 && this.__corner === 'ml') {
-        sx = -1 * (this.count * this.__eachwidth() - this.width * this.scaleX) / 2;
+      if (this.scaleX !== 0 && (this.__corner === 'ml' || this.__corner === 'tl' || this.__corner === 'bl')) {
+        sx = -1 * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
       }
-      w = this.__eachwidth();
-      h = this.__eachheight();
+      w = this.__eachWidth();
+      h = this.__eachHeight();
       x = -w / 2 * this.count + sx;
       y = -h / 2 * this.side;
       isInPathGroup = this.group && this.group.type === "path-group";
@@ -196,17 +196,14 @@
         }
         i++;
       }
-      ctx.font = "20px Arial";
-      ctx.textAlign = "right";
-      ctx.textBaseline = "middle";
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-      ctx.fillText(this.__corner, this.width - this.width / 2 - 10, -this.height / 2 + this.height / 2 / this.side);
-      if (app.scale > 0.5) {
-        ctx.font = "30px FontAwesome";
-        ctx.textAlign = "right";
+      if (this.active) {
+        ctx.font = "13.5px Arial";
+        ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-        ctx.fillText("\uf177", this.width - this.width / 2 - 10, -this.height / 2 + this.height / 2 / this.side);
+        ctx.fillStyle = 'rgba(0, 0, 0,1)';
+        label = this.side === 1 ? "単式" : "複式";
+        label = "[" + this.id + "] " + label + this.count + "連";
+        ctx.fillText(label, 0, (this.height * this.scaleY) / 2 + 15);
       }
       ctx.scale(this.scaleX, this.scaleY);
     },
@@ -235,14 +232,14 @@
       var actualHeight, actualWidth, count, side;
       actualWidth = this.scaleX * this.currentWidth;
       actualHeight = this.scaleY * this.currentHeight;
-      count = Math.floor(actualWidth / this.__eachwidth());
+      count = Math.floor(actualWidth / this.__eachWidth());
       if (count < 1) {
         count = 1;
       }
       if (count > 10) {
         count = 10;
       }
-      side = Math.round(actualHeight / this.__eachheight());
+      side = Math.round(actualHeight / this.__eachHeight());
       if (side < 1) {
         side = 1;
       }
@@ -259,19 +256,32 @@
     },
     __modifiedShelf: function() {
       var th;
-      if (this.scaleX !== 0 && this.__corner === 'mr') {
-        th = this.angle * (Math.PI / 180);
-        this.top = this.top + Math.sin(th) * (this.count * this.__eachwidth() - this.width * this.scaleX) / 2;
-        this.left = this.left + Math.cos(th) * (this.count * this.__eachwidth() - this.width * this.scaleX) / 2;
+      this.angle = this.angle % 360;
+      if (this.angle >= 350 || this.angle <= 10) {
+        this.angle = 0;
       }
-      if (this.scaleX !== 0 && this.__corner === 'ml') {
+      if (this.angle >= 80 && this.angle <= 100) {
+        this.angle = 90;
+      }
+      if (this.angle >= 170 && this.angle <= 190) {
+        this.angle = 180;
+      }
+      if (this.angle >= 260 && this.angle <= 280) {
+        this.angle = 270;
+      }
+      if (this.scaleX !== 0 && (this.__corner === 'mr' || this.__corner === 'tr' || this.__corner === 'br')) {
         th = this.angle * (Math.PI / 180);
-        this.top = this.top - Math.sin(th) * (this.count * this.__eachwidth() - this.width * this.scaleX) / 2;
-        this.left = this.left - Math.cos(th) * (this.count * this.__eachwidth() - this.width * this.scaleX) / 2;
+        this.top = this.top + Math.sin(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
+        this.left = this.left + Math.cos(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
+      }
+      if (this.scaleX !== 0 && (this.__corner === 'ml' || this.__corner === 'tl' || this.__corner === 'bl')) {
+        th = this.angle * (Math.PI / 180);
+        this.top = this.top - Math.sin(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
+        this.left = this.left - Math.cos(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
       }
       this.scaleX = this.scaleY = 1;
-      this.width = this.count * this.__eachwidth();
-      this.height = this.side * this.__eachheight();
+      this.width = this.__width();
+      this.height = this.__height();
       return this.setCoords();
     },
     _renderDashedStroke: function(ctx) {

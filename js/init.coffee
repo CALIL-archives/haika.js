@@ -10,7 +10,7 @@ app.init(
   #bgurl  : 'http://office.nanzan-u.ac.jp/TOSHOKAN/publication/bulletin/kiyo7/03-01.jpg'
   bgurl  : 'img/meidai2.png'
   #bgurl  : 'img/sample.png'
-  bgopacity: 1
+  bgopacity: 0.2
   bgscale  : 4.425
 )
 

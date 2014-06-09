@@ -9,7 +9,7 @@ app.init({
   max_width: 10000,
   max_height: 10000,
   bgurl: 'img/meidai2.png',
-  bgopacity: 1,
+  bgopacity: 0.2,
   bgscale: 4.425
 });
 

@@ -38,6 +38,20 @@ app =
     $('#canvas_width').val(@options.canvas_width)
     canvas.setHeight(@options.canvas_height)
     $('#canvas_height').val(@options.canvas_height)
+
+
+    canvas._getActionFromCorner = (target, corner) ->
+      action = 'drag'
+      if corner
+        if corner == 'ml' || corner == 'mr' || corner == 'tr' || corner == 'tl' || corner == 'bl' || corner == 'br'
+          action='scaleX'
+        else if corner == 'mt' || corner == 'mb'
+          action='scaleY'
+        else if corner == 'mtr'
+          action='rotate'
+      return action
+
+
     initAligningGuidelines(canvas)
     #initCenteringGuidelines(canvas)
     @canvas = canvas

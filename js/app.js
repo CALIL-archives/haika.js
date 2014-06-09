@@ -44,6 +44,20 @@ app = {
     $('#canvas_width').val(this.options.canvas_width);
     canvas.setHeight(this.options.canvas_height);
     $('#canvas_height').val(this.options.canvas_height);
+    canvas._getActionFromCorner = function(target, corner) {
+      var action;
+      action = 'drag';
+      if (corner) {
+        if (corner === 'ml' || corner === 'mr' || corner === 'tr' || corner === 'tl' || corner === 'bl' || corner === 'br') {
+          action = 'scaleX';
+        } else if (corner === 'mt' || corner === 'mb') {
+          action = 'scaleY';
+        } else if (corner === 'mtr') {
+          action = 'rotate';
+        }
+      }
+      return action;
+    };
     initAligningGuidelines(canvas);
     this.canvas = canvas;
     this.scale = options.scale;
