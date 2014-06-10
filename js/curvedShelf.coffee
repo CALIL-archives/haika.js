@@ -52,46 +52,27 @@
         ctx.fillRect 0, 0, 1, 1
         return
       ctx.scale 1 / @scaleX, 1 / @scaleY
-      #スケール変更中は位置をドラックした反対側に寄せる
-      sx=0
-      if @scaleX != 0 && (@__corner=='mr' || @__corner=='tr' || @__corner=='br')
-          sx=(@count*@__eachWidth()-@width*@scaleX)/2
-      if @scaleX != 0 && (@__corner=='ml' || @__corner=='tl' || @__corner=='bl')
-          sx=-1*(@count*@__eachWidth()-@width*@scaleX)/2
-      w = @__eachWidth()
-      h = @__eachHeight()
-      x = -w / 2 * @count + sx
-      y = -h / 2 * @side
-      isInPathGroup = @group and @group.type is "path-group"
-      ctx.globalAlpha = (if isInPathGroup then (ctx.globalAlpha * @opacity) else @opacity)
-      if @transformMatrix and isInPathGroup
-        ctx.translate @width / 2 + @x, @height / 2 + @y
-      if not @transformMatrix and isInPathGroup
-        ctx.translate -@group.width / 2 + @width / 2 + @x, -@group.height / 2 + @height / 2 + @y
 
-      i = 0
-      while i < @count
-        if @side is 1
-          @__renderShelf ctx, x + i * w, y, w, h
-          if app.scale > 0.5
-            @__renderSide ctx, x + i * w, y, w, h
-        else if @side is 2
-          @__renderShelf ctx, x + i * w, y, w, h
-          @__renderShelf ctx, x + i * w, y + h, w, h
-        i++
+      arcStart = (180 - 30 * @count) / 2 * Math.PI / 180
+      arcEnd = arcStart + 30 * @count * Math.PI / 180
+      arcX = 0
+      arcY = 0
+
+      #天面を描画
+      ctx.beginPath()
+      ctx.arc(arcX, arcY, @height * @scaleY / 2, arcStart, arcEnd, false);
+      rad = @height * @scaleY / 2 - @__eachHeight() * @side
+      if rad <= 10 then rad = 10
+      if  30 * @count < 360
+          ctx.arc(arcX, arcY, rad, arcEnd,arcStart, true);
+      ctx.closePath()
+      @_renderFill ctx
+      @_renderStroke ctx
 
       ctx.beginPath()
-      ctx.arc(sx, 0, @height*@scaleY/2, 0, 30*@count * Math.PI / 180, false);
-      ctx.stroke()
-      ctx.beginPath()
-      rad = @height*@scaleY/2-@__eachHeight()*1
-      if rad <= 10 then rad=10
-      ctx.arc(sx, 0, rad, 0, 30*@count * Math.PI / 180, false);
-      ctx.stroke()
-      ctx.beginPath()
-      rad = @height*@scaleY/2-@__eachHeight()*@side
-      if rad <= 10 then rad=10
-      ctx.arc(sx, 0, rad, 0, 30*@count * Math.PI / 180, false);
+      rad = @height * @scaleY / 2 - @__eachHeight() * 1
+      if rad <= 10 then rad = 10
+      ctx.arc(arcX, arcY, rad, arcStart, arcEnd, false);
       ctx.stroke()
 
       if @active
@@ -99,77 +80,35 @@
         ctx.textAlign = "center"
         ctx.textBaseline = "middle"
         ctx.fillStyle = 'rgba(0, 0, 0,1)';
-        label = if @side==1 then "単式" else "複式"
-        label = "カーブ[" + @id + "] " + label + @count + "連"
-        ctx.fillText(label,0,(@height*@scaleY)/2+15);
+        label = if @side == 1 then "曲面単式" else "曲面複式"
+        label = "[" + @id + "] " + label + @count + "連"
+        ctx.fillText(label, 0, (@height * @scaleY) / 2 + 15);
       ctx.scale @scaleX, @scaleY
       return
-
-    __renderShelf: (ctx, x, y, w, h) ->
-      ctx.beginPath()
-      ctx.moveTo x, y
-      ctx.lineWidth = 1
-      ctx.lineTo x + w, y
-      ctx.lineTo x + w, y + h
-      ctx.lineTo x, y + h
-      ctx.lineTo x, y
-      ctx.closePath()
-      @_renderFill ctx
-      @_renderStroke ctx
-
-    __renderSide: (ctx, x, y, w, h) ->
-      ctx.beginPath()
-      ctx.lineWidth = 5
-      ctx.moveTo x, y + h - 1
-      ctx.lineTo x + w, y + h - 1
-      ctx.closePath()
-      @_renderFill ctx
-      @_renderStroke ctx
 
     __resizeShelf: () ->
       actualWidth = @scaleX * @currentWidth
       actualHeight = @scaleY * @currentHeight
       count = Math.floor(actualWidth / @__eachWidth())
       if count < 1 then count = 1
-      if count > 10 then count = 10
+      if count > 20 then count = 20
       side = Math.round(actualHeight / @__eachHeight())
       if side < 1 then side = 1
       if side > 2 then side = 2
       @set(count: count, side: side, minScaleLimit: 0.01, flipX: false, flipY: false)
-      #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
+  #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
 
     __modifiedShelf: () ->
       #log '__modifiedShelf'
       @angle = @angle % 360
-      if @angle >=350 || @angle <= 10 then @angle=0
-      if @angle >=80  && @angle <=100 then @angle=90
-      if @angle >=170 && @angle <=190 then @angle=180
-      if @angle >=260 && @angle <=280 then @angle=270
-      if @scaleX != 0 && (@__corner=='mr' || @__corner=='tr' || @__corner=='br')
-         th = @angle * (Math.PI / 180)
-         @top = @top + Math.sin(th)*(@count*@__eachWidth()-@width*@scaleX)/2
-         @left = @left + Math.cos(th)*(@count*@__eachWidth()-@width*@scaleX)/2
-      if @scaleX != 0 && (@__corner=='ml' || @__corner=='tl' || @__corner=='bl')
-         th = @angle * (Math.PI / 180)
-         @top = @top - Math.sin(th)*(@count*@__eachWidth()-@width*@scaleX)/2
-         @left = @left - Math.cos(th)*(@count*@__eachWidth()-@width*@scaleX)/2
+      if @angle >= 350 || @angle <= 10 then @angle = 0
+      if @angle >= 80 && @angle <= 100 then @angle = 90
+      if @angle >= 170 && @angle <= 190 then @angle = 180
+      if @angle >= 260 && @angle <= 280 then @angle = 270
       @height = @height * @scaleY
       @scaleX = @scaleY = 1
-      @width  = @__width()
+      @width = @__width()
       @setCoords()
-
-    _renderDashedStroke: (ctx) ->
-      x = -@width / 2
-      y = -@height / 2
-      w = @width
-      h = @height
-      ctx.beginPath()
-      fabric.util.drawDashedLine ctx, x, y, x + w, y, @strokeDashArray
-      fabric.util.drawDashedLine ctx, x + w, y, x + w, y + h, @strokeDashArray
-      fabric.util.drawDashedLine ctx, x + w, y + h, x, y + h, @strokeDashArray
-      fabric.util.drawDashedLine ctx, x, y + h, x, y, @strokeDashArray
-      ctx.closePath()
-      return
 
     _normalizeLeftTopProperties: (parsedAttributes) ->
       @set "left", parsedAttributes.left + @getWidth() / 2  if "left" of parsedAttributes

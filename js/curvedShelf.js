@@ -57,92 +57,45 @@
       }
     },
     _render: function(ctx) {
-      var h, i, isInPathGroup, label, rad, sx, w, x, y;
+      var arcEnd, arcStart, arcX, arcY, label, rad;
       if (this.width === 1 && this.height === 1) {
         ctx.fillRect(0, 0, 1, 1);
         return;
       }
       ctx.scale(1 / this.scaleX, 1 / this.scaleY);
-      sx = 0;
-      if (this.scaleX !== 0 && (this.__corner === 'mr' || this.__corner === 'tr' || this.__corner === 'br')) {
-        sx = (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
-      }
-      if (this.scaleX !== 0 && (this.__corner === 'ml' || this.__corner === 'tl' || this.__corner === 'bl')) {
-        sx = -1 * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
-      }
-      w = this.__eachWidth();
-      h = this.__eachHeight();
-      x = -w / 2 * this.count + sx;
-      y = -h / 2 * this.side;
-      isInPathGroup = this.group && this.group.type === "path-group";
-      ctx.globalAlpha = (isInPathGroup ? ctx.globalAlpha * this.opacity : this.opacity);
-      if (this.transformMatrix && isInPathGroup) {
-        ctx.translate(this.width / 2 + this.x, this.height / 2 + this.y);
-      }
-      if (!this.transformMatrix && isInPathGroup) {
-        ctx.translate(-this.group.width / 2 + this.width / 2 + this.x, -this.group.height / 2 + this.height / 2 + this.y);
-      }
-      i = 0;
-      while (i < this.count) {
-        if (this.side === 1) {
-          this.__renderShelf(ctx, x + i * w, y, w, h);
-          if (app.scale > 0.5) {
-            this.__renderSide(ctx, x + i * w, y, w, h);
-          }
-        } else if (this.side === 2) {
-          this.__renderShelf(ctx, x + i * w, y, w, h);
-          this.__renderShelf(ctx, x + i * w, y + h, w, h);
-        }
-        i++;
-      }
+      arcStart = (180 - 30 * this.count) / 2 * Math.PI / 180;
+      arcEnd = arcStart + 30 * this.count * Math.PI / 180;
+      arcX = 0;
+      arcY = 0;
       ctx.beginPath();
-      ctx.arc(sx, 0, this.height * this.scaleY / 2, 0, 30 * this.count * Math.PI / 180, false);
-      ctx.stroke();
+      ctx.arc(arcX, arcY, this.height * this.scaleY / 2, arcStart, arcEnd, false);
+      rad = this.height * this.scaleY / 2 - this.__eachHeight() * this.side;
+      if (rad <= 10) {
+        rad = 10;
+      }
+      if (30 * this.count < 360) {
+        ctx.arc(arcX, arcY, rad, arcEnd, arcStart, true);
+      }
+      ctx.closePath();
+      this._renderFill(ctx);
+      this._renderStroke(ctx);
       ctx.beginPath();
       rad = this.height * this.scaleY / 2 - this.__eachHeight() * 1;
       if (rad <= 10) {
         rad = 10;
       }
-      ctx.arc(sx, 0, rad, 0, 30 * this.count * Math.PI / 180, false);
-      ctx.stroke();
-      ctx.beginPath();
-      rad = this.height * this.scaleY / 2 - this.__eachHeight() * this.side;
-      if (rad <= 10) {
-        rad = 10;
-      }
-      ctx.arc(sx, 0, rad, 0, 30 * this.count * Math.PI / 180, false);
+      ctx.arc(arcX, arcY, rad, arcStart, arcEnd, false);
       ctx.stroke();
       if (this.active) {
         ctx.font = "13.5px Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStyle = 'rgba(0, 0, 0,1)';
-        label = this.side === 1 ? "単式" : "複式";
-        label = "カーブ[" + this.id + "] " + label + this.count + "連";
+        label = this.side === 1 ? "曲面単式" : "曲面複式";
+        label = "[" + this.id + "] " + label + this.count + "連";
         ctx.fillText(label, 0, (this.height * this.scaleY) / 2 + 15);
       }
       ctx.scale(this.scaleX, this.scaleY);
-    },
-    __renderShelf: function(ctx, x, y, w, h) {
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineWidth = 1;
-      ctx.lineTo(x + w, y);
-      ctx.lineTo(x + w, y + h);
-      ctx.lineTo(x, y + h);
-      ctx.lineTo(x, y);
-      ctx.closePath();
-      this._renderFill(ctx);
-      return this._renderStroke(ctx);
-    },
-    __renderSide: function(ctx, x, y, w, h) {
-      ctx.beginPath();
-      ctx.lineWidth = 5;
-      ctx.moveTo(x, y + h - 1);
-      ctx.lineTo(x + w, y + h - 1);
-      ctx.closePath();
-      this._renderFill(ctx);
-      return this._renderStroke(ctx);
     },
     __resizeShelf: function() {
       var actualHeight, actualWidth, count, side;
@@ -152,8 +105,8 @@
       if (count < 1) {
         count = 1;
       }
-      if (count > 10) {
-        count = 10;
+      if (count > 20) {
+        count = 20;
       }
       side = Math.round(actualHeight / this.__eachHeight());
       if (side < 1) {
@@ -171,7 +124,6 @@
       });
     },
     __modifiedShelf: function() {
-      var th;
       this.angle = this.angle % 360;
       if (this.angle >= 350 || this.angle <= 10) {
         this.angle = 0;
@@ -185,33 +137,10 @@
       if (this.angle >= 260 && this.angle <= 280) {
         this.angle = 270;
       }
-      if (this.scaleX !== 0 && (this.__corner === 'mr' || this.__corner === 'tr' || this.__corner === 'br')) {
-        th = this.angle * (Math.PI / 180);
-        this.top = this.top + Math.sin(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
-        this.left = this.left + Math.cos(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
-      }
-      if (this.scaleX !== 0 && (this.__corner === 'ml' || this.__corner === 'tl' || this.__corner === 'bl')) {
-        th = this.angle * (Math.PI / 180);
-        this.top = this.top - Math.sin(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
-        this.left = this.left - Math.cos(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
-      }
       this.height = this.height * this.scaleY;
       this.scaleX = this.scaleY = 1;
       this.width = this.__width();
       return this.setCoords();
-    },
-    _renderDashedStroke: function(ctx) {
-      var h, w, x, y;
-      x = -this.width / 2;
-      y = -this.height / 2;
-      w = this.width;
-      h = this.height;
-      ctx.beginPath();
-      fabric.util.drawDashedLine(ctx, x, y, x + w, y, this.strokeDashArray);
-      fabric.util.drawDashedLine(ctx, x + w, y, x + w, y + h, this.strokeDashArray);
-      fabric.util.drawDashedLine(ctx, x + w, y + h, x, y + h, this.strokeDashArray);
-      fabric.util.drawDashedLine(ctx, x, y + h, x, y, this.strokeDashArray);
-      ctx.closePath();
     },
     _normalizeLeftTopProperties: function(parsedAttributes) {
       if ("left" in parsedAttributes) {
