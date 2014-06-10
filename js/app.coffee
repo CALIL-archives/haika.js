@@ -344,7 +344,7 @@ app =
 #    @canvas = tmp_canvas
 #    @scale = tmp_scale
     localStorage.setItem('geojson', JSON.stringify(geojson))
-    location.href = '/map.html'
+    location.href = 'map.html'
     return
     a = document.createElement('a')
     a.download = 'sample.geojson'
