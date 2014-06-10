@@ -24,11 +24,13 @@ $(window).resize ->
   app.render()
 
 add = (left=0, top=0)->
-  if $('#type').val()=='shelf'
-    object = fabric.Shelf
+  if $('#type').val()=='Shelf'
+    klass = fabric.Shelf
   if $('#type').val()=='curvedShelf'
-    object = fabric.curvedShelf
-  shelf = new object(
+    klass = fabric.curvedShelf
+  if $('#type').val()=='Beacon'
+    klass = fabric.Beacon
+  shape = new klass(
     count: parseInt($('#count').val())
     side: parseInt($('#side').val())
     top: app.transformX_cm2px(app.centerY)
@@ -38,7 +40,7 @@ add = (left=0, top=0)->
     angle: parseInt($('#angle').val())
     #lockScalingY: true
   )
-  app.add(shelf)
+  app.add(shape)
   app.render()
 #setTimeout(->
   #addmany()

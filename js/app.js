@@ -136,7 +136,7 @@ app = {
     };
     this.object_id += 1;
     props = ['type', 'width', 'height', 'scaleX', 'scaleY', 'left', 'top', 'angle', 'fill', 'stroke'];
-    if (object.type === 'shelf') {
+    if (object.type === 'shelf' || object.type === 'curved_shelf') {
       props.push('count');
       props.push('side');
     }
@@ -156,12 +156,21 @@ app = {
     return o;
   },
   load: function() {
-    var canvas, object, objects, shelf, _i, _len;
+    var canvas, klass, object, objects, shape, _i, _len;
     objects = JSON.parse(localStorage.getItem('app_data'));
     if (objects) {
       for (_i = 0, _len = objects.length; _i < _len; _i++) {
         object = objects[_i];
-        shelf = new fabric.Shelf({
+        if (object.type === 'shelf') {
+          klass = fabric.Shelf;
+        } else if (object.type === 'curved_shelf') {
+          klass = fabric.curvedShelf;
+        } else if (object.type === 'beacon') {
+          klass = fabric.Beacon;
+        } else {
+          continue;
+        }
+        shape = new klass({
           count: object.count,
           side: object.side,
           top: app.transformX_cm2px(object.top_cm),
@@ -170,7 +179,7 @@ app = {
           stroke: "#000000",
           angle: object.angle
         });
-        this.add(shelf);
+        this.add(shape);
       }
     }
     canvas = JSON.parse(localStorage.getItem('canvas'));
@@ -203,7 +212,7 @@ app = {
     this.objects[count].scaleX = object.scaleX / this.scale;
     this.objects[count].scaleY = object.scaleY / this.scale;
     this.objects[count].angle = object.angle;
-    if (object.type === 'shelf') {
+    if (object.type === 'shelf' || object.type === 'curved_shelf') {
       this.objects[count].count = object.count;
       this.objects[count].side = object.side;
     }
@@ -279,6 +288,11 @@ app = {
       }
       if (this.objects[i].type === 'curved_shelf') {
         object = new fabric.curvedShelf();
+        object.side = this.objects[i].side;
+        object.count = this.objects[i].count;
+      }
+      if (this.objects[i].type === 'beacon') {
+        object = new fabric.Beacon();
       }
       object.id = this.objects[i].id;
       object.scaleX = 1;

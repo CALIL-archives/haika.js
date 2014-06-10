@@ -123,7 +123,7 @@ app =
       'fill'
       'stroke'
     ]
-    if object.type=='shelf'
+    if object.type=='shelf' or object.type=='curved_shelf'
       props.push('count')
       props.push('side')
     for prop in props
@@ -141,7 +141,15 @@ app =
 #    log objects
     if objects
       for object in objects
-        shelf = new fabric.Shelf(
+        if object.type=='shelf'
+          klass = fabric.Shelf
+        else if object.type=='curved_shelf'
+          klass = fabric.curvedShelf
+        else if object.type=='beacon'
+          klass = fabric.Beacon
+        else
+          continue
+        shape = new klass(
           count: object.count
           side: object.side
           top: app.transformX_cm2px(object.top_cm)
@@ -150,7 +158,7 @@ app =
           stroke: "#000000"
           angle: object.angle
         )
-        @add(shelf)
+        @add(shape)
     canvas = JSON.parse(localStorage.getItem('canvas'))
     if canvas
 #      log canvas
@@ -174,7 +182,7 @@ app =
     @objects[count].scaleY = object.scaleY / @scale
     @objects[count].angle  = object.angle
 
-    if object.type=='shelf'
+    if object.type=='shelf' or object.type=='curved_shelf'
       @objects[count].count = object.count
       @objects[count].side  = object.side
     localStorage.setItem('app_data', JSON.stringify(@objects))
@@ -230,6 +238,10 @@ app =
         object.count = @objects[i].count
       if @objects[i].type=='curved_shelf'
         object = new fabric.curvedShelf()
+        object.side  = @objects[i].side
+        object.count = @objects[i].count
+      if @objects[i].type=='beacon'
+        object = new fabric.Beacon()
       object.id     = @objects[i].id
       object.scaleX = 1
       object.scaleY = 1

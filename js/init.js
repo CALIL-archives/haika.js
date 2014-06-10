@@ -20,20 +20,23 @@ $(window).resize(function() {
 });
 
 add = function(left, top) {
-  var object, shelf;
+  var klass, shape;
   if (left == null) {
     left = 0;
   }
   if (top == null) {
     top = 0;
   }
-  if ($('#type').val() === 'shelf') {
-    object = fabric.Shelf;
+  if ($('#type').val() === 'Shelf') {
+    klass = fabric.Shelf;
   }
   if ($('#type').val() === 'curvedShelf') {
-    object = fabric.curvedShelf;
+    klass = fabric.curvedShelf;
   }
-  shelf = new object({
+  if ($('#type').val() === 'Beacon') {
+    klass = fabric.Beacon;
+  }
+  shape = new klass({
     count: parseInt($('#count').val()),
     side: parseInt($('#side').val()),
     top: app.transformX_cm2px(app.centerY),
@@ -42,7 +45,7 @@ add = function(left, top) {
     stroke: "#000000",
     angle: parseInt($('#angle').val())
   });
-  app.add(shelf);
+  app.add(shape);
   return app.render();
 };
 
