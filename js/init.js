@@ -91,6 +91,16 @@ $(function() {
   $(".tobottom").click(function() {
     return app.toBottom();
   });
+  $(".svg").click(function() {
+    return app.getSVG();
+  });
+  $(".geojson").click(function() {
+    return app.getGeoJSON();
+  });
+  $(".reset").click(function() {
+    localStorage.clear();
+    return location.reload();
+  });
   $(".rotate").slider({
     min: 0,
     max: 360,
@@ -105,16 +115,6 @@ $(function() {
         return app.canvas.renderAll();
       }
     }
-  });
-  $(".svg").click(function() {
-    return app.getSVG();
-  });
-  $(".geojson").click(function() {
-    return app.getGeoJSON();
-  });
-  $(".reset").click(function() {
-    localStorage.clear();
-    return location.reload();
   });
   $('#canvas_width').change(function() {
     return app.canvas.setWidth($(this).val());

@@ -80,6 +80,13 @@ $ ->
     app.toTop()
   $(".tobottom").click ->
     app.toBottom()
+  $(".svg").click ->
+    app.getSVG()
+  $(".geojson").click ->
+    app.getGeoJSON()
+  $(".reset").click ->
+    localStorage.clear()
+    location.reload()
   $(".rotate").slider
     min: 0
     max: 360
@@ -91,13 +98,6 @@ $ ->
         activeObject.angle = ui.value
         activeObject.setCoords()
         app.canvas.renderAll()
-  $(".svg").click ->
-    app.getSVG()
-  $(".geojson").click ->
-    app.getGeoJSON()
-  $(".reset").click ->
-    localStorage.clear()
-    location.reload()
 #  $('canvas').on 'mousewheel', (event)=>
 #    #console.log(event.deltaX, event.deltaY, event.deltaFactor);
 #    if event.deltaY==1
