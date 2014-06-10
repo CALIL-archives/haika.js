@@ -394,25 +394,18 @@ app = {
       "type": "FeatureCollection",
       "features": features
     };
-    return JSON.stringify(data);
+    return JSON.stringify(data, null, 4);
   },
   getGeoJSON: function() {
-    var a, blob, canvas, geojson, tmp_canvas, tmp_scale;
+    var a, blob, geojson;
     this.unselect();
-    canvas = document.createElement('canvas');
-    canvas = new fabric.Canvas(canvas);
-    canvas.setWidth(this.options.max_width);
-    canvas.setHeight(this.options.max_height);
-    tmp_canvas = this.canvas;
-    tmp_scale = this.scale;
-    this.canvas = canvas;
-    this.scale = 1;
     this.drawguideline = false;
     this.render();
     this.drawguideline = true;
     geojson = this.toGeoJSON();
-    this.canvas = tmp_canvas;
-    this.scale = tmp_scale;
+    localStorage.setItem('geojson', JSON.stringify(geojson));
+    location.href = '/map.html';
+    return;
     a = document.createElement('a');
     a.download = 'sample.geojson';
     a.type = 'application/json';

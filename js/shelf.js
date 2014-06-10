@@ -356,18 +356,18 @@
       var center, data, h, w, x, y;
       w = this.__eachWidth() * this.count / 100;
       h = this.__eachHeight() * this.side / 100;
-      log(h);
       center = this.getCenterPoint();
       log(center);
-      x = (-w / 2 * this.count + center.x) / 100;
-      y = (-h / 2 * this.side + center.y) / 100;
+      x = -w / 2 + (center.x / 100);
+      y = -h / 2 + (center.y / 100);
       data = {
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
-          "coordinates": [[[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]]
+          "coordinates": [[[x, y], [x + w, y], [x + w, y - h], [x, y - h], [x, y]]]
         },
         "properties": {
+          "id": this.id,
           "count": this.count,
           "side": this.side,
           "center": this.getCenterPoint()

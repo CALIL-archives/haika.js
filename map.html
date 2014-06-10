@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>GeoJSON Map</title>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.css">
+  <style>
+    #geojson-input, #map-container {
+      width: 500px;
+      height: 500px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+        <div id="input-output" class="row-fluid">
+            <div class="col-sm-4 left full-height">
+                <div class="row-fluid">
+                    <textarea id="geojson-input" placeholder="Paste GeoJSON here"></textarea>
+                </div>
+                <div class="row-fluid text-centered">
+                    <input id="clear-current" type="checkbox" checked="checked">
+                    <label for="clear-current">Clear Current Features</label>
+                </div>
+                <div class="row-fluid text-centered"><a id="submit" class="btn btn-primary btn-large btn-action">Test GeoJSON</a>
+                    <a id="clear" class="btn btn-large btn-action">Clear</a>
+                </div>
+            </div>
+            <div class="col-sm-8 right full-height">
+                <div id="map-container" class="full-height"></div>
+            </div>
+        </div>
+    </div>
+
+<!-- External script dependencies  -->
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
+<script src="js/map.js"></script>
+</body>
+</html>

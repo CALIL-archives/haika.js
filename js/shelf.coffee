@@ -314,21 +314,21 @@
     toGeoJSON: ->
       w = @__eachWidth() * @count / 100
       h = @__eachHeight() * @side / 100
-      log h
       center = @getCenterPoint()
       log center
-      x = (-w / 2 * @count + center.x) / 100
-      y = (-h / 2 * @side  + center.y) / 100
+      x = -w / 2 + (center.x / 100)
+      y = -h / 2 + (center.y / 100)
       data =
         "type": "Feature"
         "geometry":
           "type": "Polygon",
           "coordinates": [
-            [ [x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]
+            [ [x, y], [x + w, y], [x + w, y - h], [x, y - h], [x, y]]
           ]
         "properties": 
-          "count": @count
-          "side": @side
+          "id"    : @id
+          "count" : @count
+          "side"  : @side
           "center": @getCenterPoint()
       return data
     
