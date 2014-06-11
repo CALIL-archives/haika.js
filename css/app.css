@@ -1,4 +1,3 @@
-
 .canvas_panel {
   position: fixed;
   bottom: 0;
@@ -9,4 +8,14 @@
 }
 .canvas_panel input {
   color: #000000;
+}
+
+.propery_panel {
+  display: none;
+  color: #ffffff;
+  position: absolute;
+  right: 0;
+  top: 100px;
+  padding: 10px;
+  background-color: #000000;
 }

@@ -78,6 +78,8 @@ app = {
       if (object._objects != null) {
         object.lockScalingX = true;
         object.lockScalingY = true;
+      } else {
+        _this.show_propety_panel(object);
       }
       _ref = _this.canvas.getObjects();
       _results = [];
@@ -105,7 +107,8 @@ app = {
         }
         return _results;
       } else {
-        return _this.save_prop(object);
+        _this.save_prop(object);
+        return _this.hide_propety_panel(object);
       }
     });
     this.canvas.on('object:scaling', function(e) {
@@ -454,5 +457,11 @@ app = {
     });
     a.href = (window.URL || webkitURL).createObjectURL(blob);
     return a.click();
+  },
+  show_propety_panel: function(object) {
+    return $('.propery_panel').show().find('p').html('id:' + object.id);
+  },
+  hide_propety_panel: function(object) {
+    return $('.propery_panel').hide();
   }
 };

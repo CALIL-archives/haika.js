@@ -60,7 +60,7 @@ $ ->
       y++
     app.render()
     return
-
+  
   $(".add").click ->
     add()
     app.render()

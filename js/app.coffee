@@ -71,11 +71,13 @@ app =
         if object._objects?
           object.lockScalingX  = true
           object.lockScalingY  = true
-        #else
+        else
+          @show_propety_panel(object)
         #  object.lockScalingY  = true
         for object in @canvas.getObjects()
           if object.id?
             @save_prop(object)
+        
     )
     @canvas.on('before:selection:cleared', (e)=>
       #log 'before_unselect'
@@ -88,6 +90,7 @@ app =
           @save_prop(object, group)
       else
         @save_prop(object)
+        @hide_propety_panel(object)
     )
     @canvas.on 'object:scaling', (e) =>
       object = e.target
@@ -386,3 +389,7 @@ app =
     blob = new Blob([svg], {"type": "image/svg+xml"})
     a.href = (window.URL || webkitURL).createObjectURL(blob)
     a.click()
+  show_propety_panel : (object)->
+    $('.propery_panel').show().find('p').html('id:'+object.id)
+  hide_propety_panel : (object)->
+    $('.propery_panel').hide()
