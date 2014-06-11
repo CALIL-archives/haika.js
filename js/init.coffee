@@ -71,7 +71,7 @@ $ ->
         centerX = 5000 - app.canvas.getWidth()
       if centerX < (-5000 + app.canvas.getWidth())
         centerX = -5000 + app.canvas.getWidth()
-      app.centerX = -centerX
+      app.centerX = -centerX.toFixed(0)
       app.render()
   new Dragdealer 'vertical-scroller',
     y: 0.5
@@ -80,7 +80,7 @@ $ ->
 #    yPrecision: 500,
     animationCallback: (x, y)->
       centerY = y * 10000 - 5000
-      app.centerY = -centerY
+      app.centerY = -centerY.toFixed(0)
       app.render()
   $(".add").click ->
     add()

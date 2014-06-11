@@ -77,7 +77,7 @@ $(function() {
       if (centerX < (-5000 + app.canvas.getWidth())) {
         centerX = -5000 + app.canvas.getWidth();
       }
-      app.centerX = -centerX;
+      app.centerX = -centerX.toFixed(0);
       return app.render();
     }
   });
@@ -88,7 +88,7 @@ $(function() {
     animationCallback: function(x, y) {
       var centerY;
       centerY = y * 10000 - 5000;
-      app.centerY = -centerY;
+      app.centerY = -centerY.toFixed(0);
       return app.render();
     }
   });
