@@ -107,13 +107,13 @@ app =
       @render()
       @save()
       return
-
+  get_id : ->
+    return @objects.length
   add : (object)->
-    id = @objects.length
+    id = @get_id()
     object.id = id
     o =
       id : id
-    @object_id += 1
     props = [
       'type'
       'width'
@@ -138,7 +138,7 @@ app =
         continue
       o[prop] = object[prop]
     @objects.push(o)
-    return o
+    return o.id
   load : ()->
     objects = JSON.parse(localStorage.getItem('app_data'))
 #    log objects
@@ -197,10 +197,13 @@ app =
     group = @canvas.getActiveGroup()
     if group
       objects = group._objects
+#      for object in objects
+#        func(object)
       #@canvas._activeObject = null
       #@canvas.setActiveGroup(group.setCoords()).renderAll()
   remove : ->
     @bind (object)=>
+      log object
       @canvas.remove(object)
       count = object.id
       @objects.splice(count, 1)
@@ -211,6 +214,15 @@ app =
       obj = @objects[count]
       @objects.splice(count, 1)
       @objects.push(obj) 
+  duplicate : ->
+    @bind (object)=>
+      id = app.add(object)
+      log app
+      log app.objects[id].top_cm
+      app.objects[id].top_cm += app.objects[id].height*2
+      log app.objects[id].top_cm
+      log app.objects[id]
+      app.render()
   transformX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale
@@ -318,22 +330,22 @@ app =
     @scale = 1
     @render()
     $('.zoom').html('100%')
-  toTop :(y=100) ->
-    @unselect()
-    @centerY += y
-    @render()
-  toBottom : (y=100)->
-    @unselect()
-    @centerY -= y
-    @render()
-  toRight : (x=100)->
-    @unselect()
-    @centerX -= x
-    @render()
-  toLeft : (x=100)->
-    @unselect()
-    @centerX += x
-    @render()
+#  toTop :(y=100) ->
+#    @unselect()
+#    @centerY += y
+#    @render()
+#  toBottom : (y=100)->
+#    @unselect()
+#    @centerY -= y
+#    @render()
+#  toRight : (x=100)->
+#    @unselect()
+#    @centerX -= x
+#    @render()
+#  toLeft : (x=100)->
+#    @unselect()
+#    @centerX += x
+#    @render()
   toGeoJSON : ->
     features = []
     for object in @canvas.getObjects()

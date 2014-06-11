@@ -3,7 +3,7 @@ body {
 }
 .canvas_panel {
   position: fixed;
-  bottom: 0;
+  bottom: 30px;
   width: 100%;
   color: white;
   padding: 0px;

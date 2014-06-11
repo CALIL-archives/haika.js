@@ -13,12 +13,12 @@ app.init({
   bgscale: 4.425
 });
 
-$('#vertical-scroller, #vertical-scroller .dragdealer').css('height', window.innerHeight - $('.header').height() - $('.canvas_panel').height());
+$('#vertical-scroller, #vertical-scroller .dragdealer').css('height', window.innerHeight - $('.header').height() - $('.canvas_panel').height() - 30);
 
 $(window).resize(function() {
   app.canvas.setWidth(window.innerWidth - 30);
   app.canvas.setHeight(window.innerHeight - $('.header').height() - 30);
-  $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', window.innerHeight - $('.header').height() - $('.canvas_panel').height());
+  $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', window.innerHeight - $('.header').height() - $('.canvas_panel').height() - 30);
   return app.render();
 });
 
@@ -111,17 +111,8 @@ $(function() {
   $(".bringtofront").click(function() {
     return app.bringToFront();
   });
-  $(".toright").click(function() {
-    return app.toRight();
-  });
-  $(".toleft").click(function() {
-    return app.toLeft();
-  });
-  $(".totop").click(function() {
-    return app.toTop();
-  });
-  $(".tobottom").click(function() {
-    return app.toBottom();
+  $(".duplicate").click(function() {
+    return app.duplicate();
   });
   $(".svg").click(function() {
     return app.getSVG();
@@ -132,21 +123,6 @@ $(function() {
   $(".reset").click(function() {
     localStorage.clear();
     return location.reload();
-  });
-  $(".rotate").slider({
-    min: 0,
-    max: 360,
-    step: 10,
-    value: 0,
-    slide: function(event, ui) {
-      var activeObject;
-      activeObject = app.canvas.getActiveObject();
-      if (activeObject) {
-        activeObject.angle = ui.value;
-        activeObject.setCoords();
-        return app.canvas.renderAll();
-      }
-    }
   });
   $('#canvas_width').change(function() {
     return app.canvas.setWidth($(this).val());

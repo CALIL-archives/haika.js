@@ -13,11 +13,11 @@ app.init(
   bgopacity: 0.2
   bgscale  : 4.425
 )
-$('#vertical-scroller, #vertical-scroller .dragdealer').css('height', window.innerHeight - $('.header').height() - $('.canvas_panel').height())
+$('#vertical-scroller, #vertical-scroller .dragdealer').css('height', window.innerHeight - $('.header').height() - $('.canvas_panel').height() - 30)
 $(window).resize ->
   app.canvas.setWidth(window.innerWidth - 30)
   app.canvas.setHeight(window.innerHeight - $('.header').height() - 30)
-  $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', window.innerHeight - $('.header').height() - $('.canvas_panel').height())
+  $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', window.innerHeight - $('.header').height() - $('.canvas_panel').height() - 30)
 #  app.canvas.setWidth(800)
 #  app.canvas.setHeight(600)
 #  app.centerX = -app.canvas.getWidth() / 2
@@ -95,14 +95,16 @@ $ ->
     app.zoomReset()
   $(".bringtofront").click ->
     app.bringToFront()
-  $(".toright").click ->
-    app.toRight()
-  $(".toleft").click ->
-    app.toLeft()
-  $(".totop").click ->
-    app.toTop()
-  $(".tobottom").click ->
-    app.toBottom()
+  $(".duplicate").click ->
+    app.duplicate()
+#  $(".toright").click ->
+#    app.toRight()
+#  $(".toleft").click ->
+#    app.toLeft()
+#  $(".totop").click ->
+#    app.toTop()
+#  $(".tobottom").click ->
+#    app.toBottom()
   $(".svg").click ->
     app.getSVG()
   $(".geojson").click ->
@@ -110,17 +112,17 @@ $ ->
   $(".reset").click ->
     localStorage.clear()
     location.reload()
-  $(".rotate").slider
-    min: 0
-    max: 360
-    step: 10
-    value: 0
-    slide: (event, ui) ->
-      activeObject = app.canvas.getActiveObject()
-      if activeObject
-        activeObject.angle = ui.value
-        activeObject.setCoords()
-        app.canvas.renderAll()
+#  $(".rotate").slider
+#    min: 0
+#    max: 360
+#    step: 10
+#    value: 0
+#    slide: (event, ui) ->
+#      activeObject = app.canvas.getActiveObject()
+#      if activeObject
+#        activeObject.angle = ui.value
+#        activeObject.setCoords()
+#        app.canvas.renderAll()
 #  $('canvas').on 'mousewheel', (event)=>
 #    #console.log(event.deltaX, event.deltaY, event.deltaFactor);
 #    if event.deltaY==1

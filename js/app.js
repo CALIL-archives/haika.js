@@ -130,14 +130,16 @@ app = {
       _this.save();
     });
   },
+  get_id: function() {
+    return this.objects.length;
+  },
   add: function(object) {
     var id, o, prop, props, _i, _len;
-    id = this.objects.length;
+    id = this.get_id();
     object.id = id;
     o = {
       id: id
     };
-    this.object_id += 1;
     props = ['type', 'width', 'height', 'scaleX', 'scaleY', 'left', 'top', 'angle', 'fill', 'stroke'];
     if (object.type === 'shelf' || object.type === 'curved_shelf') {
       props.push('count');
@@ -156,7 +158,7 @@ app = {
       o[prop] = object[prop];
     }
     this.objects.push(o);
-    return o;
+    return o.id;
   },
   load: function() {
     var canvas, klass, object, objects, shape, _i, _len;
@@ -236,6 +238,7 @@ app = {
     var _this = this;
     return this.bind(function(object) {
       var count;
+      log(object);
       _this.canvas.remove(object);
       count = object.id;
       return _this.objects.splice(count, 1);
@@ -250,6 +253,19 @@ app = {
       obj = _this.objects[count];
       _this.objects.splice(count, 1);
       return _this.objects.push(obj);
+    });
+  },
+  duplicate: function() {
+    var _this = this;
+    return this.bind(function(object) {
+      var id;
+      id = app.add(object);
+      log(app);
+      log(app.objects[id].top_cm);
+      app.objects[id].top_cm += app.objects[id].height * 2;
+      log(app.objects[id].top_cm);
+      log(app.objects[id]);
+      return app.render();
     });
   },
   transformX_cm2px: function(cm) {
@@ -368,38 +384,6 @@ app = {
     this.scale = 1;
     this.render();
     return $('.zoom').html('100%');
-  },
-  toTop: function(y) {
-    if (y == null) {
-      y = 100;
-    }
-    this.unselect();
-    this.centerY += y;
-    return this.render();
-  },
-  toBottom: function(y) {
-    if (y == null) {
-      y = 100;
-    }
-    this.unselect();
-    this.centerY -= y;
-    return this.render();
-  },
-  toRight: function(x) {
-    if (x == null) {
-      x = 100;
-    }
-    this.unselect();
-    this.centerX -= x;
-    return this.render();
-  },
-  toLeft: function(x) {
-    if (x == null) {
-      x = 100;
-    }
-    this.unselect();
-    this.centerX += x;
-    return this.render();
   },
   toGeoJSON: function() {
     var data, features, object, _i, _len, _ref;
