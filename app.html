@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   </head>
   <body>
-    <div class="container">
+    <div class="container header">
       <div class="row">
         <div class="col-md-2" style="text-align:center;width: 120px;">
           <input type="button" class="totop btn btn-default" value="↑" /><br />
@@ -67,6 +67,18 @@
       </div>
     </div>
     <canvas id="canvas" width="800" height="600"></canvas>
+    <div id="vertical-scroller" class="content-scroller">
+      <div id="content-scroller" class="dragdealer">
+        <div class="handle gray-bar">
+          <span class="value"><i class="fa fa-bars"></i></span>
+        </div>
+      </div>
+    </div>
+    <div id="horizontal-scroller" class="dragdealer">
+      <div class="handle gray-bar">
+        <span class="value"><i class="fa fa-bars fa-rotate-90"></i></span>
+      </div>
+    </div>
     <div class="propery_panel">
       <h3>オブジェクトのプロパティ</h3>
       <p>表示予定地</p>

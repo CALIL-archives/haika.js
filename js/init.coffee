@@ -2,8 +2,8 @@ app.init(
   canvas : 'canvas'
   #canvas_width : 800
   #canvas_height : 600
-  canvas_width : window.innerWidth
-  canvas_height : window.innerHeight - 100
+  canvas_width : window.innerWidth - 30
+  canvas_height : window.innerHeight - $('.header').height() - 30
   scale : 1
   max_width: 10000
   max_height: 10000
@@ -13,10 +13,11 @@ app.init(
   bgopacity: 0.2
   bgscale  : 4.425
 )
-
+$('#vertical-scroller, #vertical-scroller .dragdealer').css('height', window.innerHeight - $('.header').height() - $('.canvas_panel').height())
 $(window).resize ->
-  app.canvas.setWidth(window.innerWidth)
-  app.canvas.setHeight(window.innerHeight - 100)
+  app.canvas.setWidth(window.innerWidth - 30)
+  app.canvas.setHeight(window.innerHeight - $('.header').height() - 30)
+  $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', window.innerHeight - $('.header').height() - $('.canvas_panel').height())
 #  app.canvas.setWidth(800)
 #  app.canvas.setHeight(600)
 #  app.centerX = -app.canvas.getWidth() / 2
@@ -60,7 +61,27 @@ $ ->
       y++
     app.render()
     return
-  
+
+  new Dragdealer 'horizontal-scroller',
+    x: 0.5
+    animationCallback: (x, y)->
+#      log x
+      centerX = x * 10000 - 5000
+      if centerX > (5000 - app.canvas.getWidth())
+        centerX = 5000 - app.canvas.getWidth()
+      if centerX < (-5000 + app.canvas.getWidth())
+        centerX = -5000 + app.canvas.getWidth()
+      app.centerX = -centerX
+      app.render()
+  new Dragdealer 'vertical-scroller',
+    y: 0.5
+    horizontal: false,
+    vertical: true,
+#    yPrecision: 500,
+    animationCallback: (x, y)->
+      centerY = y * 10000 - 5000
+      app.centerY = -centerY
+      app.render()
   $(".add").click ->
     add()
     app.render()

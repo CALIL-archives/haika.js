@@ -19,3 +19,39 @@
   padding: 10px;
   background-color: #000000;
 }
+
+/* scrollbar */
+.canvas-container {
+  float: left;
+}
+#vertical-scroller {
+  float: right;
+  z-index: 10001;
+}
+#vertical-scroller .dragdealer {
+  float: right;
+  width: 30px;
+}
+#vertical-scroller .dragdealer .handle {
+  width: 30px;
+  height: 60px;
+  text-align: center;
+}
+#vertical-scroller .dragdealer .handle i {
+  line-height: 60px;
+}
+
+#horizontal-scroller {
+  clear: both;
+  z-index: 10000;
+}
+
+.gray-bar {
+  width: 100px;
+  height: 30px;
+  background: #666666;
+  color: #FFF;
+  font-size: 14px;
+  line-height: 30px;
+  text-align: center;
+}
