@@ -233,27 +233,27 @@ app =
     @unselect()
     @canvas.clear()
 #    log @objects
-    for i of @objects
-#      log @objects[i].type
-      if @objects[i].type=='shelf'
+    for o in @objects
+#      log o.type
+      if o.type=='shelf'
         object = new fabric.Shelf()
-        object.side  = @objects[i].side
-        object.count = @objects[i].count
-      if @objects[i].type=='curved_shelf'
+        object.side  = o.side
+        object.count = o.count
+      if o.type=='curved_shelf'
         object = new fabric.curvedShelf()
-        object.side  = @objects[i].side
-        object.count = @objects[i].count
-      if @objects[i].type=='beacon'
+        object.side  = o.side
+        object.count = o.count
+      if o.type=='beacon'
         object = new fabric.Beacon()
-      object.id     = @objects[i].id
+      object.id     = o.id
       object.scaleX = 1
       object.scaleY = 1
       object.width  = object.__width()
       object.height = object.__height()
-      object.left   = @transformX_cm2px(@objects[i].left_cm)
-      object.top    = @transformY_cm2px(@objects[i].top_cm)
-      if @objects[i].angle > 0
-        object.angle  = @objects[i].angle
+      object.left   = @transformX_cm2px(o.left_cm)
+      object.top    = @transformY_cm2px(o.top_cm)
+      if o.angle > 0
+        object.angle  = o.angle
       object.originX = 'center'
       object.originY = 'center'
       object.fill = "#CFE2F3"

@@ -280,32 +280,34 @@ app = {
     }
   },
   render: function() {
-    var i, object;
+    var o, object, _i, _len, _ref;
     this.unselect();
     this.canvas.clear();
-    for (i in this.objects) {
-      if (this.objects[i].type === 'shelf') {
+    _ref = this.objects;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      o = _ref[_i];
+      if (o.type === 'shelf') {
         object = new fabric.Shelf();
-        object.side = this.objects[i].side;
-        object.count = this.objects[i].count;
+        object.side = o.side;
+        object.count = o.count;
       }
-      if (this.objects[i].type === 'curved_shelf') {
+      if (o.type === 'curved_shelf') {
         object = new fabric.curvedShelf();
-        object.side = this.objects[i].side;
-        object.count = this.objects[i].count;
+        object.side = o.side;
+        object.count = o.count;
       }
-      if (this.objects[i].type === 'beacon') {
+      if (o.type === 'beacon') {
         object = new fabric.Beacon();
       }
-      object.id = this.objects[i].id;
+      object.id = o.id;
       object.scaleX = 1;
       object.scaleY = 1;
       object.width = object.__width();
       object.height = object.__height();
-      object.left = this.transformX_cm2px(this.objects[i].left_cm);
-      object.top = this.transformY_cm2px(this.objects[i].top_cm);
-      if (this.objects[i].angle > 0) {
-        object.angle = this.objects[i].angle;
+      object.left = this.transformX_cm2px(o.left_cm);
+      object.top = this.transformY_cm2px(o.top_cm);
+      if (o.angle > 0) {
+        object.angle = o.angle;
       }
       object.originX = 'center';
       object.originY = 'center';
