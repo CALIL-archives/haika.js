@@ -80,10 +80,6 @@
           </label>
           <input type="button" class="add btn btn-default" value="add" />
           <input type="button" class="remove btn btn-default" value="remove" />
-          <input type="button" class="zoomin btn btn-default" value="+zoomIn" />
-          <span class="zoom">100%</span>
-          <input type="button" class="zoomout btn btn-default" value="-zoomOut" />
-          <input type="button" class="zoomreset btn btn-default" value="zoomReset" />
           <input type="button" class="bringtofront btn btn-default" value="bringToFront " />
           <input type="button" class="svg btn btn-default" value="SVG" />
           <input type="button" class="geojson btn btn-default" value="GeoJSON" />
@@ -99,9 +95,19 @@
         </div>
       </div>
     </div>
-    <div id="horizontal-scroller" class="dragdealer">
-      <div class="handle gray-bar">
-        <span class="value"><i class="fa fa-bars fa-rotate-90"></i></span>
+    <div class="row">
+      <div class="col-md-6" style="z-index: 10000;background-color: white;">
+        <input type="button" class="zoomin btn btn-default" value="+zoomIn" />
+        <span class="zoom">100%</span>
+        <input type="button" class="zoomout btn btn-default" value="-zoomOut" />
+        <input type="button" class="zoomreset btn btn-default" value="zoomReset" />
+      </div>
+      <div class="col-md-6">
+        <div id="horizontal-scroller" class="dragdealer">
+          <div class="handle gray-bar">
+            <span class="value"><i class="fa fa-bars fa-rotate-90"></i></span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="propery_panel">
