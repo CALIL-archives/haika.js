@@ -244,9 +244,7 @@ app =
 #    log 'render'
     @unselect()
     @canvas.clear()
-#    log @objects
     for o in @objects
-#      log o.type
       if o.type=='shelf'
         object = new fabric.Shelf()
         object.side  = o.side

@@ -66,11 +66,12 @@ $ ->
     x: 0.5
     animationCallback: (x, y)->
 #      log x
+      maxX = app.bgimg_width * app.options.bgscale / 2
       centerX = x * 10000 - 5000
-      if centerX > (5000 - app.canvas.getWidth())
-        centerX = 5000 - app.canvas.getWidth()
-      if centerX < (-5000 + app.canvas.getWidth())
-        centerX = -5000 + app.canvas.getWidth()
+      if centerX > maxX - app.canvas.getWidth() / 2
+        centerX = maxX - app.canvas.getWidth() / 2
+      if centerX < -maxX + app.canvas.getWidth() / 2
+        centerX = -maxX + app.canvas.getWidth() / 2
       app.centerX = -centerX.toFixed(0)
       app.render()
   new Dragdealer 'vertical-scroller',
@@ -79,7 +80,12 @@ $ ->
     vertical: true,
 #    yPrecision: 500,
     animationCallback: (x, y)->
+      maxY = app.bgimg_height * app.options.bgscale / 2
       centerY = y * 10000 - 5000
+      if centerY > maxY - app.canvas.getHeight() / 2
+        centerY = maxY - app.canvas.getHeight() / 2
+      if centerY < -maxY + app.canvas.getHeight() / 2
+        centerY = -maxY + app.canvas.getHeight() / 2
       app.centerY = -centerY.toFixed(0)
       app.render()
   $(".add").click ->
