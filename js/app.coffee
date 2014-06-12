@@ -3,6 +3,7 @@ log = (obj) ->
     console.log obj
 
 app = 
+  state      : 'shelf'
   width      : 800
   height     : 800
   centerX    : 0
@@ -125,7 +126,7 @@ app =
       'fill'
       'stroke'
     ]
-    if object.type=='shelf' or object.type=='curved_shelf'
+    if object.type.match(/shelf$/)
       props.push('count')
       props.push('side')
     for prop in props
@@ -137,6 +138,13 @@ app =
         continue
       o[prop] = object[prop]
     @objects.push(o)
+    #layer tab
+    if object.type.match(/shelf$/)
+      state = 'shelf'
+    else
+      state = 'beacon'
+    @state = state
+    $('.nav a.'+@state).tab('show')
     return o.id
   load : ()->
     objects = JSON.parse(localStorage.getItem('app_data'))
@@ -184,7 +192,7 @@ app =
     @objects[count].scaleY = object.scaleY / @scale
     @objects[count].angle  = object.angle
 
-    if object.type=='shelf' or object.type=='curved_shelf'
+    if object.type.match(/shelf$/)
       @objects[count].count = object.count
       @objects[count].side  = object.side
     localStorage.setItem('app_data', JSON.stringify(@objects))
@@ -254,6 +262,10 @@ app =
         object.count = o.count
       if o.type=='beacon'
         object = new fabric.Beacon()
+      # layer
+      object.selectable = (o.type.match(@state))
+      if not o.type.match(@state)
+        object.opacity = 0.5
       object.id     = o.id
       object.scaleX = 1
       object.scaleY = 1
@@ -265,7 +277,11 @@ app =
         object.angle  = o.angle
       object.originX = 'center'
       object.originY = 'center'
-      object.fill = "#CFE2F3"
+      if o.type=='beacon'
+        object.fill = "#000000"
+        object.hasControls = false
+      else
+        object.fill = "#CFE2F3"
       object.stroke = "#000000"
       object.padding = 0
       object.transparentCorners = false

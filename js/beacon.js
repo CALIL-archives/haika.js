@@ -24,13 +24,13 @@
     ry: 0,
     x: 0,
     y: 0,
-    __const_width: 90,
-    __const_hegiht: 25,
+    __const_width: 10,
+    __const_hegiht: 10,
     __width: function() {
-      return this.__eachWidth() * this.count;
+      return this.__eachWidth();
     },
     __height: function() {
-      return this.__eachHeight() * this.side;
+      return this.__eachHeight();
     },
     __eachWidth: function() {
       return this.__const_width * app.scale;
@@ -61,7 +61,7 @@
       }
     },
     _render: function(ctx) {
-      var h, isInPathGroup, label, sx, w, x, y;
+      var h, isInPathGroup, sx, w, x, y;
       if (this.width === 1 && this.height === 1) {
         ctx.fillRect(0, 0, 1, 1);
         return;
@@ -86,24 +86,7 @@
       if (!this.transformMatrix && isInPathGroup) {
         ctx.translate(-this.group.width / 2 + this.width / 2 + this.x, -this.group.height / 2 + this.height / 2 + this.y);
       }
-      if (this.side === 1) {
-        this.__renderShelf(ctx, x, y, w, h);
-        if (app.scale > 0.5) {
-          this.__renderSide(ctx, x, y, w, h);
-        }
-      }
-      if (this.side === 2) {
-        this.__renderShelf(ctx, x, y, w, h);
-      }
-      if (this.active) {
-        ctx.font = "13.5px Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = 'rgba(0, 0, 0,1)';
-        label = this.side === 1 ? "単式" : "複式";
-        label = "[" + this.id + "] " + label + this.count + "連";
-        ctx.fillText(label, 0, (this.height * this.scaleY) / 2 + 15);
-      }
+      this.__renderShelf(ctx, x, y, w, h);
       ctx.scale(this.scaleX, this.scaleY);
     },
     __renderShelf: function(ctx, x, y, w, h) {
@@ -146,15 +129,6 @@
         _results.push(i++);
       }
       return _results;
-    },
-    __renderSide: function(ctx, x, y, w, h) {
-      ctx.beginPath();
-      ctx.lineWidth = 5;
-      ctx.moveTo(x, y + h - 1);
-      ctx.lineTo(x + w * this.count, y + h - 1);
-      ctx.closePath();
-      this._renderFill(ctx);
-      return this._renderStroke(ctx);
     },
     __resizeShelf: function() {
       var actualHeight, actualWidth, count, side;

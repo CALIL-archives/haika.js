@@ -7,18 +7,12 @@ scrollbar_height = $('#horizontal-scroller').height();
 
 propery_panel_width = $('.propery_panel').width();
 
-log(scrollbar_width);
-
-log(scrollbar_height);
-
-log(propery_panel_width);
-
 get_width = function() {
-  return window.innerWidth - 30 - propery_panel_width - 20;
+  return window.innerWidth - scrollbar_width - propery_panel_width - 20;
 };
 
 get_height = function() {
-  return window.innerHeight - $('.header').height() - 30;
+  return window.innerHeight - $('.header').height() - scrollbar_height;
 };
 
 app.init({
@@ -92,6 +86,12 @@ $(function() {
     }
     app.render();
   };
+  $('.nav-tabs a').click(function(e) {
+    e.preventDefault();
+    app.state = $(e.target).attr('class');
+    app.render();
+    return $(this).tab('show');
+  });
   new Dragdealer('horizontal-scroller', {
     x: 0.5,
     animationCallback: function(x, y) {

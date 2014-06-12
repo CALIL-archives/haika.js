@@ -19,12 +19,12 @@
     ry: 0
     x: 0
     y: 0
-    __const_width: 90
-    __const_hegiht: 25
+    __const_width: 10
+    __const_hegiht: 10
     __width: ->
-      @__eachWidth() * @count
+      @__eachWidth()
     __height: ->
-      @__eachHeight() * @side
+      @__eachHeight()
     __eachWidth: ->
       @__const_width * app.scale
     __eachHeight: ->
@@ -74,12 +74,7 @@
       if not @transformMatrix and isInPathGroup
         ctx.translate -@group.width / 2 + @width / 2 + @x, -@group.height / 2 + @height / 2 + @y
 
-      if @side is 1
-        @__renderShelf ctx, x, y, w, h
-        if app.scale > 0.5
-          @__renderSide ctx, x, y, w, h
-      if @side is 2
-        @__renderShelf ctx, x, y, w, h
+      @__renderShelf ctx, x, y, w, h
 
       #      ctx.lineWidth = 1
       #      ctx.globalAlpha = 1 #塗りつぶしの透明度設定
@@ -89,16 +84,16 @@
       #      ctx.arc(@width-@width/2-10,-@height/2+@height/2/@side,1,0,2*Math.PI,true)
       #      @_renderFill ctx
       #      @_renderStroke ctx
-      if @active
-        ctx.font = "13.5px Arial";
-        ctx.textAlign = "center"
-        ctx.textBaseline = "middle"
-        ctx.fillStyle = 'rgba(0, 0, 0,1)';
-
-
-        label = if @side==1 then "単式" else "複式"
-        label = "[" + @id + "] " + label + @count + "連"
-        ctx.fillText(label,0,(@height*@scaleY)/2+15);
+#      if @active
+#        ctx.font = "13.5px Arial";
+#        ctx.textAlign = "center"
+#        ctx.textBaseline = "middle"
+#        ctx.fillStyle = 'rgba(0, 0, 0,1)';
+#
+#
+#        label = if @side==1 then "単式" else "複式"
+#        label = "[" + @id + "] " + label + @count + "連"
+#        ctx.fillText(label,0,(@height*@scaleY)/2+15);
 
       #if app.scale > 0.5
       #  ctx.font = "30px FontAwesome";
@@ -141,14 +136,6 @@
         @_renderFill ctx
         @_renderStroke ctx
         i++
-    __renderSide: (ctx, x, y, w, h) ->
-      ctx.beginPath()
-      ctx.lineWidth = 5
-      ctx.moveTo x, y + h - 1
-      ctx.lineTo x + w * @count, y + h - 1
-      ctx.closePath()
-      @_renderFill ctx
-      @_renderStroke ctx
 
     __resizeShelf: () ->
       actualWidth = @scaleX * @currentWidth

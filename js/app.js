@@ -8,6 +8,7 @@ log = function(obj) {
 };
 
 app = {
+  state: 'shelf',
   width: 800,
   height: 800,
   centerX: 0,
@@ -127,14 +128,14 @@ app = {
     return this.objects.length;
   },
   add: function(object) {
-    var id, o, prop, props, _i, _len;
+    var id, o, prop, props, state, _i, _len;
     id = this.get_id();
     object.id = id;
     o = {
       id: id
     };
     props = ['type', 'width', 'height', 'scaleX', 'scaleY', 'left', 'top', 'angle', 'fill', 'stroke'];
-    if (object.type === 'shelf' || object.type === 'curved_shelf') {
+    if (object.type.match(/shelf$/)) {
       props.push('count');
       props.push('side');
     }
@@ -151,6 +152,13 @@ app = {
       o[prop] = object[prop];
     }
     this.objects.push(o);
+    if (object.type.match(/shelf$/)) {
+      state = 'shelf';
+    } else {
+      state = 'beacon';
+    }
+    this.state = state;
+    $('.nav a.' + this.state).tab('show');
     return o.id;
   },
   load: function() {
@@ -210,7 +218,7 @@ app = {
     this.objects[count].scaleX = object.scaleX / this.scale;
     this.objects[count].scaleY = object.scaleY / this.scale;
     this.objects[count].angle = object.angle;
-    if (object.type === 'shelf' || object.type === 'curved_shelf') {
+    if (object.type.match(/shelf$/)) {
       this.objects[count].count = object.count;
       this.objects[count].side = object.side;
     }
@@ -308,6 +316,10 @@ app = {
       if (o.type === 'beacon') {
         object = new fabric.Beacon();
       }
+      object.selectable = o.type.match(this.state);
+      if (!o.type.match(this.state)) {
+        object.opacity = 0.5;
+      }
       object.id = o.id;
       object.scaleX = 1;
       object.scaleY = 1;
@@ -320,7 +332,12 @@ app = {
       }
       object.originX = 'center';
       object.originY = 'center';
-      object.fill = "#CFE2F3";
+      if (o.type === 'beacon') {
+        object.fill = "#000000";
+        object.hasControls = false;
+      } else {
+        object.fill = "#CFE2F3";
+      }
       object.stroke = "#000000";
       object.padding = 0;
       object.transparentCorners = false;

@@ -2,6 +2,11 @@ body {
   overflow: hidden; 
 }
 
+.nav {
+  float: left;
+  width: 200px;
+}
+
 .main_container {
   float: left;
 }
