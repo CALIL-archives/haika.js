@@ -2,6 +2,7 @@ body {
   overflow: hidden; 
 }
 .canvas_panel {
+  opacity: 0.7;
   position: fixed;
   bottom: 30px;
   width: 100%;
@@ -24,15 +25,11 @@ body {
 }
 
 /* scrollbar */
-.canvas-container {
-  float: left;
-}
+
 #vertical-scroller {
-  float: right;
   z-index: 10001;
 }
 #vertical-scroller .dragdealer {
-  float: right;
   width: 30px;
 }
 #vertical-scroller .dragdealer .handle {
@@ -45,7 +42,6 @@ body {
 }
 
 #horizontal-scroller {
-  clear: both;
   z-index: 10000;
 }
 
@@ -57,4 +53,11 @@ body {
   font-size: 14px;
   line-height: 30px;
   text-align: center;
+}
+.main_container {
+  float: left;
+}
+
+.side_container {
+  float: left;
 }

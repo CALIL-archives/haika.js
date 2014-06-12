@@ -1,7 +1,5 @@
 app.init(
   canvas : 'canvas'
-  #canvas_width : 800
-  #canvas_height : 600
   canvas_width : window.innerWidth - 30
   canvas_height : window.innerHeight - $('.header').height() - 30
   scale : 1
@@ -13,15 +11,19 @@ app.init(
   bgopacity: 0.2
   bgscale  : 4.425
 )
-$('#vertical-scroller, #vertical-scroller .dragdealer').css('height', window.innerHeight - $('.header').height() - $('.canvas_panel').height() - 30)
+
+$('.main_container, .canvas_panel').css('width', window.innerWidth - 30)
+
+get_height = ->
+  return window.innerHeight - $('.header').height() - 30
+
+$('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height())
+
 $(window).resize ->
   app.canvas.setWidth(window.innerWidth - 30)
   app.canvas.setHeight(window.innerHeight - $('.header').height() - 30)
-  $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', window.innerHeight - $('.header').height() - $('.canvas_panel').height() - 30)
-#  app.canvas.setWidth(800)
-#  app.canvas.setHeight(600)
-#  app.centerX = -app.canvas.getWidth() / 2
-#  app.centerY = -app.canvas.getHeight() / 2
+  $('.main_container, .canvas_panel').css('width', window.innerWidth - 30)
+  $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height())
   app.render()
 
 add = (left=0, top=0)->
