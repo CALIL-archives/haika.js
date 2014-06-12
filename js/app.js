@@ -73,43 +73,36 @@ app = {
       return _this.load();
     }, 500);
     this.canvas.on('object:selected', function(e) {
-      var object, _i, _len, _ref, _results;
+      var object, _i, _len, _ref;
       object = e.target;
       if (object._objects != null) {
         object.lockScalingX = true;
         object.lockScalingY = true;
-      } else {
-        _this.show_propety_panel(object);
       }
       _ref = _this.canvas.getObjects();
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
         if (object.id != null) {
-          _results.push(_this.save_prop(object));
-        } else {
-          _results.push(void 0);
+          _this.save_prop(object);
         }
       }
-      return _results;
+      return _this.set_propety_panel();
     });
     this.canvas.on('before:selection:cleared', function(e) {
-      var group, object, objects, _i, _len, _results;
+      var group, object, objects, _i, _len;
       object = e.target;
       _this.canvas.deactivateAll().renderAll();
       if (object._objects != null) {
         group = object;
         objects = object._objects;
-        _results = [];
         for (_i = 0, _len = objects.length; _i < _len; _i++) {
           object = objects[_i];
-          _results.push(_this.save_prop(object, group));
+          _this.save_prop(object, group);
         }
-        return _results;
       } else {
         _this.save_prop(object);
-        return _this.hide_propety_panel(object);
       }
+      return _this.set_propety_panel();
     });
     this.canvas.on('object:scaling', function(e) {
       var object;
@@ -444,10 +437,22 @@ app = {
     a.href = (window.URL || webkitURL).createObjectURL(blob);
     return a.click();
   },
-  show_propety_panel: function(object) {
-    return $('.propery_panel').show().find('p').html('id:' + object.id);
-  },
-  hide_propety_panel: function(object) {
-    return $('.propery_panel').hide();
+  set_propety_panel: function(object) {
+    var group, objects;
+    $('.canvas_panel, .object_panel, .group_panel').hide();
+    object = this.canvas.getActiveObject();
+    if (object) {
+      $('.object_panel').show();
+      $('#object_id').html(object.id);
+      return;
+    }
+    group = this.canvas.getActiveGroup();
+    if (group) {
+      objects = group._objects;
+      $('#group_count').html(objects.length);
+      $('.group_panel').show();
+    } else {
+      return $('.canvas_panel').show();
+    }
   }
 };

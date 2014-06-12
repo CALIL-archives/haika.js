@@ -1,7 +1,21 @@
+scrollbar_width = $('#vertical-scroller').width()
+scrollbar_height = $('#horizontal-scroller').height()
+propery_panel_width = $('.propery_panel').width()
+log scrollbar_width
+log scrollbar_height
+log propery_panel_width
+
+
+get_width = ->
+  return window.innerWidth - 30 - propery_panel_width - 20
+
+get_height = ->
+  return window.innerHeight - $('.header').height() - 30
+
 app.init(
   canvas : 'canvas'
-  canvas_width : window.innerWidth - 30
-  canvas_height : window.innerHeight - $('.header').height() - 30
+  canvas_width : get_width()
+  canvas_height : get_height()
   scale : 1
   max_width: 10000
   max_height: 10000
@@ -12,18 +26,18 @@ app.init(
   bgscale  : 4.425
 )
 
-$('.main_container, .canvas_panel').css('width', window.innerWidth - 30)
+$('.main_container, .canvas_panel').css('width', get_width())
 
-get_height = ->
-  return window.innerHeight - $('.header').height() - 30
 
 $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height())
+$('.propery_panel').css('height', get_height()+scrollbar_height)
 
 $(window).resize ->
-  app.canvas.setWidth(window.innerWidth - 30)
-  app.canvas.setHeight(window.innerHeight - $('.header').height() - 30)
-  $('.main_container, .canvas_panel').css('width', window.innerWidth - 30)
+  app.canvas.setWidth(get_width())
+  app.canvas.setHeight(get_height())
+  $('.main_container, .canvas_panel').css('width', get_width())
   $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height())
+  $('.propery_panel').css('height', get_height()+scrollbar_height)
   app.render()
 
 add = (left=0, top=0)->

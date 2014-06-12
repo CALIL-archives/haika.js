@@ -79,16 +79,59 @@
               </select>
           </label>
           <input type="button" class="add btn btn-default" value="add" />
-          <input type="button" class="remove btn btn-default" value="remove" />
-          <i class="fa fa-files-o duplicate btn btn-default"> duplicate</i>
-
-          <input type="button" class="bringtofront btn btn-default" value="bringToFront " />
           <input type="button" class="svg btn btn-default" value="SVG" />
           <input type="button" class="geojson btn btn-default" value="GeoJSON" />
           <input type="button" class="reset btn btn-default" value="データリセット" />
         </div>
       </div>
 <!--    </div>-->
+    <div class="side_container">
+      <div id="vertical-scroller" class="content-scroller">
+        <div id="vertical-scroller" class="dragdealer">
+          <div class="handle gray-bar">
+            <span class="value"><i class="fa fa-bars"></i></span>
+          </div>
+        </div>
+      </div>
+      <div class="propery_panel">
+        <div class="canvas_panel">
+          <h3>キャンバスのプロパティ</h3>
+          <label for="canvas_width">
+            Width:
+            <input type="text" id="canvas_width" class="form-control" value="0" />
+          </label><br />
+          <label for="canvas_height">
+            Height:
+            <input type="text" id="canvas_height" class="form-control" value="0" />
+          </label><br />
+          <label for="canvas_centerX">
+            centerX:
+            <input type="text" id="canvas_centerX" class="form-control" value="0" />
+          </label><br />
+          <label for="canvas_centerY">
+            centerY:
+            <input type="text" id="canvas_centerY" class="form-control" value="0" />
+          </label><br />
+          <label for="canvas_bgscale">
+            bgscale:
+            <input type="text" id="canvas_bgscale" class="form-control" value="0" />
+          </label><br />
+          <input type="button" id="canvas_render" class="btn btn-default" value="render">
+          <div class="rotate"></div>
+        </div>
+        <div class="object_panel">
+          <h3>オブジェクトのプロパティ</h3>
+          <p>id: <span id="object_id"></span></p>
+          <p><input type="button" class="remove btn btn-default" value="remove" /></p>
+          <p><i class="fa fa-files-o duplicate btn btn-default"> duplicate</i></p>
+          <p><input type="button" class="bringtofront btn btn-default" value="bringToFront " /></p>
+        </div>
+        <div class="group_panel">
+          <h3>グループのプロパティ</h3>
+          <p><span id="group_count"></span>個のオブジェクトを選択中。</p>
+        </div>
+      </div>
+    </div>
     <div class="main_container">
       <canvas id="canvas" width="800" height="600"></canvas>
       <div class="row">
@@ -106,43 +149,6 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="side_container">
-      <div id="vertical-scroller" class="content-scroller">
-        <div id="vertical-scroller" class="dragdealer">
-          <div class="handle gray-bar">
-            <span class="value"><i class="fa fa-bars"></i></span>
-          </div>
-        </div>
-      </div>
-      <div class="propery_panel">
-        <h3>オブジェクトのプロパティ</h3>
-        <p>表示予定地</p>
-      </div>
-    </div>
-    <div class="canvas_panel">
-      <label for="canvas_width">
-        Width:
-        <input type="text" id="canvas_width" class="form-control" value="0" />
-      </label>
-      <label for="canvas_height">
-        Height:
-        <input type="text" id="canvas_height" class="form-control" value="0" />
-      </label>
-      <label for="canvas_centerX">
-        centerX:
-        <input type="text" id="canvas_centerX" class="form-control" value="0" />
-      </label>
-      <label for="canvas_centerY">
-        centerY:
-        <input type="text" id="canvas_centerY" class="form-control" value="0" />
-      </label>
-      <label for="canvas_bgscale">
-        bgscale:
-        <input type="text" id="canvas_bgscale" class="form-control" value="0" />
-      </label>
-      <input type="button" id="canvas_render" class="btn btn-default" value="render">
-      <div class="rotate"></div>
     </div>
     <!-- External script dependencies  -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
