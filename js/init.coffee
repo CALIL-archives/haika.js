@@ -204,7 +204,7 @@ app.canvas.on "object:added", (e) ->
 
 app.canvas.on "object:selected", (e) ->
   object = e.target
-  console.log "object:selected"
+#  console.log "object:selected"
   if states.length==0 or object.id!=states[states.length-1].id
     object.saveState()
     originalState = $.extend(true, {}, object.originalState)
@@ -214,12 +214,12 @@ app.canvas.on "object:selected", (e) ->
 
 app.canvas.on "selection:cleared", (e) ->
   object = e.target
-  console.log "selection:cleared"
+#  console.log "selection:cleared"
 
 
 app.canvas.on "object:modified", (e) ->
   object = e.target
-  console.log "object:modified"
+#  console.log "object:modified"
   object.saveState()
   originalState = $.extend(true, {}, object.originalState)
   states.push(originalState)

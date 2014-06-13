@@ -212,7 +212,6 @@ app.canvas.on("object:added", function(e) {
 app.canvas.on("object:selected", function(e) {
   var object, originalState;
   object = e.target;
-  console.log("object:selected");
   if (states.length === 0 || object.id !== states[states.length - 1].id) {
     object.saveState();
     originalState = $.extend(true, {}, object.originalState);
@@ -224,14 +223,12 @@ app.canvas.on("object:selected", function(e) {
 
 app.canvas.on("selection:cleared", function(e) {
   var object;
-  object = e.target;
-  return console.log("selection:cleared");
+  return object = e.target;
 });
 
 app.canvas.on("object:modified", function(e) {
   var object, originalState;
   object = e.target;
-  console.log("object:modified");
   object.saveState();
   originalState = $.extend(true, {}, object.originalState);
   states.push(originalState);
