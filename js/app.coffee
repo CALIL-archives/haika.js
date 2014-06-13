@@ -251,6 +251,8 @@ app =
 #    log 'render'
     @unselect()
     @canvas.clear()
+    beacons = []
+    shelfs  = []
     for o in @objects
       if o.type=='shelf'
         object = new fabric.Shelf()
@@ -291,6 +293,16 @@ app =
       object.cornerSize = 10
       object.setCoords()
       @canvas.add(object)
+#      if o.type=='beacon'
+#        beacons.push(object)
+#      if o.type.match(@state)
+#        shelfs.push(object)
+#    for shelf in shelfs
+#      shelf.setCoords()
+#      @canvas.add(shelf)
+#    for beacon in beacons
+#      beacon.setCoords()
+#      @canvas.add(beacon)
     if @scale==1 and @drawguideline
       fabric.drawGridLines(@canvas)
     @canvas.renderAll()
@@ -326,15 +338,21 @@ app =
 #    )
   zoomIn : ->
     @unselect()
-    @scale += 0.1
+    @scale = @scale+Math.pow(@scale+1, 2)/10
+    if @scale>=4
+      @scale = 4
+#    if 3 < @scale or 1 > @scale
+#      @scale = Math.round(@scale / 5) *5
+#    if 3 > @scale
+#      @scale = Math.round(@scale / 10) * 10
     @scale = (@scale*100).toFixed(0)/100
     @render()
     $('.zoom').html((@scale*100).toFixed(0)+'%')
   zoomOut : ->
     @unselect()
+    @scale = @scale-Math.pow(@scale+1, 2)/10
     if @scale<=0.1
-      return
-    @scale -= 0.1
+      @scale = 0.1
     @scale = (@scale*100).toFixed(0)/100
     @render()
     $('.zoom').html((@scale*100).toFixed(0)+'%')

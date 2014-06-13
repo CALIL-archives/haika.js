@@ -146,12 +146,22 @@ $ ->
 #        activeObject.angle = ui.value
 #        activeObject.setCoords()
 #        app.canvas.renderAll()
-#  $('canvas').on 'mousewheel', (event)=>
-#    #console.log(event.deltaX, event.deltaY, event.deltaFactor);
-#    if event.deltaY==1
-#      app.zoomIn()
-#    if event.deltaY==-1
-#      app.zoomOut()
+  timeout = false
+  $('canvas').on 'mousewheel', (event)=>
+    #console.log(event.deltaX, event.deltaY, event.deltaFactor);
+#    log 'event.deltaX:'+event.deltaX
+#    log 'event.deltaY:'+event.deltaY
+#    log 'event.deltaFactor'+event.deltaFactor
+    if timeout
+      return
+    else
+      timeout = setTimeout ->
+          timeout = false
+      , 100
+    if event.deltaY>0
+      app.zoomIn()
+    if event.deltaY<0
+      app.zoomOut()
 #  @shiftKey = false
 #  $(document.body).keydown (e)=>
 #    @shiftKey = e.shiftKey

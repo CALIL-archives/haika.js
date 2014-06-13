@@ -73,6 +73,8 @@ add = function(left, top) {
 };
 
 $(function() {
+  var timeout,
+    _this = this;
   window.addmany = function() {
     var x, y;
     y = 0;
@@ -157,6 +159,22 @@ $(function() {
   $(".reset").click(function() {
     localStorage.clear();
     return location.reload();
+  });
+  timeout = false;
+  $('canvas').on('mousewheel', function(event) {
+    if (timeout) {
+      return;
+    } else {
+      timeout = setTimeout(function() {
+        return timeout = false;
+      }, 100);
+    }
+    if (event.deltaY > 0) {
+      app.zoomIn();
+    }
+    if (event.deltaY < 0) {
+      return app.zoomOut();
+    }
   });
   $('#canvas_width').change(function() {
     return app.canvas.setWidth($(this).val());
