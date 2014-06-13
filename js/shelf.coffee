@@ -10,7 +10,7 @@
     console.warn "fabric.Shelf is already defined"
     return
   stateProperties = fabric.Object::stateProperties.concat()
-  stateProperties.push "rx", "ry", "x", "y"
+  stateProperties.push "rx", "ry", "x", "y", "id", "count", "side"
 
   fabric.Shelf = fabric.util.createClass(fabric.Object,
     stateProperties: stateProperties

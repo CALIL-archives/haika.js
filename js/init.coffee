@@ -146,22 +146,12 @@ $ ->
 #        activeObject.angle = ui.value
 #        activeObject.setCoords()
 #        app.canvas.renderAll()
-  timeout = false
-  $('canvas').on 'mousewheel', (event)=>
-    #console.log(event.deltaX, event.deltaY, event.deltaFactor);
-#    log 'event.deltaX:'+event.deltaX
-#    log 'event.deltaY:'+event.deltaY
-#    log 'event.deltaFactor'+event.deltaFactor
-    if timeout
-      return
-    else
-      timeout = setTimeout ->
-          timeout = false
-      , 100
-    if event.deltaY>0
-      app.zoomIn()
-    if event.deltaY<0
-      app.zoomOut()
+#  $('canvas').on 'mousewheel', (event)=>
+#    #console.log(event.deltaX, event.deltaY, event.deltaFactor);
+#    if event.deltaY==1
+#      app.zoomIn()
+#    if event.deltaY==-1
+#      app.zoomOut()
 #  @shiftKey = false
 #  $(document.body).keydown (e)=>
 #    @shiftKey = e.shiftKey
@@ -184,3 +174,56 @@ $ ->
     app.options.bgscale = parseInt($(this).val())
   $('#canvas_render').click ->
     app.render()
+
+    
+  $(".undo").click ->
+    undoManager.undo()
+
+
+undoManager = new UndoManager()
+states = []
+
+app.canvas.on "object:added", (e) ->
+  object = e.target
+#  undoManager.add
+#    undo: ->
+#      app.remove(object)
+#    redo: ->
+
+app.canvas.on "object:selected", (e) ->
+  object = e.target
+  console.log "object:selected"
+  if states.length==0 or object.id!=states[states.length-1].id
+    object.saveState()
+    originalState = $.extend(true, {}, object.originalState)
+    originalState.select = true
+    states.push(originalState)
+    log states
+
+app.canvas.on "selection:cleared", (e) ->
+  object = e.target
+  console.log "selection:cleared"
+
+
+app.canvas.on "object:modified", (e) ->
+  object = e.target
+  console.log "object:modified"
+  object.saveState()
+  originalState = $.extend(true, {}, object.originalState)
+  states.push(originalState)
+  log states
+  undoManager.add
+    undo: ->
+      log 'undo'
+      if states.length>0
+        state = states[states.length-2]
+        object.setOptions state
+        states.pop()
+        object.setCoords()
+        app.render()
+        app.canvas.setActiveObject(object)
+        log states
+    redo: ->
+#      redo()
+  return
+

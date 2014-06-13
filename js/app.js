@@ -297,11 +297,9 @@ app = {
     }
   },
   render: function() {
-    var beacons, o, object, shelfs, _i, _len, _ref;
+    var o, object, _i, _len, _ref;
     this.unselect();
     this.canvas.clear();
-    beacons = [];
-    shelfs = [];
     _ref = this.objects;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       o = _ref[_i];
@@ -376,20 +374,17 @@ app = {
   },
   zoomIn: function() {
     this.unselect();
-    this.scale = this.scale + Math.pow(this.scale + 1, 2) / 10;
-    if (this.scale >= 4) {
-      this.scale = 4;
-    }
+    this.scale += 0.1;
     this.scale = (this.scale * 100).toFixed(0) / 100;
     this.render();
     return $('.zoom').html((this.scale * 100).toFixed(0) + '%');
   },
   zoomOut: function() {
     this.unselect();
-    this.scale = this.scale - Math.pow(this.scale + 1, 2) / 10;
     if (this.scale <= 0.1) {
-      this.scale = 0.1;
+      return;
     }
+    this.scale -= 0.1;
     this.scale = (this.scale * 100).toFixed(0) / 100;
     this.render();
     return $('.zoom').html((this.scale * 100).toFixed(0) + '%');
