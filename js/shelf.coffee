@@ -203,6 +203,7 @@
             [ [x, y], [x + w, y], [x + w, y - h], [x, y - h], [x, y]]
           ]
         "properties": 
+          "type"  : @type
           "id"    : @id
           "count" : @count
           "side"  : @side

@@ -85,7 +85,7 @@ app =
           object.lockScalingX  = true
           object.lockScalingY  = true
         else
-          log JSON.stringify(object.toGeoJSON(), null, 4)
+#          log JSON.stringify(object.toGeoJSON(), null, 4)
           $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4))
         #  object.lockScalingY  = true
         for object in @canvas.getObjects()
@@ -121,13 +121,17 @@ app =
       @render()
       @save()
       return
+  last_id : 0
   get_id : ->
-    return @objects.length
-  add : (object)->
-    id = @get_id()
-    object.id = id
+    if @objects.length==0
+      return 0
+    @last_id += 1
+    return @last_id
+  create_object: (object)->
+    if not object.id?
+      object.id = @get_id()
     o =
-      id : id
+      id : object.id
     props = [
       'type'
       'width'
@@ -151,6 +155,9 @@ app =
         o.left_cm = @transformY_px2cm(object.left)
         continue
       o[prop] = object[prop]
+    return o
+  add : (object)->
+    o = @create_object(object)
     @objects.push(o)
     #layer tab
     if object.type.match(/shelf$/)
@@ -165,6 +172,8 @@ app =
 #    log objects
     if objects
       for object in objects
+        if object.id>@last_id
+          @last_id = object.id
         if object.type=='shelf'
           klass = fabric.Shelf
         else if object.type=='curved_shelf'
@@ -174,6 +183,7 @@ app =
         else
           continue
         shape = new klass(
+          id: object.id
           count: object.count
           side: object.side
           top: app.transformX_cm2px(object.top_cm)
@@ -191,20 +201,28 @@ app =
       @centerX = canvas.centerX
       @centerY = canvas.centerY
     @render()
+  search : (id)->
+    count = null
+    $(@objects).each (i, obj)->
+      if obj.id==id
+        count = i
+    return count
   save : ->
     canvas = 
       scale : @scale
       centerX : @centerX
       centerY : @centerY
     localStorage.setItem('canvas', JSON.stringify(canvas))
+    localStorage.setItem('app_data', JSON.stringify(@objects))
   save_prop : (object, group=false)->
-    count = object.id
-    @objects[count].type  = object.type
+    count = @search(object.id)
+    @objects[count].id      = object.id
+    @objects[count].type    = object.type
     @objects[count].top_cm  = @transformY_px2cm(object.top)
     @objects[count].left_cm = @transformX_px2cm(object.left)
-    @objects[count].scaleX = object.scaleX / @scale
-    @objects[count].scaleY = object.scaleY / @scale
-    @objects[count].angle  = object.angle
+    @objects[count].scaleX  = object.scaleX / @scale
+    @objects[count].scaleY  = object.scaleY / @scale
+    @objects[count].angle   = object.angle
 
     if object.type.match(/shelf$/)
       @objects[count].count = object.count
@@ -224,21 +242,24 @@ app =
       #@canvas.setActiveGroup(group.setCoords()).renderAll()
   remove : ->
     @bind (object)=>
-      log object
+#      log object
       @canvas.remove(object)
-      count = object.id
+      count = @search(object.id)
+      log count
       @objects.splice(count, 1)
+      log @objects
+      @save()
   bringToFront : ->
     @bind (object)=>
-      count = object.id
+      count = @search(object.id)
       object.bringToFront()
       obj = @objects[count]
       @objects.splice(count, 1)
-      @objects.push(obj) 
+      @objects.push(obj)
   duplicate : ->
     @bind (object)=>
-      @active(object)
-  active : (object)->
+      @add_active(object)
+  add_active : (object)->
     id = app.add(object)
     app.render()
     $(@canvas.getObjects()).each (i, obj)=>
@@ -251,12 +272,14 @@ app =
   clipboard : null
   copy  : ->
     @bind (object)=>
-      @clipboard = object
+      @clipboard = @create_object(object)
   paste : ()->
     if not @clipboard
       return
-    @active(@clipboard)
-    @clipboard = null
+    @clipboard.id = @get_id()
+    @objects.push(@clipboard)
+    app.render()
+#    @add_active(@clipboard)
   transformX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale

@@ -92,7 +92,6 @@ app = {
         object.lockScalingX = true;
         object.lockScalingY = true;
       } else {
-        log(JSON.stringify(object.toGeoJSON(), null, 4));
         $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4));
       }
       _ref = _this.canvas.getObjects();
@@ -139,15 +138,21 @@ app = {
       _this.save();
     });
   },
+  last_id: 0,
   get_id: function() {
-    return this.objects.length;
+    if (this.objects.length === 0) {
+      return 0;
+    }
+    this.last_id += 1;
+    return this.last_id;
   },
-  add: function(object) {
-    var id, o, prop, props, state, _i, _len;
-    id = this.get_id();
-    object.id = id;
+  create_object: function(object) {
+    var o, prop, props, _i, _len;
+    if (!(object.id != null)) {
+      object.id = this.get_id();
+    }
     o = {
-      id: id
+      id: object.id
     };
     props = ['type', 'width', 'height', 'scaleX', 'scaleY', 'left', 'top', 'angle', 'fill', 'stroke'];
     if (object.type.match(/shelf$/)) {
@@ -166,6 +171,11 @@ app = {
       }
       o[prop] = object[prop];
     }
+    return o;
+  },
+  add: function(object) {
+    var o, state;
+    o = this.create_object(object);
     this.objects.push(o);
     if (object.type.match(/shelf$/)) {
       state = 'shelf';
@@ -182,6 +192,9 @@ app = {
     if (objects) {
       for (_i = 0, _len = objects.length; _i < _len; _i++) {
         object = objects[_i];
+        if (object.id > this.last_id) {
+          this.last_id = object.id;
+        }
         if (object.type === 'shelf') {
           klass = fabric.Shelf;
         } else if (object.type === 'curved_shelf') {
@@ -192,6 +205,7 @@ app = {
           continue;
         }
         shape = new klass({
+          id: object.id,
           count: object.count,
           side: object.side,
           top: app.transformX_cm2px(object.top_cm),
@@ -212,6 +226,16 @@ app = {
     }
     return this.render();
   },
+  search: function(id) {
+    var count;
+    count = null;
+    $(this.objects).each(function(i, obj) {
+      if (obj.id === id) {
+        return count = i;
+      }
+    });
+    return count;
+  },
   save: function() {
     var canvas;
     canvas = {
@@ -219,14 +243,16 @@ app = {
       centerX: this.centerX,
       centerY: this.centerY
     };
-    return localStorage.setItem('canvas', JSON.stringify(canvas));
+    localStorage.setItem('canvas', JSON.stringify(canvas));
+    return localStorage.setItem('app_data', JSON.stringify(this.objects));
   },
   save_prop: function(object, group) {
     var count;
     if (group == null) {
       group = false;
     }
-    count = object.id;
+    count = this.search(object.id);
+    this.objects[count].id = object.id;
     this.objects[count].type = object.type;
     this.objects[count].top_cm = this.transformY_px2cm(object.top);
     this.objects[count].left_cm = this.transformX_px2cm(object.left);
@@ -254,17 +280,19 @@ app = {
     var _this = this;
     return this.bind(function(object) {
       var count;
-      log(object);
       _this.canvas.remove(object);
-      count = object.id;
-      return _this.objects.splice(count, 1);
+      count = _this.search(object.id);
+      log(count);
+      _this.objects.splice(count, 1);
+      log(_this.objects);
+      return _this.save();
     });
   },
   bringToFront: function() {
     var _this = this;
     return this.bind(function(object) {
       var count, obj;
-      count = object.id;
+      count = _this.search(object.id);
       object.bringToFront();
       obj = _this.objects[count];
       _this.objects.splice(count, 1);
@@ -274,10 +302,10 @@ app = {
   duplicate: function() {
     var _this = this;
     return this.bind(function(object) {
-      return _this.active(object);
+      return _this.add_active(object);
     });
   },
-  active: function(object) {
+  add_active: function(object) {
     var id,
       _this = this;
     id = app.add(object);
@@ -296,15 +324,16 @@ app = {
   copy: function() {
     var _this = this;
     return this.bind(function(object) {
-      return _this.clipboard = object;
+      return _this.clipboard = _this.create_object(object);
     });
   },
   paste: function() {
     if (!this.clipboard) {
       return;
     }
-    this.active(this.clipboard);
-    return this.clipboard = null;
+    this.clipboard.id = this.get_id();
+    this.objects.push(this.clipboard);
+    return app.render();
   },
   transformX_cm2px: function(cm) {
     return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scale;
