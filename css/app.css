@@ -34,6 +34,11 @@ body {
   display: none;
 }
 
+#geojson {
+  width: 300px;
+  height: 500px;
+  color: #000000;
+}
 
 /* scrollbar */
 

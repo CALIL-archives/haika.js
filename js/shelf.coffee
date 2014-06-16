@@ -206,7 +206,7 @@
           "id"    : @id
           "count" : @count
           "side"  : @side
-          "center": @getCenterPoint()
+#          "center": @getCenterPoint()
       return data
     
     toSVG: (reviver) ->

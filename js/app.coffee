@@ -84,7 +84,9 @@ app =
         if object._objects?
           object.lockScalingX  = true
           object.lockScalingY  = true
-#        else
+        else
+          log JSON.stringify(object.toGeoJSON(), null, 4)
+          $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4))
         #  object.lockScalingY  = true
         for object in @canvas.getObjects()
           if object.id?

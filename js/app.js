@@ -91,6 +91,9 @@ app = {
       if (object._objects != null) {
         object.lockScalingX = true;
         object.lockScalingY = true;
+      } else {
+        log(JSON.stringify(object.toGeoJSON(), null, 4));
+        $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4));
       }
       _ref = _this.canvas.getObjects();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
