@@ -151,6 +151,12 @@ $(function() {
   $(".duplicate").click(function() {
     return app.duplicate();
   });
+  $(".copy").click(function() {
+    return app.copy();
+  });
+  $(".paste").click(function() {
+    return app.paste();
+  });
   $(".svg").click(function() {
     return app.getSVG();
   });

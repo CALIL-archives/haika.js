@@ -274,22 +274,37 @@ app = {
   duplicate: function() {
     var _this = this;
     return this.bind(function(object) {
-      var id;
-      id = app.add(object);
-      app.render();
-      return $(_this.canvas.getObjects()).each(function(i, obj) {
-        if (obj.id === id) {
-          return _this.active(obj);
-        }
-      });
+      return _this.active(object);
     });
   },
   active: function(object) {
-    object.set({
-      top: object.top + 10,
-      left: object.left + 10
+    var id,
+      _this = this;
+    id = app.add(object);
+    app.render();
+    return $(this.canvas.getObjects()).each(function(i, obj) {
+      if (obj.id === id) {
+        obj.set({
+          top: obj.top + 10,
+          left: obj.left + 10
+        });
+        return _this.canvas.setActiveObject(obj);
+      }
     });
-    return this.canvas.setActiveObject(object);
+  },
+  clipboard: null,
+  copy: function() {
+    var _this = this;
+    return this.bind(function(object) {
+      return _this.clipboard = object;
+    });
+  },
+  paste: function() {
+    if (!this.clipboard) {
+      return;
+    }
+    this.active(this.clipboard);
+    return this.clipboard = null;
   },
   transformX_cm2px: function(cm) {
     return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scale;

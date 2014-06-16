@@ -237,17 +237,26 @@ app =
       @objects.push(obj) 
   duplicate : ->
     @bind (object)=>
-      id = app.add(object)
-      app.render()
-      $(@canvas.getObjects()).each (i, obj)=>
-        if obj.id==id
-          @active(obj)
+      @active(object)
   active : (object)->
-    object.set(
-      top  : object.top + 10
-      left : object.left + 10
-    )
-    @canvas.setActiveObject(object);
+    id = app.add(object)
+    app.render()
+    $(@canvas.getObjects()).each (i, obj)=>
+      if obj.id==id
+        obj.set(
+          top  : obj.top + 10
+          left : obj.left + 10
+        )
+        @canvas.setActiveObject(obj)
+  clipboard : null
+  copy  : ->
+    @bind (object)=>
+      @clipboard = object
+  paste : ()->
+    if not @clipboard
+      return
+    @active(@clipboard)
+    @clipboard = null
   transformX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale

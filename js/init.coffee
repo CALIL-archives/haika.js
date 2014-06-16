@@ -122,6 +122,10 @@ $ ->
     app.bringToFront()
   $(".duplicate").click ->
     app.duplicate()
+  $(".copy").click ->
+    app.copy()
+  $(".paste").click ->
+    app.paste()
 #  $(".toright").click ->
 #    app.toRight()
 #  $(".toleft").click ->
