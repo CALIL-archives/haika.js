@@ -1,60 +1,40 @@
 ((global) ->
   "use strict"
-  _setDefaultLeftTopValues = (attributes) ->
-    attributes.left = attributes.left or 0
-    attributes.top = attributes.top or 0
-    attributes
   fabric = global.fabric or (global.fabric = {})
-  extend = fabric.util.object.extend
   if fabric.drawGridLines
     console.warn "fabric.drawGridLines is already defined"
     return
+  fabric.drawGridLines = (ctx) ->
+    width = ctx.canvas.width
+    height = ctx.canvas.height
 
-  fabric.drawGridLines = (canvas) ->
-    canvas.renderOnAddRemove = false
-    width = canvas.width
-    height = canvas.height
-    line = null
-    rect = []
-    size = 100 * app.scale # 50px = 1m = 100cm / 2 = 50px
-
-    #格子線を描画する
-    i = 1
-    while i < Math.ceil(width / size)
-      rect[0] = i * size
-      rect[1] = 0
-      rect[2] = i * size
-      rect[3] = height
-      line = new fabric.Line(rect,
-        stroke: "#999"
-        opacity: 0.5
-        strokeWidth: 0.5
-        strokeDashArray: [2, 2]
-        selectable: false
-        hasControls: false
-        hasBorders: false
-      )
-      canvas.add line
-      ++i
-    i = 1
-    while i < Math.ceil(height / size)
-      rect[0] = 0
-      rect[1] = i * size
-      rect[2] = width
-      rect[3] = i * size
-      line = new fabric.Line(rect,
-        stroke: "#999"
-        opacity: 0.5
-        strokeWidth: 0.5
-        strokeDashArray: [2, 2]
-        selectable: false
-        hasControls: false
-        hasBorders: false
-      )
-      canvas.add line
-      ++i
+    size = 100 * app.scale
+    if size < 50 then size=500 * app.scale
+    ctx.save()
+    #ctx.setTransform(1, 0, 0, 1, 0, 0)
+    #ctx.scale(1,1)
+    #ctx.beginPath()
+    ctx.setLineDash([2,2])
+    ctx.lineWidth = 1
+    ctx.strokeStyle = '#999999'
+    ctx.opacity = 1
+    sx = (app.transformX_cm2px(0)*1000 % Math.floor(size*1000))/1000
+    sy = (app.transformY_cm2px(0)*1000 % Math.floor(size*1000))/1000
+    i = 0
+    while i < Math.ceil(width / size)+1
+        ctx.moveTo(Math.floor(i * size+sx)+0.5, 0)
+        ctx.lineTo(Math.floor(i * size+sx)+0.5, height)
+        ++i
+    i = 0
+    while i < Math.ceil(height / size)+1
+        ctx.moveTo(0, Math.floor(i * size+sy)+0.5)
+        ctx.lineTo(width, Math.floor(i * size+sy)+0.5)
+        ++i
+    ctx.stroke()
+    ctx.restore()
+    return
     #縮尺を表示する
-    canvas.renderOnAddRemove = true
+    #canvas.renderOnAddRemove = false
     points = [
       {'x': 0, 'y': 0},
       {'x': 0, 'y': size * 0.1},
@@ -104,16 +84,4 @@
     )
     canvas.add text
 
-  fabric.drawGridLines.fromElement = (element, options) ->
-    return null  unless element
-    parsedAttributes = fabric.parseAttributes(element, fabric.drawGridLines.ATTRIBUTE_NAMES)
-    parsedAttributes = _setDefaultLeftTopValues(parsedAttributes)
-    gridLines = new fabric.drawGridLines(extend(((if options then fabric.util.object.clone(options) else {})), parsedAttributes))
-    gridLines._normalizeLeftTopProperties parsedAttributes
-    gridLines
-  fabric.drawGridLines.fromObject = (object) ->
-    new fabric.drawGridLines(object)
-
   return) (if typeof exports isnt "undefined" then exports else this)
-
-#    fabric.drawGridLines.async = true;

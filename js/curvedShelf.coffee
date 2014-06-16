@@ -64,7 +64,7 @@
       rad = @height * @scaleY / 2 - @__eachHeight() * @side
       if rad <= 10 then rad = 10
       if  30 * @count < 360
-          ctx.arc(arcX, arcY, rad, arcEnd,arcStart, true);
+        ctx.arc(arcX, arcY, rad, arcEnd, arcStart, true);
       ctx.closePath()
       @_renderFill ctx
       @_renderStroke ctx

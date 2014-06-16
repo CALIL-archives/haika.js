@@ -10,15 +10,11 @@
     console.warn "fabric.Shelf is already defined"
     return
   stateProperties = fabric.Object::stateProperties.concat()
-  stateProperties.push "rx", "ry", "x", "y", "id", "count", "side"
+  stateProperties.push "id", "count", "side"
 
   fabric.Shelf = fabric.util.createClass(fabric.Object,
     stateProperties: stateProperties
     type: "shelf"
-    rx: 0
-    ry: 0
-    x: 0
-    y: 0
     __const_width: 90
     __const_hegiht: 25
     __width: ->
@@ -36,17 +32,8 @@
     initialize: (options) ->
       options = options or {}
       @callSuper "initialize", options
-      @_initRxRy()
-      @x = options.x or 0
-      @y = options.y or 0
       @width = @__width()
       @height = @__height()
-      return
-
-    _initRxRy: ->
-      if @rx and not @ry
-        @ry = @rx
-      else @rx = @ry  if @ry and not @rx
       return
 
     _render: (ctx) ->
@@ -66,8 +53,6 @@
       x = -w / 2 * @count + sx
       y = -h / 2 * @side
       isInPathGroup = @group and @group.type is "path-group"
-      #isRounded = rx isnt 0 or ry isnt 0
-      #k = 1 - 0.5522847498
       ctx.globalAlpha = (if isInPathGroup then (ctx.globalAlpha * @opacity) else @opacity)
       if @transformMatrix and isInPathGroup
         ctx.translate @width / 2 + @x, @height / 2 + @y
@@ -81,20 +66,11 @@
       if @side is 2
         @__renderShelf ctx, x, y, w, h
 
-      #      ctx.lineWidth = 1
-      #      ctx.globalAlpha = 1 #塗りつぶしの透明度設定
-      #      ctx.fillStyle = '#000000'
-      #      ctx.beginPath()
-      #      #arc(x座標,y,直径,円弧の描き始めの位置,書き終わりの位置,円弧を描く方向(true:反時計回り))
-      #      ctx.arc(@width-@width/2-10,-@height/2+@height/2/@side,1,0,2*Math.PI,true)
-      #      @_renderFill ctx
-      #      @_renderStroke ctx
       if @active
         ctx.font = "13.5px Arial";
         ctx.textAlign = "center"
         ctx.textBaseline = "middle"
         ctx.fillStyle = 'rgba(0, 0, 0,1)';
-
 
         label = if @side==1 then "単式" else "複式"
         label = "[" + @id + "] " + label + @count + "連"
@@ -205,10 +181,6 @@
 
     toObject: (propertiesToInclude) ->
       object = extend(@callSuper("toObject", propertiesToInclude),
-        rx: @get("rx") or 0
-        ry: @get("ry") or 0
-        x: @get("x")
-        y: @get("y")
         count: @get("count")        
         side: @get("side")
       )
@@ -266,7 +238,7 @@
     complexity: ->
       1
   )
-  fabric.Shelf.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat("x y rx ry width height count side".split(" "))
+  fabric.Shelf.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat("width height count side".split(" "))
   fabric.Shelf.fromElement = (element, options) ->
     return null  unless element
     parsedAttributes = fabric.parseAttributes(element, fabric.Shelf.ATTRIBUTE_NAMES)

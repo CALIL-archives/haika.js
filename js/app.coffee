@@ -52,6 +52,17 @@ app =
           action='rotate'
       return action
 
+    #背景にグリッドラインを追加するためにオーバーライド
+    canvas._renderBackground = (ctx) ->
+      if @backgroundColor
+        ctx.fillStyle = (if @backgroundColor.toLive then @backgroundColor.toLive(ctx) else @backgroundColor)
+        ctx.fillRect @backgroundColor.offsetX or 0, @backgroundColor.offsetY or 0, @width, @height
+      ctx.mozImageSmoothingEnabled = false
+      if @backgroundImage
+        #@backgroundImage.render ctx
+        ctx.drawImage(@backgroundImage._element,0,0,@width,@height)
+      ctx.mozImageSmoothingEnabled = true
+      fabric.drawGridLines(ctx)
 
     initAligningGuidelines(canvas)
     #initCenteringGuidelines(canvas)
@@ -62,6 +73,7 @@ app =
       fabric.Image.fromURL @options.bgurl, (img)=>
         @bgimg = img
         @bgimg_width  = img.width
+
         @bgimg_height = img.height
     setTimeout =>
       @load()
@@ -280,31 +292,31 @@ app =
       if o.type=='beacon'
         object.fill = "#000000"
         object.hasControls = false
+        object.padding = 10
+        object.borderColor = "#0000ee"
       else
+        object.borderColor = "#000000"
         object.fill = "#CFE2F3"
+        object.padding = 0
       object.stroke = "#000000"
-      object.padding = 0
       object.transparentCorners = false
       object.cornerColor = "#488BD4"
       object.borderOpacityWhenMoving = 0.8
-      object.borderColor = "#000000"
       object.cornerSize = 10
       object.setCoords()
       @canvas.add(object)
-    if @scale==1 and @drawguideline
-      fabric.drawGridLines(@canvas)
-    @canvas.renderAll()
     @render_bg()
+    @canvas.renderAll()
     @debug()
   render_bg : ->
     if @bgimg
-      @bgimg.left    = @canvas.getWidth()/2 + (-@bgimg_width*@options.bgscale/2 + @centerX) * @scale
-      @bgimg.top     = @canvas.getHeight()/2 + (-@bgimg_height*@options.bgscale/2 + @centerY) * @scale
-      @bgimg.width   = @bgimg_width*@options.bgscale*@scale
-      @bgimg.height  = @bgimg_height*@options.bgscale*@scale
+      @bgimg.left    = Math.floor( @canvas.getWidth()/2 + (-@bgimg_width*@options.bgscale/2 + @centerX) * @scale )
+      @bgimg.top     = Math.floor( @canvas.getHeight()/2 + (-@bgimg_height*@options.bgscale/2 + @centerY) * @scale )
+      @bgimg.width   = Math.floor( @bgimg_width*@options.bgscale*@scale  )
+      @bgimg.height  = Math.floor( @bgimg_height*@options.bgscale*@scale )
       @bgimg.opacity = @options.bgopacity
       @canvas.setBackgroundImage @bgimg, @canvas.renderAll.bind(@canvas)
-  #debgu pannel
+
   debug : ->
     $('#canvas_width').val(@canvas.getWidth())
     $('#canvas_height').val(@canvas.getHeight())
