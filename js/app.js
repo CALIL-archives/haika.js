@@ -403,8 +403,8 @@ app = {
     this.unselect();
     prev_scale = this.scale;
     this.scale = this.scale - Math.pow(this.scale + 1, 2) / 20;
-    if (this.scale <= 0.01) {
-      this.scale = 0.01;
+    if (this.scale <= 0.05) {
+      this.scale = 0.05;
     }
     if (prev_scale > 1 && this.scale < 1) {
       this.scale = 1;

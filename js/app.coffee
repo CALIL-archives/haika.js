@@ -353,8 +353,8 @@ app =
 #    @scale -= 0.1
     prev_scale = @scale
     @scale = @scale-Math.pow(@scale+1, 2)/20
-    if @scale<=0.01
-      @scale = 0.01
+    if @scale<=0.05
+      @scale = 0.05
     if prev_scale>1 and @scale < 1
       @scale = 1
     @scale = (@scale*100).toFixed(0)/100
