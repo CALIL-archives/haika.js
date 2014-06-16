@@ -276,12 +276,17 @@ app = {
     return this.bind(function(object) {
       var id;
       id = app.add(object);
-      log(app);
-      log(app.objects[id].top_cm);
-      app.objects[id].top_cm += app.objects[id].height * 2;
-      log(app.objects[id].top_cm);
-      log(app.objects[id]);
-      return app.render();
+      app.render();
+      _this.unselect();
+      return $(_this.canvas.getObjects()).each(function(i, obj) {
+        if (obj.id === id) {
+          obj.set({
+            top: obj.top + 10,
+            left: obj.left + 10
+          });
+          return this.canvas.setActiveObject(obj);
+        }
+      });
     });
   },
   transformX_cm2px: function(cm) {

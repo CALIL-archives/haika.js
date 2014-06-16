@@ -238,12 +238,20 @@ app =
   duplicate : ->
     @bind (object)=>
       id = app.add(object)
-      log app
-      log app.objects[id].top_cm
-      app.objects[id].top_cm += app.objects[id].height*2
-      log app.objects[id].top_cm
-      log app.objects[id]
+#      log app
+#      log app.objects[id].top_cm
+#      app.objects[id].top_cm += app.objects[id].height*2
+#      log app.objects[id].top_cm
+#      log app.objects[id]
       app.render()
+      @unselect()
+      $(@canvas.getObjects()).each (i, obj)->
+        if obj.id==id
+          obj.set(
+            top  : obj.top + 10
+            left : obj.left + 10
+          )
+          @canvas.setActiveObject(obj);
   transformX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale
