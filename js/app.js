@@ -277,17 +277,19 @@ app = {
       var id;
       id = app.add(object);
       app.render();
-      _this.unselect();
       return $(_this.canvas.getObjects()).each(function(i, obj) {
         if (obj.id === id) {
-          obj.set({
-            top: obj.top + 10,
-            left: obj.left + 10
-          });
-          return this.canvas.setActiveObject(obj);
+          return _this.active(obj);
         }
       });
     });
+  },
+  active: function(object) {
+    object.set({
+      top: object.top + 10,
+      left: object.left + 10
+    });
+    return this.canvas.setActiveObject(object);
   },
   transformX_cm2px: function(cm) {
     return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scale;

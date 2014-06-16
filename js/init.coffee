@@ -83,6 +83,7 @@ $ ->
     x: 0.5
     animationCallback: (x, y)->
 #      log x
+      app.unselect()
       maxX = app.bgimg_width * app.options.bgscale / 2
       centerX = x * 10000 - 5000
       if centerX > maxX - app.canvas.getWidth() / 2
@@ -97,6 +98,7 @@ $ ->
     vertical: true,
 #    yPrecision: 500,
     animationCallback: (x, y)->
+      app.unselect()
       maxY = app.bgimg_height * app.options.bgscale / 2
       centerY = y * 10000 - 5000
       if centerY > maxY - app.canvas.getHeight() / 2
