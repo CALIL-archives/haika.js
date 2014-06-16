@@ -16,6 +16,7 @@
       size = 500 * app.scale;
     }
     ctx.save();
+    ctx.beginPath();
     ctx.setLineDash([2, 2]);
     ctx.lineWidth = 1;
     ctx.strokeStyle = '#999999';
@@ -34,6 +35,7 @@
       ctx.lineTo(width, Math.floor(i * size + sy) + 0.5);
       ++i;
     }
+    ctx.closePath();
     ctx.stroke();
     ctx.restore();
     return;

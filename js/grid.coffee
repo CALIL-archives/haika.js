@@ -13,7 +13,7 @@
     ctx.save()
     #ctx.setTransform(1, 0, 0, 1, 0, 0)
     #ctx.scale(1,1)
-    #ctx.beginPath()
+    ctx.beginPath()
     ctx.setLineDash([2,2])
     ctx.lineWidth = 1
     ctx.strokeStyle = '#999999'
@@ -30,6 +30,7 @@
         ctx.moveTo(0, Math.floor(i * size+sy)+0.5)
         ctx.lineTo(width, Math.floor(i * size+sy)+0.5)
         ++i
+    ctx.closePath()
     ctx.stroke()
     ctx.restore()
     return
