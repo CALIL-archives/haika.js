@@ -59,8 +59,8 @@ app =
         ctx.fillRect @backgroundColor.offsetX or 0, @backgroundColor.offsetY or 0, @width, @height
       ctx.mozImageSmoothingEnabled = false
       if @backgroundImage
-        #@backgroundImage.render ctx
-        ctx.drawImage(@backgroundImage._element,0,0,@width,@height)
+        @backgroundImage.render ctx
+        #ctx.drawImage(@backgroundImage._element,0,0,@width,@height)
       ctx.mozImageSmoothingEnabled = true
       fabric.drawGridLines(ctx)
 

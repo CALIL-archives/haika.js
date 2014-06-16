@@ -66,7 +66,7 @@ app = {
       }
       ctx.mozImageSmoothingEnabled = false;
       if (this.backgroundImage) {
-        ctx.drawImage(this.backgroundImage._element, 0, 0, this.width, this.height);
+        this.backgroundImage.render(ctx);
       }
       ctx.mozImageSmoothingEnabled = true;
       return fabric.drawGridLines(ctx);
