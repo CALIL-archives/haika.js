@@ -291,15 +291,12 @@ app = {
       _this = this;
     this.save();
     object.id = this.get_id();
+    object.top = top;
+    object.left = left;
     id = this.add(object);
     this.render();
     return $(this.canvas.getObjects()).each(function(i, obj) {
       if (obj.id === id) {
-        log(id);
-        obj.set({
-          top: top,
-          left: left
-        });
         return _this.canvas.setActiveObject(obj);
       }
     });
