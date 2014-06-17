@@ -84,9 +84,7 @@ app =
         if object._objects?
           object.lockScalingX  = true
           object.lockScalingY  = true
-        else
-#          log JSON.stringify(object.toGeoJSON(), null, 4)
-          $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4))
+        #else
         #  object.lockScalingY  = true
         for object in @canvas.getObjects()
           if object.id?
@@ -201,7 +199,7 @@ app =
       @centerX = canvas.centerX
       @centerY = canvas.centerY
     @render()
-  search : (id)->
+  findbyid : (id)->
     count = null
     $(@objects).each (i, obj)->
       if obj.id==id
@@ -215,7 +213,7 @@ app =
     localStorage.setItem('canvas', JSON.stringify(canvas))
     localStorage.setItem('app_data', JSON.stringify(@objects))
   save_prop : (object, group=false)->
-    count = @search(object.id)
+    count = @findbyid(object.id)
     @objects[count].id      = object.id
     @objects[count].type    = object.type
     @objects[count].top_cm  = @transformY_px2cm(object.top)
@@ -244,14 +242,14 @@ app =
     @bind (object)=>
 #      log object
       @canvas.remove(object)
-      count = @search(object.id)
+      count = @findbyid(object.id)
       log count
       @objects.splice(count, 1)
       log @objects
       @save()
   bringToFront : ->
     @bind (object)=>
-      count = @search(object.id)
+      count = @findbyid(object.id)
       object.bringToFront()
       obj = @objects[count]
       @objects.splice(count, 1)
@@ -478,6 +476,8 @@ app =
     $('.canvas_panel, .object_panel, .group_panel').hide()
     object = @canvas.getActiveObject()
     if object
+      if object.toGeoJSON?
+        $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4))
       $('.object_panel').show()
       $('#object_id').html(object.id)
       return

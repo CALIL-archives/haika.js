@@ -136,6 +136,9 @@ $ ->
 #    app.toBottom()
   $(".svg").click ->
     app.getSVG()
+  $(".loadsvg").click ->
+    loadSVG 'http://fabreasy.com/demo_front.svg', app.canvas, ->
+      alert('done');
   $(".geojson").click ->
     app.getGeoJSON()
   $(".reset").click ->

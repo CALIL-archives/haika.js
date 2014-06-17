@@ -91,8 +91,6 @@ app = {
       if (object._objects != null) {
         object.lockScalingX = true;
         object.lockScalingY = true;
-      } else {
-        $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4));
       }
       _ref = _this.canvas.getObjects();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -226,7 +224,7 @@ app = {
     }
     return this.render();
   },
-  search: function(id) {
+  findbyid: function(id) {
     var count;
     count = null;
     $(this.objects).each(function(i, obj) {
@@ -251,7 +249,7 @@ app = {
     if (group == null) {
       group = false;
     }
-    count = this.search(object.id);
+    count = this.findbyid(object.id);
     this.objects[count].id = object.id;
     this.objects[count].type = object.type;
     this.objects[count].top_cm = this.transformY_px2cm(object.top);
@@ -281,7 +279,7 @@ app = {
     return this.bind(function(object) {
       var count;
       _this.canvas.remove(object);
-      count = _this.search(object.id);
+      count = _this.findbyid(object.id);
       log(count);
       _this.objects.splice(count, 1);
       log(_this.objects);
@@ -292,7 +290,7 @@ app = {
     var _this = this;
     return this.bind(function(object) {
       var count, obj;
-      count = _this.search(object.id);
+      count = _this.findbyid(object.id);
       object.bringToFront();
       obj = _this.objects[count];
       _this.objects.splice(count, 1);
@@ -537,6 +535,9 @@ app = {
     $('.canvas_panel, .object_panel, .group_panel').hide();
     object = this.canvas.getActiveObject();
     if (object) {
+      if (object.toGeoJSON != null) {
+        $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4));
+      }
       $('.object_panel').show();
       $('#object_id').html(object.id);
       return;

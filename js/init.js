@@ -160,6 +160,11 @@ $(function() {
   $(".svg").click(function() {
     return app.getSVG();
   });
+  $(".loadsvg").click(function() {
+    return loadSVG('http://fabreasy.com/demo_front.svg', app.canvas, function() {
+      return alert('done');
+    });
+  });
   $(".geojson").click(function() {
     return app.getGeoJSON();
   });
