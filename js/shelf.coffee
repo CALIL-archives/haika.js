@@ -93,10 +93,11 @@
       if @side==2
         @__renderRect(ctx, x, y+h, total_width, h)
         @__renderPartitionLine(ctx, x, y+h, w, h)
+
     __renderRect: (ctx, x, y, w, h) ->
+      ctx.lineWidth = 1
       ctx.beginPath()
       ctx.moveTo x, y
-      ctx.lineWidth = 1
       ctx.lineTo x + w, y
       ctx.lineTo x + w, y + h
       ctx.lineTo x, y + h
@@ -104,26 +105,28 @@
       ctx.closePath()
       @_renderFill ctx
       @_renderStroke ctx
+
     __renderPartitionLine: (ctx, x, y, w, h) ->
       if @count<=1
         return
+      ctx.lineWidth = 1
+      ctx.beginPath()
       i = 1
       while i < @count
-        ctx.beginPath()
-        ctx.lineWidth = 1
         ctx.moveTo x + w * i, y
         ctx.lineTo x + w * i, y + h
-        ctx.closePath()
-        @_renderFill ctx
-        @_renderStroke ctx
         i++
+      ctx.closePath()
+      #@_renderFill ctx
+      @_renderStroke ctx
+
     __renderSide: (ctx, x, y, w, h) ->
-      ctx.beginPath()
       ctx.lineWidth = 5
+      ctx.beginPath()
       ctx.moveTo x, y + h - 1
       ctx.lineTo x + w * @count, y + h - 1
       ctx.closePath()
-      @_renderFill ctx
+      #@_renderFill ctx
       @_renderStroke ctx
 
     __resizeShelf: () ->
