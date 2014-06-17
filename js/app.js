@@ -144,8 +144,8 @@ app = {
     this.last_id += 1;
     return this.last_id;
   },
-  create_object: function(object) {
-    var o, prop, props, _i, _len;
+  add: function(object) {
+    var o, prop, props, state, _i, _len;
     if (object.id === '') {
       object.id = this.get_id();
     }
@@ -169,11 +169,6 @@ app = {
       }
       o[prop] = object[prop];
     }
-    return o;
-  },
-  add: function(object) {
-    var o, state;
-    o = this.create_object(object);
     this.objects.push(o);
     if (object.type.match(/shelf$/)) {
       state = 'shelf';
@@ -280,10 +275,7 @@ app = {
       var count;
       _this.canvas.remove(object);
       count = _this.findbyid(object.id);
-      log(count);
-      _this.objects.splice(count, 1);
-      log(_this.objects);
-      return _this.save();
+      return _this.objects.splice(count, 1);
     });
   },
   bringToFront: function() {
@@ -297,18 +289,12 @@ app = {
       return _this.objects.push(obj);
     });
   },
-  duplicate: function() {
-    var _this = this;
-    return this.bind(function(object) {
-      return _this.add_active(object);
-    });
-  },
   add_active: function(object) {
     var id,
       _this = this;
-    object.id = '';
-    id = app.add(object);
-    app.render();
+    object.id = this.get_id();
+    id = this.add(object);
+    this.render();
     return $(this.canvas.getObjects()).each(function(i, obj) {
       if (obj.id === id) {
         obj.set({
@@ -319,20 +305,24 @@ app = {
       }
     });
   },
+  duplicate: function() {
+    var _this = this;
+    return this.bind(function(object) {
+      return _this.add_active(object);
+    });
+  },
   clipboard: null,
   copy: function() {
     var _this = this;
     return this.bind(function(object) {
-      return _this.clipboard = _this.create_object(object);
+      return _this.clipboard = object;
     });
   },
   paste: function() {
     if (!this.clipboard) {
       return;
     }
-    this.clipboard.id = this.get_id();
-    this.objects.push(this.clipboard);
-    return app.render();
+    return this.add_active(this.clipboard);
   },
   transformX_cm2px: function(cm) {
     return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scale;

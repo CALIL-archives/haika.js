@@ -125,7 +125,7 @@ app =
       return 0
     @last_id += 1
     return @last_id
-  create_object: (object)->
+  add : (object)->
     # new object
     if object.id==''
       object.id = @get_id()
@@ -154,9 +154,6 @@ app =
         o.left_cm = @transformY_px2cm(object.left)
         continue
       o[prop] = object[prop]
-    return o
-  add : (object)->
-    o = @create_object(object)
     @objects.push(o)
     #layer tab
     if object.type.match(/shelf$/)
@@ -241,13 +238,9 @@ app =
       #@canvas.setActiveGroup(group.setCoords()).renderAll()
   remove : ->
     @bind (object)=>
-#      log object
       @canvas.remove(object)
       count = @findbyid(object.id)
-      log count
       @objects.splice(count, 1)
-      log @objects
-      @save()
   bringToFront : ->
     @bind (object)=>
       count = @findbyid(object.id)
@@ -255,13 +248,10 @@ app =
       obj = @objects[count]
       @objects.splice(count, 1)
       @objects.push(obj)
-  duplicate : ->
-    @bind (object)=>
-      @add_active(object)
   add_active : (object)->
-    object.id = ''
-    id = app.add(object)
-    app.render()
+    object.id = @get_id()
+    id = @add(object)
+    @render()
     $(@canvas.getObjects()).each (i, obj)=>
       if obj.id==id
         obj.set(
@@ -269,17 +259,17 @@ app =
           left : obj.left + 10
         )
         @canvas.setActiveObject(obj)
+  duplicate : ->
+    @bind (object)=>
+      @add_active(object)
   clipboard : null
   copy  : ->
     @bind (object)=>
-      @clipboard = @create_object(object)
+      @clipboard = object
   paste : ()->
     if not @clipboard
       return
-    @clipboard.id = @get_id()
-    @objects.push(@clipboard)
-    app.render()
-#    @add_active(@clipboard)
+    @add_active(@clipboard)
   transformX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale
