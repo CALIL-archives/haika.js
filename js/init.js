@@ -43,7 +43,8 @@ $(window).resize(function() {
 });
 
 add = function(left, top) {
-  var id, klass, object;
+  var klass, object,
+    _this = this;
   if (left == null) {
     left = 0;
   }
@@ -68,9 +69,15 @@ add = function(left, top) {
     stroke: "#000000",
     angle: parseInt($('#angle').val())
   });
-  id = app.add(object);
+  app.add(object);
   app.render();
-  return app.canvas.setActiveObject(app.canvas.item(id));
+  return $(app.canvas.getObjects()).each(function(i, obj) {
+    if (obj.id === object.id) {
+      return setTimeout(function() {
+        return app.canvas.setActiveObject(app.canvas.item(i));
+      }, 100);
+    }
+  });
 };
 
 $(function() {
