@@ -109,7 +109,7 @@ app =
     )
     $(window).on 'beforeunload', (event)=>
       @render()
-      @local_save()
+      @save()
       return
   last_id : 0
   get_id : ->
@@ -243,29 +243,40 @@ app =
       obj = @objects[count]
       @objects.splice(count, 1)
       @objects.push(obj)
-  add_active : (object)->
-    @unselect()
+  add_active : (object, top, left)->
+    @save()
     object.id = @get_id()
     id = @add(object)
     @render()
     $(@canvas.getObjects()).each (i, obj)=>
       if obj.id==id
         obj.set(
-          top  : obj.top + 10
-          left : obj.left + 10
+          top  : top
+          left : left
         )
         @canvas.setActiveObject(obj)
   duplicate : ->
     @bind (object)=>
-      @add_active(object)
-  clipboard : null
+      @add_active(object, object.top+10,object.left+10)
+  clipboard : []
+  clipboard_count : 1
   copy  : ->
+    @clipboard = []
+    @clipboard_count = 1
     @bind (object)=>
-      @clipboard = object
-  paste : ()->
-    if not @clipboard
+      object.top_cm = @transformY_px2cm(object.top)
+      object.left_cm = @transformX_px2cm(object.left)
+      @clipboard.push(object)
+  paste : ->
+    if @clipboard==[]
       return
-    @add_active(@clipboard)
+    for object in @clipboard
+      object.top = @transformY_cm2px(object.top_cm)
+      object.left = @transformX_cm2px(object.left_cm)
+      top = object.top+@clipboard_count*object.height/2
+      left = object.left+@clipboard_count*object.width/10
+      @add_active(object, top, left)
+    @clipboard_count += 1
   transformX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale

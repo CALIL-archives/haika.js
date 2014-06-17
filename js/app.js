@@ -118,7 +118,7 @@ app = {
     });
     return $(window).on('beforeunload', function(event) {
       _this.render();
-      _this.local_save();
+      _this.save();
     });
   },
   last_id: 0,
@@ -282,18 +282,18 @@ app = {
       return _this.objects.push(obj);
     });
   },
-  add_active: function(object) {
+  add_active: function(object, top, left) {
     var id,
       _this = this;
-    this.unselect();
+    this.save();
     object.id = this.get_id();
     id = this.add(object);
     this.render();
     return $(this.canvas.getObjects()).each(function(i, obj) {
       if (obj.id === id) {
         obj.set({
-          top: obj.top + 10,
-          left: obj.left + 10
+          top: top,
+          left: left
         });
         return _this.canvas.setActiveObject(obj);
       }
@@ -302,21 +302,36 @@ app = {
   duplicate: function() {
     var _this = this;
     return this.bind(function(object) {
-      return _this.add_active(object);
+      return _this.add_active(object, object.top + 10, object.left + 10);
     });
   },
-  clipboard: null,
+  clipboard: [],
+  clipboard_count: 1,
   copy: function() {
     var _this = this;
+    this.clipboard = [];
+    this.clipboard_count = 1;
     return this.bind(function(object) {
-      return _this.clipboard = object;
+      object.top_cm = _this.transformY_px2cm(object.top);
+      object.left_cm = _this.transformX_px2cm(object.left);
+      return _this.clipboard.push(object);
     });
   },
   paste: function() {
-    if (!this.clipboard) {
+    var left, object, top, _i, _len, _ref;
+    if (this.clipboard === []) {
       return;
     }
-    return this.add_active(this.clipboard);
+    _ref = this.clipboard;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      object.top = this.transformY_cm2px(object.top_cm);
+      object.left = this.transformX_cm2px(object.left_cm);
+      top = object.top + this.clipboard_count * object.height / 2;
+      left = object.left + this.clipboard_count * object.width / 10;
+      this.add_active(object, top, left);
+    }
+    return this.clipboard_count += 1;
   },
   transformX_cm2px: function(cm) {
     return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scale;
