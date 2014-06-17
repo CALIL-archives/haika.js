@@ -250,10 +250,13 @@ app =
     @render()
     $(@canvas.getObjects()).each (i, obj)=>
       if obj.id==id
+        log id
         obj.set(
           top  : top
           left : left
         )
+#        @canvas.renderAll();
+#        @render()
         @canvas.setActiveObject(obj)
   duplicate : ->
     @bind (object)=>

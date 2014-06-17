@@ -292,6 +292,7 @@ app = {
     this.render();
     return $(this.canvas.getObjects()).each(function(i, obj) {
       if (obj.id === id) {
+        log(id);
         obj.set({
           top: top,
           left: left
