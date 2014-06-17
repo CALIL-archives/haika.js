@@ -304,7 +304,9 @@ app = {
   duplicate: function() {
     var _this = this;
     return this.bind(function(object) {
-      return _this.add_active(object, object.top + 10, object.left + 10);
+      var o;
+      o = fabric.util.object.clone(object);
+      return _this.add_active(o, o.top + 10, o.left + 10);
     });
   },
   clipboard: [],
@@ -314,9 +316,11 @@ app = {
     this.clipboard = [];
     this.clipboard_count = 1;
     return this.bind(function(object) {
-      object.top_cm = _this.transformY_px2cm(object.top);
-      object.left_cm = _this.transformX_px2cm(object.left);
-      return _this.clipboard.push(object);
+      var o;
+      o = fabric.util.object.clone(object);
+      o.top_cm = _this.transformY_px2cm(o.top);
+      o.left_cm = _this.transformX_px2cm(o.left);
+      return _this.clipboard.push(o);
     });
   },
   paste: function() {
