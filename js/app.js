@@ -363,8 +363,8 @@ app = {
   render: function() {
     var o, object, _i, _len, _ref;
     this.unselect();
-    this.canvas.clear();
     this.canvas.renderOnAddRemove = false;
+    this.canvas.clear();
     _ref = this.objects;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       o = _ref[_i];

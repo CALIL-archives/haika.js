@@ -297,8 +297,8 @@ app =
   render : ->
 #    log 'render'
     @unselect()
-    @canvas.clear()
     @canvas.renderOnAddRemove=false
+    @canvas.clear()
     for o in @objects
       if o.type=='shelf'
         object = new fabric.Shelf()
