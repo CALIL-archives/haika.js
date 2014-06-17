@@ -89,24 +89,24 @@ app =
         @save()
         @set_propety_panel()
     )
-    @canvas.on('before:selection:cleared', (e)=>
+
+    @canvas.on 'selection:created', (e)=>
+      e.target.hasControls = false
+    @canvas.on 'before:selection:cleared', (e)=>
       #log 'before_unselect'
       object = e.target
       @canvas.deactivateAll().renderAll()
       @save()
       @set_propety_panel()
-    )
     @canvas.on 'object:scaling', (e) =>
       object = e.target
       if object.__resizeShelf?
         object.__resizeShelf()
-
-    @canvas.on('object:modified', (e)=>
+    @canvas.on 'object:modified', (e)=>
         #log 'modified'
         object = e.target
         if object.__modifiedShelf?
           object.__modifiedShelf()
-    )
     $(window).on 'beforeunload', (event)=>
       @render()
       @save()
@@ -274,11 +274,12 @@ app =
     if @clipboard==[]
       return
     for object in @clipboard
-      object.top = @transformY_cm2px(object.top_cm)
-      object.left = @transformX_cm2px(object.left_cm)
-      top = object.top+@clipboard_count*object.height/2
-      left = object.left+@clipboard_count*object.width/10
-      @add_active(object, top, left)
+      o = fabric.util.object.clone(object)
+      o.top = @transformY_cm2px(o.top_cm)
+      o.left = @transformX_cm2px(o.left_cm)
+      top = object.top+@clipboard_count*o.height/2
+      left = object.left+@clipboard_count*o.width/10
+      @add_active(o, top, left)
     @clipboard_count += 1
   transformX_cm2px : (cm)->
     # centerX(cm) => px

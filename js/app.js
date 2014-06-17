@@ -96,6 +96,9 @@ app = {
       _this.save();
       return _this.set_propety_panel();
     });
+    this.canvas.on('selection:created', function(e) {
+      return e.target.hasControls = false;
+    });
     this.canvas.on('before:selection:cleared', function(e) {
       var object;
       object = e.target;
@@ -320,18 +323,19 @@ app = {
     });
   },
   paste: function() {
-    var left, object, top, _i, _len, _ref;
+    var left, o, object, top, _i, _len, _ref;
     if (this.clipboard === []) {
       return;
     }
     _ref = this.clipboard;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
-      object.top = this.transformY_cm2px(object.top_cm);
-      object.left = this.transformX_cm2px(object.left_cm);
-      top = object.top + this.clipboard_count * object.height / 2;
-      left = object.left + this.clipboard_count * object.width / 10;
-      this.add_active(object, top, left);
+      o = fabric.util.object.clone(object);
+      o.top = this.transformY_cm2px(o.top_cm);
+      o.left = this.transformX_cm2px(o.left_cm);
+      top = object.top + this.clipboard_count * o.height / 2;
+      left = object.left + this.clipboard_count * o.width / 10;
+      this.add_active(o, top, left);
     }
     return this.clipboard_count += 1;
   },
