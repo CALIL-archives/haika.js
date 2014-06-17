@@ -170,6 +170,7 @@ $(function() {
     return app.getGeoJSON();
   });
   $(".reset").click(function() {
+    app.objects = [];
     localStorage.clear();
     return location.reload();
   });

@@ -142,6 +142,7 @@ $ ->
   $(".geojson").click ->
     app.getGeoJSON()
   $(".reset").click ->
+    app.objects = []
     localStorage.clear()
     location.reload()
 #  $(".rotate").slider
