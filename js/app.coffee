@@ -259,6 +259,7 @@ app =
     @bind (object)=>
       @add_active(object)
   add_active : (object)->
+    object.id = ''
     id = app.add(object)
     app.render()
     $(@canvas.getObjects()).each (i, obj)=>

@@ -306,6 +306,7 @@ app = {
   add_active: function(object) {
     var id,
       _this = this;
+    object.id = '';
     id = app.add(object);
     app.render();
     return $(this.canvas.getObjects()).each(function(i, obj) {
