@@ -75,7 +75,7 @@ add = function(left, top) {
     if (obj.id === object.id) {
       return setTimeout(function() {
         return app.canvas.setActiveObject(app.canvas.item(i));
-      }, 100);
+      }, 10);
     }
   });
 };
