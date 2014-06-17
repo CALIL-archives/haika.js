@@ -82,6 +82,7 @@ app = {
         return _this.bgimg_height = img.height;
       });
     }
+    this.render();
     setTimeout(function() {
       return _this.load();
     }, 500);
@@ -427,7 +428,7 @@ app = {
       this.bgimg.width = Math.floor(this.bgimg_width * this.options.bgscale * this.scale);
       this.bgimg.height = Math.floor(this.bgimg_height * this.options.bgscale * this.scale);
       this.bgimg.opacity = this.options.bgopacity;
-      return this.canvas.setBackgroundImage(this.bgimg, this.canvas.renderAll.bind(this.canvas));
+      return this.canvas.setBackgroundImage(this.bgimg);
     }
   },
   debug: function() {

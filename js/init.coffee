@@ -59,7 +59,7 @@ add = (left=0, top=0)->
     if obj.id==object.id
       setTimeout ->
         app.canvas.setActiveObject(app.canvas.item(i))
-      , 100
+      , 10
 #setTimeout(->
   #addmany()
   #add(250, 250)
