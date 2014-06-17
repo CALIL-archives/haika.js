@@ -156,22 +156,22 @@ $ ->
 #        activeObject.setCoords()
 #        app.canvas.renderAll()
 
-timeout = false
-$('canvas').on 'mousewheel', (event)=>
-  #console.log(event.deltaX, event.deltaY, event.deltaFactor);
-#    log 'event.deltaX:'+event.deltaX
-#    log 'event.deltaY:'+event.deltaY
-#    log 'event.deltaFactor'+event.deltaFactor
-  if timeout
-    return
-  else
-    timeout = setTimeout ->
-        timeout = false
-    , 100
-  if event.deltaY>0
-    app.zoomIn()
-  if event.deltaY<0
-    app.zoomOut()
+  timeout = false
+  $('canvas').on 'mousewheel', (event)=>
+    #console.log(event.deltaX, event.deltaY, event.deltaFactor);
+  #    log 'event.deltaX:'+event.deltaX
+  #    log 'event.deltaY:'+event.deltaY
+  #    log 'event.deltaFactor'+event.deltaFactor
+    if timeout
+      return
+    else
+      timeout = setTimeout ->
+          timeout = false
+      , 100
+    if event.deltaY>0
+      app.zoomIn()
+    if event.deltaY<0
+      app.zoomOut()
 
 #  @shiftKey = false
 #  $(document.body).keydown (e)=>
@@ -197,9 +197,29 @@ $('canvas').on 'mousewheel', (event)=>
     app.render()
 
     
-  $(".undo").click ->
+  $('.undo').click ->
     undoManager.undo()
 
+  # shortcut key
+  Mousetrap.bind 'mod+c', ->
+    app.copy()
+    return false
+  Mousetrap.bind 'mod+v', ->
+    app.paste()
+    return false
+  # Prevent the backspace key from navigating back.
+  $(document).unbind("keydown").bind "keydown", (event) ->
+    doPrevent = false
+    if event.keyCode is 8 or event.keyCode is 46
+      d = event.srcElement or event.target
+      if (d.tagName.toUpperCase() is "INPUT" and (d.type.toUpperCase() is "TEXT" or d.type.toUpperCase() is "PASSWORD" or d.type.toUpperCase() is "FILE" or d.type.toUpperCase() is "EMAIL")) or d.tagName.toUpperCase() is "TEXTAREA"
+        doPrevent = d.readOnly or d.disabled
+      else
+        doPrevent = true
+    if doPrevent
+      event.preventDefault()
+      app.remove()
+    return
 
 undoManager = new UndoManager()
 states = []
