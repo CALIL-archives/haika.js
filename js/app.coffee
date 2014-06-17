@@ -86,22 +86,14 @@ app =
           object.lockScalingY  = true
         #else
         #  object.lockScalingY  = true
-        for object in @canvas.getObjects()
-          if object.id?
-            @save_prop(object)
+        @save()
         @set_propety_panel()
     )
     @canvas.on('before:selection:cleared', (e)=>
       #log 'before_unselect'
       object = e.target
       @canvas.deactivateAll().renderAll()
-      if object._objects?
-        group = object
-        objects = object._objects
-        for object in objects
-          @save_prop(object, group)
-      else
-        @save_prop(object)
+      @save()
       @set_propety_panel()
     )
     @canvas.on 'object:scaling', (e) =>
@@ -117,7 +109,7 @@ app =
     )
     $(window).on 'beforeunload', (event)=>
       @render()
-      @save()
+      @local_save()
       return
   last_id : 0
   get_id : ->
@@ -203,13 +195,17 @@ app =
       if obj.id==id
         count = i
     return count
-  save : ->
+  local_save : ->
     canvas = 
       scale : @scale
       centerX : @centerX
       centerY : @centerY
     localStorage.setItem('canvas', JSON.stringify(canvas))
     localStorage.setItem('app_data', JSON.stringify(@objects))
+  save : ->
+    for object in @canvas.getObjects()
+      @save_prop(object)
+    @local_save()
   save_prop : (object, group=false)->
     count = @findbyid(object.id)
     @objects[count].id      = object.id
@@ -223,7 +219,6 @@ app =
     if object.type.match(/shelf$/)
       @objects[count].count = object.count
       @objects[count].side  = object.side
-    localStorage.setItem('app_data', JSON.stringify(@objects))
 
   bind : (func)->
     object = @canvas.getActiveObject()
@@ -249,6 +244,7 @@ app =
       @objects.splice(count, 1)
       @objects.push(obj)
   add_active : (object)->
+    @unselect()
     object.id = @get_id()
     id = @add(object)
     @render()

@@ -86,35 +86,20 @@ app = {
       return _this.load();
     }, 500);
     this.canvas.on('object:selected', function(e) {
-      var object, _i, _len, _ref;
+      var object;
       object = e.target;
       if (object._objects != null) {
         object.lockScalingX = true;
         object.lockScalingY = true;
       }
-      _ref = _this.canvas.getObjects();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        object = _ref[_i];
-        if (object.id != null) {
-          _this.save_prop(object);
-        }
-      }
+      _this.save();
       return _this.set_propety_panel();
     });
     this.canvas.on('before:selection:cleared', function(e) {
-      var group, object, objects, _i, _len;
+      var object;
       object = e.target;
       _this.canvas.deactivateAll().renderAll();
-      if (object._objects != null) {
-        group = object;
-        objects = object._objects;
-        for (_i = 0, _len = objects.length; _i < _len; _i++) {
-          object = objects[_i];
-          _this.save_prop(object, group);
-        }
-      } else {
-        _this.save_prop(object);
-      }
+      _this.save();
       return _this.set_propety_panel();
     });
     this.canvas.on('object:scaling', function(e) {
@@ -133,7 +118,7 @@ app = {
     });
     return $(window).on('beforeunload', function(event) {
       _this.render();
-      _this.save();
+      _this.local_save();
     });
   },
   last_id: 0,
@@ -229,7 +214,7 @@ app = {
     });
     return count;
   },
-  save: function() {
+  local_save: function() {
     var canvas;
     canvas = {
       scale: this.scale,
@@ -238,6 +223,15 @@ app = {
     };
     localStorage.setItem('canvas', JSON.stringify(canvas));
     return localStorage.setItem('app_data', JSON.stringify(this.objects));
+  },
+  save: function() {
+    var object, _i, _len, _ref;
+    _ref = this.canvas.getObjects();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      this.save_prop(object);
+    }
+    return this.local_save();
   },
   save_prop: function(object, group) {
     var count;
@@ -254,9 +248,8 @@ app = {
     this.objects[count].angle = object.angle;
     if (object.type.match(/shelf$/)) {
       this.objects[count].count = object.count;
-      this.objects[count].side = object.side;
+      return this.objects[count].side = object.side;
     }
-    return localStorage.setItem('app_data', JSON.stringify(this.objects));
   },
   bind: function(func) {
     var group, object, objects;
@@ -292,6 +285,7 @@ app = {
   add_active: function(object) {
     var id,
       _this = this;
+    this.unselect();
     object.id = this.get_id();
     id = this.add(object);
     this.render();
