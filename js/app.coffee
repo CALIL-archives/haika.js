@@ -73,8 +73,8 @@ app =
       fabric.Image.fromURL @options.bgurl, (img)=>
         @bgimg = img
         @bgimg_width  = img.width
-
         @bgimg_height = img.height
+    @render()
     setTimeout =>
       @load()
     , 500
@@ -352,7 +352,7 @@ app =
       @bgimg.width   = Math.floor( @bgimg_width*@options.bgscale*@scale  )
       @bgimg.height  = Math.floor( @bgimg_height*@options.bgscale*@scale )
       @bgimg.opacity = @options.bgopacity
-      @canvas.setBackgroundImage @bgimg, @canvas.renderAll.bind(@canvas)
+      @canvas.setBackgroundImage @bgimg
 
   debug : ->
     $('#canvas_width').val(@canvas.getWidth())
