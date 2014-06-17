@@ -364,6 +364,7 @@ app = {
     var o, object, _i, _len, _ref;
     this.unselect();
     this.canvas.clear();
+    this.canvas.renderOnAddRemove = false;
     _ref = this.objects;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       o = _ref[_i];
@@ -416,6 +417,7 @@ app = {
     }
     this.render_bg();
     this.canvas.renderAll();
+    this.canvas.renderOnAddRemove = true;
     return this.debug();
   },
   render_bg: function() {

@@ -43,7 +43,7 @@ $(window).resize(function() {
 });
 
 add = function(left, top) {
-  var klass, object;
+  var id, klass, object;
   if (left == null) {
     left = 0;
   }
@@ -68,8 +68,9 @@ add = function(left, top) {
     stroke: "#000000",
     angle: parseInt($('#angle').val())
   });
-  app.add(object);
-  return app.render();
+  id = app.add(object);
+  app.render();
+  return app.canvas.setActiveObject(app.canvas.item(id));
 };
 
 $(function() {

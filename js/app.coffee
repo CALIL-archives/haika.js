@@ -298,6 +298,7 @@ app =
 #    log 'render'
     @unselect()
     @canvas.clear()
+    @canvas.renderOnAddRemove=false
     for o in @objects
       if o.type=='shelf'
         object = new fabric.Shelf()
@@ -342,6 +343,7 @@ app =
       @canvas.add(object)
     @render_bg()
     @canvas.renderAll()
+    @canvas.renderOnAddRemove=true
     @debug()
   render_bg : ->
     if @bgimg

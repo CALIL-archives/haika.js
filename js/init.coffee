@@ -53,8 +53,9 @@ add = (left=0, top=0)->
     angle: parseInt($('#angle').val())
     #lockScalingY: true
   )
-  app.add(object)
+  id = app.add(object)
   app.render()
+  app.canvas.setActiveObject(app.canvas.item(id))
 #setTimeout(->
   #addmany()
   #add(250, 250)
