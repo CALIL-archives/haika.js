@@ -43,7 +43,7 @@ $(window).resize(function() {
 });
 
 add = function(left, top) {
-  var klass, shape;
+  var klass, object;
   if (left == null) {
     left = 0;
   }
@@ -59,7 +59,7 @@ add = function(left, top) {
   if ($('#type').val() === 'Beacon') {
     klass = fabric.Beacon;
   }
-  shape = new klass({
+  object = new klass({
     count: parseInt($('#count').val()),
     side: parseInt($('#side').val()),
     top: app.transformX_cm2px(app.centerY),
@@ -68,7 +68,7 @@ add = function(left, top) {
     stroke: "#000000",
     angle: parseInt($('#angle').val())
   });
-  app.add(shape);
+  app.add(object);
   return app.render();
 };
 

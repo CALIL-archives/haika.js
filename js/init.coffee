@@ -43,7 +43,7 @@ add = (left=0, top=0)->
     klass = fabric.curvedShelf
   if $('#type').val()=='Beacon'
     klass = fabric.Beacon
-  shape = new klass(
+  object = new klass(
     count: parseInt($('#count').val())
     side: parseInt($('#side').val())
     top: app.transformX_cm2px(app.centerY)
@@ -53,7 +53,7 @@ add = (left=0, top=0)->
     angle: parseInt($('#angle').val())
     #lockScalingY: true
   )
-  app.add(shape)
+  app.add(object)
   app.render()
 #setTimeout(->
   #addmany()

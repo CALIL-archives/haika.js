@@ -146,7 +146,7 @@ app = {
   },
   create_object: function(object) {
     var o, prop, props, _i, _len;
-    if (!(object.id != null)) {
+    if (object.id === '') {
       object.id = this.get_id();
     }
     o = {

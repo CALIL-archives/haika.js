@@ -126,7 +126,8 @@ app =
     @last_id += 1
     return @last_id
   create_object: (object)->
-    if not object.id?
+    # new object
+    if object.id==''
       object.id = @get_id()
     o =
       id : object.id
