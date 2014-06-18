@@ -74,6 +74,7 @@ app =
         @bgimg = img
         @bgimg_width  = img.width
         @bgimg_height = img.height
+        @render()
     @render()
     setTimeout =>
       @load()
@@ -295,9 +296,11 @@ app =
       @canvas.fire('selection:cleared', { target: object })
   render : ->
 #    log 'render'
-    @unselect()
+    #オブジェクトをクリア
     @canvas.renderOnAddRemove=false
-    @canvas.clear()
+    @unselect()
+    @canvas._objects.length = 0;
+    #@canvas.clear()
     for o in @objects
       if o.type=='shelf'
         object = new fabric.Shelf()
@@ -314,14 +317,12 @@ app =
       if not o.type.match(@state)
         object.opacity = 0.5
       object.id     = o.id
-      object.scaleX = 1
-      object.scaleY = 1
+      object.scaleX = object.scaleY = 1
       object.width  = object.__width()
       object.height = object.__height()
       object.left   = @transformX_cm2px(o.left_cm)
       object.top    = @transformY_cm2px(o.top_cm)
-      if o.angle > 0
-        object.angle  = o.angle
+      object.angle  = o.angle
       object.originX = 'center'
       object.originY = 'center'
       if o.type=='beacon'
@@ -338,7 +339,6 @@ app =
       object.cornerColor = "#488BD4"
       object.borderOpacityWhenMoving = 0.8
       object.cornerSize = 10
-      object.setCoords()
       @canvas.add(object)
     @render_bg()
     @canvas.renderAll()
