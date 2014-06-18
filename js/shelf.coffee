@@ -195,7 +195,7 @@
       w = @__eachWidth() * @count / 100
       h = @__eachHeight() * @side / 100
       center = @getCenterPoint()
-      log center
+#      log center
       x = -w / 2 + (center.x / 100)
       y = -h / 2 + (center.y / 100)
       data =

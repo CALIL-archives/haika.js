@@ -255,21 +255,51 @@ app = {
       return this.objects[count].side = object.side;
     }
   },
-  bind: function(func) {
-    var group, object, objects;
+  bind: function(func, do_active) {
+    var group, new_id, object, objects, _i, _len,
+      _this = this;
+    if (do_active == null) {
+      do_active = true;
+    }
     object = this.canvas.getActiveObject();
     if (object) {
-      func(object);
+      new_id = func(object);
+      if (do_active) {
+        $(this.canvas.getObjects()).each(function(i, obj) {
+          if (obj.id === new_id) {
+            return _this.canvas.setActiveObject(obj);
+          }
+        });
+      }
     }
     group = this.canvas.getActiveGroup();
     if (group) {
-      return objects = group._objects;
+      this.canvas.discardActiveGroup();
+      objects = group._objects;
+      for (_i = 0, _len = objects.length; _i < _len; _i++) {
+        object = objects[_i];
+        func(object);
+      }
+      if (do_active) {
+        objects = objects.map(function(o) {
+          return o.set("active", true);
+        });
+        group = new fabric.Group(objects, {
+          originX: "center",
+          originY: "center"
+        });
+        this.canvas._activeObject = null;
+        return this.canvas.setActiveGroup(group.setCoords()).renderAll();
+      }
     }
   },
   remove: function() {
     var _this = this;
-    return this.bind(function(object) {
+    return this.bind(function(object, do_active) {
       var count;
+      if (do_active == null) {
+        do_active = false;
+      }
       _this.canvas.remove(object);
       count = _this.findbyid(object.id);
       return _this.objects.splice(count, 1);
@@ -287,24 +317,20 @@ app = {
     });
   },
   add_active: function(object, top, left) {
-    var id,
-      _this = this;
+    var new_id;
     this.save();
     object.id = this.get_id();
     object.top = top;
     object.left = left;
-    id = this.add(object);
+    new_id = this.add(object);
     this.render();
-    return $(this.canvas.getObjects()).each(function(i, obj) {
-      if (obj.id === id) {
-        return _this.canvas.setActiveObject(obj);
-      }
-    });
+    return new_id;
   },
   duplicate: function() {
     var _this = this;
     return this.bind(function(object) {
       var o;
+      log(object);
       o = fabric.util.object.clone(object);
       return _this.add_active(o, o.top + 10, o.left + 10);
     });
@@ -339,6 +365,18 @@ app = {
       this.add_active(o, top, left);
     }
     return this.clipboard_count += 1;
+  },
+  select_all: function() {
+    var group, objects;
+    objects = this.canvas.getObjects().map(function(o) {
+      return o.set("active", true);
+    });
+    group = new fabric.Group(objects, {
+      originX: "center",
+      originY: "center"
+    });
+    this.canvas._activeObject = null;
+    return this.canvas.setActiveGroup(group.setCoords()).renderAll();
   },
   transformX_cm2px: function(cm) {
     return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scale;

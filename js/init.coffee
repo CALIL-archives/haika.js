@@ -59,6 +59,7 @@ add = (left=0, top=0)->
     if obj.id==object.id
       setTimeout ->
         app.canvas.setActiveObject(app.canvas.item(i))
+        $('.add').blur()
       , 10
 #setTimeout(->
   #addmany()
@@ -213,6 +214,20 @@ $ ->
   Mousetrap.bind 'mod+v', ->
     app.paste()
     return false
+  cancel_default = (e)->
+    if e.preventDefault
+      e.preventDefault()
+    else
+      # internet explorer
+      e.returnValue = false;
+  Mousetrap.bind 'mod+d', (e)->
+    cancel_default(e)
+    app.duplicate()
+    return false
+  Mousetrap.bind 'mod+a', (e)->
+    cancel_default(e)
+    app.select_all()
+    return false
   # Prevent the backspace key from navigating back.
   $(document).unbind("keydown").bind "keydown", (event) ->
     doPrevent = false
@@ -245,7 +260,7 @@ app.canvas.on "object:selected", (e) ->
     originalState = $.extend(true, {}, object.originalState)
     originalState.select = true
     states.push(originalState)
-    log states
+#    log states
 
 app.canvas.on "selection:cleared", (e) ->
   object = e.target
@@ -258,10 +273,10 @@ app.canvas.on "object:modified", (e) ->
   object.saveState()
   originalState = $.extend(true, {}, object.originalState)
   states.push(originalState)
-  log states
+#  log states
   undoManager.add
     undo: ->
-      log 'undo'
+#      log 'undo'
       if states.length>0
         state = states[states.length-2]
         object.setOptions state
@@ -269,7 +284,7 @@ app.canvas.on "object:modified", (e) ->
         object.setCoords()
         app.canvas.setActiveObject(object)
         app.render()
-        log states
+#        log states
     redo: ->
 #      redo()
   return

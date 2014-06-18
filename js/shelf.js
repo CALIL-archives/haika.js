@@ -232,7 +232,6 @@
       w = this.__eachWidth() * this.count / 100;
       h = this.__eachHeight() * this.side / 100;
       center = this.getCenterPoint();
-      log(center);
       x = -w / 2 + (center.x / 100);
       y = -h / 2 + (center.y / 100);
       data = {

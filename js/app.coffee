@@ -220,19 +220,32 @@ app =
       @objects[count].count = object.count
       @objects[count].side  = object.side
 
-  bind : (func)->
+  bind : (func, do_active=true)->
     object = @canvas.getActiveObject()
     if object
-      func(object)
+      new_id = func(object)
+      if do_active
+        $(@canvas.getObjects()).each (i, obj)=>
+          if obj.id==new_id
+            @canvas.setActiveObject(obj)
     group = @canvas.getActiveGroup()
     if group
+      @canvas.discardActiveGroup()
       objects = group._objects
-#      for object in objects
-#        func(object)
-      #@canvas._activeObject = null
-      #@canvas.setActiveGroup(group.setCoords()).renderAll()
+      for object in objects
+        func(object)
+      if do_active
+        objects = objects.map((o) ->
+          o.set "active", true
+        )
+        group = new fabric.Group(objects,
+          originX: "center"
+          originY: "center"
+        )
+        @canvas._activeObject = null
+        @canvas.setActiveGroup(group.setCoords()).renderAll()
   remove : ->
-    @bind (object)=>
+    @bind (object, do_active=false)=>
       @canvas.remove(object)
       count = @findbyid(object.id)
       @objects.splice(count, 1)
@@ -248,13 +261,12 @@ app =
     object.id = @get_id()
     object.top=top
     object.left=left
-    id = @add(object)
+    new_id = @add(object)
     @render()
-    $(@canvas.getObjects()).each (i, obj)=>
-      if obj.id==id
-        @canvas.setActiveObject(obj)
+    return new_id
   duplicate : ->
     @bind (object)=>
+      log object
       o = fabric.util.object.clone(object)
       @add_active(o, o.top+10,o.left+10)
   clipboard : []
@@ -278,6 +290,16 @@ app =
       left = object.left+@clipboard_count*o.width/10
       @add_active(o, top, left)
     @clipboard_count += 1
+  select_all : ()->
+    objects = @canvas.getObjects().map((o) ->
+      o.set "active", true
+    )
+    group = new fabric.Group(objects,
+      originX: "center"
+      originY: "center"
+    )
+    @canvas._activeObject = null
+    @canvas.setActiveGroup(group.setCoords()).renderAll()
   transformX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale

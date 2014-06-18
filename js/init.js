@@ -74,14 +74,15 @@ add = function(left, top) {
   return $(app.canvas.getObjects()).each(function(i, obj) {
     if (obj.id === object.id) {
       return setTimeout(function() {
-        return app.canvas.setActiveObject(app.canvas.item(i));
+        app.canvas.setActiveObject(app.canvas.item(i));
+        return $('.add').blur();
       }, 10);
     }
   });
 };
 
 $(function() {
-  var timeout,
+  var cancel_default, timeout,
     _this = this;
   window.addmany = function() {
     var x, y;
@@ -227,6 +228,23 @@ $(function() {
     app.paste();
     return false;
   });
+  cancel_default = function(e) {
+    if (e.preventDefault) {
+      return e.preventDefault();
+    } else {
+      return e.returnValue = false;
+    }
+  };
+  Mousetrap.bind('mod+d', function(e) {
+    cancel_default(e);
+    app.duplicate();
+    return false;
+  });
+  Mousetrap.bind('mod+a', function(e) {
+    cancel_default(e);
+    app.select_all();
+    return false;
+  });
   return $(document).unbind("keydown").bind("keydown", function(event) {
     var d, doPrevent;
     doPrevent = false;
@@ -261,8 +279,7 @@ app.canvas.on("object:selected", function(e) {
     object.saveState();
     originalState = $.extend(true, {}, object.originalState);
     originalState.select = true;
-    states.push(originalState);
-    return log(states);
+    return states.push(originalState);
   }
 });
 
@@ -277,19 +294,16 @@ app.canvas.on("object:modified", function(e) {
   object.saveState();
   originalState = $.extend(true, {}, object.originalState);
   states.push(originalState);
-  log(states);
   undoManager.add({
     undo: function() {
       var state;
-      log('undo');
       if (states.length > 0) {
         state = states[states.length - 2];
         object.setOptions(state);
         states.pop();
         object.setCoords();
         app.canvas.setActiveObject(object);
-        app.render();
-        return log(states);
+        return app.render();
       }
     },
     redo: function() {}
