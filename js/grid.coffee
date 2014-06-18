@@ -10,9 +10,8 @@
 
     size = 100 * app.scale
     if size < 50 then size=500 * app.scale
+    if size < 50 then size=1000 * app.scale
     ctx.save()
-    #ctx.setTransform(1, 0, 0, 1, 0, 0)
-    #ctx.scale(1,1)
     ctx.beginPath()
     ctx.setLineDash([2,2])
     ctx.lineWidth = 1

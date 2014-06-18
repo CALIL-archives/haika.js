@@ -29,11 +29,12 @@ function initAligningGuidelines(canvas) {
 
   function drawLine(x1, y1, x2, y2) {
     ctx.save();
+    ctx.setLineDash([4,4]);
     ctx.lineWidth = aligningLineWidth;
     ctx.strokeStyle = aligningLineColor;
     ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
+    ctx.moveTo(Math.floor(x1)+0.5, Math.floor(y1)+0.5);
+    ctx.lineTo(Math.floor(x2)+0.5, Math.floor(y2)+0.5);
     ctx.stroke();
     ctx.restore();
   }
@@ -75,6 +76,8 @@ function initAligningGuidelines(canvas) {
 
     if (!transform) return;
 
+       horizontalLines.length = 0;
+       verticalLines.length = 0;
     // It should be trivial to DRY this up by encapsulating (repeating) creation of x1, x2, y1, and y2 into functions,
     // but we're not doing it here for perf. reasons -- as this a function that's invoked on every mouse move
 
@@ -90,6 +93,7 @@ function initAligningGuidelines(canvas) {
           objectWidth = canvasObjects[i].getBoundingRectWidth();
 
       // snap by the horizontal center line
+       /*
       if (isInRange(objectLeft, activeObjectLeft)) {
         verticalInTheRange = true;
         verticalLines.push({
@@ -103,7 +107,7 @@ function initAligningGuidelines(canvas) {
         });
         activeObject.setPositionByOrigin(new fabric.Point(objectLeft, activeObjectTop), transform.originX, transform.originY);
       }
-
+*/
       // snap by the left edge
       if (isInRange(objectLeft - objectWidth / 2, activeObjectLeft - activeObjectWidth / 2)) {
         verticalInTheRange = true;
@@ -135,6 +139,7 @@ function initAligningGuidelines(canvas) {
       }
 
       // snap by the vertical center line
+        /*
       if (isInRange(objectTop, activeObjectTop)) {
         horizontalInTheRange = true;
         horizontalLines.push({
@@ -148,11 +153,11 @@ function initAligningGuidelines(canvas) {
         });
         activeObject.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop), transform.originX, transform.originY);
       }
-
+*/
       // snap by the top edge
       if (isInRange(objectTop - objectHeight / 2, activeObjectTop - activeObjectHeight / 2)) {
         horizontalInTheRange = true;
-        horizontalLines.push({
+        var hs={
           y: objectTop - objectHeight / 2,
           x1: (objectLeft < activeObjectLeft)
             ? (objectLeft - objectWidth / 2 - aligningLineOffset)
@@ -160,8 +165,23 @@ function initAligningGuidelines(canvas) {
           x2: (activeObjectLeft > objectLeft)
             ? (activeObjectLeft + activeObjectWidth / 2 + aligningLineOffset)
             : (activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset)
-        });
-        activeObject.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop - objectHeight / 2 + activeObjectHeight / 2), transform.originX, transform.originY);
+        }
+        var enabled=true;
+        for (var x = horizontalLines.length; x--; ) {
+             if(hs.y==horizontalLines[x].y){
+                 if(Math.abs(horizontalLines[x].x2-horizontalLines[x].x1)>Math.abs(hs.x2-hs.x1)) {
+                     if(Math.abs(horizontalLines[x].x2-horizontalLines[x].x1)-Math.abs(hs.x2-hs.x1)>5){
+                         horizontalLines.splice(x, 1);
+                     }
+                 }else{
+                     enabled=false;
+                 }
+             }
+        }
+        if(enabled){
+            horizontalLines.push(hs);
+            activeObject.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop - objectHeight / 2 + activeObjectHeight / 2), transform.originX, transform.originY);
+        }
       }
 
       // snap by the bottom edge
@@ -187,6 +207,7 @@ function initAligningGuidelines(canvas) {
     if (!verticalInTheRange) {
       verticalLines.length = 0;
     }
+
   });
 
   canvas.on('before:render', function() {

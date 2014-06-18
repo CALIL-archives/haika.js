@@ -17,6 +17,9 @@
     if (size < 50) {
       size = 500 * app.scale;
     }
+    if (size < 50) {
+      size = 1000 * app.scale;
+    }
     ctx.save();
     ctx.beginPath();
     ctx.setLineDash([2, 2]);

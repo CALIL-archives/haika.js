@@ -79,7 +79,8 @@ app = {
       fabric.Image.fromURL(this.options.bgurl, function(img) {
         _this.bgimg = img;
         _this.bgimg_width = img.width;
-        return _this.bgimg_height = img.height;
+        _this.bgimg_height = img.height;
+        return _this.render();
       });
     }
     this.render();
@@ -407,9 +408,9 @@ app = {
   },
   render: function() {
     var o, object, _i, _len, _ref;
-    this.unselect();
     this.canvas.renderOnAddRemove = false;
-    this.canvas.clear();
+    this.unselect();
+    this.canvas._objects.length = 0;
     _ref = this.objects;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       o = _ref[_i];
@@ -431,15 +432,12 @@ app = {
         object.opacity = 0.5;
       }
       object.id = o.id;
-      object.scaleX = 1;
-      object.scaleY = 1;
+      object.scaleX = object.scaleY = 1;
       object.width = object.__width();
       object.height = object.__height();
       object.left = this.transformX_cm2px(o.left_cm);
       object.top = this.transformY_cm2px(o.top_cm);
-      if (o.angle > 0) {
-        object.angle = o.angle;
-      }
+      object.angle = o.angle;
       object.originX = 'center';
       object.originY = 'center';
       if (o.type === 'beacon') {
@@ -457,7 +455,6 @@ app = {
       object.cornerColor = "#488BD4";
       object.borderOpacityWhenMoving = 0.8;
       object.cornerSize = 10;
-      object.setCoords();
       this.canvas.add(object);
     }
     this.render_bg();
