@@ -222,6 +222,7 @@ app =
       @objects[count].side  = object.side
 
   bind : (func, do_active=true)->
+    log do_active
     object = @canvas.getActiveObject()
     if object
       new_id = func(object)
@@ -246,10 +247,11 @@ app =
         @canvas._activeObject = null
         @canvas.setActiveGroup(group.setCoords()).renderAll()
   remove : ->
-    @bind (object, do_active=false)=>
+    @bind((object)=>
       @canvas.remove(object)
       count = @findbyid(object.id)
       @objects.splice(count, 1)
+    , false)
   bringToFront : ->
     @bind (object)=>
       count = @findbyid(object.id)
@@ -267,8 +269,8 @@ app =
     return new_id
   duplicate : ->
     @bind (object)=>
-      log object
       o = fabric.util.object.clone(object)
+      log o.top
       @add_active(o, o.top+10,o.left+10)
   clipboard : []
   clipboard_count : 1
