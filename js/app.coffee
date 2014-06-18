@@ -256,16 +256,18 @@ app =
         @canvas.setActiveObject(obj)
   duplicate : ->
     @bind (object)=>
-      @add_active(object, object.top+10,object.left+10)
+      o = fabric.util.object.clone(object)
+      @add_active(o, o.top+10,o.left+10)
   clipboard : []
   clipboard_count : 1
   copy  : ->
     @clipboard = []
     @clipboard_count = 1
     @bind (object)=>
-      object.top_cm = @transformY_px2cm(object.top)
-      object.left_cm = @transformX_px2cm(object.left)
-      @clipboard.push(object)
+      o = fabric.util.object.clone(object)
+      o.top_cm = @transformY_px2cm(o.top)
+      o.left_cm = @transformX_px2cm(o.left)
+      @clipboard.push(o)
   paste : ->
     if @clipboard==[]
       return
