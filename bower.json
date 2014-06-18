@@ -21,6 +21,7 @@
     "jquery-ui": "~1.10.4",
     "jquery.finger": "~0.1.0",
     "dragdealer": "*",
-    "Javascript-Undo-Manager": "*"
+    "Javascript-Undo-Manager": "*",
+    "proj4": "~2.1.2"
   }
 }
