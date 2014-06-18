@@ -301,6 +301,8 @@ app =
     )
     @canvas._activeObject = null
     @canvas.setActiveGroup(group.setCoords()).renderAll()
+  unselect_all : ()->
+    @canvas.deactivateAll().renderAll()
   transformX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale

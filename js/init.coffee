@@ -208,18 +208,18 @@ $ ->
     undoManager.undo()
 
   # shortcut key
-  Mousetrap.bind 'mod+c', ->
-    app.copy()
-    return false
-  Mousetrap.bind 'mod+v', ->
-    app.paste()
-    return false
   cancel_default = (e)->
     if e.preventDefault
       e.preventDefault()
     else
       # internet explorer
       e.returnValue = false;
+  Mousetrap.bind 'mod+c', ->
+    app.copy()
+    return false
+  Mousetrap.bind 'mod+v', ->
+    app.paste()
+    return false
   Mousetrap.bind 'mod+d', (e)->
     cancel_default(e)
     app.duplicate()
@@ -228,6 +228,24 @@ $ ->
     cancel_default(e)
     app.select_all()
     return false
+  Mousetrap.bind ['esc', 'escape'], (e)->
+    cancel_default(e)
+    app.unselect_all()
+    return false
+#  Mousetrap.bind 'mod+=', (e)->
+#    log e
+#    cancel_default(e)
+#    app.zoomIn()
+#    return false
+#  Mousetrap.bind 'mod+–', (e)->
+#    log e.keyCode
+#    cancel_default(e)
+#    app.zoomOut()
+#    return false
+#  Mousetrap.bind 'mod+0', (e)->
+#    cancel_default(e)
+#    app.zoomReset()
+#    return false
   # Prevent the backspace key from navigating back.
   $(document).unbind("keydown").bind "keydown", (event) ->
     doPrevent = false
