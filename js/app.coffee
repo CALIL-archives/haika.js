@@ -94,7 +94,7 @@ app =
     @canvas.on 'selection:created', (e)=>
       e.target.hasControls = false
     @canvas.on 'before:selection:cleared', (e)=>
-      #log 'before_unselect'
+#      log 'before:selection:cleared'
       object = e.target
       @canvas.deactivateAll().renderAll()
       @save()
@@ -222,30 +222,37 @@ app =
       @objects[count].side  = object.side
 
   bind : (func, do_active=true)->
-    log do_active
     object = @canvas.getActiveObject()
     if object
       new_id = func(object)
-      if do_active
+      if new_id and do_active
         $(@canvas.getObjects()).each (i, obj)=>
           if obj.id==new_id
             @canvas.setActiveObject(obj)
     group = @canvas.getActiveGroup()
     if group
-      @canvas.discardActiveGroup()
       objects = group._objects
+      new_ids = []
       for object in objects
-        func(object)
+        new_id = func(object)
+        new_ids.push(new_id)
       if do_active
-        objects = objects.map((o) ->
-          o.set "active", true
-        )
-        group = new fabric.Group(objects,
-          originX: "center"
-          originY: "center"
-        )
-        @canvas._activeObject = null
-        @canvas.setActiveGroup(group.setCoords()).renderAll()
+        @active_group(new_ids)
+  active_group : (new_ids)->
+    new_objects = []
+    for object in @canvas.getObjects()
+      for new_id in new_ids
+        if object.id==new_id
+          new_objects.push(object)
+    new_objects = new_objects.map((o) ->
+      o.set "active", true
+    )
+    group = new fabric.Group(new_objects,
+      originX: "center"
+      originY: "center"
+    )
+    @canvas._activeObject = null
+    @canvas.setActiveGroup(group.setCoords()).renderAll()
   remove : ->
     @bind((object)=>
       @canvas.remove(object)
@@ -259,40 +266,54 @@ app =
       obj = @objects[count]
       @objects.splice(count, 1)
       @objects.push(obj)
+      return obj.id
   add_active : (object, top, left)->
     @save()
     object.id = @get_id()
-    object.top=top
-    object.left=left
+    object.top  = top
+    object.left = left
     new_id = @add(object)
     @render()
     return new_id
   duplicate : ->
     @bind (object)=>
-      o = fabric.util.object.clone(object)
-      log o.top
-      @add_active(o, o.top+10,o.left+10)
+#      o = fabric.util.object.clone(object)
+      new_id = @add_active(object, object.top+10,object.left+10)
+      return new_id
   clipboard : []
   clipboard_count : 1
   copy  : ->
     @clipboard = []
     @clipboard_count = 1
     @bind (object)=>
-      o = fabric.util.object.clone(object)
-      o.top_cm = @transformY_px2cm(o.top)
-      o.left_cm = @transformX_px2cm(o.left)
-      @clipboard.push(o)
+#      o = fabric.util.object.clone(object)
+      object.top_cm = @transformY_px2cm(object.top)
+      object.left_cm = @transformX_px2cm(object.left)
+      @clipboard.push(object)
+    , false
   paste : ->
-    if @clipboard==[]
+    if @clipboard.length<=0
       return
-    for object in @clipboard
-      o = fabric.util.object.clone(object)
-      o.top = @transformY_cm2px(o.top_cm)
-      o.left = @transformX_cm2px(o.left_cm)
-      top = object.top+@clipboard_count*o.height/2
-      left = object.left+@clipboard_count*o.width/10
-      @add_active(o, top, left)
+    if @clipboard.length==1
+      new_id = @__paste(@clipboard[0])
+      $(@canvas.getObjects()).each (i, obj)=>
+        if obj.id==new_id
+          @canvas.setActiveObject(obj)
+    else
+      new_ids = []
+      for object in @clipboard
+        new_id = @__paste(object)
+        new_ids.push(new_id)
+      @active_group(new_ids)
     @clipboard_count += 1
+  __paste : (object)->
+#    o = fabric.util.object.clone(object)
+    object.top = @transformY_cm2px(object.top_cm)
+    object.left = @transformX_cm2px(object.left_cm)
+    top = object.top+@clipboard_count*object.height/2
+    left = object.left+@clipboard_count*object.width/10
+    new_id = @add_active(object, top, left)
+    return new_id
   select_all : ()->
     objects = @canvas.getObjects().map((o) ->
       o.set "active", true

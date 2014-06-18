@@ -247,6 +247,11 @@ $(function() {
     app.select_all();
     return false;
   });
+  Mousetrap.bind('mod+z', function(e) {
+    cancel_default(e);
+    undoManager.undo();
+    return false;
+  });
   Mousetrap.bind(['esc', 'escape'], function(e) {
     cancel_default(e);
     app.unselect_all();

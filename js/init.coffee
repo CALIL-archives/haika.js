@@ -228,6 +228,10 @@ $ ->
     cancel_default(e)
     app.select_all()
     return false
+  Mousetrap.bind 'mod+z', (e)->
+    cancel_default(e)
+    undoManager.undo()
+    return false
   Mousetrap.bind ['esc', 'escape'], (e)->
     cancel_default(e)
     app.unselect_all()
