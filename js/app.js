@@ -300,6 +300,8 @@ app = {
       }
       if (do_active) {
         return this.active_group(new_ids);
+      } else {
+        return this.render();
       }
     }
   },

@@ -238,6 +238,8 @@ app =
         new_ids.push(new_id)
       if do_active
         @active_group(new_ids)
+      else
+        @render()
   active_group : (new_ids)->
     new_objects = []
     for object in @canvas.getObjects()
