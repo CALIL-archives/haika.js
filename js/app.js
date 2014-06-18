@@ -377,8 +377,6 @@ app = {
     this.clipboard_count = 1;
     return this.bind((function(_this) {
       return function(object) {
-        object.top_cm = _this.transformY_px2cm(object.top);
-        object.left_cm = _this.transformX_px2cm(object.left);
         return _this.clipboard.push(object);
       };
     })(this), false);
@@ -410,13 +408,21 @@ app = {
     return this.clipboard_count += 1;
   },
   __paste: function(object) {
-    var left, new_id, top;
-    object.top = this.transformY_cm2px(object.top_cm);
-    object.left = this.transformX_cm2px(object.left_cm);
-    top = object.top + this.clipboard_count * object.height / 2;
-    left = object.left + this.clipboard_count * object.width / 10;
-    new_id = this.add_active(object, top, left);
-    return new_id;
+    var left, new_id, new_object, top;
+    new_object = null;
+    $(this.canvas.getObjects()).each((function(_this) {
+      return function(i, obj) {
+        if (obj.id === object.id) {
+          return new_object = obj;
+        }
+      };
+    })(this));
+    if (new_object) {
+      top = new_object.top + this.clipboard_count * new_object.height / 2;
+      left = new_object.left + this.clipboard_count * new_object.width / 10;
+      new_id = this.add_active(new_object, top, left);
+      return new_id;
+    }
   },
   select_all: function() {
     var group, objects;

@@ -289,8 +289,6 @@ app =
     @clipboard_count = 1
     @bind (object)=>
 #      o = fabric.util.object.clone(object)
-      object.top_cm = @transformY_px2cm(object.top)
-      object.left_cm = @transformX_px2cm(object.left)
       @clipboard.push(object)
     , false
   paste : ->
@@ -309,13 +307,16 @@ app =
       @active_group(new_ids)
     @clipboard_count += 1
   __paste : (object)->
-#    o = fabric.util.object.clone(object)
-    object.top = @transformY_cm2px(object.top_cm)
-    object.left = @transformX_cm2px(object.left_cm)
-    top = object.top+@clipboard_count*object.height/2
-    left = object.left+@clipboard_count*object.width/10
-    new_id = @add_active(object, top, left)
-    return new_id
+#    object = fabric.util.object.clone(object)
+    new_object = null
+    $(@canvas.getObjects()).each (i, obj)=>
+      if obj.id==object.id
+        new_object = obj
+    if new_object
+      top = new_object.top+@clipboard_count*new_object.height/2
+      left = new_object.left+@clipboard_count*new_object.width/10
+      new_id = @add_active(new_object, top, left)
+      return new_id
   select_all : ()->
     objects = @canvas.getObjects().map((o) ->
       o.set "active", true
