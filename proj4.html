@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+  </head>
+  <body>
+<div id=txt>123</div>
+    <script type="text/javascript" src="bower_components/proj4/dist/proj4.js"></script>
+    <script type="text/javascript">
+proj4.defs["EPSG:4326"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+txt.innerHTML = proj4(proj4.defs["EPSG:4326"],proj4.defs["EPSG:4326"],[500,500]);
+
+
+    </script>
+
+  </body>
+</html>
