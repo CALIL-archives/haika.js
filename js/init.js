@@ -69,6 +69,7 @@ add = function(left, top) {
     angle: parseInt($('#angle').val())
   });
   app.add(object);
+  app.set_state(object);
   app.render();
   return $(app.canvas.getObjects()).each((function(_this) {
     return function(i, obj) {

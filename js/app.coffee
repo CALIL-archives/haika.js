@@ -90,8 +90,8 @@ app =
         @set_propety_panel()
     )
 
-    @canvas.on 'selection:created', (e)=>
-      e.target.hasControls = false
+#    @canvas.on 'selection:created', (e)=>
+#      e.target.hasControls = false
     @canvas.on 'before:selection:cleared', (e)=>
 #      log 'before:selection:cleared'
       object = e.target
@@ -153,6 +153,8 @@ app =
         continue
       o[prop] = object[prop]
     @objects.push(o)
+    return o.id
+  set_state : (object)->
     #layer tab
     if object.type.match(/shelf$/)
       state = 'shelf'
@@ -160,7 +162,6 @@ app =
       state = 'beacon'
     @state = state
     $('.nav a.'+@state).tab('show')
-    return o.id
   bind : (func, do_active=true)->
     object = @canvas.getActiveObject()
     if object
@@ -390,6 +391,8 @@ app =
     canvas = JSON.parse(localStorage.getItem('canvas'))
     if canvas
 #      log canvas
+      @state   = canvas.state
+      $('.nav a.'+@state).tab('show')
       @scale   = canvas.scale
       $('.zoom').html((@scale*100).toFixed(0)+'%')
       @centerX = canvas.centerX
@@ -434,6 +437,7 @@ app =
     @render()
   local_save : ->
     canvas =
+      state : @state
       scale : @scale
       centerX : @centerX
       centerY : @centerY

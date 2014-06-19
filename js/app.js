@@ -101,11 +101,6 @@ app = {
         return _this.set_propety_panel();
       };
     })(this));
-    this.canvas.on('selection:created', (function(_this) {
-      return function(e) {
-        return e.target.hasControls = false;
-      };
-    })(this));
     this.canvas.on('before:selection:cleared', (function(_this) {
       return function(e) {
         var object;
@@ -159,7 +154,7 @@ app = {
     return count;
   },
   add: function(object) {
-    var o, prop, props, state, _i, _len;
+    var o, prop, props, _i, _len;
     if (object.id === '') {
       object.id = this.get_id();
     }
@@ -184,14 +179,17 @@ app = {
       o[prop] = object[prop];
     }
     this.objects.push(o);
+    return o.id;
+  },
+  set_state: function(object) {
+    var state;
     if (object.type.match(/shelf$/)) {
       state = 'shelf';
     } else {
       state = 'beacon';
     }
     this.state = state;
-    $('.nav a.' + this.state).tab('show');
-    return o.id;
+    return $('.nav a.' + this.state).tab('show');
   },
   bind: function(func, do_active) {
     var group, new_id, new_ids, object, _i, _len, _ref;
@@ -515,6 +513,8 @@ app = {
     var canvas, geojson, h, klass, left, object, shape, top, w, x, y, _i, _len, _ref;
     canvas = JSON.parse(localStorage.getItem('canvas'));
     if (canvas) {
+      this.state = canvas.state;
+      $('.nav a.' + this.state).tab('show');
       this.scale = canvas.scale;
       $('.zoom').html((this.scale * 100).toFixed(0) + '%');
       this.centerX = canvas.centerX;
@@ -569,6 +569,7 @@ app = {
   local_save: function() {
     var canvas;
     canvas = {
+      state: this.state,
       scale: this.scale,
       centerX: this.centerX,
       centerY: this.centerY

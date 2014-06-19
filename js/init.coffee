@@ -54,6 +54,7 @@ add = (left=0, top=0)->
     #lockScalingY: true
   )
   app.add(object)
+  app.set_state(object)
   app.render()
   $(app.canvas.getObjects()).each (i, obj)=>
     if obj.id==object.id
