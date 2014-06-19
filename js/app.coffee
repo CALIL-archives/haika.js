@@ -456,27 +456,10 @@ app =
     return JSON.stringify(data, null, 4)
   getGeoJSON : ->
     @unselect()
-#    canvas = document.createElement('canvas')
-#    canvas = new fabric.Canvas(canvas);
-#    canvas.setWidth @options.max_width
-#    canvas.setHeight @options.max_height
-#    tmp_canvas = @canvas
-#    tmp_scale = @scale
-#    @canvas = canvas
-#    @scale = 1
     @render()
     geojson = @toGeoJSON()
-#    @canvas = tmp_canvas
-#    @scale = tmp_scale
     localStorage.setItem('geojson', geojson)
     location.href = 'map.html'
-    return
-    a = document.createElement('a')
-    a.download = 'sample.geojson'
-    a.type = 'application/json'
-    blob = new Blob([geojson], {"type": "application/json"})
-    a.href = (window.URL || webkitURL).createObjectURL(blob)
-    a.click()
   getSVG : ->
     @unselect()
     canvas = document.createElement('canvas')

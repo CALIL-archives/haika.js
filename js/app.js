@@ -599,21 +599,12 @@ app = {
     return JSON.stringify(data, null, 4);
   },
   getGeoJSON: function() {
-    var a, blob, geojson;
+    var geojson;
     this.unselect();
     this.render();
     geojson = this.toGeoJSON();
     localStorage.setItem('geojson', geojson);
-    location.href = 'map.html';
-    return;
-    a = document.createElement('a');
-    a.download = 'sample.geojson';
-    a.type = 'application/json';
-    blob = new Blob([geojson], {
-      "type": "application/json"
-    });
-    a.href = (window.URL || webkitURL).createObjectURL(blob);
-    return a.click();
+    return location.href = 'map.html';
   },
   getSVG: function() {
     var a, blob, canvas, svg, tmp_canvas, tmp_scale;
