@@ -232,6 +232,8 @@
       center = this.getCenterPoint();
       x = -w / 2 + center.x;
       y = -h / 2 + center.y;
+      x = app.transformX_px2cm(x);
+      y = app.transformY_px2cm(y);
       data = {
         "type": "Feature",
         "geometry": {

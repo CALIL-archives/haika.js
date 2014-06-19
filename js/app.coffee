@@ -470,6 +470,8 @@ app =
         h = klass.prototype.__eachHeight() * object.properties.side
         x = object.geometry.coordinates[0][0][0]
         y = object.geometry.coordinates[0][0][1]
+        x = @transformX_cm2px(x)
+        y = @transformY_cm2px(y)
         top = y + h / 2
         left = x + w / 2
         shape = new klass(
@@ -480,8 +482,6 @@ app =
           left: left
           fill: "#CFE2F3"
           stroke: "#000000"
-          originX : 'center'
-          originY : 'center'
           angle: object.properties.angle
         )
         @add(shape)
