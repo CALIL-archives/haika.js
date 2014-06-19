@@ -192,12 +192,14 @@
       return object
 
     toGeoJSON: ->
-      w = @__eachWidth() * @count / 100
-      h = @__eachHeight() * @side / 100
+      w = @__eachWidth() * @count # / 100
+      h = @__eachHeight() * @side # / 100
       center = @getCenterPoint()
 #      log center
-      x = -w / 2 + (center.x / 100)
-      y = -h / 2 + (center.y / 100)
+      x = -w / 2 + center.x # / 100)
+      y = -h / 2 + center.y # / 100)
+      x = app.transformLeftX_px2cm(x)
+      y = app.transformTopY_px2cm(y)
       data =
         "type": "Feature"
         "geometry":
@@ -208,9 +210,9 @@
         "properties": 
           "type"  : @type
           "id"    : @id
-          "count" : @count
-          "side"  : @side
-#          "center": @getCenterPoint()
+          "count"    : @count
+          "side"    : @side
+          "angle" : @angle
       return data
     
     toSVG: (reviver) ->

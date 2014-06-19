@@ -46,14 +46,15 @@ add = (left=0, top=0)->
   object = new klass(
     count: parseInt($('#count').val())
     side: parseInt($('#side').val())
-    top: app.transformX_cm2px(app.centerY)
-    left: app.transformY_cm2px(app.centerX)
+    top: app.transformTopY_cm2px(app.centerY)
+    left: app.transformLeftX_cm2px(app.centerX)
     fill: "#CFE2F3"
     stroke: "#000000"
     angle: parseInt($('#angle').val())
     #lockScalingY: true
   )
   app.add(object)
+  app.set_state(object)
   app.render()
   $(app.canvas.getObjects()).each (i, obj)=>
     if obj.id==object.id
@@ -208,18 +209,18 @@ $ ->
     undoManager.undo()
 
   # shortcut key
-  Mousetrap.bind 'mod+c', ->
-    app.copy()
-    return false
-  Mousetrap.bind 'mod+v', ->
-    app.paste()
-    return false
   cancel_default = (e)->
     if e.preventDefault
       e.preventDefault()
     else
       # internet explorer
       e.returnValue = false;
+  Mousetrap.bind 'mod+c', ->
+    app.copy()
+    return false
+  Mousetrap.bind 'mod+v', ->
+    app.paste()
+    return false
   Mousetrap.bind 'mod+d', (e)->
     cancel_default(e)
     app.duplicate()
@@ -228,6 +229,28 @@ $ ->
     cancel_default(e)
     app.select_all()
     return false
+  Mousetrap.bind 'mod+z', (e)->
+    cancel_default(e)
+    undoManager.undo()
+    return false
+  Mousetrap.bind ['esc', 'escape'], (e)->
+    cancel_default(e)
+    app.unselect_all()
+    return false
+#  Mousetrap.bind 'mod+=', (e)->
+#    log e
+#    cancel_default(e)
+#    app.zoomIn()
+#    return false
+#  Mousetrap.bind 'mod+–', (e)->
+#    log e.keyCode
+#    cancel_default(e)
+#    app.zoomOut()
+#    return false
+#  Mousetrap.bind 'mod+0', (e)->
+#    cancel_default(e)
+#    app.zoomReset()
+#    return false
   # Prevent the backspace key from navigating back.
   $(document).unbind("keydown").bind "keydown", (event) ->
     doPrevent = false

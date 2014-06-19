@@ -11,7 +11,6 @@ app =
   scale      : 1
   objects    : []
   canvas     : false
-  drawguideline : true
   is_moving  : false
   is_scaling : false
   is_rotating: false
@@ -91,10 +90,10 @@ app =
         @set_propety_panel()
     )
 
-    @canvas.on 'selection:created', (e)=>
-      e.target.hasControls = false
+#    @canvas.on 'selection:created', (e)=>
+#      e.target.hasControls = false
     @canvas.on 'before:selection:cleared', (e)=>
-      #log 'before_unselect'
+#      log 'before:selection:cleared'
       object = e.target
       @canvas.deactivateAll().renderAll()
       @save()
@@ -118,6 +117,12 @@ app =
       return 0
     @last_id += 1
     return @last_id
+  findbyid : (id)->
+    count = null
+    $(@objects).each (i, obj)->
+      if obj.id==id
+        count = i
+    return count
   add : (object)->
     # new object
     if object.id==''
@@ -141,13 +146,15 @@ app =
       props.push('side')
     for prop in props
       if prop=='top'
-        o.top_cm = @transformX_px2cm(object.top)
+        o.top_cm = @transformTopY_px2cm(object.top)
         continue
       if prop=='left'
-        o.left_cm = @transformY_px2cm(object.left)
+        o.left_cm = @transformLeftX_px2cm(object.left)
         continue
       o[prop] = object[prop]
     @objects.push(o)
+    return o.id
+  set_state : (object)->
     #layer tab
     if object.type.match(/shelf$/)
       state = 'shelf'
@@ -155,101 +162,46 @@ app =
       state = 'beacon'
     @state = state
     $('.nav a.'+@state).tab('show')
-    return o.id
-  load : ()->
-    objects = JSON.parse(localStorage.getItem('app_data'))
-#    log objects
-    if objects
-      for object in objects
-        if object.id>@last_id
-          @last_id = object.id
-        if object.type=='shelf'
-          klass = fabric.Shelf
-        else if object.type=='curved_shelf'
-          klass = fabric.curvedShelf
-        else if object.type=='beacon'
-          klass = fabric.Beacon
-        else
-          continue
-        shape = new klass(
-          id: object.id
-          count: object.count
-          side: object.side
-          top: app.transformX_cm2px(object.top_cm)
-          left: app.transformY_cm2px(object.left_cm)
-          fill: "#CFE2F3"
-          stroke: "#000000"
-          angle: object.angle
-        )
-        @add(shape)
-    canvas = JSON.parse(localStorage.getItem('canvas'))
-    if canvas
-#      log canvas
-      @scale   = canvas.scale
-      $('.zoom').html((@scale*100).toFixed(0)+'%')
-      @centerX = canvas.centerX
-      @centerY = canvas.centerY
-    @render()
-  findbyid : (id)->
-    count = null
-    $(@objects).each (i, obj)->
-      if obj.id==id
-        count = i
-    return count
-  local_save : ->
-    canvas = 
-      scale : @scale
-      centerX : @centerX
-      centerY : @centerY
-    localStorage.setItem('canvas', JSON.stringify(canvas))
-    localStorage.setItem('app_data', JSON.stringify(@objects))
-  save : ->
-    for object in @canvas.getObjects()
-      @save_prop(object)
-    @local_save()
-  save_prop : (object, group=false)->
-    count = @findbyid(object.id)
-    @objects[count].id      = object.id
-    @objects[count].type    = object.type
-    @objects[count].top_cm  = @transformY_px2cm(object.top)
-    @objects[count].left_cm = @transformX_px2cm(object.left)
-    @objects[count].scaleX  = object.scaleX / @scale
-    @objects[count].scaleY  = object.scaleY / @scale
-    @objects[count].angle   = object.angle
-
-    if object.type.match(/shelf$/)
-      @objects[count].count = object.count
-      @objects[count].side  = object.side
-
   bind : (func, do_active=true)->
     object = @canvas.getActiveObject()
     if object
+      log object.top
       new_id = func(object)
-      if do_active
+      if new_id and do_active
         $(@canvas.getObjects()).each (i, obj)=>
           if obj.id==new_id
             @canvas.setActiveObject(obj)
     group = @canvas.getActiveGroup()
     if group
-      @canvas.discardActiveGroup()
-      objects = group._objects
-      for object in objects
-        func(object)
+      new_ids = []
+      for object in group.getObjects()
+        new_id = func(object)
+        new_ids.push(new_id)
       if do_active
-        objects = objects.map((o) ->
-          o.set "active", true
-        )
-        group = new fabric.Group(objects,
-          originX: "center"
-          originY: "center"
-        )
-        @canvas._activeObject = null
-        @canvas.setActiveGroup(group.setCoords()).renderAll()
+        @active_group(new_ids)
+      else
+        @render()
+  active_group : (new_ids)->
+    new_objects = []
+    for object in @canvas.getObjects()
+      for new_id in new_ids
+        if object.id==new_id
+          new_objects.push(object)
+    new_objects = new_objects.map((o) ->
+      o.set "active", true
+    )
+    group = new fabric.Group(new_objects,
+      originX: "center"
+      originY: "center"
+    )
+    @canvas._activeObject = null
+    @canvas.setActiveGroup(group.setCoords()).renderAll()
   remove : ->
-    @bind (object, do_active=false)=>
+    @bind((object)=>
       @canvas.remove(object)
       count = @findbyid(object.id)
       @objects.splice(count, 1)
+    , false)
   bringToFront : ->
     @bind (object)=>
       count = @findbyid(object.id)
@@ -257,41 +209,52 @@ app =
       obj = @objects[count]
       @objects.splice(count, 1)
       @objects.push(obj)
+      return obj.id
   add_active : (object, top, left)->
     @save()
     object.id = @get_id()
-    object.top=top
-    object.left=left
+    object.top  = top
+    object.left = left
     new_id = @add(object)
     @render()
     return new_id
   duplicate : ->
     @bind (object)=>
-      log object
+      @render()
       o = fabric.util.object.clone(object)
-      @add_active(o, o.top+10,o.left+10)
+      new_id = @add_active(o, o.top+10,o.left+10)
+      return new_id
   clipboard : []
   clipboard_count : 1
   copy  : ->
     @clipboard = []
     @clipboard_count = 1
     @bind (object)=>
-      o = fabric.util.object.clone(object)
-      o.top_cm = @transformY_px2cm(o.top)
-      o.left_cm = @transformX_px2cm(o.left)
-      @clipboard.push(o)
+      @clipboard.push(object)
+    , false
   paste : ->
-    if @clipboard==[]
+    if @clipboard.length<=0
       return
-    for object in @clipboard
-      o = fabric.util.object.clone(object)
-      o.top = @transformY_cm2px(o.top_cm)
-      o.left = @transformX_cm2px(o.left_cm)
-      top = object.top+@clipboard_count*o.height/2
-      left = object.left+@clipboard_count*o.width/10
-      @add_active(o, top, left)
+    if @clipboard.length==1
+      new_id = @__paste(@clipboard[0])
+      $(@canvas.getObjects()).each (i, obj)=>
+        if obj.id==new_id
+          @canvas.setActiveObject(obj)
+    else
+      new_ids = []
+      for object in @clipboard
+        new_id = @__paste(object)
+        new_ids.push(new_id)
+      @active_group(new_ids)
     @clipboard_count += 1
+  __paste : (object)->
+    o = fabric.util.object.clone(object)
+    top = o.top+@clipboard_count*o.height/2
+    left = o.left+@clipboard_count*o.width/10
+    new_id = @add_active(o, top, left)
+    return new_id
   select_all : ()->
+    @canvas.discardActiveGroup()
     objects = @canvas.getObjects().map((o) ->
       o.set "active", true
     )
@@ -301,15 +264,15 @@ app =
     )
     @canvas._activeObject = null
     @canvas.setActiveGroup(group.setCoords()).renderAll()
-  transformX_cm2px : (cm)->
-    # centerX(cm) => px
+  unselect_all : ()->
+    @canvas.deactivateAll().renderAll()
+  transformLeftX_cm2px : (cm)->
     return @canvas.getWidth()/2+(@centerX-cm)*@scale
-  transformY_cm2px : (cm)->
+  transformTopY_cm2px : (cm)->
     return @canvas.getHeight()/2+(@centerY-cm)*@scale
-  transformX_px2cm : (px)->
-    # left(px) => x(cm)
+  transformLeftX_px2cm : (px)->
     return @centerX - (px - @canvas.getWidth() / 2) / @scale
-  transformY_px2cm : (px)->
+  transformTopY_px2cm : (px)->
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
   unselect : ->
     object = app.canvas.getActiveObject()
@@ -325,7 +288,22 @@ app =
     @unselect()
     @canvas._objects.length = 0;
     #@canvas.clear()
+    beacons = []
+    shelfs  = []
     for o in @objects
+      if o.type=='beacon'
+        beacons.push(o)
+      if o.type.match(/shelf$/)
+        shelfs.push(o)
+    for o in shelfs
+      @render_object(o)
+    for o in beacons
+      @render_object(o)
+    @render_bg()
+    @canvas.renderAll()
+    @canvas.renderOnAddRemove=true
+    @debug()
+  render_object : (o)->
       if o.type=='shelf'
         object = new fabric.Shelf()
         object.side  = o.side
@@ -344,8 +322,8 @@ app =
       object.scaleX = object.scaleY = 1
       object.width  = object.__width()
       object.height = object.__height()
-      object.left   = @transformX_cm2px(o.left_cm)
-      object.top    = @transformY_cm2px(o.top_cm)
+      object.left   = @transformLeftX_cm2px(o.left_cm)
+      object.top    = @transformTopY_cm2px(o.top_cm)
       object.angle  = o.angle
       object.originX = 'center'
       object.originY = 'center'
@@ -364,10 +342,6 @@ app =
       object.borderOpacityWhenMoving = 0.8
       object.cornerSize = 10
       @canvas.add(object)
-    @render_bg()
-    @canvas.renderAll()
-    @canvas.renderOnAddRemove=true
-    @debug()
   render_bg : ->
     if @bgimg
       @bgimg.left    = Math.floor( @canvas.getWidth()/2 + (-@bgimg_width*@options.bgscale/2 + @centerX) * @scale )
@@ -384,18 +358,6 @@ app =
     $('#canvas_centerY').val(@centerY)
     $('#canvas_bgscale').val(@options.bgscale)
 
-#    object.on(
-#      modified: =>
-#        @moving(object)
-#        @scaling(object)
-#        @rotating(object)
-#      moving: =>
-#        @moving(object)
-#      scaling: =>
-#        @scaling(object)
-#      rotating: =>
-#        @rotating(object)
-#    )
   zoomIn : ->
     @unselect()
 #    @scale += 0.1
@@ -425,22 +387,80 @@ app =
     @scale = 1
     @render()
     $('.zoom').html('100%')
-#  toTop :(y=100) ->
-#    @unselect()
-#    @centerY += y
-#    @render()
-#  toBottom : (y=100)->
-#    @unselect()
-#    @centerY -= y
-#    @render()
-#  toRight : (x=100)->
-#    @unselect()
-#    @centerX -= x
-#    @render()
-#  toLeft : (x=100)->
-#    @unselect()
-#    @centerX += x
-#    @render()
+  load : ()->
+    canvas = JSON.parse(localStorage.getItem('canvas'))
+    if canvas
+#      log canvas
+      @state   = canvas.state
+      $('.nav a.'+@state).tab('show')
+      @scale   = canvas.scale
+      $('.zoom').html((@scale*100).toFixed(0)+'%')
+      @centerX = canvas.centerX
+      @centerY = canvas.centerY
+    geojson = JSON.parse(localStorage.getItem('geojson'))
+#    log geojson
+    if geojson and geojson.features.length>0
+      for object in geojson.features
+        if object.properties.id>@last_id
+          @last_id = object.properties.id
+        if object.properties.type=='shelf'
+          klass = fabric.Shelf
+        else if object.properties.type=='curved_shelf'
+          klass = fabric.curvedShelf
+        else if object.properties.type=='beacon'
+          klass = fabric.Beacon
+        else
+          continue
+        if object.properties.type.match(/shelf$/)
+          w = klass.prototype.__eachWidth() * object.properties.count
+          h = klass.prototype.__eachHeight() * object.properties.side
+        if object.properties.type=='beacon'
+          w = klass.prototype.__width()
+          h = klass.prototype.__height()
+        x = object.geometry.coordinates[0][0][0]
+        y = object.geometry.coordinates[0][0][1]
+        x = @transformLeftX_cm2px(x)
+        y = @transformTopY_cm2px(y)
+        top = y + h / 2
+        left = x + w / 2
+        shape = new klass(
+          id: object.properties.id
+          count: object.properties.count
+          side: object.properties.side
+          top: top
+          left: left
+          fill: "#CFE2F3"
+          stroke: "#000000"
+          angle: object.properties.angle
+        )
+        @add(shape)
+    @render()
+  local_save : ->
+    canvas =
+      state : @state
+      scale : @scale
+      centerX : @centerX
+      centerY : @centerY
+    localStorage.setItem('canvas', JSON.stringify(canvas))
+#    localStorage.setItem('app_data', JSON.stringify(@objects))
+    localStorage.setItem('geojson', @toGeoJSON())
+  save : ->
+    for object in @canvas.getObjects()
+      @save_prop(object)
+    @local_save()
+  save_prop : (object, group=false)->
+    count = @findbyid(object.id)
+    @objects[count].id      = object.id
+    @objects[count].type    = object.type
+    @objects[count].top_cm  = @transformTopY_px2cm(object.top)
+    @objects[count].left_cm = @transformLeftX_px2cm(object.left)
+    @objects[count].scaleX  = object.scaleX / @scale
+    @objects[count].scaleY  = object.scaleY / @scale
+    @objects[count].angle   = object.angle
+
+    if object.type.match(/shelf$/)
+      @objects[count].count = object.count
+      @objects[count].side  = object.side
   toGeoJSON : ->
     features = []
     for object in @canvas.getObjects()
@@ -451,29 +471,10 @@ app =
     return JSON.stringify(data, null, 4)
   getGeoJSON : ->
     @unselect()
-#    canvas = document.createElement('canvas')
-#    canvas = new fabric.Canvas(canvas);
-#    canvas.setWidth @options.max_width
-#    canvas.setHeight @options.max_height
-#    tmp_canvas = @canvas
-#    tmp_scale = @scale
-#    @canvas = canvas
-#    @scale = 1
-    @drawguideline = false
     @render()
-    @drawguideline = true
     geojson = @toGeoJSON()
-#    @canvas = tmp_canvas
-#    @scale = tmp_scale
-    localStorage.setItem('geojson', JSON.stringify(geojson))
+    localStorage.setItem('geojson', geojson)
     location.href = 'map.html'
-    return
-    a = document.createElement('a')
-    a.download = 'sample.geojson'
-    a.type = 'application/json'
-    blob = new Blob([geojson], {"type": "application/json"})
-    a.href = (window.URL || webkitURL).createObjectURL(blob)
-    a.click()
   getSVG : ->
     @unselect()
     canvas = document.createElement('canvas')
@@ -484,9 +485,7 @@ app =
     tmp_scale = @scale
     @canvas = canvas
     @scale = 1
-    @drawguideline = false
     @render()
-    @drawguideline = true
     svg = @canvas.toSVG()
     @canvas = tmp_canvas
     @scale = tmp_scale

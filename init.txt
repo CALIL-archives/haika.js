@@ -213,8 +213,8 @@ app.resetZoom = ->
       count = @match(object)
       if count!=null
         log object.top
-        @objects[count].top_cm  = @transformY_px2cm(object.top)
-        @objects[count].left_cm = @transformX_px2cm(object.left)
+        @objects[count].top_cm  = @transformTopY_px2cm(object.top)
+        @objects[count].left_cm = @transformLeftX_px2cm(object.left)
   scaling : ()->
     log 'scaling'
     @bind (object, group)=>
@@ -222,16 +222,16 @@ app.resetZoom = ->
       if count!=null
         @objects[count].scaleX = object.scaleX / @scale
         @objects[count].scaleY = object.scaleY / @scale
-        @objects[count].top_cm    = @transformY_px2cm(object.top)
-        @objects[count].left_cm   = @transformX_px2cm(object.left)
+        @objects[count].top_cm    = @transformTopY_px2cm(object.top)
+        @objects[count].left_cm   = @transformLeftX_px2cm(object.left)
   rotating : ()->
     log 'rotating'
     @bind (object)=>
       count = @match(object)
       if count!=null
         @objects[count].angle    = object.angle
-        @objects[count].top_cm   = @transformY_px2cm(object.top)
-        @objects[count].left_cm  = @transformX_px2cm(object.left)
+        @objects[count].top_cm   = @transformTopY_px2cm(object.top)
+        @objects[count].left_cm  = @transformLeftX_px2cm(object.left)
 ###  $(@options.canvas).on 'drag', (e)=>
     if $(".is_visible .btn-primary").find('input').val()=='edit'
       return
@@ -271,13 +271,13 @@ app.resetZoom = ->
 app.scale = 1
 x_cm = -125
 log x_cm
-x_px = app.transformX_cm2px(x_cm)
+x_px = app.transformLeftX_cm2px(x_cm)
 log x_px
 
-x_cm = app.transformX_px2cm(x_px)
+x_cm = app.transformLeftX_px2cm(x_px)
 log x_cm
 
-x_px = app.transformX_cm2px(x_cm)
+x_px = app.transformLeftX_cm2px(x_cm)
 log x_px
 
 ###
@@ -295,8 +295,8 @@ log x_px
       tempScaleX = scaleX * @scale
       log 'tempScaleX:'+tempScaleX
       tempScaleY = scaleY * @scale
-      tempLeft   = @transformX_cm2px(left_cm)
-      tempTop    = @transformY_cm2px(top_cm)
+      tempLeft   = @transformLeftX_cm2px(left_cm)
+      tempTop    = @transformTopY_cm2px(top_cm)
 #      if tempLeft > @width 
 #        continue
 #      if tempTop > @height
@@ -327,19 +327,19 @@ log x_px
       count += 1
     return null
 
-  transformX_cm2px : (cm)->
+  transformLeftX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale
     #return @centerX * @scale + @canvas.getWidth()  / 2 - cm * @scale
-  transformY_cm2px : (cm)->
+  transformTopY_cm2px : (cm)->
     return @canvas.getHeight()/2+(@centerY-cm)*@scale
     #return @centerY * @scale + @canvas.getHeight() / 2 - cm * @scale
-  transformX_px2cm : (px)->
+  transformLeftX_px2cm : (px)->
     # left(px) => x(cm)
     #return (px+@centerX)/@scale-@canvas.getWidth()/2
     #return @canvas.getWidth() / 2 - (px + @centerX) * @scale
     return @centerX - (px - @canvas.getWidth() / 2) / @scale
-  transformY_px2cm : (px)->
+  transformTopY_px2cm : (px)->
     #return (px+@centerY)/@scale-@canvas.getHeight()/2
     #return @canvas.getHeight() / 2 - (px + @centerY) * @scale 
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
@@ -355,3 +355,88 @@ log x_px
 #          @__renderShelf ctx, x + i * w, y + h, w, h
 #        i++
 
+#  toTop :(y=100) ->
+#    @unselect()
+#    @centerY += y
+#    @render()
+#  toBottom : (y=100)->
+#    @unselect()
+#    @centerY -= y
+#    @render()
+#  toRight : (x=100)->
+#    @unselect()
+#    @centerX -= x
+#    @render()
+#  toLeft : (x=100)->
+#    @unselect()
+#    @centerX += x
+#    @render()
+#  load : ()->
+#    objects = JSON.parse(localStorage.getItem('geojson'))
+#    log objects
+#    if objects
+#      for object in objects
+#        if object.id>@last_id
+#          @last_id = object.id
+#        if object.type=='shelf'
+#          klass = fabric.Shelf
+#        else if object.type=='curved_shelf'
+#          klass = fabric.curvedShelf
+#        else if object.type=='beacon'
+#          klass = fabric.Beacon
+#        else
+#          continue
+#        shape = new klass(
+#          id: object.id
+#          count: object.count
+#          side: object.side
+#          top: app.transformLeftX_cm2px(object.top_cm)
+#          left: app.transformTopY_cm2px(object.left_cm)
+#          fill: "#CFE2F3"
+#          stroke: "#000000"
+#          angle: object.angle
+#        )
+#        @add(shape)
+#    canvas = JSON.parse(localStorage.getItem('canvas'))
+#    if canvas
+##      log canvas
+#      @scale   = canvas.scale
+#      $('.zoom').html((@scale*100).toFixed(0)+'%')
+#      @centerX = canvas.centerX
+#      @centerY = canvas.centerY
+#    @render()
+
+
+#    object.on(
+#      modified: =>
+#        @moving(object)
+#        @scaling(object)
+#        @rotating(object)
+#      moving: =>
+#        @moving(object)
+#      scaling: =>
+#        @scaling(object)
+#      rotating: =>
+#        @rotating(object)
+#    )
+
+
+#    canvas = document.createElement('canvas')
+#    canvas = new fabric.Canvas(canvas);
+#    canvas.setWidth @options.max_width
+#    canvas.setHeight @options.max_height
+#    tmp_canvas = @canvas
+#    tmp_scale = @scale
+#    @canvas = canvas
+#    @scale = 1
+
+#    @canvas = tmp_canvas
+#    @scale = tmp_scale
+
+    return
+    a = document.createElement('a')
+    a.download = 'sample.geojson'
+    a.type = 'application/json'
+    blob = new Blob([geojson], {"type": "application/json"})
+    a.href = (window.URL || webkitURL).createObjectURL(blob)
+    a.click()
