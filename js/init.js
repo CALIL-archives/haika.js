@@ -237,6 +237,11 @@ $(function() {
     app.paste();
     return false;
   });
+  Mousetrap.bind('mod+d', function(e) {
+    cancel_default(e);
+    app.duplicate();
+    return false;
+  });
   Mousetrap.bind('mod+a', function(e) {
     cancel_default(e);
     app.select_all();

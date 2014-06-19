@@ -220,10 +220,10 @@ $ ->
   Mousetrap.bind 'mod+v', ->
     app.paste()
     return false
-#  Mousetrap.bind 'mod+d', (e)->
-#    cancel_default(e)
-#    app.duplicate()
-#    return false
+  Mousetrap.bind 'mod+d', (e)->
+    cancel_default(e)
+    app.duplicate()
+    return false
   Mousetrap.bind 'mod+a', (e)->
     cancel_default(e)
     app.select_all()
