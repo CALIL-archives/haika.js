@@ -243,13 +243,11 @@
         "properties": {
           "type": this.type,
           "id": this.id,
+          "count": this.count,
+          "side": this.side,
           "angle": this.angle
         }
       };
-      if (this.type.match(/shelf$/)) {
-        data.properties.count = this.count;
-        data.properties.side = this.side;
-      }
       return data;
     },
     toSVG: function(reviver) {

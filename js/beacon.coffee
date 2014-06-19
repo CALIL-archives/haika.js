@@ -22,7 +22,7 @@
       return
 
     _render: (ctx) ->
-      console.log @
+#      console.log @
       ctx.beginPath()
       if @width is 1 and @height is 1
         ctx.fillRect 0, 0, 1, 1
@@ -58,7 +58,26 @@
       return object
 
     toGeoJSON: ->
-      ""
+      w = @__const_width
+      h = @__const_height
+      center = @getCenterPoint()
+#      log center
+      x = -w / 2 + center.x
+      y = -h / 2 + center.y
+      x = app.transformLeftX_px2cm(x)
+      y = app.transformTopY_px2cm(y)
+      data =
+        "type": "Feature"
+        "geometry":
+          "type": "Polygon",
+          "coordinates": [
+            [ [x, y], [x + w, y], [x + w, y - h], [x, y - h], [x, y]]
+          ]
+        "properties":
+          "type"  : @type
+          "id"    : @id
+          "angle" : @angle
+      return data
 
     toSVG: (reviver) ->
       ""

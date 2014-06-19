@@ -387,7 +387,6 @@ app =
 #    log geojson
     if geojson and geojson.features.length>0
       for object in geojson.features
-#        log object
         if object.properties.id>@last_id
           @last_id = object.properties.id
         if object.properties.type=='shelf'
@@ -398,8 +397,12 @@ app =
           klass = fabric.Beacon
         else
           continue
-        w = klass.prototype.__eachWidth() * object.properties.count
-        h = klass.prototype.__eachHeight() * object.properties.side
+        if object.properties.type.match(/shelf$/)
+          w = klass.prototype.__eachWidth() * object.properties.count
+          h = klass.prototype.__eachHeight() * object.properties.side
+        if object.properties.type=='beacon'
+          w = klass.prototype.__width()
+          h = klass.prototype.__height()
         x = object.geometry.coordinates[0][0][0]
         y = object.geometry.coordinates[0][0][1]
         x = @transformLeftX_cm2px(x)

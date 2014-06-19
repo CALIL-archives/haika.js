@@ -166,6 +166,31 @@
       }
       return object;
     },
+    toGeoJSON: function() {
+      var center, data, h, w, x, y;
+      w = this.__eachWidth() * this.count;
+      h = this.__eachHeight() * this.side;
+      center = this.getCenterPoint();
+      x = -w / 2 + center.x;
+      y = -h / 2 + center.y;
+      x = app.transformLeftX_px2cm(x);
+      y = app.transformTopY_px2cm(y);
+      data = {
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[[x, y], [x + w, y], [x + w, y - h], [x, y - h], [x, y]]]
+        },
+        "properties": {
+          "type": this.type,
+          "id": this.id,
+          "count": this.count,
+          "side": this.side,
+          "angle": this.angle
+        }
+      };
+      return data;
+    },
     toSVG: function(reviver) {
       var count, i, k, markup, row;
       markup = this._createBaseSVGMarkup();

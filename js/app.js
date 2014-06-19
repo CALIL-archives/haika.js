@@ -518,8 +518,14 @@ app = {
         } else {
           continue;
         }
-        w = klass.prototype.__eachWidth() * object.properties.count;
-        h = klass.prototype.__eachHeight() * object.properties.side;
+        if (object.properties.type.match(/shelf$/)) {
+          w = klass.prototype.__eachWidth() * object.properties.count;
+          h = klass.prototype.__eachHeight() * object.properties.side;
+        }
+        if (object.properties.type === 'beacon') {
+          w = klass.prototype.__width();
+          h = klass.prototype.__height();
+        }
         x = object.geometry.coordinates[0][0][0];
         y = object.geometry.coordinates[0][0][1];
         x = this.transformLeftX_cm2px(x);

@@ -210,11 +210,9 @@
         "properties": 
           "type"  : @type
           "id"    : @id
+          "count"    : @count
+          "side"    : @side
           "angle" : @angle
-#          "center": @getCenterPoint()
-      if @type.match(/shelf$/)
-        data.properties.count = @count
-        data.properties.side = @side
       return data
     
     toSVG: (reviver) ->
