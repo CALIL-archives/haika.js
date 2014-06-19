@@ -67,7 +67,7 @@ $(document).ready ->
   ).addTo map
   geojson = JSON.parse(localStorage.getItem('geojson'))
   setTimeout(->
-    $("#geojson-input").val(geojson.toString())
+    $("#geojson-input").val(JSON.stringify(geojson))
     $("#submit").trigger('click')
   , 1000)
   $("#submit").on "click", ->

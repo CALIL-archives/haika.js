@@ -511,7 +511,6 @@ app = {
       _ref = geojson.features;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
-        log(object);
         if (object.properties.id > this.last_id) {
           this.last_id = object.properties.id;
         }
@@ -603,7 +602,7 @@ app = {
     this.unselect();
     this.render();
     geojson = this.toGeoJSON();
-    localStorage.setItem('geojson', JSON.stringify(geojson));
+    localStorage.setItem('geojson', geojson);
     location.href = 'map.html';
     return;
     a = document.createElement('a');

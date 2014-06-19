@@ -391,56 +391,6 @@ app =
     @scale = 1
     @render()
     $('.zoom').html('100%')
-#  toTop :(y=100) ->
-#    @unselect()
-#    @centerY += y
-#    @render()
-#  toBottom : (y=100)->
-#    @unselect()
-#    @centerY -= y
-#    @render()
-#  toRight : (x=100)->
-#    @unselect()
-#    @centerX -= x
-#    @render()
-#  toLeft : (x=100)->
-#    @unselect()
-#    @centerX += x
-#    @render()
-#  load : ()->
-#    objects = JSON.parse(localStorage.getItem('geojson'))
-#    log objects
-#    if objects
-#      for object in objects
-#        if object.id>@last_id
-#          @last_id = object.id
-#        if object.type=='shelf'
-#          klass = fabric.Shelf
-#        else if object.type=='curved_shelf'
-#          klass = fabric.curvedShelf
-#        else if object.type=='beacon'
-#          klass = fabric.Beacon
-#        else
-#          continue
-#        shape = new klass(
-#          id: object.id
-#          count: object.count
-#          side: object.side
-#          top: app.transformLeftX_cm2px(object.top_cm)
-#          left: app.transformTopY_cm2px(object.left_cm)
-#          fill: "#CFE2F3"
-#          stroke: "#000000"
-#          angle: object.angle
-#        )
-#        @add(shape)
-#    canvas = JSON.parse(localStorage.getItem('canvas'))
-#    if canvas
-##      log canvas
-#      @scale   = canvas.scale
-#      $('.zoom').html((@scale*100).toFixed(0)+'%')
-#      @centerX = canvas.centerX
-#      @centerY = canvas.centerY
-#    @render()
   load : ()->
     canvas = JSON.parse(localStorage.getItem('canvas'))
     if canvas
@@ -453,7 +403,7 @@ app =
 #    log geojson
     if geojson.features and geojson.features.length>0
       for object in geojson.features
-        log object
+#        log object
         if object.properties.id>@last_id
           @last_id = object.properties.id
         if object.properties.type=='shelf'
@@ -531,7 +481,7 @@ app =
     geojson = @toGeoJSON()
 #    @canvas = tmp_canvas
 #    @scale = tmp_scale
-    localStorage.setItem('geojson', JSON.stringify(geojson))
+    localStorage.setItem('geojson', geojson)
     location.href = 'map.html'
     return
     a = document.createElement('a')
