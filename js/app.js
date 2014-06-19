@@ -339,6 +339,7 @@ app = {
   },
   select_all: function() {
     var group, objects;
+    this.canvas.discardActiveGroup();
     objects = this.canvas.getObjects().map(function(o) {
       return o.set("active", true);
     });

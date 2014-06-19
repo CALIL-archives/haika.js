@@ -252,6 +252,7 @@ app =
     new_id = @add_active(o, top, left)
     return new_id
   select_all : ()->
+    @canvas.discardActiveGroup()
     objects = @canvas.getObjects().map((o) ->
       o.set "active", true
     )
