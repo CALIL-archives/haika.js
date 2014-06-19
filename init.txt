@@ -405,3 +405,17 @@ log x_px
 #      @centerX = canvas.centerX
 #      @centerY = canvas.centerY
 #    @render()
+
+
+#    object.on(
+#      modified: =>
+#        @moving(object)
+#        @scaling(object)
+#        @rotating(object)
+#      moving: =>
+#        @moving(object)
+#      scaling: =>
+#        @scaling(object)
+#      rotating: =>
+#        @rotating(object)
+#    )

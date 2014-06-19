@@ -330,21 +330,12 @@ app = {
     return this.clipboard_count += 1;
   },
   __paste: function(object) {
-    var left, new_id, new_object, top;
-    new_object = null;
-    $(this.canvas.getObjects()).each((function(_this) {
-      return function(i, obj) {
-        if (obj.id === object.id) {
-          return new_object = obj;
-        }
-      };
-    })(this));
-    if (new_object) {
-      top = new_object.top + this.clipboard_count * new_object.height / 2;
-      left = new_object.left + this.clipboard_count * new_object.width / 10;
-      new_id = this.add_active(new_object, top, left);
-      return new_id;
-    }
+    var left, new_id, o, top;
+    o = fabric.util.object.clone(object);
+    top = o.top + this.clipboard_count * o.height / 2;
+    left = o.left + this.clipboard_count * o.width / 10;
+    new_id = this.add_active(o, top, left);
+    return new_id;
   },
   select_all: function() {
     var group, objects;
@@ -507,7 +498,7 @@ app = {
       this.centerY = canvas.centerY;
     }
     geojson = JSON.parse(localStorage.getItem('geojson'));
-    if (geojson.features && geojson.features.length > 0) {
+    if (geojson && geojson.features.length > 0) {
       _ref = geojson.features;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];

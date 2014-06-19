@@ -247,16 +247,11 @@ app =
       @active_group(new_ids)
     @clipboard_count += 1
   __paste : (object)->
-#    object = fabric.util.object.clone(object)
-    new_object = null
-    $(@canvas.getObjects()).each (i, obj)=>
-      if obj.id==object.id
-        new_object = obj
-    if new_object
-      top = new_object.top+@clipboard_count*new_object.height/2
-      left = new_object.left+@clipboard_count*new_object.width/10
-      new_id = @add_active(new_object, top, left)
-      return new_id
+    o = fabric.util.object.clone(object)
+    top = o.top+@clipboard_count*o.height/2
+    left = o.left+@clipboard_count*o.width/10
+    new_id = @add_active(o, top, left)
+    return new_id
   select_all : ()->
     objects = @canvas.getObjects().map((o) ->
       o.set "active", true
@@ -350,18 +345,6 @@ app =
     $('#canvas_centerY').val(@centerY)
     $('#canvas_bgscale').val(@options.bgscale)
 
-#    object.on(
-#      modified: =>
-#        @moving(object)
-#        @scaling(object)
-#        @rotating(object)
-#      moving: =>
-#        @moving(object)
-#      scaling: =>
-#        @scaling(object)
-#      rotating: =>
-#        @rotating(object)
-#    )
   zoomIn : ->
     @unselect()
 #    @scale += 0.1
@@ -401,7 +384,7 @@ app =
       @centerY = canvas.centerY
     geojson = JSON.parse(localStorage.getItem('geojson'))
 #    log geojson
-    if geojson.features and geojson.features.length>0
+    if geojson and geojson.features.length>0
       for object in geojson.features
 #        log object
         if object.properties.id>@last_id
