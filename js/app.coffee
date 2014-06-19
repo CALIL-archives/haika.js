@@ -146,10 +146,10 @@ app =
       props.push('side')
     for prop in props
       if prop=='top'
-        o.top_cm = @transformX_px2cm(object.top)
+        o.top_cm = @transformY_px2cm(object.top)
         continue
       if prop=='left'
-        o.left_cm = @transformY_px2cm(object.left)
+        o.left_cm = @transformX_px2cm(object.left)
         continue
       o[prop] = object[prop]
     @objects.push(o)
@@ -444,9 +444,16 @@ app =
 #      @centerY = canvas.centerY
 #    @render()
   load : ()->
+    canvas = JSON.parse(localStorage.getItem('canvas'))
+    if canvas
+#      log canvas
+      @scale   = canvas.scale
+      $('.zoom').html((@scale*100).toFixed(0)+'%')
+      @centerX = canvas.centerX
+      @centerY = canvas.centerY
     geojson = JSON.parse(localStorage.getItem('geojson'))
-    log geojson
-    if geojson.features.length>0
+#    log geojson
+    if geojson.features and geojson.features.length>0
       for object in geojson.features
         log object
         if object.properties.id>@last_id
@@ -473,16 +480,11 @@ app =
           left: left
           fill: "#CFE2F3"
           stroke: "#000000"
+          originX : 'center'
+          originY : 'center'
           angle: object.properties.angle
         )
         @add(shape)
-    canvas = JSON.parse(localStorage.getItem('canvas'))
-    if canvas
-#      log canvas
-      @scale   = canvas.scale
-      $('.zoom').html((@scale*100).toFixed(0)+'%')
-      @centerX = canvas.centerX
-      @centerY = canvas.centerY
     @render()
   local_save : ->
     canvas =

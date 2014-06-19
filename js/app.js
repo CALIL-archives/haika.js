@@ -174,11 +174,11 @@ app = {
     for (_i = 0, _len = props.length; _i < _len; _i++) {
       prop = props[_i];
       if (prop === 'top') {
-        o.top_cm = this.transformX_px2cm(object.top);
+        o.top_cm = this.transformY_px2cm(object.top);
         continue;
       }
       if (prop === 'left') {
-        o.left_cm = this.transformY_px2cm(object.left);
+        o.left_cm = this.transformX_px2cm(object.left);
         continue;
       }
       o[prop] = object[prop];
@@ -499,9 +499,15 @@ app = {
   },
   load: function() {
     var canvas, geojson, h, klass, left, object, shape, top, w, x, y, _i, _len, _ref;
+    canvas = JSON.parse(localStorage.getItem('canvas'));
+    if (canvas) {
+      this.scale = canvas.scale;
+      $('.zoom').html((this.scale * 100).toFixed(0) + '%');
+      this.centerX = canvas.centerX;
+      this.centerY = canvas.centerY;
+    }
     geojson = JSON.parse(localStorage.getItem('geojson'));
-    log(geojson);
-    if (geojson.features.length > 0) {
+    if (geojson.features && geojson.features.length > 0) {
       _ref = geojson.features;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
@@ -532,17 +538,12 @@ app = {
           left: left,
           fill: "#CFE2F3",
           stroke: "#000000",
+          originX: 'center',
+          originY: 'center',
           angle: object.properties.angle
         });
         this.add(shape);
       }
-    }
-    canvas = JSON.parse(localStorage.getItem('canvas'));
-    if (canvas) {
-      this.scale = canvas.scale;
-      $('.zoom').html((this.scale * 100).toFixed(0) + '%');
-      this.centerX = canvas.centerX;
-      this.centerY = canvas.centerY;
     }
     return this.render();
   },
