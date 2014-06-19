@@ -16,7 +16,6 @@ app = {
   scale: 1,
   objects: [],
   canvas: false,
-  drawguideline: true,
   is_moving: false,
   is_scaling: false,
   is_rotating: false,
@@ -149,6 +148,16 @@ app = {
     this.last_id += 1;
     return this.last_id;
   },
+  findbyid: function(id) {
+    var count;
+    count = null;
+    $(this.objects).each(function(i, obj) {
+      if (obj.id === id) {
+        return count = i;
+      }
+    });
+    return count;
+  },
   add: function(object) {
     var o, prop, props, state, _i, _len;
     if (object.id === '') {
@@ -183,93 +192,6 @@ app = {
     this.state = state;
     $('.nav a.' + this.state).tab('show');
     return o.id;
-  },
-  load: function() {
-    var canvas, klass, object, objects, shape, _i, _len;
-    objects = JSON.parse(localStorage.getItem('app_data'));
-    if (objects) {
-      for (_i = 0, _len = objects.length; _i < _len; _i++) {
-        object = objects[_i];
-        if (object.id > this.last_id) {
-          this.last_id = object.id;
-        }
-        if (object.type === 'shelf') {
-          klass = fabric.Shelf;
-        } else if (object.type === 'curved_shelf') {
-          klass = fabric.curvedShelf;
-        } else if (object.type === 'beacon') {
-          klass = fabric.Beacon;
-        } else {
-          continue;
-        }
-        shape = new klass({
-          id: object.id,
-          count: object.count,
-          side: object.side,
-          top: app.transformX_cm2px(object.top_cm),
-          left: app.transformY_cm2px(object.left_cm),
-          fill: "#CFE2F3",
-          stroke: "#000000",
-          angle: object.angle
-        });
-        this.add(shape);
-      }
-    }
-    canvas = JSON.parse(localStorage.getItem('canvas'));
-    if (canvas) {
-      this.scale = canvas.scale;
-      $('.zoom').html((this.scale * 100).toFixed(0) + '%');
-      this.centerX = canvas.centerX;
-      this.centerY = canvas.centerY;
-    }
-    return this.render();
-  },
-  findbyid: function(id) {
-    var count;
-    count = null;
-    $(this.objects).each(function(i, obj) {
-      if (obj.id === id) {
-        return count = i;
-      }
-    });
-    return count;
-  },
-  local_save: function() {
-    var canvas;
-    canvas = {
-      scale: this.scale,
-      centerX: this.centerX,
-      centerY: this.centerY
-    };
-    localStorage.setItem('canvas', JSON.stringify(canvas));
-    return localStorage.setItem('app_data', JSON.stringify(this.objects));
-  },
-  save: function() {
-    var object, _i, _len, _ref;
-    _ref = this.canvas.getObjects();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      this.save_prop(object);
-    }
-    return this.local_save();
-  },
-  save_prop: function(object, group) {
-    var count;
-    if (group == null) {
-      group = false;
-    }
-    count = this.findbyid(object.id);
-    this.objects[count].id = object.id;
-    this.objects[count].type = object.type;
-    this.objects[count].top_cm = this.transformY_px2cm(object.top);
-    this.objects[count].left_cm = this.transformX_px2cm(object.left);
-    this.objects[count].scaleX = object.scaleX / this.scale;
-    this.objects[count].scaleY = object.scaleY / this.scale;
-    this.objects[count].angle = object.angle;
-    if (object.type.match(/shelf$/)) {
-      this.objects[count].count = object.count;
-      return this.objects[count].side = object.side;
-    }
   },
   bind: function(func, do_active) {
     var group, new_id, new_ids, object, objects, _i, _len;
@@ -575,6 +497,92 @@ app = {
     this.render();
     return $('.zoom').html('100%');
   },
+  load: function() {
+    var canvas, geojson, h, klass, left, object, shape, top, w, x, y, _i, _len, _ref;
+    geojson = JSON.parse(localStorage.getItem('geojson'));
+    log(geojson);
+    if (geojson.features.length > 0) {
+      _ref = geojson.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        log(object);
+        if (object.properties.id > this.last_id) {
+          this.last_id = object.properties.id;
+        }
+        if (object.properties.type === 'shelf') {
+          klass = fabric.Shelf;
+        } else if (object.properties.type === 'curved_shelf') {
+          klass = fabric.curvedShelf;
+        } else if (object.properties.type === 'beacon') {
+          klass = fabric.Beacon;
+        } else {
+          continue;
+        }
+        w = klass.prototype.__eachWidth() * object.properties.count;
+        h = klass.prototype.__eachHeight() * object.properties.side;
+        x = object.geometry.coordinates[0][0][0];
+        y = object.geometry.coordinates[0][0][1];
+        top = y + h / 2;
+        left = x + w / 2;
+        shape = new klass({
+          id: object.properties.id,
+          count: object.properties.count,
+          side: object.properties.side,
+          top: top,
+          left: left,
+          fill: "#CFE2F3",
+          stroke: "#000000",
+          angle: object.properties.angle
+        });
+        this.add(shape);
+      }
+    }
+    canvas = JSON.parse(localStorage.getItem('canvas'));
+    if (canvas) {
+      this.scale = canvas.scale;
+      $('.zoom').html((this.scale * 100).toFixed(0) + '%');
+      this.centerX = canvas.centerX;
+      this.centerY = canvas.centerY;
+    }
+    return this.render();
+  },
+  local_save: function() {
+    var canvas;
+    canvas = {
+      scale: this.scale,
+      centerX: this.centerX,
+      centerY: this.centerY
+    };
+    localStorage.setItem('canvas', JSON.stringify(canvas));
+    return localStorage.setItem('geojson', this.toGeoJSON());
+  },
+  save: function() {
+    var object, _i, _len, _ref;
+    _ref = this.canvas.getObjects();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      this.save_prop(object);
+    }
+    return this.local_save();
+  },
+  save_prop: function(object, group) {
+    var count;
+    if (group == null) {
+      group = false;
+    }
+    count = this.findbyid(object.id);
+    this.objects[count].id = object.id;
+    this.objects[count].type = object.type;
+    this.objects[count].top_cm = this.transformY_px2cm(object.top);
+    this.objects[count].left_cm = this.transformX_px2cm(object.left);
+    this.objects[count].scaleX = object.scaleX / this.scale;
+    this.objects[count].scaleY = object.scaleY / this.scale;
+    this.objects[count].angle = object.angle;
+    if (object.type.match(/shelf$/)) {
+      this.objects[count].count = object.count;
+      return this.objects[count].side = object.side;
+    }
+  },
   toGeoJSON: function() {
     var data, features, object, _i, _len, _ref;
     features = [];
@@ -592,9 +600,7 @@ app = {
   getGeoJSON: function() {
     var a, blob, geojson;
     this.unselect();
-    this.drawguideline = false;
     this.render();
-    this.drawguideline = true;
     geojson = this.toGeoJSON();
     localStorage.setItem('geojson', JSON.stringify(geojson));
     location.href = 'map.html';
@@ -619,9 +625,7 @@ app = {
     tmp_scale = this.scale;
     this.canvas = canvas;
     this.scale = 1;
-    this.drawguideline = false;
     this.render();
-    this.drawguideline = true;
     svg = this.canvas.toSVG();
     this.canvas = tmp_canvas;
     this.scale = tmp_scale;

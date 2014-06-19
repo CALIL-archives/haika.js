@@ -11,7 +11,6 @@ app =
   scale      : 1
   objects    : []
   canvas     : false
-  drawguideline : true
   is_moving  : false
   is_scaling : false
   is_rotating: false
@@ -118,6 +117,12 @@ app =
       return 0
     @last_id += 1
     return @last_id
+  findbyid : (id)->
+    count = null
+    $(@objects).each (i, obj)->
+      if obj.id==id
+        count = i
+    return count
   add : (object)->
     # new object
     if object.id==''
@@ -156,71 +161,6 @@ app =
     @state = state
     $('.nav a.'+@state).tab('show')
     return o.id
-  load : ()->
-    objects = JSON.parse(localStorage.getItem('app_data'))
-#    log objects
-    if objects
-      for object in objects
-        if object.id>@last_id
-          @last_id = object.id
-        if object.type=='shelf'
-          klass = fabric.Shelf
-        else if object.type=='curved_shelf'
-          klass = fabric.curvedShelf
-        else if object.type=='beacon'
-          klass = fabric.Beacon
-        else
-          continue
-        shape = new klass(
-          id: object.id
-          count: object.count
-          side: object.side
-          top: app.transformX_cm2px(object.top_cm)
-          left: app.transformY_cm2px(object.left_cm)
-          fill: "#CFE2F3"
-          stroke: "#000000"
-          angle: object.angle
-        )
-        @add(shape)
-    canvas = JSON.parse(localStorage.getItem('canvas'))
-    if canvas
-#      log canvas
-      @scale   = canvas.scale
-      $('.zoom').html((@scale*100).toFixed(0)+'%')
-      @centerX = canvas.centerX
-      @centerY = canvas.centerY
-    @render()
-  findbyid : (id)->
-    count = null
-    $(@objects).each (i, obj)->
-      if obj.id==id
-        count = i
-    return count
-  local_save : ->
-    canvas = 
-      scale : @scale
-      centerX : @centerX
-      centerY : @centerY
-    localStorage.setItem('canvas', JSON.stringify(canvas))
-    localStorage.setItem('app_data', JSON.stringify(@objects))
-  save : ->
-    for object in @canvas.getObjects()
-      @save_prop(object)
-    @local_save()
-  save_prop : (object, group=false)->
-    count = @findbyid(object.id)
-    @objects[count].id      = object.id
-    @objects[count].type    = object.type
-    @objects[count].top_cm  = @transformY_px2cm(object.top)
-    @objects[count].left_cm = @transformX_px2cm(object.left)
-    @objects[count].scaleX  = object.scaleX / @scale
-    @objects[count].scaleY  = object.scaleY / @scale
-    @objects[count].angle   = object.angle
-
-    if object.type.match(/shelf$/)
-      @objects[count].count = object.count
-      @objects[count].side  = object.side
-
   bind : (func, do_active=true)->
     object = @canvas.getActiveObject()
     if object
@@ -469,6 +409,106 @@ app =
 #    @unselect()
 #    @centerX += x
 #    @render()
+#  load : ()->
+#    objects = JSON.parse(localStorage.getItem('geojson'))
+#    log objects
+#    if objects
+#      for object in objects
+#        if object.id>@last_id
+#          @last_id = object.id
+#        if object.type=='shelf'
+#          klass = fabric.Shelf
+#        else if object.type=='curved_shelf'
+#          klass = fabric.curvedShelf
+#        else if object.type=='beacon'
+#          klass = fabric.Beacon
+#        else
+#          continue
+#        shape = new klass(
+#          id: object.id
+#          count: object.count
+#          side: object.side
+#          top: app.transformX_cm2px(object.top_cm)
+#          left: app.transformY_cm2px(object.left_cm)
+#          fill: "#CFE2F3"
+#          stroke: "#000000"
+#          angle: object.angle
+#        )
+#        @add(shape)
+#    canvas = JSON.parse(localStorage.getItem('canvas'))
+#    if canvas
+##      log canvas
+#      @scale   = canvas.scale
+#      $('.zoom').html((@scale*100).toFixed(0)+'%')
+#      @centerX = canvas.centerX
+#      @centerY = canvas.centerY
+#    @render()
+  load : ()->
+    geojson = JSON.parse(localStorage.getItem('geojson'))
+    log geojson
+    if geojson.features.length>0
+      for object in geojson.features
+        log object
+        if object.properties.id>@last_id
+          @last_id = object.properties.id
+        if object.properties.type=='shelf'
+          klass = fabric.Shelf
+        else if object.properties.type=='curved_shelf'
+          klass = fabric.curvedShelf
+        else if object.properties.type=='beacon'
+          klass = fabric.Beacon
+        else
+          continue
+        w = klass.prototype.__eachWidth() * object.properties.count
+        h = klass.prototype.__eachHeight() * object.properties.side
+        x = object.geometry.coordinates[0][0][0]
+        y = object.geometry.coordinates[0][0][1]
+        top = y + h / 2
+        left = x + w / 2
+        shape = new klass(
+          id: object.properties.id
+          count: object.properties.count
+          side: object.properties.side
+          top: top
+          left: left
+          fill: "#CFE2F3"
+          stroke: "#000000"
+          angle: object.properties.angle
+        )
+        @add(shape)
+    canvas = JSON.parse(localStorage.getItem('canvas'))
+    if canvas
+#      log canvas
+      @scale   = canvas.scale
+      $('.zoom').html((@scale*100).toFixed(0)+'%')
+      @centerX = canvas.centerX
+      @centerY = canvas.centerY
+    @render()
+  local_save : ->
+    canvas =
+      scale : @scale
+      centerX : @centerX
+      centerY : @centerY
+    localStorage.setItem('canvas', JSON.stringify(canvas))
+#    localStorage.setItem('app_data', JSON.stringify(@objects))
+    localStorage.setItem('geojson', @toGeoJSON())
+  save : ->
+    for object in @canvas.getObjects()
+      @save_prop(object)
+    @local_save()
+  save_prop : (object, group=false)->
+    count = @findbyid(object.id)
+    @objects[count].id      = object.id
+    @objects[count].type    = object.type
+    @objects[count].top_cm  = @transformY_px2cm(object.top)
+    @objects[count].left_cm = @transformX_px2cm(object.left)
+    @objects[count].scaleX  = object.scaleX / @scale
+    @objects[count].scaleY  = object.scaleY / @scale
+    @objects[count].angle   = object.angle
+
+    if object.type.match(/shelf$/)
+      @objects[count].count = object.count
+      @objects[count].side  = object.side
   toGeoJSON : ->
     features = []
     for object in @canvas.getObjects()
@@ -487,9 +527,7 @@ app =
 #    tmp_scale = @scale
 #    @canvas = canvas
 #    @scale = 1
-    @drawguideline = false
     @render()
-    @drawguideline = true
     geojson = @toGeoJSON()
 #    @canvas = tmp_canvas
 #    @scale = tmp_scale
@@ -512,9 +550,7 @@ app =
     tmp_scale = @scale
     @canvas = canvas
     @scale = 1
-    @drawguideline = false
     @render()
-    @drawguideline = true
     svg = @canvas.toSVG()
     @canvas = tmp_canvas
     @scale = tmp_scale

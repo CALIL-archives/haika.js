@@ -227,11 +227,11 @@
     },
     toGeoJSON: function() {
       var center, data, h, w, x, y;
-      w = this.__eachWidth() * this.count / 100;
-      h = this.__eachHeight() * this.side / 100;
+      w = this.__eachWidth() * this.count;
+      h = this.__eachHeight() * this.side;
       center = this.getCenterPoint();
-      x = -w / 2 + (center.x / 100);
-      y = -h / 2 + (center.y / 100);
+      x = -w / 2 + center.x;
+      y = -h / 2 + center.y;
       data = {
         "type": "Feature",
         "geometry": {
@@ -241,10 +241,13 @@
         "properties": {
           "type": this.type,
           "id": this.id,
-          "count": this.count,
-          "side": this.side
+          "angle": this.angle
         }
       };
+      if (this.type.match(/shelf$/)) {
+        data.properties.count = this.count;
+        data.properties.side = this.side;
+      }
       return data;
     },
     toSVG: function(reviver) {
