@@ -287,7 +287,22 @@ app =
     @unselect()
     @canvas._objects.length = 0;
     #@canvas.clear()
+    beacons = []
+    shelfs  = []
     for o in @objects
+      if o.type=='beacon'
+        beacons.push(o)
+      if o.type.match(/shelf$/)
+        shelfs.push(o)
+    for o in shelfs
+      @render_object(o)
+    for o in beacons
+      @render_object(o)
+    @render_bg()
+    @canvas.renderAll()
+    @canvas.renderOnAddRemove=true
+    @debug()
+  render_object : (o)->
       if o.type=='shelf'
         object = new fabric.Shelf()
         object.side  = o.side
@@ -326,10 +341,6 @@ app =
       object.borderOpacityWhenMoving = 0.8
       object.cornerSize = 10
       @canvas.add(object)
-    @render_bg()
-    @canvas.renderAll()
-    @canvas.renderOnAddRemove=true
-    @debug()
   render_bg : ->
     if @bgimg
       @bgimg.left    = Math.floor( @canvas.getWidth()/2 + (-@bgimg_width*@options.bgscale/2 + @centerX) * @scale )

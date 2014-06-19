@@ -384,60 +384,79 @@ app = {
     }
   },
   render: function() {
-    var o, object, _i, _len, _ref;
+    var beacons, o, shelfs, _i, _j, _k, _len, _len1, _len2, _ref;
     this.canvas.renderOnAddRemove = false;
     this.unselect();
     this.canvas._objects.length = 0;
+    beacons = [];
+    shelfs = [];
     _ref = this.objects;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       o = _ref[_i];
-      if (o.type === 'shelf') {
-        object = new fabric.Shelf();
-        object.side = o.side;
-        object.count = o.count;
-      }
-      if (o.type === 'curved_shelf') {
-        object = new fabric.curvedShelf();
-        object.side = o.side;
-        object.count = o.count;
-      }
       if (o.type === 'beacon') {
-        object = new fabric.Beacon();
+        beacons.push(o);
       }
-      object.selectable = o.type.match(this.state);
-      if (!o.type.match(this.state)) {
-        object.opacity = 0.5;
+      if (o.type.match(/shelf$/)) {
+        shelfs.push(o);
       }
-      object.id = o.id;
-      object.scaleX = object.scaleY = 1;
-      object.width = object.__width();
-      object.height = object.__height();
-      object.left = this.transformLeftX_cm2px(o.left_cm);
-      object.top = this.transformTopY_cm2px(o.top_cm);
-      object.angle = o.angle;
-      object.originX = 'center';
-      object.originY = 'center';
-      if (o.type === 'beacon') {
-        object.fill = "#000000";
-        object.hasControls = false;
-        object.padding = 10;
-        object.borderColor = "#0000ee";
-      } else {
-        object.borderColor = "#000000";
-        object.fill = "#CFE2F3";
-        object.padding = 0;
-      }
-      object.stroke = "#000000";
-      object.transparentCorners = false;
-      object.cornerColor = "#488BD4";
-      object.borderOpacityWhenMoving = 0.8;
-      object.cornerSize = 10;
-      this.canvas.add(object);
+    }
+    for (_j = 0, _len1 = shelfs.length; _j < _len1; _j++) {
+      o = shelfs[_j];
+      this.render_object(o);
+    }
+    for (_k = 0, _len2 = beacons.length; _k < _len2; _k++) {
+      o = beacons[_k];
+      this.render_object(o);
     }
     this.render_bg();
     this.canvas.renderAll();
     this.canvas.renderOnAddRemove = true;
     return this.debug();
+  },
+  render_object: function(o) {
+    var object;
+    if (o.type === 'shelf') {
+      object = new fabric.Shelf();
+      object.side = o.side;
+      object.count = o.count;
+    }
+    if (o.type === 'curved_shelf') {
+      object = new fabric.curvedShelf();
+      object.side = o.side;
+      object.count = o.count;
+    }
+    if (o.type === 'beacon') {
+      object = new fabric.Beacon();
+    }
+    object.selectable = o.type.match(this.state);
+    if (!o.type.match(this.state)) {
+      object.opacity = 0.5;
+    }
+    object.id = o.id;
+    object.scaleX = object.scaleY = 1;
+    object.width = object.__width();
+    object.height = object.__height();
+    object.left = this.transformLeftX_cm2px(o.left_cm);
+    object.top = this.transformTopY_cm2px(o.top_cm);
+    object.angle = o.angle;
+    object.originX = 'center';
+    object.originY = 'center';
+    if (o.type === 'beacon') {
+      object.fill = "#000000";
+      object.hasControls = false;
+      object.padding = 10;
+      object.borderColor = "#0000ee";
+    } else {
+      object.borderColor = "#000000";
+      object.fill = "#CFE2F3";
+      object.padding = 0;
+    }
+    object.stroke = "#000000";
+    object.transparentCorners = false;
+    object.cornerColor = "#488BD4";
+    object.borderOpacityWhenMoving = 0.8;
+    object.cornerSize = 10;
+    return this.canvas.add(object);
   },
   render_bg: function() {
     if (this.bgimg) {
