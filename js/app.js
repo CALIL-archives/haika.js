@@ -174,11 +174,11 @@ app = {
     for (_i = 0, _len = props.length; _i < _len; _i++) {
       prop = props[_i];
       if (prop === 'top') {
-        o.top_cm = this.transformY_px2cm(object.top);
+        o.top_cm = this.transformTopY_px2cm(object.top);
         continue;
       }
       if (prop === 'left') {
-        o.left_cm = this.transformX_px2cm(object.left);
+        o.left_cm = this.transformLeftX_px2cm(object.left);
         continue;
       }
       o[prop] = object[prop];
@@ -361,16 +361,16 @@ app = {
   unselect_all: function() {
     return this.canvas.deactivateAll().renderAll();
   },
-  transformX_cm2px: function(cm) {
+  transformLeftX_cm2px: function(cm) {
     return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scale;
   },
-  transformY_cm2px: function(cm) {
+  transformTopY_cm2px: function(cm) {
     return this.canvas.getHeight() / 2 + (this.centerY - cm) * this.scale;
   },
-  transformX_px2cm: function(px) {
+  transformLeftX_px2cm: function(px) {
     return this.centerX - (px - this.canvas.getWidth() / 2) / this.scale;
   },
-  transformY_px2cm: function(px) {
+  transformTopY_px2cm: function(px) {
     return this.centerY - (px - this.canvas.getHeight() / 2) / this.scale;
   },
   unselect: function() {
@@ -417,8 +417,8 @@ app = {
       object.scaleX = object.scaleY = 1;
       object.width = object.__width();
       object.height = object.__height();
-      object.left = this.transformX_cm2px(o.left_cm);
-      object.top = this.transformY_cm2px(o.top_cm);
+      object.left = this.transformLeftX_cm2px(o.left_cm);
+      object.top = this.transformTopY_cm2px(o.top_cm);
       object.angle = o.angle;
       object.originX = 'center';
       object.originY = 'center';
@@ -528,8 +528,8 @@ app = {
         h = klass.prototype.__eachHeight() * object.properties.side;
         x = object.geometry.coordinates[0][0][0];
         y = object.geometry.coordinates[0][0][1];
-        x = this.transformX_cm2px(x);
-        y = this.transformY_cm2px(y);
+        x = this.transformLeftX_cm2px(x);
+        y = this.transformTopY_cm2px(y);
         top = y + h / 2;
         left = x + w / 2;
         shape = new klass({
@@ -574,8 +574,8 @@ app = {
     count = this.findbyid(object.id);
     this.objects[count].id = object.id;
     this.objects[count].type = object.type;
-    this.objects[count].top_cm = this.transformY_px2cm(object.top);
-    this.objects[count].left_cm = this.transformX_px2cm(object.left);
+    this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
+    this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
     this.objects[count].scaleX = object.scaleX / this.scale;
     this.objects[count].scaleY = object.scaleY / this.scale;
     this.objects[count].angle = object.angle;

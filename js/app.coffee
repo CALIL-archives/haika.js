@@ -146,10 +146,10 @@ app =
       props.push('side')
     for prop in props
       if prop=='top'
-        o.top_cm = @transformY_px2cm(object.top)
+        o.top_cm = @transformTopY_px2cm(object.top)
         continue
       if prop=='left'
-        o.left_cm = @transformX_px2cm(object.left)
+        o.left_cm = @transformLeftX_px2cm(object.left)
         continue
       o[prop] = object[prop]
     @objects.push(o)
@@ -269,15 +269,13 @@ app =
     @canvas.setActiveGroup(group.setCoords()).renderAll()
   unselect_all : ()->
     @canvas.deactivateAll().renderAll()
-  transformX_cm2px : (cm)->
-    # centerX(cm) => px
+  transformLeftX_cm2px : (cm)->
     return @canvas.getWidth()/2+(@centerX-cm)*@scale
-  transformY_cm2px : (cm)->
+  transformTopY_cm2px : (cm)->
     return @canvas.getHeight()/2+(@centerY-cm)*@scale
-  transformX_px2cm : (px)->
-    # left(px) => x(cm)
+  transformLeftX_px2cm : (px)->
     return @centerX - (px - @canvas.getWidth() / 2) / @scale
-  transformY_px2cm : (px)->
+  transformTopY_px2cm : (px)->
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
   unselect : ->
     object = app.canvas.getActiveObject()
@@ -312,8 +310,8 @@ app =
       object.scaleX = object.scaleY = 1
       object.width  = object.__width()
       object.height = object.__height()
-      object.left   = @transformX_cm2px(o.left_cm)
-      object.top    = @transformY_cm2px(o.top_cm)
+      object.left   = @transformLeftX_cm2px(o.left_cm)
+      object.top    = @transformTopY_cm2px(o.top_cm)
       object.angle  = o.angle
       object.originX = 'center'
       object.originY = 'center'
@@ -428,8 +426,8 @@ app =
 #          id: object.id
 #          count: object.count
 #          side: object.side
-#          top: app.transformX_cm2px(object.top_cm)
-#          left: app.transformY_cm2px(object.left_cm)
+#          top: app.transformLeftX_cm2px(object.top_cm)
+#          left: app.transformTopY_cm2px(object.left_cm)
 #          fill: "#CFE2F3"
 #          stroke: "#000000"
 #          angle: object.angle
@@ -470,8 +468,8 @@ app =
         h = klass.prototype.__eachHeight() * object.properties.side
         x = object.geometry.coordinates[0][0][0]
         y = object.geometry.coordinates[0][0][1]
-        x = @transformX_cm2px(x)
-        y = @transformY_cm2px(y)
+        x = @transformLeftX_cm2px(x)
+        y = @transformTopY_cm2px(y)
         top = y + h / 2
         left = x + w / 2
         shape = new klass(
@@ -502,8 +500,8 @@ app =
     count = @findbyid(object.id)
     @objects[count].id      = object.id
     @objects[count].type    = object.type
-    @objects[count].top_cm  = @transformY_px2cm(object.top)
-    @objects[count].left_cm = @transformX_px2cm(object.left)
+    @objects[count].top_cm  = @transformTopY_px2cm(object.top)
+    @objects[count].left_cm = @transformLeftX_px2cm(object.left)
     @objects[count].scaleX  = object.scaleX / @scale
     @objects[count].scaleY  = object.scaleY / @scale
     @objects[count].angle   = object.angle

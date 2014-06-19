@@ -198,8 +198,8 @@
 #      log center
       x = -w / 2 + center.x # / 100)
       y = -h / 2 + center.y # / 100)
-      x = app.transformX_px2cm(x)
-      y = app.transformY_px2cm(y)
+      x = app.transformLeftX_px2cm(x)
+      y = app.transformTopY_px2cm(y)
       data =
         "type": "Feature"
         "geometry":

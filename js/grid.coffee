@@ -17,8 +17,8 @@
     ctx.lineWidth = 1
     ctx.strokeStyle = '#999999'
     ctx.opacity = 1
-    sx = (app.transformX_cm2px(0)*1000 % Math.floor(size*1000))/1000
-    sy = (app.transformY_cm2px(0)*1000 % Math.floor(size*1000))/1000
+    sx = (app.transformLeftX_cm2px(0)*1000 % Math.floor(size*1000))/1000
+    sy = (app.transformTopY_cm2px(0)*1000 % Math.floor(size*1000))/1000
     i = 0
     while i < Math.ceil(width / size)+1
         ctx.moveTo(Math.floor(i * size+sx)+0.5, 0)

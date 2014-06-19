@@ -46,8 +46,8 @@ add = (left=0, top=0)->
   object = new klass(
     count: parseInt($('#count').val())
     side: parseInt($('#side').val())
-    top: app.transformY_cm2px(app.centerX)
-    left: app.transformX_cm2px(app.centerY)
+    top: app.transformTopY_cm2px(app.centerX)
+    left: app.transformLeftX_cm2px(app.centerY)
     fill: "#CFE2F3"
     stroke: "#000000"
     angle: parseInt($('#angle').val())

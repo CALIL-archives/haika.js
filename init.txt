@@ -213,8 +213,8 @@ app.resetZoom = ->
       count = @match(object)
       if count!=null
         log object.top
-        @objects[count].top_cm  = @transformY_px2cm(object.top)
-        @objects[count].left_cm = @transformX_px2cm(object.left)
+        @objects[count].top_cm  = @transformTopY_px2cm(object.top)
+        @objects[count].left_cm = @transformLeftX_px2cm(object.left)
   scaling : ()->
     log 'scaling'
     @bind (object, group)=>
@@ -222,16 +222,16 @@ app.resetZoom = ->
       if count!=null
         @objects[count].scaleX = object.scaleX / @scale
         @objects[count].scaleY = object.scaleY / @scale
-        @objects[count].top_cm    = @transformY_px2cm(object.top)
-        @objects[count].left_cm   = @transformX_px2cm(object.left)
+        @objects[count].top_cm    = @transformTopY_px2cm(object.top)
+        @objects[count].left_cm   = @transformLeftX_px2cm(object.left)
   rotating : ()->
     log 'rotating'
     @bind (object)=>
       count = @match(object)
       if count!=null
         @objects[count].angle    = object.angle
-        @objects[count].top_cm   = @transformY_px2cm(object.top)
-        @objects[count].left_cm  = @transformX_px2cm(object.left)
+        @objects[count].top_cm   = @transformTopY_px2cm(object.top)
+        @objects[count].left_cm  = @transformLeftX_px2cm(object.left)
 ###  $(@options.canvas).on 'drag', (e)=>
     if $(".is_visible .btn-primary").find('input').val()=='edit'
       return
@@ -271,13 +271,13 @@ app.resetZoom = ->
 app.scale = 1
 x_cm = -125
 log x_cm
-x_px = app.transformX_cm2px(x_cm)
+x_px = app.transformLeftX_cm2px(x_cm)
 log x_px
 
-x_cm = app.transformX_px2cm(x_px)
+x_cm = app.transformLeftX_px2cm(x_px)
 log x_cm
 
-x_px = app.transformX_cm2px(x_cm)
+x_px = app.transformLeftX_cm2px(x_cm)
 log x_px
 
 ###
@@ -295,8 +295,8 @@ log x_px
       tempScaleX = scaleX * @scale
       log 'tempScaleX:'+tempScaleX
       tempScaleY = scaleY * @scale
-      tempLeft   = @transformX_cm2px(left_cm)
-      tempTop    = @transformY_cm2px(top_cm)
+      tempLeft   = @transformLeftX_cm2px(left_cm)
+      tempTop    = @transformTopY_cm2px(top_cm)
 #      if tempLeft > @width 
 #        continue
 #      if tempTop > @height
@@ -327,19 +327,19 @@ log x_px
       count += 1
     return null
 
-  transformX_cm2px : (cm)->
+  transformLeftX_cm2px : (cm)->
     # centerX(cm) => px
     return @canvas.getWidth()/2+(@centerX-cm)*@scale
     #return @centerX * @scale + @canvas.getWidth()  / 2 - cm * @scale
-  transformY_cm2px : (cm)->
+  transformTopY_cm2px : (cm)->
     return @canvas.getHeight()/2+(@centerY-cm)*@scale
     #return @centerY * @scale + @canvas.getHeight() / 2 - cm * @scale
-  transformX_px2cm : (px)->
+  transformLeftX_px2cm : (px)->
     # left(px) => x(cm)
     #return (px+@centerX)/@scale-@canvas.getWidth()/2
     #return @canvas.getWidth() / 2 - (px + @centerX) * @scale
     return @centerX - (px - @canvas.getWidth() / 2) / @scale
-  transformY_px2cm : (px)->
+  transformTopY_px2cm : (px)->
     #return (px+@centerY)/@scale-@canvas.getHeight()/2
     #return @canvas.getHeight() / 2 - (px + @centerY) * @scale 
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
