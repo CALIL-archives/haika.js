@@ -173,7 +173,7 @@ app =
     group = @canvas.getActiveGroup()
     if group
       new_ids = []
-      group.forEachObject (object, i)->
+      for object in group.getObjects()
         new_id = func(object)
         new_ids.push(new_id)
       if do_active

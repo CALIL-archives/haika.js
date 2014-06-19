@@ -194,7 +194,7 @@ app = {
     return o.id;
   },
   bind: function(func, do_active) {
-    var group, new_id, new_ids, object;
+    var group, new_id, new_ids, object, _i, _len, _ref;
     if (do_active == null) {
       do_active = true;
     }
@@ -215,10 +215,12 @@ app = {
     group = this.canvas.getActiveGroup();
     if (group) {
       new_ids = [];
-      group.forEachObject(function(object, i) {
+      _ref = group.getObjects();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
         new_id = func(object);
-        return new_ids.push(new_id);
-      });
+        new_ids.push(new_id);
+      }
       if (do_active) {
         return this.active_group(new_ids);
       } else {
