@@ -194,12 +194,13 @@ app = {
     return o.id;
   },
   bind: function(func, do_active) {
-    var group, new_id, new_ids, object, objects, _i, _len;
+    var group, new_id, new_ids, object;
     if (do_active == null) {
       do_active = true;
     }
     object = this.canvas.getActiveObject();
     if (object) {
+      log(object.top);
       new_id = func(object);
       if (new_id && do_active) {
         $(this.canvas.getObjects()).each((function(_this) {
@@ -213,13 +214,11 @@ app = {
     }
     group = this.canvas.getActiveGroup();
     if (group) {
-      objects = group._objects;
       new_ids = [];
-      for (_i = 0, _len = objects.length; _i < _len; _i++) {
-        object = objects[_i];
+      group.forEachObject(function(object, i) {
         new_id = func(object);
-        new_ids.push(new_id);
-      }
+        return new_ids.push(new_id);
+      });
       if (do_active) {
         return this.active_group(new_ids);
       } else {
@@ -286,8 +285,9 @@ app = {
   duplicate: function() {
     return this.bind((function(_this) {
       return function(object) {
-        var new_id;
-        new_id = _this.add_active(object, object.top + 10, object.left + 10);
+        var new_id, o;
+        o = fabric.util.object.clone(object);
+        new_id = _this.add_active(o, o.top + 10, o.left + 10);
         return new_id;
       };
     })(this));

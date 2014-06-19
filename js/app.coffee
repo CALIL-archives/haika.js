@@ -164,6 +164,7 @@ app =
   bind : (func, do_active=true)->
     object = @canvas.getActiveObject()
     if object
+      log object.top
       new_id = func(object)
       if new_id and do_active
         $(@canvas.getObjects()).each (i, obj)=>
@@ -171,9 +172,8 @@ app =
             @canvas.setActiveObject(obj)
     group = @canvas.getActiveGroup()
     if group
-      objects = group._objects
       new_ids = []
-      for object in objects
+      group.forEachObject (object, i)->
         new_id = func(object)
         new_ids.push(new_id)
       if do_active
@@ -219,8 +219,8 @@ app =
     return new_id
   duplicate : ->
     @bind (object)=>
-#      o = fabric.util.object.clone(object)
-      new_id = @add_active(object, object.top+10,object.left+10)
+      o = fabric.util.object.clone(object)
+      new_id = @add_active(o, o.top+10,o.left+10)
       return new_id
   clipboard : []
   clipboard_count : 1
@@ -228,7 +228,6 @@ app =
     @clipboard = []
     @clipboard_count = 1
     @bind (object)=>
-#      o = fabric.util.object.clone(object)
       @clipboard.push(object)
     , false
   paste : ->
