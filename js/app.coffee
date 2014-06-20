@@ -220,7 +220,7 @@ app =
     return new_id
   duplicate : ->
     @bind (object)=>
-      @render()
+      @canvas.discardActiveGroup()
       o = fabric.util.object.clone(object)
       new_id = @add_active(o, o.top+10,o.left+10)
       return new_id

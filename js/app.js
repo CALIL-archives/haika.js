@@ -286,7 +286,7 @@ app = {
     return this.bind((function(_this) {
       return function(object) {
         var new_id, o;
-        _this.render();
+        _this.canvas.discardActiveGroup();
         o = fabric.util.object.clone(object);
         new_id = _this.add_active(o, o.top + 10, o.left + 10);
         return new_id;
