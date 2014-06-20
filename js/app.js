@@ -255,12 +255,16 @@ app = {
   remove: function() {
     return this.bind((function(_this) {
       return function(object) {
-        var count;
-        _this.canvas.remove(object);
-        count = _this.findbyid(object.id);
-        return _this.objects.splice(count, 1);
+        return _this.__remove(object);
       };
     })(this), false);
+  },
+  __remove: function(object) {
+    var count;
+    this.canvas.remove(object);
+    count = this.findbyid(object.id);
+    this.objects.splice(count, 1);
+    return object;
   },
   bringToFront: function() {
     return this.bind((function(_this) {

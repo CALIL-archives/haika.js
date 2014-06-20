@@ -71,7 +71,7 @@ $(window).resize ->
   app.render()
 
 add = (left=0, top=0)->
-  undo.set_add = true
+
   if $('#type').val()=='Shelf'
     klass = fabric.Shelf
   if $('#type').val()=='curvedShelf'
@@ -88,9 +88,10 @@ add = (left=0, top=0)->
     angle: parseInt($('#angle').val())
     #lockScalingY: true
   )
-  app.add(object)
+  id = app.add(object)
   app.set_state(object)
   app.render()
+  undo.add(id)
   $(app.canvas.getObjects()).each (i, obj)=>
     if obj.id==object.id
       setTimeout ->
@@ -125,7 +126,10 @@ $ ->
     add()
     app.render()
   $(".remove").click ->
+    object = app.canvas.getActiveObject()
     app.remove()
+    if object
+      undo.remove(object)
   $(".zoomin").click ->
     app.zoomIn()
   $(".zoomout").click ->
@@ -276,31 +280,28 @@ $ ->
 undo =
   undoManager : new UndoManager()
   states : []
-  set_add : false
   set_selected : true
+  add : (id)->
+    log 'add set'
+    @undoManager.add
+      undo: =>
+        log 'undo add '+id
+        object = @get_object(id)
+        log object
+        app.__remove(object)
+#        app.save()
+#        app.render()
+      redo: =>
+  remove : (object)->
+    log 'remove set'
+    @undoManager.add
+      undo: =>
+        log 'undo remove '+object.id
+        log object
+        app.add(object)
+        app.render()
+      redo: =>
   init : ->
-#    app.canvas.on "object:added", (e) =>
-#      object = e.target
-#      id = object.id
-#      log id
-#      log 'add'
-#      if @set_add
-#        log 'set'
-#        @undoManager.add
-#          undo: =>
-#            log 'undo'
-#            object = @get_object(id)
-#            app.remove(object)
-#          redo: =>
-#
-#    app.canvas.on "object:removed", (e) =>
-#      object = e.target
-#      log 'remove'
-#      @undoManager.add
-#        undo: =>
-#          app.add(object)
-#        redo: =>
-
     app.canvas.on "object:selected", (e) =>
       object = e.target
 #      console.log "object:selected"
@@ -322,16 +323,27 @@ undo =
     app.canvas.on "object:modified", (e) =>
       object = e.target
     #  console.log "object:modified"
-    #  log object
+#      log object
+#      group = app.canvas.getActiveGroup()
+#      if group
+#        objects = group.getObjects()
+#        log group.top
+#      else
+#        log object.top
+#        objects = [object]
+#      for object in objects
       object.saveState()
       originalState = $.extend(true, {}, object.originalState)
       originalState.state_type = 'modified'
+#        log originalState
+#        if objects.length>1
+#          originalState.top += group.top
+#          originalState.left += group.left
       @states.push(originalState)
 #      log @states
       @undoManager.add
         undo: =>
     #      log 'undo'
-          log @
           if @states.length>0
             app.canvas.deactivateAll()
             state = @states[@states.length-2]
@@ -340,7 +352,7 @@ undo =
             if object
               @set_state(object, state)
               @states.pop()
-              log @states[@states.length-1].state_type
+#              log @states[@states.length-1].state_type
               if @states[@states.length-1].state_type=='selected'
                 @states.pop()
     #          app.canvas.renderAll()

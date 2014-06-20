@@ -85,14 +85,13 @@ $(window).resize(function() {
 });
 
 add = function(left, top) {
-  var klass, object;
+  var id, klass, object;
   if (left == null) {
     left = 0;
   }
   if (top == null) {
     top = 0;
   }
-  undo.set_add = true;
   if ($('#type').val() === 'Shelf') {
     klass = fabric.Shelf;
   }
@@ -111,9 +110,10 @@ add = function(left, top) {
     stroke: "#000000",
     angle: parseInt($('#angle').val())
   });
-  app.add(object);
+  id = app.add(object);
   app.set_state(object);
   app.render();
+  undo.add(id);
   return $(app.canvas.getObjects()).each((function(_this) {
     return function(i, obj) {
       if (obj.id === object.id) {
@@ -152,7 +152,12 @@ $(function() {
     return app.render();
   });
   $(".remove").click(function() {
-    return app.remove();
+    var object;
+    object = app.canvas.getActiveObject();
+    app.remove();
+    if (object) {
+      return undo.remove(object);
+    }
   });
   $(".zoomin").click(function() {
     return app.zoomIn();
@@ -286,8 +291,40 @@ $(function() {
 undo = {
   undoManager: new UndoManager(),
   states: [],
-  set_add: false,
   set_selected: true,
+  add: function(id) {
+    log('add set');
+    return this.undoManager.add({
+      undo: (function(_this) {
+        return function() {
+          var object;
+          log('undo add ' + id);
+          object = _this.get_object(id);
+          log(object);
+          return app.__remove(object);
+        };
+      })(this),
+      redo: (function(_this) {
+        return function() {};
+      })(this)
+    });
+  },
+  remove: function(object) {
+    log('remove set');
+    return this.undoManager.add({
+      undo: (function(_this) {
+        return function() {
+          log('undo remove ' + object.id);
+          log(object);
+          app.add(object);
+          return app.render();
+        };
+      })(this),
+      redo: (function(_this) {
+        return function() {};
+      })(this)
+    });
+  },
   init: function() {
     app.canvas.on("object:selected", (function(_this) {
       return function(e) {
@@ -322,7 +359,6 @@ undo = {
         _this.undoManager.add({
           undo: function() {
             var state;
-            log(_this);
             if (_this.states.length > 0) {
               app.canvas.deactivateAll();
               state = _this.states[_this.states.length - 2];
@@ -330,7 +366,6 @@ undo = {
               if (object) {
                 _this.set_state(object, state);
                 _this.states.pop();
-                log(_this.states[_this.states.length - 1].state_type);
                 if (_this.states[_this.states.length - 1].state_type === 'selected') {
                   _this.states.pop();
                 }

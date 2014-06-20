@@ -200,10 +200,13 @@ app =
     @canvas.setActiveGroup(group.setCoords()).renderAll()
   remove : ->
     @bind((object)=>
-      @canvas.remove(object)
-      count = @findbyid(object.id)
-      @objects.splice(count, 1)
+      @__remove(object)
     , false)
+  __remove : (object)->
+    @canvas.remove(object)
+    count = @findbyid(object.id)
+    @objects.splice(count, 1)
+    return object
   bringToFront : ->
     @bind (object)=>
       count = @findbyid(object.id)
