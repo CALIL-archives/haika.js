@@ -79,7 +79,7 @@ app =
       @load()
       if options.callback?
         options.callback()
-    , 100
+    , 500
     @canvas.on('object:selected', (e)=>
         #log 'selected'
         object = e.target

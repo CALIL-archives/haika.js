@@ -91,7 +91,7 @@ app = {
           return options.callback();
         }
       };
-    })(this), 100);
+    })(this), 500);
     this.canvas.on('object:selected', (function(_this) {
       return function(e) {
         var object;
