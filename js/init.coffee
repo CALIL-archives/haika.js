@@ -71,6 +71,7 @@ $(window).resize ->
   app.render()
 
 add = (left=0, top=0)->
+  undo.set_add = true
   if $('#type').val()=='Shelf'
     klass = fabric.Shelf
   if $('#type').val()=='curvedShelf'
@@ -212,7 +213,7 @@ $ ->
 
     
   $('.undo').click ->
-    undoManager.undo()
+    undo.undoManager.undo()
 
   # shortcut key
   cancel_default = (e)->
@@ -237,7 +238,7 @@ $ ->
     return false
   Mousetrap.bind 'mod+z', (e)->
     cancel_default(e)
-    undoManager.undo()
+    undo.undoManager.undo()
     return false
   Mousetrap.bind ['esc', 'escape'], (e)->
     cancel_default(e)
@@ -271,50 +272,93 @@ $ ->
       app.remove()
     return
 
-undoManager = new UndoManager()
-states = []
+# Undo
+undo =
+  undoManager : new UndoManager()
+  states : []
+  set_add : false
+  set_selected : true
+  init : ->
+#    app.canvas.on "object:added", (e) =>
+#      object = e.target
+#      id = object.id
+#      log id
+#      log 'add'
+#      if @set_add
+#        log 'set'
+#        @undoManager.add
+#          undo: =>
+#            log 'undo'
+#            object = @get_object(id)
+#            app.remove(object)
+#          redo: =>
+#
+#    app.canvas.on "object:removed", (e) =>
+#      object = e.target
+#      log 'remove'
+#      @undoManager.add
+#        undo: =>
+#          app.add(object)
+#        redo: =>
 
-app.canvas.on "object:added", (e) ->
-  object = e.target
-#  undoManager.add
-#    undo: ->
-#      app.remove(object)
-#    redo: ->
+    app.canvas.on "object:selected", (e) =>
+      object = e.target
+#      console.log "object:selected"
+      if not @set_selected
+        @set_selected = true
+        return
+      if @states.length==0 or object.id!=@states[@states.length-1].id
+        object.saveState()
+        originalState = $.extend(true, {}, object.originalState)
+        originalState.state_type = 'selected'
+        @states.push(originalState)
+#        log @states
 
-app.canvas.on "object:selected", (e) ->
-  object = e.target
-#  console.log "object:selected"
-  if states.length==0 or object.id!=states[states.length-1].id
-    object.saveState()
-    originalState = $.extend(true, {}, object.originalState)
-    originalState.select = true
-    states.push(originalState)
-#    log states
-
-app.canvas.on "selection:cleared", (e) ->
-  object = e.target
-#  console.log "selection:cleared"
+    app.canvas.on "selection:cleared", (e) =>
+      object = e.target
+    #  console.log "selection:cleared"
 
 
-app.canvas.on "object:modified", (e) ->
-  object = e.target
-#  console.log "object:modified"
-  object.saveState()
-  originalState = $.extend(true, {}, object.originalState)
-  states.push(originalState)
-#  log states
-  undoManager.add
-    undo: ->
-#      log 'undo'
-      if states.length>0
-        state = states[states.length-2]
-        object.setOptions state
-        states.pop()
-        object.setCoords()
-        app.canvas.setActiveObject(object)
-        app.render()
-#        log states
-    redo: ->
-#      redo()
-  return
+    app.canvas.on "object:modified", (e) =>
+      object = e.target
+    #  console.log "object:modified"
+    #  log object
+      object.saveState()
+      originalState = $.extend(true, {}, object.originalState)
+      originalState.state_type = 'modified'
+      @states.push(originalState)
+#      log @states
+      @undoManager.add
+        undo: =>
+    #      log 'undo'
+          log @
+          if @states.length>0
+            app.canvas.deactivateAll()
+            state = @states[@states.length-2]
+            object = @get_object(state.id)
+    #        log object
+            if object
+              @set_state(object, state)
+              @states.pop()
+              log @states[@states.length-1].state_type
+              if @states[@states.length-1].state_type=='selected'
+                @states.pop()
+    #          app.canvas.renderAll()
+              @set_selected = false
+              app.canvas.setActiveObject(object)
+            log @states
+        redo: =>
+    #      redo()
+      return
+  get_object : (id)->
+    object = null
+    for o in app.canvas.getObjects()
+      if o.id==id
+        object = o
+        break
+    return object
+  set_state : (object, state)->
+    object.setOptions state
+    object.setCoords()
 
+undo.init()
