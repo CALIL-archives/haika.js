@@ -20,6 +20,40 @@ app.init(
   #bgurl  : 'img/sample.png'
   bgopacity: 0.2
   bgscale  : 4.425
+  callback : ->
+    # scrollbar
+    scroll_weight = 5000
+    maxX = app.bgimg_width * app.options.bgscale / 2
+    maxY = app.bgimg_height * app.options.bgscale / 2
+    defaultX =  -((app.centerX - scroll_weight) / 10000)
+    defaultY =  -((app.centerY - scroll_weight) / 10000)
+    window.xscrollbar = new Dragdealer 'horizontal-scroller',
+      x: defaultX
+      animationCallback: (x, y)->
+  #      log x
+        app.unselect()
+        centerX = x * 10000 - scroll_weight
+        if centerX > maxX - app.canvas.getWidth() / 2
+          centerX = maxX - app.canvas.getWidth() / 2
+        if centerX < -maxX + app.canvas.getWidth() / 2
+          centerX = -maxX + app.canvas.getWidth() / 2
+        app.centerX = -centerX.toFixed(0)
+        app.render()
+    new Dragdealer 'vertical-scroller',
+      y: defaultY
+      horizontal: false,
+      vertical: true,
+  #    yPrecision: 500,
+      animationCallback: (x, y)->
+        app.unselect()
+        centerY = y * 10000 - scroll_weight
+        if centerY > maxY - app.canvas.getHeight() / 2
+          centerY = maxY - app.canvas.getHeight() / 2
+        if centerY < -maxY + app.canvas.getHeight() / 2
+          centerY = -maxY + app.canvas.getHeight() / 2
+        app.centerY = -centerY.toFixed(0)
+        app.render()
+
 )
 
 $('.main_container, .canvas_panel').css('width', get_width())
@@ -86,34 +120,6 @@ $ ->
     app.state = $(e.target).attr('class')
     app.render()
     $(this).tab('show')
-  new Dragdealer 'horizontal-scroller',
-    x: 0.5
-    animationCallback: (x, y)->
-#      log x
-      app.unselect()
-      maxX = app.bgimg_width * app.options.bgscale / 2
-      centerX = x * 10000 - 5000
-      if centerX > maxX - app.canvas.getWidth() / 2
-        centerX = maxX - app.canvas.getWidth() / 2
-      if centerX < -maxX + app.canvas.getWidth() / 2
-        centerX = -maxX + app.canvas.getWidth() / 2
-      app.centerX = -centerX.toFixed(0)
-      app.render()
-  new Dragdealer 'vertical-scroller',
-    y: 0.5
-    horizontal: false,
-    vertical: true,
-#    yPrecision: 500,
-    animationCallback: (x, y)->
-      app.unselect()
-      maxY = app.bgimg_height * app.options.bgscale / 2
-      centerY = y * 10000 - 5000
-      if centerY > maxY - app.canvas.getHeight() / 2
-        centerY = maxY - app.canvas.getHeight() / 2
-      if centerY < -maxY + app.canvas.getHeight() / 2
-        centerY = -maxY + app.canvas.getHeight() / 2
-      app.centerY = -centerY.toFixed(0)
-      app.render()
   $(".add").click ->
     add()
     app.render()

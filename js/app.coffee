@@ -77,6 +77,8 @@ app =
     @render()
     setTimeout =>
       @load()
+      if options.callback?
+        options.callback()
     , 500
     @canvas.on('object:selected', (e)=>
         #log 'selected'

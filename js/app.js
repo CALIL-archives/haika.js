@@ -86,7 +86,10 @@ app = {
     this.render();
     setTimeout((function(_this) {
       return function() {
-        return _this.load();
+        _this.load();
+        if (options.callback != null) {
+          return options.callback();
+        }
       };
     })(this), 500);
     this.canvas.on('object:selected', (function(_this) {
