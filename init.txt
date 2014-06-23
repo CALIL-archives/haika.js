@@ -440,3 +440,32 @@ log x_px
     blob = new Blob([geojson], {"type": "application/json"})
     a.href = (window.URL || webkitURL).createObjectURL(blob)
     a.click()
+
+
+オブジェクトのプロパティ
+プロパティからパネルを作成
+
+パネルの変更をオブジェクトに反映
+GeoJSONに反映
+
+プロパティのグルーピング
+
+
+groups :
+    property:
+        row: 2
+        count: 6
+    shelfs: []
+
+
+
+canvas:
+    width: 1162
+    height: 713
+    centerX: 1014
+    centerY: -357
+    bgscale: 4.425
+
+
+
+

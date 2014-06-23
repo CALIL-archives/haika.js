@@ -71,3 +71,10 @@ body {
   line-height: 30px;
   text-align: center;
 }
+
+/* editor */
+
+#editor {
+  color: #000000;
+  background-color: #ffffff;
+}
