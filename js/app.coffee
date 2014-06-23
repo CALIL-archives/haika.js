@@ -109,6 +109,7 @@ app =
         object = e.target
         if object.__modifiedShelf?
           object.__modifiedShelf()
+        @set_propety_panel()
     $(window).on 'beforeunload', (event)=>
       @render()
       @save()
@@ -504,6 +505,12 @@ app =
     $('.canvas_panel, .object_panel, .group_panel').hide()
     object = @canvas.getActiveObject()
     if object
+      editor.schema = object.getJsonSchema()
+      # Set the value
+      properties = {}
+      for key of editor.schema.properties
+        properties[key] = object[key]
+      editor.setValue properties
       if object.toGeoJSON?
         $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4))
       $('.object_panel').show()

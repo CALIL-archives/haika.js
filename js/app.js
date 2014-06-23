@@ -127,8 +127,9 @@ app = {
         var object;
         object = e.target;
         if (object.__modifiedShelf != null) {
-          return object.__modifiedShelf();
+          object.__modifiedShelf();
         }
+        return _this.set_propety_panel();
       };
     })(this));
     return $(window).on('beforeunload', (function(_this) {
@@ -658,10 +659,16 @@ app = {
     return a.click();
   },
   set_propety_panel: function(object) {
-    var group, objects;
+    var group, key, objects, properties;
     $('.canvas_panel, .object_panel, .group_panel').hide();
     object = this.canvas.getActiveObject();
     if (object) {
+      editor.schema = object.getJsonSchema();
+      properties = {};
+      for (key in editor.schema.properties) {
+        properties[key] = object[key];
+      }
+      editor.setValue(properties);
       if (object.toGeoJSON != null) {
         $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4));
       }

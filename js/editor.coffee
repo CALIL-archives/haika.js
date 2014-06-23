@@ -5,87 +5,87 @@ editor = new JSONEditor(document.getElementById("editor"),
   disable_edit_json: true
   disable_properties: true
   schema:
-    title: "プロパティ"
+    title: "基本情報"
     type: "object"
     properties:
-      name:
-        type: "string"
-        description: "First and Last name"
-        minLength: 4
-        default: "Jeremy Dorn"
-
-      age:
-        type: "integer"
-        default: 24
-        minimum: 18
-        maximum: 99
-
-      favorite_color:
-        type: "string"
-        format: "color"
-        title: "favorite color"
-        default: "#ffa500"
-
-      gender:
-        type: "string"
-        enum: [
-          "male"
-          "female"
-        ]
-
-      location:
-        type: "object"
-        title: "Location"
-        properties:
-          city:
-            type: "string"
-            default: "San Francisco"
-
-          state:
-            type: "string"
-            default: "CA"
-
-          citystate:
-            type: "string"
-            description: "This is generated automatically from the previous two fields"
-            template: "{{city}}, {{state}}"
-            watch:
-              city: "location.city"
-              state: "location.state"
-
-      pets:
-        type: "array"
-        format: "table"
-        title: "Pets"
-        uniqueItems: true
-        items:
-          type: "object"
-          title: "Pet"
-          properties:
-            type:
-              type: "string"
-              enum: [
-                "cat"
-                "dog"
-                "bird"
-                "reptile"
-                "other"
-              ]
-              default: "dog"
-
-            name:
-              type: "string"
-
-        default: [
-          type: "dog"
-          name: "Walter"
-        ]
+#      name:
+#        type: "string"
+#        description: "First and Last name"
+#        minLength: 4
+#        default: "Jeremy Dorn"
+#
+#      age:
+#        type: "integer"
+#        default: 24
+#        minimum: 18
+#        maximum: 99
+#
+#      favorite_color:
+#        type: "string"
+#        format: "color"
+#        title: "favorite color"
+#        default: "#ffa500"
+#
+#      gender:
+#        type: "string"
+#        enum: [
+#          "male"
+#          "female"
+#        ]
+#
+#      location:
+#        type: "object"
+#        title: "Location"
+#        properties:
+#          city:
+#            type: "string"
+#            default: "San Francisco"
+#
+#          state:
+#            type: "string"
+#            default: "CA"
+#
+#          citystate:
+#            type: "string"
+#            description: "This is generated automatically from the previous two fields"
+#            template: "{{city}}, {{state}}"
+#            watch:
+#              city: "location.city"
+#              state: "location.state"
+#
+#      pets:
+#        type: "array"
+#        format: "table"
+#        title: "Pets"
+#        uniqueItems: true
+#        items:
+#          type: "object"
+#          title: "Pet"
+#          properties:
+#            type:
+#              type: "string"
+#              enum: [
+#                "cat"
+#                "dog"
+#                "bird"
+#                "reptile"
+#                "other"
+#              ]
+#              default: "dog"
+#
+#            name:
+#              type: "string"
+#
+#        default: [
+#          type: "dog"
+#          name: "Walter"
+#        ]
 
       count:
         type: "integer"
         default: 3
         minimum: 1
-        maximum: 6
+        maximum: 10
 
       side:
         type: "integer"
@@ -104,28 +104,27 @@ editor = new JSONEditor(document.getElementById("editor"),
           ]
 )
 
-# Set the value
-editor.setValue
-  name: "本棚本棚"
-  count: 3
-  side: 2
-
 
 # Get the value
-data = editor.getValue()
-console.log data.name # "John Smith"
-
-# Validate
-errors = editor.validate()
-if errors.length
-  # Not valid
-  alert 'Not validate'
+#data = editor.getValue()
+#console.log data.name # "John Smith"
 
 
 # Listen for changes
 editor.on "change", ->
 
   # Do something...
-  data = editor.getValue()
-  console.log data
+  # Validate
+  errors = editor.validate()
+  if errors.length
+    # Not valid
+    alert 'Not validate'
+  else
+    data = editor.getValue()
+    object = app.canvas.getActiveObject()
+    if object
+      for key of editor.schema.properties
+        object[key] = data[key]
+      app.render()
+#    console.log data
   return

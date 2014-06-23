@@ -240,7 +240,34 @@
       markup.push "</g>"
 
       (if reviver then reviver(markup.join("")) else markup.join(""))
-    
+
+    getJsonSchema : () ->
+      schema =
+        title: "基本情報"
+        type: "object"
+        properties:
+          count:
+            type: "integer"
+            default: 3
+            minimum: 1
+            maximum: 10
+
+          side:
+            type: "integer"
+            default: 1
+            minimum: 1
+            maximum: 2
+
+#          shelfs:
+#            type: "array"
+#            uniqueItems: true
+#            items:
+#              type: "string"
+#              enum: [
+#                "value1"
+#                "value2"
+#              ]
+      return schema
     complexity: ->
       1
   )

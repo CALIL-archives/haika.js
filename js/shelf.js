@@ -280,6 +280,28 @@
         return markup.join("");
       }
     },
+    getJsonSchema: function() {
+      var schema;
+      schema = {
+        title: "基本情報",
+        type: "object",
+        properties: {
+          count: {
+            type: "integer",
+            "default": 3,
+            minimum: 1,
+            maximum: 10
+          },
+          side: {
+            type: "integer",
+            "default": 1,
+            minimum: 1,
+            maximum: 2
+          }
+        }
+      };
+      return schema;
+    },
     complexity: function() {
       return 1;
     }

@@ -1,9 +1,9 @@
 scrollbar_width = $('#vertical-scroller').width()
 scrollbar_height = $('#horizontal-scroller').height()
-propery_panel_width = $('.propery_panel').width()
+property_panel_width = $('.property_panel').width()
 
 get_width = ->
-  return window.innerWidth - scrollbar_width - propery_panel_width - 20
+  return window.innerWidth - scrollbar_width - property_panel_width - 20
 
 get_height = ->
   return window.innerHeight - $('.header').height() - scrollbar_height
@@ -60,14 +60,14 @@ $('.main_container, .canvas_panel').css('width', get_width())
 
 
 $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height())
-$('.propery_panel').css('height', get_height()+scrollbar_height)
+$('.property_panel').css('height', get_height()+scrollbar_height)
 
 $(window).resize ->
   app.canvas.setWidth(get_width())
   app.canvas.setHeight(get_height())
   $('.main_container, .canvas_panel').css('width', get_width())
   $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height())
-  $('.propery_panel').css('height', get_height()+scrollbar_height)
+  $('.property_panel').css('height', get_height()+scrollbar_height)
   app.render()
 
 add = (left=0, top=0)->
