@@ -93,15 +93,15 @@ editor = new JSONEditor(document.getElementById("editor"),
         minimum: 1
         maximum: 2
 
-      shelfs:
-        type: "array"
-        uniqueItems: true
-        items:
-          type: "string"
-          enum: [
-            "value1"
-            "value2"
-          ]
+#      shelfs:
+#        type: "array"
+#        uniqueItems: true
+#        items:
+#          type: "string"
+#          enum: [
+#            "value1"
+#            "value2"
+#          ]
 )
 
 
@@ -118,13 +118,18 @@ editor.on "change", ->
   errors = editor.validate()
   if errors.length
     # Not valid
-    alert 'Not validate'
+    alert '入力値が正しくありません。'
   else
     data = editor.getValue()
     object = app.canvas.getActiveObject()
     if object
       for key of editor.schema.properties
         object[key] = data[key]
+#      app.canvas.renderAll()
+#      app.save()
       app.render()
+      $(app.canvas.getObjects()).each (i, obj)=>
+          if obj.id==object.id
+            app.canvas.setActiveObject(obj)
 #    console.log data
   return

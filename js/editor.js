@@ -21,14 +21,6 @@ editor = new JSONEditor(document.getElementById("editor"), {
         "default": 1,
         minimum: 1,
         maximum: 2
-      },
-      shelfs: {
-        type: "array",
-        uniqueItems: true,
-        items: {
-          type: "string",
-          "enum": ["value1", "value2"]
-        }
       }
     }
   }
@@ -38,7 +30,7 @@ editor.on("change", function() {
   var data, errors, key, object;
   errors = editor.validate();
   if (errors.length) {
-    alert('Not validate');
+    alert('入力値が正しくありません。');
   } else {
     data = editor.getValue();
     object = app.canvas.getActiveObject();
@@ -47,6 +39,13 @@ editor.on("change", function() {
         object[key] = data[key];
       }
       app.render();
+      $(app.canvas.getObjects()).each((function(_this) {
+        return function(i, obj) {
+          if (obj.id === object.id) {
+            return app.canvas.setActiveObject(obj);
+          }
+        };
+      })(this));
     }
   }
 });
