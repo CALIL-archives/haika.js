@@ -247,6 +247,7 @@
         type: "object"
         properties:
           count:
+            title: "連数"
             type: "integer"
             default: 3
             minimum: 1

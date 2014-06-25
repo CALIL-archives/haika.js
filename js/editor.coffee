@@ -82,18 +82,21 @@ editor = new JSONEditor(document.getElementById("editor"),
 #        ]
 
       count:
+        title: "連数"
         type: "integer"
         default: 3
         minimum: 1
         maximum: 10
 
       side:
+        title: "面"
         type: "integer"
         default: 1
         minimum: 1
         maximum: 2
 
       angle:
+        title: "角度"
         type: "integer"
         default: 0
         minimum: 0
