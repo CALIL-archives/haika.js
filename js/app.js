@@ -659,14 +659,19 @@ app = {
     return a.click();
   },
   set_propety_panel: function(object) {
-    var group, key, objects, properties;
+    var group, key, objects, properties, value;
     $('.canvas_panel, .object_panel, .group_panel').hide();
     object = this.canvas.getActiveObject();
     if (object) {
       editor.schema = object.getJsonSchema();
       properties = {};
       for (key in editor.schema.properties) {
-        properties[key] = object[key];
+        if (editor.schema.properties[key].type === 'integer') {
+          value = object[key].toFixed(0);
+        } else {
+          value = object[key];
+        }
+        properties[key] = value;
       }
       editor.setValue(properties);
       if (object.toGeoJSON != null) {

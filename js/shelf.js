@@ -297,6 +297,12 @@
             "default": 1,
             minimum: 1,
             maximum: 2
+          },
+          angle: {
+            type: "integer",
+            "default": 0,
+            minimum: 0,
+            maximum: 360
           }
         }
       };

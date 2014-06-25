@@ -509,7 +509,11 @@ app =
       # Set the value
       properties = {}
       for key of editor.schema.properties
-        properties[key] = object[key]
+        if editor.schema.properties[key].type=='integer'
+          value = object[key].toFixed(0)
+        else
+          value = object[key]
+        properties[key] = value
       editor.setValue properties
       if object.toGeoJSON?
         $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4))
