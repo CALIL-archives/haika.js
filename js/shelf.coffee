@@ -202,14 +202,14 @@
       y = app.transformTopY_px2cm(y)
       # 中心点からの距離の比を出す
       map_center =
-        lat : 35.697086
-        lon : 139.761239
+        lat : 35.155080
+        lon : 136.963791
       map_edge =
-        lat : 35.697018
-        lon : 139.761239
+        lat : 35.155049
+        lon : 136.963791
       half_distance = map_center.lat - map_edge.lat
       # 地図の幅半分 / 5000
-      cm_ratio = half_distance / 5000
+      cm_ratio = half_distance / 5000 * 100
       x = map_center.lon + x * cm_ratio
       y = map_center.lat + y * cm_ratio
       h = h * cm_ratio

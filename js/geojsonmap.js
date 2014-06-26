@@ -100,47 +100,14 @@ styleFunction = function(feature, resolution) {
 @type {olx.source.GeoJSONOptions}
  */
 
-geojson = localStorage.getItem('geojson');
+geojson = JSON.parse(localStorage.getItem('geojson'));
 
 console.log(geojson);
 
+console.log(localStorage.getItem('geojson'))
+
 vectorSource = new ol.source.GeoJSON({
-  object: {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              138.6968994140625,
-              35.36665566526249
-            ],
-            [
-              138.6968994140625,
-              35.97800618085568
-            ],
-            [
-              140.1910400390625,
-              35.97800618085568
-            ],
-            [
-              140.1910400390625,
-              35.36665566526249
-            ],
-            [
-              138.6968994140625,
-              35.36665566526249
-            ]
-          ]
-        ]
-      }
-    }
-  ]
-}
+  object:geojson
 });
 
 var features = vectorSource.getFeatures();
@@ -148,10 +115,10 @@ console.log(features);
 
 vectorLayer = new ol.layer.Vector({
   source: vectorSource,
-//  style: styleFunction
+  style: styleFunction
 });
 
-center = ol.proj.transform([139.761239, 35.697086], "EPSG:4326", "EPSG:3857");
+center = ol.proj.transform([136.963791, 35.155080], "EPSG:4326", "EPSG:3857");
 
 map = new ol.Map({
   layers: [
@@ -162,7 +129,8 @@ map = new ol.Map({
   target: "map",
   view: new ol.View2D({
     center: center,
-    zoom: 2
+    zoom: 2,
+    projection: 'EPSG:4326'
   })
 });
 
