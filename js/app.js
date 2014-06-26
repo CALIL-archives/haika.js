@@ -545,20 +545,22 @@ app = {
         } else {
           continue;
         }
-        if (object.properties.type.match(/shelf$/)) {
-          w = klass.prototype.__eachWidth() * object.properties.count;
-          h = klass.prototype.__eachHeight() * object.properties.side;
-        }
-        if (object.properties.type === 'beacon') {
-          w = klass.prototype.__width();
-          h = klass.prototype.__height();
-        }
+        w = klass.prototype.__const_width * object.properties.count;
+        h = klass.prototype.__const_hegiht * object.properties.side;
+        log('h:' + h);
         x = object.geometry.coordinates[0][0][0];
         y = object.geometry.coordinates[0][0][1];
-        x = this.transformLeftX_cm2px(x);
-        y = this.transformTopY_cm2px(y);
+        log(object.geometry.coordinates[0][0]);
+        log('x:' + x);
+        log('y:' + y);
         top = y + h / 2;
         left = x + w / 2;
+        log('top:' + top);
+        log('left:' + left);
+        top = this.transformTopY_cm2px(top);
+        left = this.transformLeftX_cm2px(left);
+        log('top:' + top);
+        log('left:' + left);
         shape = new klass({
           id: object.properties.id,
           count: object.properties.count,
@@ -603,7 +605,9 @@ app = {
     this.objects[count].id = object.id;
     this.objects[count].type = object.type;
     this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
+    object.top_cm = this.objects[count].top_cm;
     this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
+    object.left_cm = this.objects[count].left_cm;
     this.objects[count].scaleX = object.scaleX / this.scale;
     this.objects[count].scaleY = object.scaleY / this.scale;
     this.objects[count].angle = object.angle;

@@ -226,28 +226,11 @@
       return object;
     },
     toGeoJSON: function() {
-      var center, cm_ratio, data, h, half_distance, map_center, map_edge, w, x, y;
-      w = this.__eachWidth() * this.count;
-      h = this.__eachHeight() * this.side;
-      center = this.getCenterPoint();
-      x = -w / 2 + center.x;
-      y = -h / 2 + center.y;
-      x = app.transformLeftX_px2cm(x);
-      y = app.transformTopY_px2cm(y);
-      map_center = {
-        lat: 35.155080,
-        lon: 136.963791
-      };
-      map_edge = {
-        lat: 35.155049,
-        lon: 136.963791
-      };
-      half_distance = map_center.lat - map_edge.lat;
-      cm_ratio = half_distance / 5000 * 100;
-      x = map_center.lon + x * cm_ratio;
-      y = map_center.lat + y * cm_ratio;
-      h = h * cm_ratio;
-      w = w * cm_ratio;
+      var data, h, w, x, y;
+      w = this.__const_width * this.count;
+      h = this.__const_hegiht * this.side;
+      x = -w / 2 + this.left_cm;
+      y = -h / 2 + this.top_cm;
       data = {
         "type": "Feature",
         "geometry": {

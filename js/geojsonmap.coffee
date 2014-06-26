@@ -56,262 +56,29 @@ styleFunction = (feature, resolution) ->
   styles[feature.getGeometry().getType()]
 
 
-###
-@type {olx.source.GeoJSONOptions}
-###
-geojson = localStorage.getItem('geojson')
+#
+#@type {olx.source.GeoJSONOptions}
+# 
+geojson = JSON.parse(localStorage.getItem("geojson"))
 console.log geojson
-vectorSource = new ol.source.GeoJSON((object:
-  type: "FeatureCollection"
-#  crs:
-#    type: "name"
-#    properties:
-#      name: "EPSG:3857"
-
-  features: [
-    {
-      type: "Feature"
-      geometry:
-        type: "Point"
-        coordinates: [
-          0
-          0
-        ]
-    }
-    {
-      type: "Feature"
-      geometry:
-        type: "LineString"
-        coordinates: [
-          [
-            4e6
-            -2e6
-          ]
-          [
-            8e6
-            2e6
-          ]
-        ]
-    }
-    {
-      type: "Feature"
-      geometry:
-        type: "LineString"
-        coordinates: [
-          [
-            4e6
-            2e6
-          ]
-          [
-            8e6
-            -2e6
-          ]
-        ]
-    }
-    {
-      type: "Feature"
-      geometry:
-        type: "Polygon"
-        coordinates: [[
-#          [
-#            -5e6
-#            -1e6
-#          ]
-#          [
-#            -4e6
-#            1e6
-#          ]
-#          [
-#            -3e6
-#            -1e6
-#          ]
-          [102.0, 2.0], [103.0, 2.0], [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]
-#          [
-#              139.7612409007535,
-#              35.697086485480376
-#          ]
-#          [
-#              139.7612435935535,
-#              35.697086485480376
-#          ]
-#          [
-#              139.7612435935535,
-#              35.69708633588038
-#          ]
-#          [
-#              139.7612409007535,
-#              35.69708633588038
-#          ]
-#          [
-#              139.7612409007535,
-#              35.697086485480376
-#          ]
-        ]]
-    }
-    {
-      type: "Feature"
-      geometry:
-        type: "MultiLineString"
-        coordinates: [
-          [
-            [
-              -1e6
-              -7.5e5
-            ]
-            [
-              -1e6
-              7.5e5
-            ]
-          ]
-          [
-            [
-              1e6
-              -7.5e5
-            ]
-            [
-              1e6
-              7.5e5
-            ]
-          ]
-          [
-            [
-              -7.5e5
-              -1e6
-            ]
-            [
-              7.5e5
-              -1e6
-            ]
-          ]
-          [
-            [
-              -7.5e5
-              1e6
-            ]
-            [
-              7.5e5
-              1e6
-            ]
-          ]
-        ]
-    }
-    {
-      type: "Feature"
-      geometry:
-        type: "MultiPolygon"
-        coordinates: [
-          [[
-            [
-              -5e6
-              6e6
-            ]
-            [
-              -5e6
-              8e6
-            ]
-            [
-              -3e6
-              8e6
-            ]
-            [
-              -3e6
-              6e6
-            ]
-          ]]
-          [[
-            [
-              -2e6
-              6e6
-            ]
-            [
-              -2e6
-              8e6
-            ]
-            [
-              0e6
-              8e6
-            ]
-            [
-              0e6
-              6e6
-            ]
-          ]]
-          [[
-            [
-              1e6
-              6e6
-            ]
-            [
-              1e6
-              8e6
-            ]
-            [
-              3e6
-              8e6
-            ]
-            [
-              3e6
-              6e6
-            ]
-          ]]
-        ]
-    }
-    {
-      type: "Feature"
-      geometry:
-        type: "GeometryCollection"
-        geometries: [
-          {
-            type: "LineString"
-            coordinates: [
-              [
-                -5e6
-                -5e6
-              ]
-              [
-                0e6
-                -5e6
-              ]
-            ]
-          }
-          {
-            type: "Point"
-            coordinates: [
-              4e6
-              -5e6
-            ]
-          }
-          {
-            type: "Polygon"
-            coordinates: [[
-              [
-                1e6
-                -6e6
-              ]
-              [
-                2e6
-                -4e6
-              ]
-              [
-                3e6
-                -6e6
-              ]
-            ]]
-          }
-        ]
-    }
-  ]
-))
-console.log vectorSource
-#vectorSource.addFeature new ol.Feature(new ol.geom.Circle([
-#  5e6
-#  7e6
-#], 1e6))
+console.log localStorage.getItem("geojson")
+vectorSource = new ol.source.GeoJSON(object: geojson)
+features = vectorSource.getFeatures()
+console.log features
 vectorLayer = new ol.layer.Vector(
   source: vectorSource
   style: styleFunction
 )
-center = ol.proj.transform([ 139.761239, 35.697086 ], "EPSG:4326", "EPSG:3857")
+center = ol.proj.transform([
+  136.963791
+  35.155080
+], "EPSG:4326", "EPSG:3857")
+console.log center
+center = ol.proj.transform([
+  136.963791
+  35.155049
+], "EPSG:4326", "EPSG:3857")
+console.log center
 map = new ol.Map(
   layers: [
     new ol.layer.Tile(source: new ol.source.OSM())
@@ -319,9 +86,8 @@ map = new ol.Map(
   ]
   target: "map"
   view: new ol.View2D(
-    center:center
+    center: center
     zoom: 2
-#    maxZoom: 5
-#    maxResolution: 1
+    projection: "EPSG:4326"
   )
 )
