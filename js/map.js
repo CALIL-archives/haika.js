@@ -26,18 +26,16 @@ $(document).ready(function() {
     $("#geojson-input").removeClass("drop-it");
   };
   road_layer = new L.TileLayer("http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png", {
-    maxZoom: 18,
     subdomains: ["1", "2", "3", "4"],
     attribution: "Tiles Courtesy of <a href=\"http://www.mapquest.com/\" target=\"_blank\">MapQuest</a>. Map data (c) <a href=\"http://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, CC-BY-SA."
   });
   satellite_layer = new L.TileLayer("http://otile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png", {
-    maxZoom: 18,
     subdomains: ["1", "2", "3", "4"],
     attribution: "Tiles Courtesy of <a href=\"http://www.mapquest.com/\" target=\"_blank\">MapQuest</a>."
   });
   map = new L.Map("map-container", {
     center: new L.LatLng(37.92686760148135, -96.767578125),
-    zoom: 4,
+    zoom: 1,
     layers: [road_layer]
   });
   geojsonLayer = new L.GeoJSON(null, {

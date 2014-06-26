@@ -18,7 +18,7 @@ editor = new JSONEditor(document.getElementById("editor"), {
         maximum: 10
       },
       side: {
-        title: "面",
+        title: "面数",
         type: "integer",
         "default": 1,
         minimum: 1,
