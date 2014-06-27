@@ -478,7 +478,7 @@ app =
     @render()
     geojson = @toGeoJSON()
     localStorage.setItem('geojson', geojson)
-    location.href = 'map.html'
+    location.href = 'map2.html'
   getSVG : ->
     @unselect()
     canvas = document.createElement('canvas')
@@ -502,7 +502,7 @@ app =
   set_propety_panel : (object)->
     $('.canvas_panel, .object_panel, .group_panel').hide()
     object = @canvas.getActiveObject()
-    if object
+    if object and object.getJsonSchema?
       editor.schema = object.getJsonSchema()
       # Set the value
       properties = {}

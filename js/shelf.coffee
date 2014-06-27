@@ -10,7 +10,7 @@
     console.warn "fabric.Shelf is already defined"
     return
   stateProperties = fabric.Object::stateProperties.concat()
-  stateProperties.push "id", "count", "side"
+  stateProperties.push "id", "count", "side", "top_cm", "left_cm"
 
   fabric.Shelf = fabric.util.createClass(fabric.Object,
     stateProperties: stateProperties
@@ -286,3 +286,4 @@
   return) (if typeof exports isnt "undefined" then exports else this)
 
 #    fabric.Shelf.async = true;
+

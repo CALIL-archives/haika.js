@@ -628,7 +628,7 @@ app = {
     this.render();
     geojson = this.toGeoJSON();
     localStorage.setItem('geojson', geojson);
-    return location.href = 'map.html';
+    return location.href = 'map2.html';
   },
   getSVG: function() {
     var a, blob, canvas, svg, tmp_canvas, tmp_scale;
@@ -658,7 +658,7 @@ app = {
     var group, key, objects, properties, value;
     $('.canvas_panel, .object_panel, .group_panel').hide();
     object = this.canvas.getActiveObject();
-    if (object) {
+    if (object && (object.getJsonSchema != null)) {
       editor.schema = object.getJsonSchema();
       properties = {};
       for (key in editor.schema.properties) {

@@ -14,7 +14,7 @@
     return;
   }
   stateProperties = fabric.Object.prototype.stateProperties.concat();
-  stateProperties.push("id", "count", "side");
+  stateProperties.push("id", "count", "side", "top_cm", "left_cm");
   fabric.Shelf = fabric.util.createClass(fabric.Object, {
     stateProperties: stateProperties,
     type: "shelf",

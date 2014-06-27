@@ -16,7 +16,33 @@ body {
   width: 360px;
 }
 
+/* toolbar */
+.toolbar_container {
+  position: absolute;
+  left: 50px;
+  top:  100px;
+  z-index: 10000000;
+  padding: 10px;
+  border: 1px solid #999999;
+  background-color: #FFFFFF;
+}
+.toolbar_container ul {
+  margin-left: 0;
+  padding-left: 0;
+}
+.toolbar_container li {
+  display: block;
+  list-style: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #CCCCCC;
+  background-color: #FFFFFF;
+}
+.toolbar_container li:hover {
+  background-color: lightpink;
+}
 
+/* property_panel */
 .property_panel {
   float: right;
   width: 330px;

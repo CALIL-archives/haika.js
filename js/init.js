@@ -151,6 +151,21 @@ $(function() {
     add();
     return app.render();
   });
+  $(".add_shelf").click(function() {
+    $('#type').val('Shelf');
+    add();
+    return app.render();
+  });
+  $(".add_curved_shelf").click(function() {
+    $('#type').val('curvedShelf');
+    add();
+    return app.render();
+  });
+  $(".add_beacon").click(function() {
+    $('#type').val('Beacon');
+    add();
+    return app.render();
+  });
   $(".remove").click(function() {
     var object;
     object = app.canvas.getActiveObject();

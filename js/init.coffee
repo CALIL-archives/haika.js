@@ -125,6 +125,20 @@ $ ->
   $(".add").click ->
     add()
     app.render()
+
+  # toolbar
+  $(".add_shelf").click ->
+    $('#type').val('Shelf')
+    add()
+    app.render()
+  $(".add_curved_shelf").click ->
+    $('#type').val('curvedShelf')
+    add()
+    app.render()
+  $(".add_beacon").click ->
+    $('#type').val('Beacon')
+    add()
+    app.render()
   $(".remove").click ->
     object = app.canvas.getActiveObject()
     app.remove()
@@ -248,17 +262,15 @@ $ ->
     cancel_default(e)
     app.unselect_all()
     return false
-#  Mousetrap.bind 'mod+=', (e)->
-#    log e
+#  Mousetrap.bind '=', (e)->
 #    cancel_default(e)
 #    app.zoomIn()
 #    return false
-#  Mousetrap.bind 'mod+–', (e)->
-#    log e.keyCode
+#  Mousetrap.bind '-', (e)->
 #    cancel_default(e)
 #    app.zoomOut()
 #    return false
-#  Mousetrap.bind 'mod+0', (e)->
+#  Mousetrap.bind '0', (e)->
 #    cancel_default(e)
 #    app.zoomReset()
 #    return false
