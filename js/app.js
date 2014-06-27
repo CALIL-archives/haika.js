@@ -202,7 +202,6 @@ app = {
     }
     object = this.canvas.getActiveObject();
     if (object) {
-      log(object.top);
       new_id = func(object);
       if (new_id && do_active) {
         $(this.canvas.getObjects()).each((function(_this) {
@@ -480,6 +479,45 @@ app = {
     $('#canvas_centerX').val(this.centerX);
     $('#canvas_centerY').val(this.centerY);
     return $('#canvas_bgscale').val(this.options.bgscale);
+  },
+  get_move: function(event) {
+    if (event.shiftKey) {
+      return 10;
+    } else {
+      return 1;
+    }
+  },
+  up: function(event) {
+    return this.bind((function(_this) {
+      return function(object) {
+        object.top = object.top - _this.get_move(event);
+        return _this.canvas.renderAll();
+      };
+    })(this));
+  },
+  down: function(event) {
+    return this.bind((function(_this) {
+      return function(object) {
+        object.top = object.top + _this.get_move(event);
+        return _this.canvas.renderAll();
+      };
+    })(this));
+  },
+  left: function(event) {
+    return this.bind((function(_this) {
+      return function(object) {
+        object.left = object.left - _this.get_move(event);
+        return _this.canvas.renderAll();
+      };
+    })(this));
+  },
+  right: function(event) {
+    return this.bind((function(_this) {
+      return function(object) {
+        object.left = object.left + _this.get_move(event);
+        return _this.canvas.renderAll();
+      };
+    })(this));
   },
   zoomIn: function() {
     var prev_scale;

@@ -262,6 +262,22 @@ $ ->
     cancel_default(e)
     app.unselect_all()
     return false
+  Mousetrap.bind ['up', 'shift+up'], (e)->
+    cancel_default(e)
+    app.up(e)
+    return false
+  Mousetrap.bind ['down', 'shift+down'], (e)->
+    cancel_default(e)
+    app.down(e)
+    return false
+  Mousetrap.bind ['left', 'shift+left'], (e)->
+    cancel_default(e)
+    app.left(e)
+    return false
+  Mousetrap.bind ['right', 'shift+right'], (e)->
+    cancel_default(e)
+    app.right(e)
+    return false
 #  Mousetrap.bind '=', (e)->
 #    cancel_default(e)
 #    app.zoomIn()

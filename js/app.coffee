@@ -168,7 +168,6 @@ app =
   bind : (func, do_active=true)->
     object = @canvas.getActiveObject()
     if object
-      log object.top
       new_id = func(object)
       if new_id and do_active
         $(@canvas.getObjects()).each (i, obj)=>
@@ -363,7 +362,24 @@ app =
     $('#canvas_centerX').val(@centerX)
     $('#canvas_centerY').val(@centerY)
     $('#canvas_bgscale').val(@options.bgscale)
-
+  get_move : (event)->
+    return if event.shiftKey then 10 else 1
+  up : (event)->
+    @bind (object)=>
+      object.top = object.top - @get_move(event)
+      @canvas.renderAll()
+  down : (event)->
+    @bind (object)=>
+      object.top = object.top + @get_move(event)
+      @canvas.renderAll()
+  left : (event)->
+    @bind (object)=>
+      object.left = object.left - @get_move(event)
+      @canvas.renderAll()
+  right : (event)->
+    @bind (object)=>
+      object.left = object.left + @get_move(event)
+      @canvas.renderAll()
   zoomIn : ->
     @unselect()
 #    @scale += 0.1
