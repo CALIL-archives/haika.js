@@ -227,10 +227,10 @@
     },
     toGeoJSON: function() {
       var data, h, w, x, y;
-      w = this.__const_width * this.count;
-      h = this.__const_hegiht * this.side;
-      x = -w / 2 + this.left_cm;
-      y = -h / 2 + this.top_cm;
+      w = this.__const_width * this.count / 100;
+      h = this.__const_hegiht * this.side / 100;
+      x = -w / 2 + this.left_cm / 100;
+      y = -h / 2 + this.top_cm / 100;
       data = {
         "type": "Feature",
         "geometry": {

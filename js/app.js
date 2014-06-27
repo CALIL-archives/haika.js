@@ -547,20 +547,12 @@ app = {
         }
         w = klass.prototype.__const_width * object.properties.count;
         h = klass.prototype.__const_hegiht * object.properties.side;
-        log('h:' + h);
         x = object.geometry.coordinates[0][0][0];
         y = object.geometry.coordinates[0][0][1];
-        log(object.geometry.coordinates[0][0]);
-        log('x:' + x);
-        log('y:' + y);
-        top = y + h / 2;
-        left = x + w / 2;
-        log('top:' + top);
-        log('left:' + left);
+        top = y * 100 + h / 2;
+        left = x * 100 + w / 2;
         top = this.transformTopY_cm2px(top);
         left = this.transformLeftX_cm2px(left);
-        log('top:' + top);
-        log('left:' + left);
         shape = new klass({
           id: object.properties.id,
           count: object.properties.count,

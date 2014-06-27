@@ -192,10 +192,10 @@
       return object
 
     toGeoJSON: ->
-      w = @__const_width * @count
-      h = @__const_hegiht * @side
-      x = -w / 2 + @left_cm
-      y = -h / 2 + @top_cm
+      w = @__const_width * @count / 100
+      h = @__const_hegiht * @side / 100
+      x = -w / 2 + @left_cm / 100
+      y = -h / 2 + @top_cm / 100
       data =
         "type": "Feature"
         "geometry":
