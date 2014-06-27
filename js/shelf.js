@@ -14,12 +14,12 @@
     return;
   }
   stateProperties = fabric.Object.prototype.stateProperties.concat();
-  stateProperties.push("id", "count", "side", "top_cm", "left_cm");
+  stateProperties.push("id", "count", "side", "top_cm", "left_cm", "eachWidth", "eachHeight");
   fabric.Shelf = fabric.util.createClass(fabric.Object, {
     stateProperties: stateProperties,
     type: "shelf",
-    __const_width: 90,
-    __const_hegiht: 25,
+    eachWidth: 90,
+    eachHeight: 25,
     __width: function() {
       return this.__eachWidth() * this.count;
     },
@@ -27,10 +27,10 @@
       return this.__eachHeight() * this.side;
     },
     __eachWidth: function() {
-      return this.__const_width * app.scale;
+      return this.eachWidth * app.scale;
     },
     __eachHeight: function() {
-      return this.__const_hegiht * app.scale;
+      return this.eachHeight * app.scale;
     },
     count: 1,
     side: 1,
@@ -227,8 +227,8 @@
     },
     toGeoJSON: function() {
       var data, h, w, x, y;
-      w = this.__const_width * this.count / 100;
-      h = this.__const_hegiht * this.side / 100;
+      w = this.eachWidth * this.count / 100;
+      h = this.eachHeight * this.side / 100;
       x = -w / 2 + this.left_cm / 100;
       y = -h / 2 + this.top_cm / 100;
       data = {
@@ -239,12 +239,15 @@
         },
         "properties": {
           "type": this.type,
+          "eachWidth": this.eachWidth,
+          "eachHeight": this.eachHeight,
           "id": this.id,
           "count": this.count,
           "side": this.side,
           "angle": this.angle
         }
       };
+      log(data);
       return data;
     },
     toSVG: function(reviver) {
@@ -253,8 +256,8 @@
       markup.push("<g>");
       count = this.get("count");
       side = this.get("side");
-      w = this.__const_width;
-      h = this.__const_hegiht;
+      w = this.eachWidth;
+      h = this.eachHeight;
       x = -w / 2 * this.count;
       y = -h / 2 * this.side;
       i = 0;
@@ -266,7 +269,7 @@
       if (side === 2) {
         i = 0;
         while (i < count) {
-          markup.push("<rect x=\"" + ((-1 * this.width / 2) + this.width / count * i) + "\" y=\"" + ((-1 * this.height / 2) + this.__const_hegiht) + "\" rx=\"" + (this.get("rx")) + "\" ry=\"" + (this.get("ry")) + "\" width=\"" + (this.width / count) + "\" height=\"" + (this.height / 2) + "\" style=\"" + (this.getSvgStyles()) + "\" transform=\"" + (this.getSvgTransform()) + "\"/>");
+          markup.push("<rect x=\"" + ((-1 * this.width / 2) + this.width / count * i) + "\" y=\"" + ((-1 * this.height / 2) + this.eachHeight) + "\" rx=\"" + (this.get("rx")) + "\" ry=\"" + (this.get("ry")) + "\" width=\"" + (this.width / count) + "\" height=\"" + (this.height / 2) + "\" style=\"" + (this.getSvgStyles()) + "\" transform=\"" + (this.getSvgTransform()) + "\"/>");
           i++;
         }
       }
@@ -325,12 +328,6 @@
   fabric.Shelf.fromObject = function(object) {
     return new fabric.Shelf(object);
   };
-  fabric.miniShelf = fabric.util.createClass(fabric.Shelf, {
-    stateProperties: stateProperties,
-    type: "mini_shelf",
-    __const_width: 30,
-    __const_hegiht: 25
-  });
 })((typeof exports !== "undefined" ? exports : this));
 
 //# sourceMappingURL=shelf.map

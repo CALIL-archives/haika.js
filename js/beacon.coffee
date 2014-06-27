@@ -7,12 +7,12 @@
     return
   fabric.Beacon = fabric.util.createClass(fabric.Object,
     type: "beacon"
-    __const_width: 10
-    __const_height: 10
+    eachWidth: 10
+    eachHeight: 10
     __width: ->
-      @__const_width * app.scale
+      @eachWidth * app.scale
     __height: ->
-      @__const_height * app.scale
+      @eachHeight * app.scale
 
     initialize: (options) ->
       options = options or {}
@@ -58,8 +58,8 @@
       return object
 
     toGeoJSON: ->
-      w = @__const_width
-      h = @__const_height
+      w = @eachWidth
+      h = @eachHeight
       center = @getCenterPoint()
 #      log center
       x = -w / 2 + center.x

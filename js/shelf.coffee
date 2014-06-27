@@ -10,21 +10,21 @@
     console.warn "fabric.Shelf is already defined"
     return
   stateProperties = fabric.Object::stateProperties.concat()
-  stateProperties.push "id", "count", "side", "top_cm", "left_cm"
+  stateProperties.push "id", "count", "side", "top_cm", "left_cm", "eachWidth", "eachHeight"
 
   fabric.Shelf = fabric.util.createClass(fabric.Object,
     stateProperties: stateProperties
     type: "shelf"
-    __const_width: 90
-    __const_hegiht: 25
+    eachWidth: 90
+    eachHeight: 25
     __width: ->
       @__eachWidth() * @count
     __height: ->
       @__eachHeight() * @side
     __eachWidth: ->
-      @__const_width * app.scale
+      @eachWidth * app.scale
     __eachHeight: ->
-      @__const_hegiht * app.scale
+      @eachHeight * app.scale
     count: 1
     side: 1
     minScaleLimit: 1
@@ -192,8 +192,8 @@
       return object
 
     toGeoJSON: ->
-      w = @__const_width * @count / 100
-      h = @__const_hegiht * @side / 100
+      w = @eachWidth * @count / 100
+      h = @eachHeight * @side / 100
       x = -w / 2 + @left_cm / 100
       y = -h / 2 + @top_cm / 100
       data =
@@ -205,10 +205,13 @@
           ]
         "properties": 
           "type"  : @type
+          "eachWidth" : @eachWidth
+          "eachHeight": @eachHeight
           "id"    : @id
           "count"    : @count
           "side"    : @side
           "angle" : @angle
+      log data
       return data
     
     toSVG: (reviver) ->
@@ -216,8 +219,8 @@
       markup.push("<g>")
       count = @get("count")
       side  = @get("side")
-      w = @__const_width
-      h = @__const_hegiht
+      w = @eachWidth
+      h = @eachHeight
       x = -w / 2 * @count
       y = -h / 2 * @side
       i = 0
@@ -231,7 +234,7 @@
         i = 0
         while i < count
 #          markup.push """<rect x="#{x}" y="#{y}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@w}" height="#{@h}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
-          markup.push """<rect x="#{(-1 * @width / 2) + @width / count * i}" y="#{(-1 * @height / 2) + @__const_hegiht}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@width / count}" height="#{@height / 2}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
+          markup.push """<rect x="#{(-1 * @width / 2) + @width / count * i}" y="#{(-1 * @height / 2) + @eachHeight}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@width / count}" height="#{@height / 2}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
           i++
       markup.push "</g>"
 
@@ -283,12 +286,6 @@
   fabric.Shelf.fromObject = (object) ->
     new fabric.Shelf(object)
 
-  fabric.miniShelf = fabric.util.createClass(fabric.Shelf,
-    stateProperties: stateProperties
-    type: "mini_shelf"
-    __const_width: 30
-    __const_hegiht: 25
-  )
   return) (if typeof exports isnt "undefined" then exports else this)
 
   #    fabric.Shelf.async = true;

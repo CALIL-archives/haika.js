@@ -10,13 +10,13 @@
   }
   fabric.Beacon = fabric.util.createClass(fabric.Object, {
     type: "beacon",
-    __const_width: 10,
-    __const_height: 10,
+    eachWidth: 10,
+    eachHeight: 10,
     __width: function() {
-      return this.__const_width * app.scale;
+      return this.eachWidth * app.scale;
     },
     __height: function() {
-      return this.__const_height * app.scale;
+      return this.eachHeight * app.scale;
     },
     initialize: function(options) {
       options = options || {};
@@ -77,8 +77,8 @@
     },
     toGeoJSON: function() {
       var center, data, h, w, x, y;
-      w = this.__const_width;
-      h = this.__const_height;
+      w = this.eachWidth;
+      h = this.eachHeight;
       center = this.getCenterPoint();
       x = -w / 2 + center.x;
       y = -h / 2 + center.y;

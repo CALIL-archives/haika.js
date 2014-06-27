@@ -165,7 +165,7 @@ app = {
     o = {
       id: object.id
     };
-    props = ['type', 'width', 'height', 'scaleX', 'scaleY', 'left', 'top', 'angle', 'fill', 'stroke'];
+    props = ['eachWidth', 'eachHeight', 'type', 'width', 'height', 'scaleX', 'scaleY', 'left', 'top', 'angle', 'fill', 'stroke'];
     if (object.type.match(/shelf$/)) {
       props.push('count');
       props.push('side');
@@ -438,6 +438,8 @@ app = {
     if (o.type.match(/shelf$/)) {
       object.side = o.side;
       object.count = o.count;
+      object.eachWidth = o.eachWidth;
+      object.eachHeight = o.eachHeight;
     }
     object.selectable = o.type.match(this.state);
     if (!o.type.match(this.state)) {
@@ -581,8 +583,8 @@ app = {
           this.last_id = object.properties.id;
         }
         klass = this.get_class(object.properties.type);
-        w = klass.prototype.__const_width * object.properties.count;
-        h = klass.prototype.__const_hegiht * object.properties.side;
+        w = klass.prototype.eachWidth * object.properties.count;
+        h = klass.prototype.eachHeight * object.properties.side;
         x = object.geometry.coordinates[0][0][0];
         y = object.geometry.coordinates[0][0][1];
         top = y * 100 + h / 2;
@@ -590,6 +592,8 @@ app = {
         top = this.transformTopY_cm2px(top);
         left = this.transformLeftX_cm2px(left);
         shape = new klass({
+          eachWidth: object.properties.eachWidth,
+          eachHeight: object.properties.eachHeight,
           id: object.properties.id,
           count: object.properties.count,
           side: object.properties.side,
@@ -599,6 +603,7 @@ app = {
           stroke: "#000000",
           angle: object.properties.angle
         });
+        log(shape);
         this.add(shape);
       }
     }
