@@ -84,23 +84,9 @@ $(window).resize(function() {
   return app.render();
 });
 
-add = function(left, top) {
+add = function() {
   var id, klass, object;
-  if (left == null) {
-    left = 0;
-  }
-  if (top == null) {
-    top = 0;
-  }
-  if ($('#type').val() === 'Shelf') {
-    klass = fabric.Shelf;
-  }
-  if ($('#type').val() === 'curvedShelf') {
-    klass = fabric.curvedShelf;
-  }
-  if ($('#type').val() === 'Beacon') {
-    klass = fabric.Beacon;
-  }
+  klass = app.get_class($('#type').val());
   object = new klass({
     count: parseInt($('#count').val()),
     side: parseInt($('#side').val()),
@@ -152,17 +138,22 @@ $(function() {
     return app.render();
   });
   $(".add_shelf").click(function() {
-    $('#type').val('Shelf');
+    $('#type').val('shelf');
     add();
     return app.render();
   });
   $(".add_curved_shelf").click(function() {
-    $('#type').val('curvedShelf');
+    $('#type').val('curved_shelf');
+    add();
+    return app.render();
+  });
+  $(".add_mini_shelf").click(function() {
+    $('#type').val('mini_shelf');
     add();
     return app.render();
   });
   $(".add_beacon").click(function() {
-    $('#type').val('Beacon');
+    $('#type').val('beacon');
     add();
     return app.render();
   });

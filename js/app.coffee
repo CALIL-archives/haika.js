@@ -286,6 +286,17 @@ app =
     if object
       @canvas.fire('before:selection:cleared', { target: object })
       @canvas.fire('selection:cleared', { target: object })
+  get_class : (classname)->
+    if classname=='shelf'
+      return fabric.Shelf
+    else if classname=='curved_shelf'
+      return fabric.curvedShelf
+    else if classname=='mini_shelf'
+      return fabric.miniShelf
+    else if classname=='beacon'
+      return fabric.Beacon
+    else
+      return fabric.Shelf
   render : ->
 #    log 'render'
     #オブジェクトをクリア
@@ -309,44 +320,39 @@ app =
     @canvas.renderOnAddRemove=true
     @debug()
   render_object : (o)->
-      if o.type=='shelf'
-        object = new fabric.Shelf()
-        object.side  = o.side
-        object.count = o.count
-      if o.type=='curved_shelf'
-        object = new fabric.curvedShelf()
-        object.side  = o.side
-        object.count = o.count
-      if o.type=='beacon'
-        object = new fabric.Beacon()
-      # layer
-      object.selectable = (o.type.match(@state))
-      if not o.type.match(@state)
-        object.opacity = 0.5
-      object.id     = o.id
-      object.scaleX = object.scaleY = 1
-      object.width  = object.__width()
-      object.height = object.__height()
-      object.left   = @transformLeftX_cm2px(o.left_cm)
-      object.top    = @transformTopY_cm2px(o.top_cm)
-      object.angle  = o.angle
-      object.originX = 'center'
-      object.originY = 'center'
-      if o.type=='beacon'
-        object.fill = "#000000"
-        object.hasControls = false
-        object.padding = 10
-        object.borderColor = "#0000ee"
-      else
-        object.borderColor = "#000000"
-        object.fill = "#CFE2F3"
-        object.padding = 0
-      object.stroke = "#000000"
-      object.transparentCorners = false
-      object.cornerColor = "#488BD4"
-      object.borderOpacityWhenMoving = 0.8
-      object.cornerSize = 10
-      @canvas.add(object)
+    klass = @get_class(o.type)
+    object = new klass()
+    if o.type.match(/shelf$/)
+      object.side  = o.side
+      object.count = o.count
+    # layer
+    object.selectable = (o.type.match(@state))
+    if not o.type.match(@state)
+      object.opacity = 0.5
+    object.id     = o.id
+    object.scaleX = object.scaleY = 1
+    object.width  = object.__width()
+    object.height = object.__height()
+    object.left   = @transformLeftX_cm2px(o.left_cm)
+    object.top    = @transformTopY_cm2px(o.top_cm)
+    object.angle  = o.angle
+    object.originX = 'center'
+    object.originY = 'center'
+    if o.type=='beacon'
+      object.fill = "#000000"
+      object.hasControls = false
+      object.padding = 10
+      object.borderColor = "#0000ee"
+    else
+      object.borderColor = "#000000"
+      object.fill = "#CFE2F3"
+      object.padding = 0
+    object.stroke = "#000000"
+    object.transparentCorners = false
+    object.cornerColor = "#488BD4"
+    object.borderOpacityWhenMoving = 0.8
+    object.cornerSize = 10
+    @canvas.add(object)
   render_bg : ->
     if @bgimg
       @bgimg.left    = Math.floor( @canvas.getWidth()/2 + (-@bgimg_width*@options.bgscale/2 + @centerX) * @scale )
@@ -365,19 +371,23 @@ app =
   get_move : (event)->
     return if event.shiftKey then 10 else 1
   up : (event)->
-    @bind (object)=>
+    object = @canvas.getActiveObject()
+    if object
       object.top = object.top - @get_move(event)
       @canvas.renderAll()
   down : (event)->
-    @bind (object)=>
+    object = @canvas.getActiveObject()
+    if object
       object.top = object.top + @get_move(event)
       @canvas.renderAll()
   left : (event)->
-    @bind (object)=>
+    object = @canvas.getActiveObject()
+    if object
       object.left = object.left - @get_move(event)
       @canvas.renderAll()
   right : (event)->
-    @bind (object)=>
+    object = @canvas.getActiveObject()
+    if object
       object.left = object.left + @get_move(event)
       @canvas.renderAll()
   zoomIn : ->
@@ -425,14 +435,7 @@ app =
       for object in geojson.features
         if object.properties.id>@last_id
           @last_id = object.properties.id
-        if object.properties.type=='shelf'
-          klass = fabric.Shelf
-        else if object.properties.type=='curved_shelf'
-          klass = fabric.curvedShelf
-        else if object.properties.type=='beacon'
-          klass = fabric.Beacon
-        else
-          continue
+        klass = @get_class(object.properties.type)
         w = klass.prototype.__const_width * object.properties.count
         h = klass.prototype.__const_hegiht * object.properties.side
         x = object.geometry.coordinates[0][0][0]

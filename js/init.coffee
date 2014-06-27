@@ -70,14 +70,8 @@ $(window).resize ->
   $('.property_panel').css('height', get_height()+scrollbar_height)
   app.render()
 
-add = (left=0, top=0)->
-
-  if $('#type').val()=='Shelf'
-    klass = fabric.Shelf
-  if $('#type').val()=='curvedShelf'
-    klass = fabric.curvedShelf
-  if $('#type').val()=='Beacon'
-    klass = fabric.Beacon
+add = ->
+  klass = app.get_class($('#type').val())
   object = new klass(
     count: parseInt($('#count').val())
     side: parseInt($('#side').val())
@@ -128,15 +122,19 @@ $ ->
 
   # toolbar
   $(".add_shelf").click ->
-    $('#type').val('Shelf')
+    $('#type').val('shelf')
     add()
     app.render()
   $(".add_curved_shelf").click ->
-    $('#type').val('curvedShelf')
+    $('#type').val('curved_shelf')
+    add()
+    app.render()
+  $(".add_mini_shelf").click ->
+    $('#type').val('mini_shelf')
     add()
     app.render()
   $(".add_beacon").click ->
-    $('#type').val('Beacon')
+    $('#type').val('beacon')
     add()
     app.render()
   $(".remove").click ->

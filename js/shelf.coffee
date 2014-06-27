@@ -283,7 +283,12 @@
   fabric.Shelf.fromObject = (object) ->
     new fabric.Shelf(object)
 
+  fabric.miniShelf = fabric.util.createClass(fabric.Shelf,
+    stateProperties: stateProperties
+    type: "mini_shelf"
+    __const_width: 30
+    __const_hegiht: 25
+  )
   return) (if typeof exports isnt "undefined" then exports else this)
 
-#    fabric.Shelf.async = true;
-
+  #    fabric.Shelf.async = true;

@@ -325,6 +325,12 @@
   fabric.Shelf.fromObject = function(object) {
     return new fabric.Shelf(object);
   };
+  fabric.miniShelf = fabric.util.createClass(fabric.Shelf, {
+    stateProperties: stateProperties,
+    type: "mini_shelf",
+    __const_width: 30,
+    __const_hegiht: 25
+  });
 })((typeof exports !== "undefined" ? exports : this));
 
 //# sourceMappingURL=shelf.map

@@ -388,6 +388,19 @@ app = {
       });
     }
   },
+  get_class: function(classname) {
+    if (classname === 'shelf') {
+      return fabric.Shelf;
+    } else if (classname === 'curved_shelf') {
+      return fabric.curvedShelf;
+    } else if (classname === 'mini_shelf') {
+      return fabric.miniShelf;
+    } else if (classname === 'beacon') {
+      return fabric.Beacon;
+    } else {
+      return fabric.Shelf;
+    }
+  },
   render: function() {
     var beacons, o, shelfs, _i, _j, _k, _len, _len1, _len2, _ref;
     this.canvas.renderOnAddRemove = false;
@@ -419,19 +432,12 @@ app = {
     return this.debug();
   },
   render_object: function(o) {
-    var object;
-    if (o.type === 'shelf') {
-      object = new fabric.Shelf();
+    var klass, object;
+    klass = this.get_class(o.type);
+    object = new klass();
+    if (o.type.match(/shelf$/)) {
       object.side = o.side;
       object.count = o.count;
-    }
-    if (o.type === 'curved_shelf') {
-      object = new fabric.curvedShelf();
-      object.side = o.side;
-      object.count = o.count;
-    }
-    if (o.type === 'beacon') {
-      object = new fabric.Beacon();
     }
     object.selectable = o.type.match(this.state);
     if (!o.type.match(this.state)) {
@@ -488,36 +494,36 @@ app = {
     }
   },
   up: function(event) {
-    return this.bind((function(_this) {
-      return function(object) {
-        object.top = object.top - _this.get_move(event);
-        return _this.canvas.renderAll();
-      };
-    })(this));
+    var object;
+    object = this.canvas.getActiveObject();
+    if (object) {
+      object.top = object.top - this.get_move(event);
+      return this.canvas.renderAll();
+    }
   },
   down: function(event) {
-    return this.bind((function(_this) {
-      return function(object) {
-        object.top = object.top + _this.get_move(event);
-        return _this.canvas.renderAll();
-      };
-    })(this));
+    var object;
+    object = this.canvas.getActiveObject();
+    if (object) {
+      object.top = object.top + this.get_move(event);
+      return this.canvas.renderAll();
+    }
   },
   left: function(event) {
-    return this.bind((function(_this) {
-      return function(object) {
-        object.left = object.left - _this.get_move(event);
-        return _this.canvas.renderAll();
-      };
-    })(this));
+    var object;
+    object = this.canvas.getActiveObject();
+    if (object) {
+      object.left = object.left - this.get_move(event);
+      return this.canvas.renderAll();
+    }
   },
   right: function(event) {
-    return this.bind((function(_this) {
-      return function(object) {
-        object.left = object.left + _this.get_move(event);
-        return _this.canvas.renderAll();
-      };
-    })(this));
+    var object;
+    object = this.canvas.getActiveObject();
+    if (object) {
+      object.left = object.left + this.get_move(event);
+      return this.canvas.renderAll();
+    }
   },
   zoomIn: function() {
     var prev_scale;
@@ -574,15 +580,7 @@ app = {
         if (object.properties.id > this.last_id) {
           this.last_id = object.properties.id;
         }
-        if (object.properties.type === 'shelf') {
-          klass = fabric.Shelf;
-        } else if (object.properties.type === 'curved_shelf') {
-          klass = fabric.curvedShelf;
-        } else if (object.properties.type === 'beacon') {
-          klass = fabric.Beacon;
-        } else {
-          continue;
-        }
+        klass = this.get_class(object.properties.type);
         w = klass.prototype.__const_width * object.properties.count;
         h = klass.prototype.__const_hegiht * object.properties.side;
         x = object.geometry.coordinates[0][0][0];

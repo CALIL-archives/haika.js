@@ -35,7 +35,6 @@
             </label>
           </div>
 -->
-          <div style="display: none;">
           <div class="btn-group">
             <button type="button" class="btn btn-danger">オブジェクトを追加</button>
             <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
@@ -58,12 +57,14 @@
                 <li><a href="#">BLEビーコン</a></li>
             </ul>
           </div>
+          <div style="display: none;">
 
           <label for="type">type:
               <select id="type" class="form-control">
-                  <option value="Shelf">Shelf</option>
-                  <option value="curvedShelf">curvedShelf</option>
-                  <option value="Beacon">Beacon</option>
+                  <option value="shelf">Shelf</option>
+                  <option value="curved_shelf">curvedShelf</option>
+                  <option value="mini_shelf">miniShelf</option>
+                  <option value="beacon">Beacon</option>
               </select>
           </label>
           <label for="count">count:
@@ -98,6 +99,7 @@
     <div class="toolbar_container">
       <ul>
         <li class="add_shelf"><i class="fa fa-square-o"></i> Shelf</li>
+        <li class="add_mini_shelf"><i class="fa fa-square-o"></i> miniShelf</li>
         <li class="add_curved_shelf"><i class="fa fa-dot-circle-o"></i> CShlef</li>
         <li class="add_beacon"><i class="fa fa-square"></i> Beacon</li>
       </ul>
