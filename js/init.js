@@ -84,9 +84,9 @@ $(window).resize(function() {
   return app.render();
 });
 
-add = function() {
+add = function(type) {
   var id, klass, object;
-  klass = app.get_class($('#type').val());
+  klass = app.get_class(type);
   object = new klass({
     count: parseInt($('#count').val()),
     side: parseInt($('#side').val()),
@@ -96,8 +96,9 @@ add = function() {
     stroke: "#000000",
     angle: parseInt($('#angle').val())
   });
-  if ($('#type').val() === 'mini_shelf') {
-    object.eachWidth = 30;
+  if (type === 'custom_shelf') {
+    object.eachWidth = $('#width').val();
+    object.eachHeght = $('#height').val();
   }
   id = app.add(object);
   app.set_state(object);
@@ -141,18 +142,15 @@ $(function() {
     return app.render();
   });
   $(".add_shelf").click(function() {
-    $('#type').val('shelf');
-    add();
+    add('shelf');
     return app.render();
   });
   $(".add_curved_shelf").click(function() {
-    $('#type').val('curved_shelf');
-    add();
+    add('curved_shelf');
     return app.render();
   });
-  $(".add_mini_shelf").click(function() {
-    $('#type').val('mini_shelf');
-    add();
+  $(".add_custom_shelf").click(function() {
+    add('custom_shelf');
     return app.render();
   });
   $(".add_beacon").click(function() {

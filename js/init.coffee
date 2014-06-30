@@ -70,8 +70,8 @@ $(window).resize ->
   $('.property_panel').css('height', get_height()+scrollbar_height)
   app.render()
 
-add = ->
-  klass = app.get_class($('#type').val())
+add = (type)->
+  klass = app.get_class(type)
   object = new klass(
     count: parseInt($('#count').val())
     side: parseInt($('#side').val())
@@ -82,8 +82,9 @@ add = ->
     angle: parseInt($('#angle').val())
     #lockScalingY: true
   )
-  if $('#type').val()=='mini_shelf'
-    object.eachWidth = 30
+  if type=='custom_shelf'
+    object.eachWidth = $('#width').val()
+    object.eachHeght = $('#height').val()
   id = app.add(object)
   app.set_state(object)
   app.render()
@@ -124,16 +125,13 @@ $ ->
 
   # toolbar
   $(".add_shelf").click ->
-    $('#type').val('shelf')
-    add()
+    add('shelf')
     app.render()
   $(".add_curved_shelf").click ->
-    $('#type').val('curved_shelf')
-    add()
+    add('curved_shelf')
     app.render()
-  $(".add_mini_shelf").click ->
-    $('#type').val('mini_shelf')
-    add()
+  $(".add_custom_shelf").click ->
+    add('custom_shelf')
     app.render()
   $(".add_beacon").click ->
     $('#type').val('beacon')
