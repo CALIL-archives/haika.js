@@ -96,6 +96,9 @@ add = function() {
     stroke: "#000000",
     angle: parseInt($('#angle').val())
   });
+  if ($('#type').val() === 'mini_shelf') {
+    object.eachWidth = 30;
+  }
   id = app.add(object);
   app.set_state(object);
   app.render();

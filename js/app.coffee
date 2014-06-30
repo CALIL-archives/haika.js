@@ -293,8 +293,6 @@ app =
       return fabric.Shelf
     else if classname=='curved_shelf'
       return fabric.curvedShelf
-    else if classname=='mini_shelf'
-      return fabric.miniShelf
     else if classname=='beacon'
       return fabric.Beacon
     else
@@ -439,15 +437,15 @@ app =
       for object in geojson.features
         if object.properties.id>@last_id
           @last_id = object.properties.id
-        klass = @get_class(object.properties.type)
-        w = klass.prototype.eachWidth * object.properties.count
-        h = klass.prototype.eachHeight * object.properties.side
+        w = object.properties.eachWidth * object.properties.count
+        h = object.properties.eachHeight * object.properties.side
         x = object.geometry.coordinates[0][0][0]
         y = object.geometry.coordinates[0][0][1]
         top = y * 100 + h / 2
         left = x * 100 + w / 2
         top = @transformTopY_cm2px(top)
         left = @transformLeftX_cm2px(left)
+        klass = @get_class(object.properties.type)
         shape = new klass(
           eachWidth: object.properties.eachWidth
           eachHeight: object.properties.eachHeight

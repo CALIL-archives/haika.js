@@ -82,6 +82,8 @@ add = ->
     angle: parseInt($('#angle').val())
     #lockScalingY: true
   )
+  if $('#type').val()=='mini_shelf'
+    object.eachWidth = 30
   id = app.add(object)
   app.set_state(object)
   app.render()
