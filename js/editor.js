@@ -30,6 +30,16 @@ editor = new JSONEditor(document.getElementById("editor"), {
         "default": 0,
         minimum: 0,
         maximum: 360
+      },
+      eachWidth: {
+        type: "integer",
+        "default": 90,
+        minimum: 1
+      },
+      eachHeight: {
+        type: "integer",
+        "default": 25,
+        minimum: 1
       }
     }
   }
@@ -37,6 +47,7 @@ editor = new JSONEditor(document.getElementById("editor"), {
 
 editor.on("change", function() {
   var data, errors, key, object;
+  log('change');
   errors = editor.validate();
   if (errors.length) {
     alert('入力値が正しくありません。');

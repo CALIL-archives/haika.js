@@ -83,8 +83,8 @@ add = (type)->
     #lockScalingY: true
   )
   if type=='custom_shelf'
-    object.eachWidth = $('#width').val()
-    object.eachHeght = $('#height').val()
+    object.eachWidth = parseInt($('#width').val())
+    object.eachHeight = parseInt($('#height').val())
   id = app.add(object)
   app.set_state(object)
   app.render()

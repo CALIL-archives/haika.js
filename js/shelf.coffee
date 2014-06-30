@@ -211,7 +211,7 @@
           "count"    : @count
           "side"    : @side
           "angle" : @angle
-      log data
+#      log data
       return data
     
     toSVG: (reviver) ->
@@ -262,6 +262,14 @@
             default: 0
             minimum: 0
             maximum: 360
+          eachWidth:
+            type: "integer"
+            default: 90
+            minimum: 1
+          eachHeight:
+            type: "integer"
+            default: 25
+            minimum: 1
 #          shelfs:
 #            type: "array"
 #            uniqueItems: true
