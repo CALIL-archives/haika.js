@@ -226,16 +226,27 @@
       return object;
     },
     toGeoJSON: function() {
-      var data, h, w, x, y;
+      var c, coordinate, coordinates, data, h, new_coordinate, new_coordinates, w, x, y, _i, _j, _len, _len1;
       w = this.eachWidth * this.count / 100;
       h = this.eachHeight * this.side / 100;
       x = -w / 2 + this.left_cm / 100;
       y = -h / 2 + this.top_cm / 100;
+      coordinates = [[[x, y], [x + w, y], [x + w, y - h], [x, y - h], [x, y]]];
+      new_coordinates = [];
+      for (_i = 0, _len = coordinates.length; _i < _len; _i++) {
+        c = coordinates[_i];
+        for (_j = 0, _len1 = c.length; _j < _len1; _j++) {
+          coordinate = c[_j];
+          log(coordinate);
+          new_coordinate = rotate(coordinate[0], coordinate[1], 0, 0, this.angle);
+          new_coordinates.push(new_coordinate);
+        }
+      }
       data = {
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
-          "coordinates": [[[x, y], [x + w, y], [x + w, y - h], [x, y - h], [x, y]]]
+          "coordinates": coordinates
         },
         "properties": {
           "type": this.type,
@@ -339,4 +350,6 @@
   };
 })((typeof exports !== "undefined" ? exports : this));
 
-//# sourceMappingURL=shelf.map
+/*
+//@ sourceMappingURL=shelf.map
+*/

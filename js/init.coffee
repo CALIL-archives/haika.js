@@ -78,7 +78,7 @@ add = (val)->
     left: app.transformLeftX_cm2px(app.centerX)
     fill: "#CFE2F3"
     stroke: "#000000"
-    angle: 0
+    angle: if val.angle? then val.angle else 0
     #lockScalingY: true
   )
   if val.count?
@@ -129,25 +129,40 @@ $ ->
   toolbar = 
     shelf :
       icon  : 'square-o'
-      title : '標準本棚'
+      title : '一般本棚'
       eachWidth: 90
-      eachHeight: 25
-      count : 3
-      side  : 2
-    bunko_shelf :
+      eachHeight: 26
+      count : 5
+      side  : 1
+    big_shelf :
       icon  : 'square-o'
-      title : '文庫本棚'
+      title : '大型本棚'
       eachWidth: 90
-      eachHeight: 20
-      count : 3
-      side  : 2
-    zukan_shelf :
+      eachHeight: 33
+      count : 5
+      side  : 1
+    magazine_shelf :
       icon  : 'square-o'
-      title : '図鑑本棚'
+      title : '雑誌本棚'
       eachWidth: 90
+      eachHeight: 45
+      count : 5
+      side  : 1
+    kamishibai_shelf :
+      icon  : 'square-o'
+      title : '紙芝居'
+      eachWidth: 90
+      eachHeight: 90
+      count : 1
+      side  : 1
+    booktrack_shelf :
+      icon  : 'square-o'
+      title : 'ブックトラック'
+      eachWidth: 60
       eachHeight: 40
-      count : 3
-      side  : 2
+      count : 1
+      side  : 1
+      angle : 20
     curved_shelf :
       icon  : 'dot-circle-o'
       title : '円形本棚'

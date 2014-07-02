@@ -196,13 +196,21 @@
       h = @eachHeight * @side / 100
       x = -w / 2 + @left_cm / 100
       y = -h / 2 + @top_cm / 100
+      coordinates = [
+        [ [x, y], [x + w, y], [x + w, y - h], [x, y - h], [x, y]]
+      ]
+      new_coordinates = []
+      for c in coordinates
+        for coordinate in c
+          log coordinate
+          new_coordinate = rotate(coordinate[0], coordinate[1], 0, 0, @angle)
+          new_coordinates.push(new_coordinate)
       data =
         "type": "Feature"
         "geometry":
-          "type": "Polygon",
-          "coordinates": [
-            [ [x, y], [x + w, y], [x + w, y - h], [x, y - h], [x, y]]
-          ]
+          "type": "Polygon"
+#          "coordinates": [new_coordinates]
+          "coordinates": coordinates
         "properties": 
           "type"  : @type
           "eachWidth" : @eachWidth

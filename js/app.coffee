@@ -2,6 +2,14 @@ log = (obj) ->
   try
     console.log obj
 
+rotate = (cx, cy, x, y, angle) ->
+    radians = (Math.PI / 180) * angle
+    cos = Math.cos(radians)
+    sin = Math.sin(radians)
+    nx = (cos * (x - cx)) - (sin * (y - cy)) + cx
+    ny = (sin * (x - cx)) + (cos * (y - cy)) + cy
+    return [nx, ny]
+
 app = 
   state      : 'shelf'
   width      : 800
