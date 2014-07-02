@@ -134,4 +134,29 @@ map = new ol.Map(
   )
 )
 
-$('#geojson').val(JSON.stringify(new_geojson, null, 4))
+features = []
+if geojson and new_geojson.features.length>0
+  for object in new_geojson.features
+    log object
+    coordinates = []
+    for geometry in object.geometry.coordinates[0]
+      x = geometry[0]
+      y = geometry[1]
+      coordinate = center = ol.proj.transform([x,y], "EPSG:3857", "EPSG:4326")
+      coordinates.push(coordinate)
+    data =
+      "type": "Feature"
+      "geometry":
+        "type": "Polygon",
+        "coordinates": [
+          coordinates
+        ]
+      "properties": object.properties
+    features.push(data)
+
+EPSG3857_geojson =
+  "type": "FeatureCollection"
+  "features": features
+
+
+$('#geojson').val(JSON.stringify(EPSG3857_geojson, null, 4))
