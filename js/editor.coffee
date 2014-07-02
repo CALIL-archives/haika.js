@@ -135,7 +135,8 @@ editor.on "change", ->
   errors = editor.validate()
   if errors.length
     # Not valid
-    alert '入力値が正しくありません。'
+    log errors
+#    alert '入力値が正しくありません。'
   else
     data = editor.getValue()
     object = app.canvas.getActiveObject()

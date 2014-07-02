@@ -50,7 +50,7 @@ editor.on("change", function() {
   log('change');
   errors = editor.validate();
   if (errors.length) {
-    alert('入力値が正しくありません。');
+    log(errors);
   } else {
     data = editor.getValue();
     object = app.canvas.getActiveObject();
@@ -70,4 +70,6 @@ editor.on("change", function() {
   }
 });
 
-//# sourceMappingURL=editor.map
+/*
+//@ sourceMappingURL=editor.map
+*/

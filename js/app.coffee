@@ -458,7 +458,7 @@ app =
           stroke: "#000000"
           angle: object.properties.angle
         )
-        log shape
+#        log shape
         @add(shape)
     @render()
   local_save : ->
@@ -475,6 +475,8 @@ app =
       @save_prop(object)
     @local_save()
   save_prop : (object, group=false)->
+#    log object.__proto__.getJsonSchema()
+#    log object.constructor.prototype.getJsonSchema()
     count = @findbyid(object.id)
     @objects[count].id      = object.id
     @objects[count].type    = object.type
@@ -487,8 +489,15 @@ app =
     @objects[count].angle   = object.angle
 
     if object.type.match(/shelf$/)
-      @objects[count].count = object.count
-      @objects[count].side  = object.side
+      schema = object.constructor.prototype.getJsonSchema()
+      for key of schema.properties
+#        log key
+#        log object[key]
+        @objects[count][key] = object[key]
+#      @objects[count].count = object.count
+#      @objects[count].side  = object.side
+#      @objects[count].eachWidth  = object.eachWidth
+#      @objects[count].eachHeight = object.eachHeight
   toGeoJSON : ->
     features = []
     for object in @canvas.getObjects()
@@ -524,6 +533,7 @@ app =
     a.href = (window.URL || webkitURL).createObjectURL(blob)
     a.click()
   set_propety_panel : (object)->
+#    log 'set_propety_panel'
     $('.canvas_panel, .object_panel, .group_panel').hide()
     object = @canvas.getActiveObject()
     if object and object.getJsonSchema?

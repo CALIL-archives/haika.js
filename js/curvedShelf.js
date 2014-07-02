@@ -210,6 +210,35 @@
         return markup.join("");
       }
     },
+    getJsonSchema: function() {
+      var schema;
+      schema = {
+        title: "基本情報",
+        type: "object",
+        properties: {
+          count: {
+            title: "連数",
+            type: "integer",
+            "default": 3,
+            minimum: 1,
+            maximum: 10
+          },
+          side: {
+            type: "integer",
+            "default": 1,
+            minimum: 1,
+            maximum: 2
+          },
+          angle: {
+            type: "integer",
+            "default": 0,
+            minimum: 0,
+            maximum: 360
+          }
+        }
+      };
+      return schema;
+    },
     complexity: function() {
       return 1;
     }
@@ -231,4 +260,6 @@
   };
 })((typeof exports !== "undefined" ? exports : this));
 
-//# sourceMappingURL=curvedShelf.map
+/*
+//@ sourceMappingURL=curvedShelf.map
+*/

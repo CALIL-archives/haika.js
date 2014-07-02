@@ -81,6 +81,25 @@
 
     toSVG: (reviver) ->
       ""
+    getJsonSchema : () ->
+      schema =
+        title: "基本情報"
+        type: "object"
+        properties:
+          angle:
+            type: "integer"
+            default: 0
+            minimum: 0
+            maximum: 360
+#          eachWidth:
+#            type: "integer"
+#            default: 90
+#            minimum: 1
+#          eachHeight:
+#            type: "integer"
+#            default: 25
+#            minimum: 1
+      return schema
 
     complexity: ->
       1

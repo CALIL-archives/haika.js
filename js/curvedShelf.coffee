@@ -167,6 +167,47 @@
 
       (if reviver then reviver(markup.join("")) else markup.join(""))
 
+    getJsonSchema : () ->
+      schema =
+        title: "基本情報"
+        type: "object"
+        properties:
+          count:
+            title: "連数"
+            type: "integer"
+            default: 3
+            minimum: 1
+            maximum: 10
+
+          side:
+            type: "integer"
+            default: 1
+            minimum: 1
+            maximum: 2
+          angle:
+            type: "integer"
+            default: 0
+            minimum: 0
+            maximum: 360
+#          eachWidth:
+#            type: "integer"
+#            default: 90
+#            minimum: 1
+#          eachHeight:
+#            type: "integer"
+#            default: 25
+#            minimum: 1
+#          shelfs:
+#            type: "array"
+#            uniqueItems: true
+#            items:
+#              type: "string"
+#              enum: [
+#                "value1"
+#                "value2"
+#              ]
+      return schema
+
     complexity: ->
       1
   )

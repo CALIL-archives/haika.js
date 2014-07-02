@@ -601,7 +601,6 @@ app = {
           stroke: "#000000",
           angle: object.properties.angle
         });
-        log(shape);
         this.add(shape);
       }
     }
@@ -628,7 +627,7 @@ app = {
     return this.local_save();
   },
   save_prop: function(object, group) {
-    var count;
+    var count, key, schema, _results;
     if (group == null) {
       group = false;
     }
@@ -643,8 +642,12 @@ app = {
     this.objects[count].scaleY = object.scaleY / this.scale;
     this.objects[count].angle = object.angle;
     if (object.type.match(/shelf$/)) {
-      this.objects[count].count = object.count;
-      return this.objects[count].side = object.side;
+      schema = object.constructor.prototype.getJsonSchema();
+      _results = [];
+      for (key in schema.properties) {
+        _results.push(this.objects[count][key] = object[key]);
+      }
+      return _results;
     }
   },
   toGeoJSON: function() {
@@ -727,4 +730,6 @@ app = {
   }
 };
 
-//# sourceMappingURL=app.map
+/*
+//@ sourceMappingURL=app.map
+*/

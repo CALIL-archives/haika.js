@@ -101,10 +101,28 @@
     toSVG: function(reviver) {
       return "";
     },
+    getJsonSchema: function() {
+      var schema;
+      schema = {
+        title: "基本情報",
+        type: "object",
+        properties: {
+          angle: {
+            type: "integer",
+            "default": 0,
+            minimum: 0,
+            maximum: 360
+          }
+        }
+      };
+      return schema;
+    },
     complexity: function() {
       return 1;
     }
   });
 })((typeof exports !== "undefined" ? exports : this));
 
-//# sourceMappingURL=beacon.map
+/*
+//@ sourceMappingURL=beacon.map
+*/
