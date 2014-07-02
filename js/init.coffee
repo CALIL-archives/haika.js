@@ -134,8 +134,7 @@ $ ->
     add('custom_shelf')
     app.render()
   $(".add_beacon").click ->
-    $('#type').val('beacon')
-    add()
+    add('beacon')
     app.render()
   $(".remove").click ->
     object = app.canvas.getActiveObject()

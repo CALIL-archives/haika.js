@@ -154,8 +154,7 @@ $(function() {
     return app.render();
   });
   $(".add_beacon").click(function() {
-    $('#type').val('beacon');
-    add();
+    add('beacon');
     return app.render();
   });
   $(".remove").click(function() {
