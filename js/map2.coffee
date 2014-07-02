@@ -133,3 +133,5 @@ map = new ol.Map(
     projection: "EPSG:4326"
   )
 )
+
+$('#geojson').val(JSON.stringify(new_geojson, null, 4))

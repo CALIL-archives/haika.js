@@ -179,4 +179,6 @@ map = new ol.Map({
   })
 });
 
+$('#geojson').val(JSON.stringify(new_geojson, null, 4));
+
 //# sourceMappingURL=map2.map
