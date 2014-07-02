@@ -238,7 +238,7 @@
         for (_j = 0, _len1 = c.length; _j < _len1; _j++) {
           coordinate = c[_j];
           log(coordinate);
-          new_coordinate = rotate(coordinate[0], coordinate[1], 0, 0, this.angle);
+          new_coordinate = rotate(0, 0, coordinate[0], coordinate[1], this.angle);
           new_coordinates.push(new_coordinate);
         }
       }
@@ -246,10 +246,12 @@
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
-          "coordinates": coordinates
+          "coordinates": [new_coordinates]
         },
         "properties": {
           "type": this.type,
+          "left_cm": this.left_cm,
+          "top_cm": this.top_cm,
           "eachWidth": this.eachWidth,
           "eachHeight": this.eachHeight,
           "id": this.id,

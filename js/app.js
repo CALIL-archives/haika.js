@@ -572,7 +572,7 @@ app = {
     return $('.zoom').html('100%');
   },
   load: function() {
-    var canvas, geojson, h, klass, left, object, shape, top, w, x, y, _i, _len, _ref;
+    var canvas, geojson, klass, left, object, shape, top, _i, _len, _ref;
     canvas = JSON.parse(localStorage.getItem('canvas'));
     if (canvas) {
       this.state = canvas.state;
@@ -590,12 +590,6 @@ app = {
         if (object.properties.id > this.last_id) {
           this.last_id = object.properties.id;
         }
-        w = object.properties.eachWidth * object.properties.count;
-        h = object.properties.eachHeight * object.properties.side;
-        x = object.geometry.coordinates[0][0][0];
-        y = object.geometry.coordinates[0][0][1];
-        top = y * 100 + h / 2;
-        left = x * 100 + w / 2;
         top = this.transformTopY_cm2px(top);
         left = this.transformLeftX_cm2px(left);
         klass = this.get_class(object.properties.type);
@@ -605,8 +599,8 @@ app = {
           id: object.properties.id,
           count: object.properties.count,
           side: object.properties.side,
-          top: top,
-          left: left,
+          top: this.transformTopY_cm2px(object.properties.top_cm),
+          left: this.transformLeftX_cm2px(object.properties.left_cm),
           fill: "#CFE2F3",
           stroke: "#000000",
           angle: object.properties.angle

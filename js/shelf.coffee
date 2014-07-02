@@ -203,16 +203,17 @@
       for c in coordinates
         for coordinate in c
           log coordinate
-          new_coordinate = rotate(coordinate[0], coordinate[1], 0, 0, @angle)
+          new_coordinate = rotate(0, 0, coordinate[0], coordinate[1], @angle)
           new_coordinates.push(new_coordinate)
       data =
         "type": "Feature"
         "geometry":
           "type": "Polygon"
-#          "coordinates": [new_coordinates]
-          "coordinates": coordinates
+          "coordinates": [new_coordinates]
         "properties": 
           "type"  : @type
+          "left_cm" : @left_cm
+          "top_cm"  : @top_cm
           "eachWidth" : @eachWidth
           "eachHeight": @eachHeight
           "id"    : @id
