@@ -70,21 +70,24 @@ $(window).resize ->
   $('.property_panel').css('height', get_height()+scrollbar_height)
   app.render()
 
-add = (type)->
-  klass = app.get_class(type)
+add = (val)->
+  log val
+  klass = app.get_class(val.type)
   object = new klass(
-    count: parseInt($('#count').val())
-    side: parseInt($('#side').val())
     top: app.transformTopY_cm2px(app.centerY)
     left: app.transformLeftX_cm2px(app.centerX)
     fill: "#CFE2F3"
     stroke: "#000000"
-    angle: parseInt($('#angle').val())
+    angle: 0
     #lockScalingY: true
   )
-  if type=='custom_shelf'
-    object.eachWidth = parseInt($('#width').val())
-    object.eachHeight = parseInt($('#height').val())
+  if val.count?
+    object.count = val.count
+  if val.side?
+    object.side = val.side
+  if val.type.match(/shelf$/)
+    object.eachWidth = val.eachWidth
+    object.eachHeight = val.eachHeight
   id = app.add(object)
   app.set_state(object)
   app.render()
@@ -123,13 +126,46 @@ $ ->
     add()
     app.render()
 
+  toolbar = 
+    shelf :
+      icon  : 'square-o'
+      title : '標準本棚'
+      eachWidth: 90
+      eachHeight: 25
+      count : 3
+      side  : 2
+    bunko_shelf :
+      icon  : 'square-o'
+      title : '文庫本棚'
+      eachWidth: 90
+      eachHeight: 20
+      count : 3
+      side  : 2
+    zukan_shelf :
+      icon  : 'square-o'
+      title : '図鑑本棚'
+      eachWidth: 90
+      eachHeight: 40
+      count : 3
+      side  : 2
+    curved_shelf :
+      icon  : 'dot-circle-o'
+      title : '円形本棚'
+      count : 3
+      side  : 2
+    beacon :
+      icon  : 'square'
+      title : 'ビーコン'
+  for key, val of toolbar
+    html = """<li id="add_#{key}" key="#{key}"><i class="fa fa-#{val.icon}"></i> #{val.title}</li>"""
+    $('.toolbar_container').append(html)
+    $('#add_'+key).click (e)->
+      key =  $(e.target).attr('key')
+      object = toolbar[key]
+      object.type = key
+      add(object)
+      app.render()
   # toolbar
-  $(".add_shelf").click ->
-    add('shelf')
-    app.render()
-  $(".add_curved_shelf").click ->
-    add('curved_shelf')
-    app.render()
   $(".add_custom_shelf").click ->
     add('custom_shelf')
     app.render()
