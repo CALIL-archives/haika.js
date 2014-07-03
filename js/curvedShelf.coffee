@@ -145,6 +145,8 @@
           ]
         "properties":
           "type"  : @type
+          "left_cm" : @left_cm
+          "top_cm"  : @top_cm
           "id"    : @id
           "count"    : @count
           "side"    : @side

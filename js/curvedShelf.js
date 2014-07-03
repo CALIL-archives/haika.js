@@ -183,6 +183,8 @@
         },
         "properties": {
           "type": this.type,
+          "left_cm": this.left_cm,
+          "top_cm": this.top_cm,
           "id": this.id,
           "count": this.count,
           "side": this.side,

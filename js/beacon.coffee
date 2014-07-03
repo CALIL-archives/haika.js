@@ -75,6 +75,8 @@
           ]
         "properties":
           "type"  : @type
+          "left_cm" : @left_cm
+          "top_cm"  : @top_cm
           "id"    : @id
           "angle" : @angle
       return data
