@@ -237,7 +237,7 @@
         c = coordinates[_i];
         for (_j = 0, _len1 = c.length; _j < _len1; _j++) {
           coordinate = c[_j];
-          new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(0, 0), fabric.util.degreesToRadians(this.angle));
+          new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(this.left_cm / 100, this.top_cm / 100), fabric.util.degreesToRadians(this.angle));
           log(new_coordinate);
           new_coordinates.push([new_coordinate.x, new_coordinate.y]);
         }

@@ -129,7 +129,7 @@ map = new ol.Map(
   target: "map"
   view: new ol.View2D(
     center: center
-    zoom: 2
+    zoom: 5
     projection: "EPSG:4326"
   )
 )

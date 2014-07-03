@@ -202,10 +202,7 @@
       new_coordinates = []
       for c in coordinates
         for coordinate in c
-#          log coordinate
-#          new_coordinate = rotate(0, 0, coordinate[0], coordinate[1], @angle)
-#          log new_coordinate
-          new_coordinate =  fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(0, 0), fabric.util.degreesToRadians(@angle));
+          new_coordinate =  fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(@left_cm / 100, @top_cm / 100), fabric.util.degreesToRadians(@angle));
           log new_coordinate
           new_coordinates.push([new_coordinate.x, new_coordinate.y])
       data =
