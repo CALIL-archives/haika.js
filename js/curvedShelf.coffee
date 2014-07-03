@@ -141,7 +141,7 @@
         "geometry":
           "type": "Polygon",
           "coordinates": [
-            [ [x, y], [x + w, y], [x + w, y - h], [x, y - h], [x, y]]
+            [ [-x, y], [-(x + w), y], [-(x + w), y + h], [-x, y + h], [-x, y]]
           ]
         "properties":
           "type"  : @type

@@ -84,7 +84,7 @@ if geojson and geojson.features.length>0
     for geometry in object.geometry.coordinates[0]
       x = geometry[0]
       y = geometry[1]
-      coordinate = [map_center.lon-x, map_center.lat+y]
+      coordinate = [map_center.lon+x, map_center.lat+y]
       coordinates.push(coordinate)
     data =
       "type": "Feature"
@@ -129,7 +129,7 @@ map = new ol.Map(
   target: "map"
   view: new ol.View2D(
     center: center
-    zoom: 5
+    zoom: 6
     projection: "EPSG:4326"
   )
 )

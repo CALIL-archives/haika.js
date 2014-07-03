@@ -197,7 +197,7 @@
       x = -w / 2 + @left_cm / 100
       y = -h / 2 + @top_cm / 100
       coordinates = [
-        [ [x, y], [x + w, y], [x + w, y - h], [x, y - h], [x, y]]
+        [ [-x, y], [-(x + w), y], [-(x + w), y + h], [-x, y + h], [-x, y]]
       ]
       new_coordinates = []
       for c in coordinates
@@ -210,6 +210,7 @@
         "geometry":
           "type": "Polygon"
           "coordinates": [new_coordinates]
+#          "coordinates": coordinates
         "properties": 
           "type"  : @type
           "left_cm" : @left_cm

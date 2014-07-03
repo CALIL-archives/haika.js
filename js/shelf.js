@@ -231,7 +231,7 @@
       h = this.eachHeight * this.side / 100;
       x = -w / 2 + this.left_cm / 100;
       y = -h / 2 + this.top_cm / 100;
-      coordinates = [[[x, y], [x + w, y], [x + w, y - h], [x, y - h], [x, y]]];
+      coordinates = [[[-x, y], [-(x + w), y], [-(x + w), y + h], [-x, y + h], [-x, y]]];
       new_coordinates = [];
       for (_i = 0, _len = coordinates.length; _i < _len; _i++) {
         c = coordinates[_i];
