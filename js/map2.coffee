@@ -158,5 +158,5 @@ EPSG3857_geojson =
   "type": "FeatureCollection"
   "features": features
 
-
+#proj4("EPSG:3857", "EPSG:4326", [2, 5])
 $('#geojson').val(JSON.stringify(EPSG3857_geojson, null, 4))

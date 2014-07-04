@@ -27,7 +27,7 @@ app.init(
     maxY = app.bgimg_height * app.options.bgscale / 2
     defaultX =  -((app.centerX - scroll_weight) / 10000)
     defaultY =  -((app.centerY - scroll_weight) / 10000)
-    window.xscrollbar = new Dragdealer 'horizontal-scroller',
+    new Dragdealer 'horizontal-scroller',
       x: defaultX
       animationCallback: (x, y)->
   #      log x

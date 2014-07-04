@@ -3,6 +3,7 @@ log = (obj) ->
     console.log obj
 
 app = 
+  id         : null
   state      : 'shelf'
   width      : 800
   height     : 800
@@ -421,30 +422,40 @@ app =
     @scale = 1
     @render()
     $('.zoom').html('100%')
+  is_local : ->
+    return location.protocol=='file:' or location.port!=''
   load : ()->
-    canvas = JSON.parse(localStorage.getItem('canvas'))
+    # ローカルか？
+    if @is_local()
+      data =
+        canvas : JSON.parse(localStorage.getItem('canvas'))
+        geojson : JSON.parse(localStorage.getItem('geojson'))
+      log data
+      @load_render(data)
+      return
+    # location.hashにIDはあるか？
+    if location.hash!=''
+      @id = location.hash.split('#')[1]
+      # サーバーからロード
+      @load_server()
+    else
+      # 新規IDの取得, ハッシュに設定
+      @get_haika_id()
+  load_render : (data)->
+    log data
+    canvas = data.canvas
+    geojson = data.geojson
     if canvas
-#      log canvas
       @state   = canvas.state
       $('.nav a.'+@state).tab('show')
       @scale   = canvas.scale
       $('.zoom').html((@scale*100).toFixed(0)+'%')
       @centerX = canvas.centerX
       @centerY = canvas.centerY
-    geojson = JSON.parse(localStorage.getItem('geojson'))
-#    log geojson
     if geojson and geojson.features.length>0
       for object in geojson.features
         if object.properties.id>@last_id
           @last_id = object.properties.id
-#        w = object.properties.eachWidth * object.properties.count
-#        h = object.properties.eachHeight * object.properties.side
-#        x = object.geometry.coordinates[0][0][0]
-#        y = object.geometry.coordinates[0][0][1]
-#        top = y * 100 + h / 2
-#        left = x * 100 + w / 2
-        top = @transformTopY_cm2px(top)
-        left = @transformLeftX_cm2px(left)
         klass = @get_class(object.properties.type)
         shape = new klass(
           eachWidth: object.properties.eachWidth
@@ -458,22 +469,62 @@ app =
           stroke: "#000000"
           angle: object.properties.angle
         )
-#        log shape
         @add(shape)
     @render()
-  local_save : ->
-    canvas =
+  get_haika_id : ->
+    url = '/haika_store/index.php'
+    $.ajax
+      url: url
+      type: "GET"
+      dataType: "json"
+      error: ()->
+      success: (data)=>
+        location.hash = data.id
+        @id = data.id
+  load_server : ->
+    url = """/haika_store/data/#{@id}.json"""
+    $.ajax
+      url: url
+      type: "GET"
+      dataType: "json"
+      error: ()->
+      success: (data)=>
+        @load_render(data)
+  get_canvas_data : ->
+    return {
       state : @state
       scale : @scale
       centerX : @centerX
       centerY : @centerY
+    }
+  save_local : ->
+    canvas = @get_canvas_data()
     localStorage.setItem('canvas', JSON.stringify(canvas))
 #    localStorage.setItem('app_data', JSON.stringify(@objects))
-    localStorage.setItem('geojson', @toGeoJSON())
+    localStorage.setItem('geojson', JSON.stringify(@toGeoJSON(), null, 4))
+  save_server : ->
+    param = 
+      canvas : @get_canvas_data()
+      geojson: @toGeoJSON()
+    param = JSON.stringify(param)
+    data =
+      id  : @id
+      data: param
+    log data
+    url = '/haika_store/index.php'
+    $.ajax
+      url: url
+      type: "POST"
+      data: data
+      dataType: "json"
+      error: ()->
+      success: (data) >
+        log data
   save : ->
     for object in @canvas.getObjects()
       @save_prop(object)
-    @local_save()
+    @save_local()
+    @save_server()
   save_prop : (object, group=false)->
 #    log object.__proto__.getJsonSchema()
 #    log object.constructor.prototype.getJsonSchema()
@@ -505,7 +556,7 @@ app =
     data = 
       "type": "FeatureCollection"
       "features": features
-    return JSON.stringify(data, null, 4)
+    return data
   getGeoJSON : ->
     @unselect()
     @render()

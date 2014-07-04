@@ -141,4 +141,6 @@ $(document).ready(function() {
   showGeoJsonSample("Point");
 });
 
-//# sourceMappingURL=map.map
+/*
+//@ sourceMappingURL=map.map
+*/

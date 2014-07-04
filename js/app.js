@@ -8,6 +8,7 @@ log = function(obj) {
 };
 
 app = {
+  id: null,
   state: 'shelf',
   width: 800,
   height: 800,
@@ -561,9 +562,32 @@ app = {
     this.render();
     return $('.zoom').html('100%');
   },
+  is_local: function() {
+    return location.protocol === 'file:' || location.port !== '';
+  },
   load: function() {
-    var canvas, geojson, klass, left, object, shape, top, _i, _len, _ref;
-    canvas = JSON.parse(localStorage.getItem('canvas'));
+    var data;
+    if (this.is_local()) {
+      data = {
+        canvas: JSON.parse(localStorage.getItem('canvas')),
+        geojson: JSON.parse(localStorage.getItem('geojson'))
+      };
+      log(data);
+      this.load_render(data);
+      return;
+    }
+    if (location.hash !== '') {
+      this.id = location.hash.split('#')[1];
+      return this.load_server();
+    } else {
+      return this.get_haika_id();
+    }
+  },
+  load_render: function(data) {
+    var canvas, geojson, klass, object, shape, _i, _len, _ref;
+    log(data);
+    canvas = data.canvas;
+    geojson = data.geojson;
     if (canvas) {
       this.state = canvas.state;
       $('.nav a.' + this.state).tab('show');
@@ -572,7 +596,6 @@ app = {
       this.centerX = canvas.centerX;
       this.centerY = canvas.centerY;
     }
-    geojson = JSON.parse(localStorage.getItem('geojson'));
     if (geojson && geojson.features.length > 0) {
       _ref = geojson.features;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -580,8 +603,6 @@ app = {
         if (object.properties.id > this.last_id) {
           this.last_id = object.properties.id;
         }
-        top = this.transformTopY_cm2px(top);
-        left = this.transformLeftX_cm2px(left);
         klass = this.get_class(object.properties.type);
         shape = new klass({
           eachWidth: object.properties.eachWidth,
@@ -600,16 +621,72 @@ app = {
     }
     return this.render();
   },
-  local_save: function() {
-    var canvas;
-    canvas = {
+  get_haika_id: function() {
+    var url;
+    url = '/haika_store/index.php';
+    return $.ajax({
+      url: url,
+      type: "GET",
+      dataType: "json",
+      error: function() {},
+      success: (function(_this) {
+        return function(data) {
+          location.hash = data.id;
+          return _this.id = data.id;
+        };
+      })(this)
+    });
+  },
+  load_server: function() {
+    var url;
+    url = "/haika_store/data/" + this.id + ".json";
+    return $.ajax({
+      url: url,
+      type: "GET",
+      dataType: "json",
+      error: function() {},
+      success: (function(_this) {
+        return function(data) {
+          return _this.load_render(data);
+        };
+      })(this)
+    });
+  },
+  get_canvas_data: function() {
+    return {
       state: this.state,
       scale: this.scale,
       centerX: this.centerX,
       centerY: this.centerY
     };
+  },
+  save_local: function() {
+    var canvas;
+    canvas = this.get_canvas_data();
     localStorage.setItem('canvas', JSON.stringify(canvas));
-    return localStorage.setItem('geojson', this.toGeoJSON());
+    return localStorage.setItem('geojson', JSON.stringify(this.toGeoJSON(), null, 4));
+  },
+  save_server: function() {
+    var data, param, url;
+    param = {
+      canvas: this.get_canvas_data(),
+      geojson: this.toGeoJSON()
+    };
+    param = JSON.stringify(param);
+    data = {
+      id: this.id,
+      data: param
+    };
+    log(data);
+    url = '/haika_store/index.php';
+    return $.ajax({
+      url: url,
+      type: "POST",
+      data: data,
+      dataType: "json",
+      error: function() {},
+      success: data > log(data)
+    });
   },
   save: function() {
     var object, _i, _len, _ref;
@@ -618,7 +695,8 @@ app = {
       object = _ref[_i];
       this.save_prop(object);
     }
-    return this.local_save();
+    this.save_local();
+    return this.save_server();
   },
   save_prop: function(object, group) {
     var count, key, schema, _results;
@@ -656,7 +734,7 @@ app = {
       "type": "FeatureCollection",
       "features": features
     };
-    return JSON.stringify(data, null, 4);
+    return data;
   },
   getGeoJSON: function() {
     var geojson;

@@ -69,4 +69,6 @@ map.addControl(new ol.control.ZoomSlider());
 
 map.addControl(new ol.control.ScaleLine());
 
-//# sourceMappingURL=georeferencer.map
+/*
+//@ sourceMappingURL=georeferencer.map
+*/

@@ -100,4 +100,6 @@
   };
 })((typeof exports !== "undefined" ? exports : this));
 
-//# sourceMappingURL=grid.map
+/*
+//@ sourceMappingURL=grid.map
+*/

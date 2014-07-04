@@ -179,8 +179,7 @@
             type: "integer"
             default: 3
             minimum: 1
-            maximum: 10
-
+            maximum: 12
           side:
             type: "integer"
             default: 1
