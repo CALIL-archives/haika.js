@@ -588,7 +588,7 @@ app =
     geojson.features = features
     localStorage.setItem('geojson', JSON.stringify(geojson))
     log geojson
-    @save_local = ->
+    $(window).off 'beforeunload'
     location.href = 'map2.html'
   getSVG : ->
     @unselect()

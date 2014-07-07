@@ -776,7 +776,7 @@ app = {
     geojson.features = features;
     localStorage.setItem('geojson', JSON.stringify(geojson));
     log(geojson);
-    this.save_local = function() {};
+    $(window).off('beforeunload');
     return location.href = 'map2.html';
   },
   getSVG: function() {
