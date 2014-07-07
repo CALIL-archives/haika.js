@@ -72,37 +72,37 @@ console.log geojson
 #        lat : 35.155080
 #        lon : 136.963791
 map_center =
-  lat : 4184975.9183342634
-  lon : 15246739.471236346
+  lat : 15246739.471236346
+  lon : 4184975.9183342634
 
-features = []
+#features = []
+#
+#if geojson and geojson.features.length>0
+#  for object in geojson.features
+#    log object
+#    coordinates = []
+#    for geometry in object.geometry.coordinates[0]
+#      x = geometry[0]
+#      y = geometry[1]
+#      coordinate = [map_center.lat+x, map_center.lon+y]
+#      coordinates.push(coordinate)
+#    data =
+#      "type": "Feature"
+#      "geometry":
+#        "type": "Polygon",
+#        "coordinates": [
+#          coordinates
+#        ]
+#      "properties": object.properties
+#    features.push(data)
+#
+#new_geojson =
+#  "type": "FeatureCollection"
+#  "features": features
+#
+#log new_geojson
 
-if geojson and geojson.features.length>0
-  for object in geojson.features
-    log object
-    coordinates = []
-    for geometry in object.geometry.coordinates[0]
-      x = geometry[0]
-      y = geometry[1]
-      coordinate = [map_center.lon+x, map_center.lat+y]
-      coordinates.push(coordinate)
-    data =
-      "type": "Feature"
-      "geometry":
-        "type": "Polygon",
-        "coordinates": [
-          coordinates
-        ]
-      "properties": object.properties
-    features.push(data)
-
-new_geojson =
-  "type": "FeatureCollection"
-  "features": features
-
-log new_geojson
-
-vectorSource = new ol.source.GeoJSON(object: new_geojson)
+vectorSource = new ol.source.GeoJSON(object: geojson)
 features = vectorSource.getFeatures()
 console.log features
 vectorLayer = new ol.layer.Vector(
@@ -135,14 +135,14 @@ map = new ol.Map(
 )
 
 features = []
-if geojson and new_geojson.features.length>0
-  for object in new_geojson.features
+if geojson and geojson.features.length>0
+  for object in geojson.features
     log object
     coordinates = []
     for geometry in object.geometry.coordinates[0]
       x = geometry[0]
       y = geometry[1]
-      coordinate = center = ol.proj.transform([x,y], "EPSG:3857", "EPSG:4326")
+      coordinate = ol.proj.transform([x,y], "EPSG:3857", "EPSG:4326")
       coordinates.push(coordinate)
     data =
       "type": "Feature"

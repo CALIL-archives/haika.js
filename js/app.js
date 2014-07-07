@@ -448,8 +448,10 @@ app = {
     object.scaleX = object.scaleY = 1;
     object.width = object.__width();
     object.height = object.__height();
-    object.left = this.transformLeftX_cm2px(o.left_cm);
     object.top = this.transformTopY_cm2px(o.top_cm);
+    object.left = this.transformLeftX_cm2px(o.left_cm);
+    object.top_cm = o.top_cm;
+    object.left_cm = o.left_cm;
     object.angle = o.angle;
     object.originX = 'center';
     object.originY = 'center';
@@ -612,6 +614,8 @@ app = {
           side: object.properties.side,
           top: this.transformTopY_cm2px(object.properties.top_cm),
           left: this.transformLeftX_cm2px(object.properties.left_cm),
+          top_cm: object.properties.top_cm,
+          left_cm: object.properties.left_cm,
           fill: "#CFE2F3",
           stroke: "#000000",
           angle: object.properties.angle
@@ -696,7 +700,9 @@ app = {
       this.save_prop(object);
     }
     this.save_local();
-    return this.save_server();
+    if (!this.is_local()) {
+      return this.save_server();
+    }
   },
   save_prop: function(object, group) {
     var count, key, schema, _results;
@@ -722,13 +728,19 @@ app = {
       return _results;
     }
   },
+  mapCenter: null,
+  mapAngle: 0,
+  setMapCenter: function(latlon) {
+    return this.mapCenter = proj4("EPSG:4326", "EPSG:3857", latlon);
+  },
   toGeoJSON: function() {
-    var data, features, object, _i, _len, _ref;
+    var data, features, geojson, object, _i, _len, _ref;
     features = [];
     _ref = this.canvas.getObjects();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
-      features.push(object.toGeoJSON());
+      geojson = object.toGeoJSON();
+      features.push(geojson);
     }
     data = {
       "type": "FeatureCollection",
@@ -737,11 +749,34 @@ app = {
     return data;
   },
   getGeoJSON: function() {
-    var geojson;
+    var coordinate, coordinates, features, geojson, geometry, new_coordinate, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
     this.unselect();
     this.render();
     geojson = this.toGeoJSON();
-    localStorage.setItem('geojson', geojson);
+    features = [];
+    _ref = geojson.features;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      if (this.mapCenter) {
+        coordinates = [];
+        _ref1 = object.geometry.coordinates[0];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          geometry = _ref1[_j];
+          x = geometry[0];
+          y = geometry[1];
+          new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.mapAngle));
+          coordinate = [this.mapCenter[0] + new_coordinate.x, this.mapCenter[1] + new_coordinate.y];
+          coordinates.push(coordinate);
+          log(coordinate);
+        }
+        object.geometry.coordinates = [coordinates];
+      }
+      features.push(object);
+    }
+    geojson.features = features;
+    localStorage.setItem('geojson', JSON.stringify(geojson));
+    log(geojson);
+    this.save_local = function() {};
     return location.href = 'map2.html';
   },
   getSVG: function() {

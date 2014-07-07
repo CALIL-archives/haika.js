@@ -328,7 +328,7 @@ app =
       object.count = o.count
       object.eachWidth = o.eachWidth
       object.eachHeight = o.eachHeight
-    # layer
+        # layer
     object.selectable = (o.type.match(@state))
     if not o.type.match(@state)
       object.opacity = 0.5
@@ -336,8 +336,10 @@ app =
     object.scaleX = object.scaleY = 1
     object.width  = object.__width()
     object.height = object.__height()
-    object.left   = @transformLeftX_cm2px(o.left_cm)
     object.top    = @transformTopY_cm2px(o.top_cm)
+    object.left   = @transformLeftX_cm2px(o.left_cm)
+    object.top_cm = o.top_cm
+    object.left_cm= o.left_cm
     object.angle  = o.angle
     object.originX = 'center'
     object.originY = 'center'
@@ -465,6 +467,8 @@ app =
           side: object.properties.side
           top: @transformTopY_cm2px(object.properties.top_cm)
           left: @transformLeftX_cm2px(object.properties.left_cm)
+          top_cm: object.properties.top_cm
+          left_cm: object.properties.left_cm
           fill: "#CFE2F3"
           stroke: "#000000"
           angle: object.properties.angle
@@ -524,7 +528,8 @@ app =
     for object in @canvas.getObjects()
       @save_prop(object)
     @save_local()
-    @save_server()
+    if not @is_local()
+      @save_server()
   save_prop : (object, group=false)->
 #    log object.__proto__.getJsonSchema()
 #    log object.constructor.prototype.getJsonSchema()
@@ -549,10 +554,15 @@ app =
 #      @objects[count].side  = object.side
 #      @objects[count].eachWidth  = object.eachWidth
 #      @objects[count].eachHeight = object.eachHeight
+  mapCenter : null
+  mapAngle  : 0
+  setMapCenter : (latlon)->
+    @mapCenter = proj4("EPSG:4326", "EPSG:3857", latlon)
   toGeoJSON : ->
     features = []
     for object in @canvas.getObjects()
-      features.push(object.toGeoJSON())
+      geojson = object.toGeoJSON()
+      features.push(geojson)
     data = 
       "type": "FeatureCollection"
       "features": features
@@ -561,7 +571,24 @@ app =
     @unselect()
     @render()
     geojson = @toGeoJSON()
-    localStorage.setItem('geojson', geojson)
+    features = []
+    for object in geojson.features
+      if @mapCenter
+        coordinates = []
+        for geometry in object.geometry.coordinates[0]
+          x = geometry[0]
+          y = geometry[1]
+          # 回転の反映
+          new_coordinate =  fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-@mapAngle))
+          coordinate = [@mapCenter[0]+new_coordinate.x, @mapCenter[1]+new_coordinate.y]
+          coordinates.push(coordinate)
+          log coordinate
+        object.geometry.coordinates = [coordinates]
+      features.push(object)
+    geojson.features = features
+    localStorage.setItem('geojson', JSON.stringify(geojson))
+    log geojson
+    @save_local = ->
     location.href = 'map2.html'
   getSVG : ->
     @unselect()

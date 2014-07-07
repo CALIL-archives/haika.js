@@ -56,6 +56,9 @@ app.init(
 
 )
 
+app.setMapCenter([136.963791, 35.155080])
+app.mapAngle = 25
+
 $('.main_container, .canvas_panel').css('width', get_width())
 
 
