@@ -253,6 +253,24 @@ $(function() {
   $(".paste").click(function() {
     return app.paste();
   });
+  $(".align-left").click(function() {
+    return app.alignLeft();
+  });
+  $(".align-center").click(function() {
+    return app.alignCenter();
+  });
+  $(".align-right").click(function() {
+    return app.alignRight();
+  });
+  $(".align-top").click(function() {
+    return app.alignTop();
+  });
+  $(".align-vcenter").click(function() {
+    return app.alignVcenter();
+  });
+  $(".align-bottom").click(function() {
+    return app.alignBottom();
+  });
   $(".svg").click(function() {
     return app.getSVG();
   });

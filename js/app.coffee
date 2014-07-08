@@ -395,6 +395,55 @@ app =
     if object
       object.left = object.left + @get_move(event)
       @canvas.renderAll()
+  alignLeft : ()->
+    group = @canvas.getActiveGroup()
+    if group._objects
+      left = 0
+      for object in group._objects
+        left = Math.min(object.left, left)
+      for object in group._objects
+        object.left = left
+      @save()
+      @canvas.renderAll()
+  alignRight : ()->
+    group = @canvas.getActiveGroup()
+    if group._objects
+      left = 0
+      for object in group._objects
+        left = Math.max(object.left, left)
+      for object in group._objects
+        object.left = left
+      @canvas.renderAll()
+  alignCenter : ()->
+    group = @canvas.getActiveGroup()
+    if group._objects
+      for object in group._objects
+        object.left = 0
+      @canvas.renderAll()
+  alignTop : ()->
+    group = @canvas.getActiveGroup()
+    if group._objects
+      top = 0
+      for object in group._objects
+        top = Math.min(object.top, top)
+      for object in group._objects
+        object.top = top
+      @canvas.renderAll()
+  alignBottom : ()->
+    group = @canvas.getActiveGroup()
+    if group._objects
+      top = 0
+      for object in group._objects
+        top = Math.max(object.top, top)
+      for object in group._objects
+        object.top = top
+      @canvas.renderAll()
+  alignVcenter : ()->
+    group = @canvas.getActiveGroup()
+    if group._objects
+      for object in group._objects
+        object.top = 0
+      @canvas.renderAll()
   zoomIn : ->
     @unselect()
 #    @scale += 0.1

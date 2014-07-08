@@ -528,6 +528,103 @@ app = {
       return this.canvas.renderAll();
     }
   },
+  alignLeft: function() {
+    var group, left, object, _i, _j, _len, _len1, _ref, _ref1;
+    group = this.canvas.getActiveGroup();
+    if (group._objects) {
+      left = 0;
+      _ref = group._objects;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        left = Math.min(object.left, left);
+      }
+      _ref1 = group._objects;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        object = _ref1[_j];
+        object.left = left;
+      }
+      this.save();
+      return this.canvas.renderAll();
+    }
+  },
+  alignRight: function() {
+    var group, left, object, _i, _j, _len, _len1, _ref, _ref1;
+    group = this.canvas.getActiveGroup();
+    if (group._objects) {
+      left = 0;
+      _ref = group._objects;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        left = Math.max(object.left, left);
+      }
+      _ref1 = group._objects;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        object = _ref1[_j];
+        object.left = left;
+      }
+      return this.canvas.renderAll();
+    }
+  },
+  alignCenter: function() {
+    var group, object, _i, _len, _ref;
+    group = this.canvas.getActiveGroup();
+    if (group._objects) {
+      _ref = group._objects;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        object.left = 0;
+      }
+      return this.canvas.renderAll();
+    }
+  },
+  alignTop: function() {
+    var group, object, top, _i, _j, _len, _len1, _ref, _ref1;
+    group = this.canvas.getActiveGroup();
+    if (group._objects) {
+      top = 0;
+      _ref = group._objects;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        top = Math.min(object.top, top);
+      }
+      _ref1 = group._objects;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        object = _ref1[_j];
+        object.top = top;
+      }
+      return this.canvas.renderAll();
+    }
+  },
+  alignBottom: function() {
+    var group, object, top, _i, _j, _len, _len1, _ref, _ref1;
+    group = this.canvas.getActiveGroup();
+    if (group._objects) {
+      top = 0;
+      _ref = group._objects;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        top = Math.max(object.top, top);
+      }
+      _ref1 = group._objects;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        object = _ref1[_j];
+        object.top = top;
+      }
+      return this.canvas.renderAll();
+    }
+  },
+  alignVcenter: function() {
+    var group, object, _i, _len, _ref;
+    group = this.canvas.getActiveGroup();
+    if (group._objects) {
+      _ref = group._objects;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        object.top = 0;
+      }
+      return this.canvas.renderAll();
+    }
+  },
   zoomIn: function() {
     var prev_scale;
     this.unselect();

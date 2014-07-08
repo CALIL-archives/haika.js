@@ -209,6 +209,18 @@ $ ->
     app.copy()
   $(".paste").click ->
     app.paste()
+  $(".align-left").click ->
+    app.alignLeft()
+  $(".align-center").click ->
+    app.alignCenter()
+  $(".align-right").click ->
+    app.alignRight()
+  $(".align-top").click ->
+    app.alignTop()
+  $(".align-vcenter").click ->
+    app.alignVcenter()
+  $(".align-bottom").click ->
+    app.alignBottom()
 #  $(".toright").click ->
 #    app.toRight()
 #  $(".toleft").click ->
