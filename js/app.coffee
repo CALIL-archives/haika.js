@@ -480,6 +480,7 @@ app =
     $.ajax
       url: url
       type: "GET"
+      cache : false
       dataType: "json"
       error: ()->
       success: (data)=>
@@ -490,6 +491,7 @@ app =
     $.ajax
       url: url
       type: "GET"
+      cache : false
       dataType: "json"
       error: ()->
       success: (data)=>

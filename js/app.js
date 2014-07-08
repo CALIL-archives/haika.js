@@ -631,6 +631,7 @@ app = {
     return $.ajax({
       url: url,
       type: "GET",
+      cache: false,
       dataType: "json",
       error: function() {},
       success: (function(_this) {
@@ -647,6 +648,7 @@ app = {
     return $.ajax({
       url: url,
       type: "GET",
+      cache: false,
       dataType: "json",
       error: function() {},
       success: (function(_this) {
