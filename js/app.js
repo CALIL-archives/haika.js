@@ -529,38 +529,44 @@ app = {
     }
   },
   alignLeft: function() {
-    var group, left, object, _i, _j, _len, _len1, _ref, _ref1;
+    var bound, group, left, object, object_left, _i, _j, _len, _len1, _ref, _ref1;
     group = this.canvas.getActiveGroup();
     if (group._objects) {
       left = 0;
       _ref = group._objects;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
-        left = Math.min(object.left, left);
+        bound = object.getBoundingRect();
+        left = Math.min(bound.left, left);
       }
       _ref1 = group._objects;
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         object = _ref1[_j];
-        object.left = left;
+        bound = object.getBoundingRect();
+        object_left = left + bound.width / 2;
+        object.left = object_left;
       }
       this.save();
       return this.canvas.renderAll();
     }
   },
   alignRight: function() {
-    var group, left, object, _i, _j, _len, _len1, _ref, _ref1;
+    var bound, group, left, object, object_left, _i, _j, _len, _len1, _ref, _ref1;
     group = this.canvas.getActiveGroup();
     if (group._objects) {
       left = 0;
       _ref = group._objects;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
-        left = Math.max(object.left, left);
+        bound = object.getBoundingRect();
+        left = Math.max(bound.left, left);
       }
       _ref1 = group._objects;
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         object = _ref1[_j];
-        object.left = left;
+        bound = object.getBoundingRect();
+        object_left = left - bound.width / 2 + group.width / 2;
+        object.left = object_left;
       }
       return this.canvas.renderAll();
     }
@@ -578,37 +584,41 @@ app = {
     }
   },
   alignTop: function() {
-    var group, object, top, _i, _j, _len, _len1, _ref, _ref1;
+    var bound, group, object, top, _i, _j, _len, _len1, _ref, _ref1;
     group = this.canvas.getActiveGroup();
     if (group._objects) {
       top = 0;
       _ref = group._objects;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
-        top = Math.min(object.top, top);
+        bound = object.getBoundingRect();
+        top = Math.min(bound.top, top);
       }
       _ref1 = group._objects;
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         object = _ref1[_j];
-        object.top = top;
+        bound = object.getBoundingRect();
+        object.top = top + bound.height / 2;
       }
       return this.canvas.renderAll();
     }
   },
   alignBottom: function() {
-    var group, object, top, _i, _j, _len, _len1, _ref, _ref1;
+    var bound, group, object, top, _i, _j, _len, _len1, _ref, _ref1;
     group = this.canvas.getActiveGroup();
     if (group._objects) {
       top = 0;
       _ref = group._objects;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
-        top = Math.max(object.top, top);
+        bound = object.getBoundingRect();
+        top = Math.max(bound.top, top);
       }
       _ref1 = group._objects;
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         object = _ref1[_j];
-        object.top = top;
+        bound = object.getBoundingRect();
+        object.top = top - bound.height / 2 + group.height / 2;
       }
       return this.canvas.renderAll();
     }
