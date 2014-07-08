@@ -543,7 +543,6 @@ app =
     @objects[count].scaleX  = object.scaleX / @scale
     @objects[count].scaleY  = object.scaleY / @scale
     @objects[count].angle   = object.angle
-
     if object.type.match(/shelf$/)
       schema = object.constructor.prototype.getJsonSchema()
       for key of schema.properties

@@ -146,10 +146,10 @@ editor.on "change", ->
 #        log data[key]
         object[key] = data[key]
 #      app.canvas.renderAll()
-#      app.save()
-      app.render()
-      $(app.canvas.getObjects()).each (i, obj)=>
-          if obj.id==object.id
-            app.canvas.setActiveObject(obj)
+      app.save()
+#      app.render()
+#      $(app.canvas.getObjects()).each (i, obj)=>
+#          if obj.id==object.id
+#            app.canvas.setActiveObject(obj)
 #    console.log data
   return
