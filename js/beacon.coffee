@@ -79,6 +79,8 @@
           "top_cm"  : @top_cm
           "id"    : @id
           "angle" : @angle
+          "fill" : @fill
+          "stroke" : @stroke
       return data
 
     toSVG: (reviver) ->

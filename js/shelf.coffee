@@ -222,6 +222,8 @@
           "count"    : @count
           "side"    : @side
           "angle" : @angle
+          "fill" : @fill
+          "stroke" : @stroke
 #      log data
       return data
     

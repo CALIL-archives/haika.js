@@ -95,7 +95,9 @@
           "left_cm": this.left_cm,
           "top_cm": this.top_cm,
           "id": this.id,
-          "angle": this.angle
+          "angle": this.angle,
+          "fill": this.fill,
+          "stroke": this.stroke
         }
       };
       return data;

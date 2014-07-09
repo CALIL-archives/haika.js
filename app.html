@@ -6,6 +6,7 @@
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="bower_components/dragdealer/dragdealer.css" rel="stylesheet">
+    <link href="vendor/bootstrap-colorselector-0.2.0/css/bootstrap-colorselector.css" rel="stylesheet">
     <link href="css/shelf.css" rel="stylesheet">
     <link href="css/app.css" rel="stylesheet">
 <!--    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">-->
@@ -97,8 +98,26 @@
       </div>
 <!--    </div>-->
     <div class="toolbar_container">
-      <ul>
+      <ul class="toolbar_menu">
       </ul>
+      <select id="fill-color">
+        <option value="2" data-color="#CFE2F3" selected="selected">lightblue</option>
+        <option value="106" data-color="#A0522D">sienna</option>
+        <option value="47" data-color="#CD5C5C">indianred</option>
+        <option value="87" data-color="#FF4500">orangered</option>
+        <option value="15" data-color="#DC143C">crimson</option>
+        <option value="24" data-color="#FF8C00">darkorange</option>
+        <option value="78" data-color="#C71585">mediumvioletred</option>
+      </select>
+      <select id="stroke-color">
+        <option value="1" data-color="#000000" selected="selected">balck</option>
+        <option value="106" data-color="#A0522D">sienna</option>
+        <option value="47" data-color="#CD5C5C">indianred</option>
+        <option value="87" data-color="#FF4500">orangered</option>
+        <option value="15" data-color="#DC143C">crimson</option>
+        <option value="24" data-color="#FF8C00">darkorange</option>
+        <option value="78" data-color="#C71585">mediumvioletred</option>
+      </select>
     </div>
     <div class="side_container">
       <div id="vertical-scroller" class="content-scroller">
@@ -196,6 +215,7 @@
 <!--    <script type="text/javascript" src="bower_components/jquery.hotkeys/jquery.hotkeys.js"></script>-->
     <script type="text/javascript" src="vendor/mousetrap.min.js"></script>
     <script type="text/javascript" src="bower_components/jquery.finger/dist/jquery.finger.min.js"></script>
+    <script type="text/javascript" src="vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js"></script>
 <!--    <script type="text/javascript" src="vendor/fabric.min.js"></script>-->
     <script type="text/javascript" src="vendor/fabric.js"></script>
     <script type="text/javascript" src="vendor/aligning_guidelines.js"></script>

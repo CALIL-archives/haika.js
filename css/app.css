@@ -33,7 +33,7 @@ body {
   margin-left: 0;
   padding-left: 0;
 }
-.toolbar_container li {
+.toolbar_container ul.toolbar_menu>li {
   display: block;
   list-style: none;
   padding: 10px;
@@ -41,7 +41,7 @@ body {
   border: 1px solid #CCCCCC;
   background-color: #FFFFFF;
 }
-.toolbar_container li:hover {
+.toolbar_container ul.toolbar_menu>li:hover {
   background-color: lightpink;
 }
 

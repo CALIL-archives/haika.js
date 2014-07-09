@@ -18,6 +18,8 @@ app =
   bgimg: null
   bgimg_width: null
   bgimg_height: null
+  fillColor: "#CFE2F3"
+  strokeColor: "#000000"
   options: {}
   init : (options)->
     default_options =
@@ -321,6 +323,7 @@ app =
     @canvas.renderOnAddRemove=true
     @debug()
   render_object : (o)->
+    log o
     klass = @get_class(o.type)
     object = new klass()
     if o.type.match(/shelf$/)
@@ -350,9 +353,9 @@ app =
       object.borderColor = "#0000ee"
     else
       object.borderColor = "#000000"
-      object.fill = "#CFE2F3"
+      object.fill = o.fill
       object.padding = 0
-    object.stroke = "#000000"
+    object.stroke = o.stroke
     object.transparentCorners = false
     object.cornerColor = "#488BD4"
     object.borderOpacityWhenMoving = 0.8
@@ -526,8 +529,8 @@ app =
           left: @transformLeftX_cm2px(object.properties.left_cm)
           top_cm: object.properties.top_cm
           left_cm: object.properties.left_cm
-          fill: "#CFE2F3"
-          stroke: "#000000"
+          fill: object.properties.fill
+          stroke: object.properties.stroke
           angle: object.properties.angle
         )
         @add(shape)
@@ -602,6 +605,8 @@ app =
     @objects[count].scaleX  = object.scaleX / @scale
     @objects[count].scaleY  = object.scaleY / @scale
     @objects[count].angle   = object.angle
+    @objects[count].fill    = object.fill
+    @objects[count].stroke  = object.stroke
     if object.type.match(/shelf$/)
       schema = object.constructor.prototype.getJsonSchema()
       for key of schema.properties

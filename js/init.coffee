@@ -58,7 +58,16 @@ app.init(
 
 app.setMapCenter([136.963791, 35.155080])
 app.mapAngle = 25
-  
+
+$('#fill-color').colorselector(
+  callback: (value, color, title)->
+    app.fillColor = color
+)
+$('#stroke-color').colorselector(
+  callback: (value, color, title)->
+    app.strokeColor = color
+)
+
 $('.main_container, .canvas_panel').css('width', get_width())
 
 
@@ -79,8 +88,8 @@ add = (val)->
   object = new klass(
     top: app.transformTopY_cm2px(app.centerY)
     left: app.transformLeftX_cm2px(app.centerX)
-    fill: "#CFE2F3"
-    stroke: "#000000"
+    fill: app.fillColor
+    stroke: app.strokeColor
     angle: if val.angle? then val.angle else 0
     #lockScalingY: true
   )
@@ -176,7 +185,7 @@ $ ->
       title : 'ビーコン'
   for key, val of toolbar
     html = """<li id="add_#{key}" key="#{key}"><i class="fa fa-#{val.icon}"></i> #{val.title}</li>"""
-    $('.toolbar_container').append(html)
+    $('.toolbar_container ul:first').append(html)
     $('#add_'+key).click (e)->
       key =  $(e.target).attr('key')
       object = toolbar[key]

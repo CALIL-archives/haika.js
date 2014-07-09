@@ -188,7 +188,9 @@
           "id": this.id,
           "count": this.count,
           "side": this.side,
-          "angle": this.angle
+          "angle": this.angle,
+          "fill": this.fill,
+          "stroke": this.stroke
         }
       };
       return data;

@@ -73,6 +73,18 @@ app.setMapCenter([136.963791, 35.155080]);
 
 app.mapAngle = 25;
 
+$('#fill-color').colorselector({
+  callback: function(value, color, title) {
+    return app.fillColor = color;
+  }
+});
+
+$('#stroke-color').colorselector({
+  callback: function(value, color, title) {
+    return app.strokeColor = color;
+  }
+});
+
 $('.main_container, .canvas_panel').css('width', get_width());
 
 $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height());
@@ -95,8 +107,8 @@ add = function(val) {
   object = new klass({
     top: app.transformTopY_cm2px(app.centerY),
     left: app.transformLeftX_cm2px(app.centerX),
-    fill: "#CFE2F3",
-    stroke: "#000000",
+    fill: app.fillColor,
+    stroke: app.strokeColor,
     angle: val.angle != null ? val.angle : 0
   });
   if (val.count != null) {
@@ -206,7 +218,7 @@ $(function() {
   for (key in toolbar) {
     val = toolbar[key];
     html = "<li id=\"add_" + key + "\" key=\"" + key + "\"><i class=\"fa fa-" + val.icon + "\"></i> " + val.title + "</li>";
-    $('.toolbar_container').append(html);
+    $('.toolbar_container ul:first').append(html);
     $('#add_' + key).click(function(e) {
       var object;
       key = $(e.target).attr('key');

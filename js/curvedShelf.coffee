@@ -151,6 +151,8 @@
           "count"    : @count
           "side"    : @side
           "angle" : @angle
+          "fill" : @fill
+          "stroke" : @stroke
       return data
 
     toSVG: (reviver) ->
