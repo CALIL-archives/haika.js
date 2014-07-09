@@ -59,13 +59,27 @@ app.init(
 app.setMapCenter([136.963791, 35.155080])
 app.mapAngle = 25
 
+bind = (func, do_active=true)->
+  object = app.canvas.getActiveObject()
+  if object
+    func(object)
+  group = app.canvas.getActiveGroup()
+  if group
+    for object in group.getObjects()
+      func(object)
 $('#fill-color').colorselector(
   callback: (value, color, title)->
     app.fillColor = color
+    bind (object)->
+      object.fill = color
+    app.canvas.renderAll()
 )
 $('#stroke-color').colorselector(
   callback: (value, color, title)->
     app.strokeColor = color
+    bind (object)->
+      object.stroke = color
+    app.canvas.renderAll()
 )
 
 $('.main_container, .canvas_panel').css('width', get_width())
