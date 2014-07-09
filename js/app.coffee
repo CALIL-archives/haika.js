@@ -323,7 +323,6 @@ app =
     @canvas.renderOnAddRemove=true
     @debug()
   render_object : (o)->
-    log o
     klass = @get_class(o.type)
     object = new klass()
     if o.type.match(/shelf$/)

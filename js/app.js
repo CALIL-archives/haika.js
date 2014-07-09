@@ -434,7 +434,6 @@ app = {
   },
   render_object: function(o) {
     var klass, object;
-    log(o);
     klass = this.get_class(o.type);
     object = new klass();
     if (o.type.match(/shelf$/)) {

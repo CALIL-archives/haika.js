@@ -82,6 +82,84 @@ $('#stroke-color').colorselector(
     app.canvas.renderAll()
 )
 
+
+
+# 色情報を取得するための canvas
+canvas = document.createElement('canvas')
+ctx = canvas.getContext('2d')
+# 画像
+img = new Image()
+img.addEventListener('load', loadComplete, false);
+
+#画像を読み込む
+loadImg = (file) ->
+  if not file.type.match(/image\/.+/)
+    return  
+  #NOTE:svgを渡すとchromeでcanvasのgetImageDataがエラーを発してしまう．
+  if file.type is "image/svg+xml"
+    return  
+  reader = new FileReader()
+  reader.onload = ->
+    img.src = @result
+    loadComplete()
+  reader.readAsDataURL file
+
+#変換処理ボタンクリック時
+$('#file').change (e)->
+  files = e.target.files
+  if files.length==0
+    return
+  loadImg files[0]
+
+loadComplete = ->
+  canvas.width = img.width
+  canvas.height = img.height
+  ctx.drawImage(img, 0, 0)
+  # 画像の色情報を取得
+  w = canvas.width
+  h = canvas.height
+  data = ctx.getImageData(0, 0, w, h).data
+  log data
+  y = 0
+  while y < h - 1
+    x = 0
+    while x < w - 1
+      n = x * 4 + y * w * 4
+      # RGB
+      r = data[n]
+      g = data[n + 1]
+      b = data[n + 2]
+      a = data[n + 3]
+      if a!=0
+        color = hex_color(r,g,b)
+        log color
+        add_pixel(x, y, color)
+      x++
+    y++
+
+hex_color = (r, g, b)->
+  return '#' + [r,g,b].map((a)->
+    return ("0" + parseInt(a).toString(16)).slice(-2)
+  ).join('')
+
+add_pixel = (x, y, color)->
+  klass = app.get_class('shelf')
+  object = new klass(
+    top: app.transformTopY_cm2px(x*100)
+    left: app.transformLeftX_cm2px(y*100)
+    fill: color
+    stroke: color
+    angle: 0
+    count: 1
+    side : 1
+    eachWidth: 100
+    eachHeight: 100
+  )
+  app.add(object)
+  app.set_state(object)
+  app.render()
+    
+
 $('.main_container, .canvas_panel').css('width', get_width())
 
 
@@ -326,6 +404,9 @@ $ ->
     else
       # internet explorer
       e.returnValue = false;
+  Mousetrap.bind 'mod+o', ->
+    $('#file').trigger('click')
+    return false
   Mousetrap.bind 'mod+c', ->
     app.copy()
     return false
