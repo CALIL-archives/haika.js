@@ -529,7 +529,7 @@ app = {
     }
   },
   alignLeft: function() {
-    var bound, group, left, object, object_left, _i, _j, _len, _len1, _ref, _ref1;
+    var bound, group, left, object, _i, _j, _len, _len1, _ref, _ref1;
     group = this.canvas.getActiveGroup();
     if (group._objects) {
       left = 0;
@@ -543,15 +543,14 @@ app = {
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         object = _ref1[_j];
         bound = object.getBoundingRect();
-        object_left = left + bound.width / 2;
-        object.left = object_left;
+        object.left = left + bound.width / 2;
       }
       this.save();
       return this.canvas.renderAll();
     }
   },
   alignRight: function() {
-    var bound, group, left, object, object_left, _i, _j, _len, _len1, _ref, _ref1;
+    var bound, group, left, object, _i, _j, _len, _len1, _ref, _ref1;
     group = this.canvas.getActiveGroup();
     if (group._objects) {
       left = 0;
@@ -559,14 +558,13 @@ app = {
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
         bound = object.getBoundingRect();
-        left = Math.max(bound.left, left);
+        left = Math.max(bound.left + bound.width, left);
       }
       _ref1 = group._objects;
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         object = _ref1[_j];
         bound = object.getBoundingRect();
-        object_left = left - bound.width / 2 + group.width / 2;
-        object.left = object_left;
+        object.left = left - bound.width / 2;
       }
       return this.canvas.renderAll();
     }
@@ -612,13 +610,13 @@ app = {
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
         bound = object.getBoundingRect();
-        top = Math.max(bound.top, top);
+        top = Math.max(bound.top + bound.height, top);
       }
       _ref1 = group._objects;
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         object = _ref1[_j];
         bound = object.getBoundingRect();
-        object.top = top - bound.height / 2 + group.height / 2;
+        object.top = top - bound.height / 2;
       }
       return this.canvas.renderAll();
     }

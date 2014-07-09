@@ -404,8 +404,7 @@ app =
         left = Math.min(bound.left, left)
       for object in group._objects
         bound = object.getBoundingRect()
-        object_left = left + bound.width/2
-        object.left = object_left
+        object.left = left + bound.width/2
       @save()
       @canvas.renderAll()
   alignRight : ()->
@@ -414,11 +413,10 @@ app =
       left = 0
       for object in group._objects
         bound = object.getBoundingRect()
-        left = Math.max(bound.left, left)
+        left = Math.max(bound.left+bound.width, left)
       for object in group._objects
         bound = object.getBoundingRect()
-        object_left = left - bound.width/2 + group.width/2
-        object.left = object_left
+        object.left = left - bound.width/2
       @canvas.renderAll()
   alignCenter : ()->
     group = @canvas.getActiveGroup()
@@ -443,10 +441,10 @@ app =
       top = 0
       for object in group._objects
         bound = object.getBoundingRect()
-        top = Math.max(bound.top, top)
+        top = Math.max(bound.top+bound.height, top)
       for object in group._objects
         bound = object.getBoundingRect()
-        object.top = top - bound.height/2 + group.height/2
+        object.top = top - bound.height/2
       @canvas.renderAll()
   alignVcenter : ()->
     group = @canvas.getActiveGroup()
