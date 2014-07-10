@@ -84,13 +84,6 @@ $('#stroke-color').colorselector(
 
 
 
-# 色情報を取得するための canvas
-canvas = document.createElement('canvas')
-ctx = canvas.getContext('2d')
-# 画像
-img = new Image()
-img.addEventListener('load', loadComplete, false);
-
 #画像を読み込む
 loadImg = (file) ->
   if not file.type.match(/image\/.+/)
@@ -100,8 +93,7 @@ loadImg = (file) ->
     return  
   reader = new FileReader()
   reader.onload = ->
-    img.src = @result
-    loadComplete()
+    loadComplete(@result)
   reader.readAsDataURL file
 
 #変換処理ボタンクリック時
@@ -111,7 +103,13 @@ $('#file').change (e)->
     return
   loadImg files[0]
 
-loadComplete = ->
+loadComplete = (data)->
+  # 画像
+  img = new Image()
+  img.src = data
+  # 色情報を取得するための canvas
+  canvas = document.createElement('canvas')
+  ctx = canvas.getContext('2d')
   canvas.width = img.width
   canvas.height = img.height
   ctx.drawImage(img, 0, 0)
@@ -119,45 +117,41 @@ loadComplete = ->
   w = canvas.width
   h = canvas.height
   data = ctx.getImageData(0, 0, w, h).data
-  log data
-  y = 0
-  while y < h - 1
-    x = 0
-    while x < w - 1
-      n = x * 4 + y * w * 4
-      # RGB
-      r = data[n]
-      g = data[n + 1]
-      b = data[n + 2]
-      a = data[n + 3]
-      if a!=0
-        color = hex_color(r,g,b)
-        log color
-        add_pixel(x, y, color)
-      x++
-    y++
 
-hex_color = (r, g, b)->
-  return '#' + [r,g,b].map((a)->
-    return ("0" + parseInt(a).toString(16)).slice(-2)
-  ).join('')
+  params =
+    image : data
+    w     : w
+    h     : h
+  worker = new Worker("js/worker.js")
+  worker.onmessage = (e) ->
+    log e.data
+    switch e.data.status
+      when "working"
+        log e.data.count
+      when "end"
+        results = e.data.result
+        for result in results
+          add_pixel(result.x, result.y, result.color)
+        app.render()
+
+  worker.postMessage params
+
 
 add_pixel = (x, y, color)->
+  dot = 10
   klass = app.get_class('shelf')
   object = new klass(
-    top: app.transformTopY_cm2px(x*100)
-    left: app.transformLeftX_cm2px(y*100)
+    top: app.transformTopY_cm2px(y*dot)
+    left: app.transformLeftX_cm2px(x*dot)
     fill: color
     stroke: color
     angle: 0
     count: 1
     side : 1
-    eachWidth: 100
-    eachHeight: 100
+    eachWidth: dot
+    eachHeight: dot
   )
   app.add(object)
-  app.set_state(object)
-  app.render()
     
 
 $('.main_container, .canvas_panel').css('width', get_width())
