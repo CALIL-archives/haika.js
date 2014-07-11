@@ -45,7 +45,20 @@
       @width = @__width()
       @height = @__height()
       @setCoords()
+      @__is_into()
 
+    __is_into: () ->
+      objects = app.canvas.getObjects()
+      for object in objects
+        if object.type.match(/shelf$/)
+          half_width = object.__width() / 2
+          left = object.left - half_width
+          right = object.left + half_width
+          half_height = object.__height() / 2
+          top = object.top - half_height
+          bottom = object.top + half_height
+          if (@left > left and @left < right) and (@top > top and @top < bottom)
+            log 'into:'+object.id
     _normalizeLeftTopProperties: (parsedAttributes) ->
       @set "left", parsedAttributes.left + @getWidth() / 2  if "left" of parsedAttributes
       @set "top", parsedAttributes.top + @getHeight() / 2  if "top" of parsedAttributes

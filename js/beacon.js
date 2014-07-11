@@ -56,7 +56,32 @@
       }
       this.width = this.__width();
       this.height = this.__height();
-      return this.setCoords();
+      this.setCoords();
+      return this.__is_into();
+    },
+    __is_into: function() {
+      var bottom, half_height, half_width, left, object, objects, right, top, _i, _len, _results;
+      objects = app.canvas.getObjects();
+      _results = [];
+      for (_i = 0, _len = objects.length; _i < _len; _i++) {
+        object = objects[_i];
+        if (object.type.match(/shelf$/)) {
+          half_width = object.__width() / 2;
+          left = object.left - half_width;
+          right = object.left + half_width;
+          half_height = object.__height() / 2;
+          top = object.top - half_height;
+          bottom = object.top + half_height;
+          if ((this.left > left && this.left < right) && (this.top > top && this.top < bottom)) {
+            _results.push(log('into:' + object.id));
+          } else {
+            _results.push(void 0);
+          }
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
     },
     _normalizeLeftTopProperties: function(parsedAttributes) {
       if ("left" in parsedAttributes) {
