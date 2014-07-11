@@ -40,6 +40,9 @@ editor = new JSONEditor(document.getElementById("editor"), {
         type: "integer",
         "default": 25,
         minimum: 1
+      },
+      minor: {
+        type: "integer"
       }
     }
   }

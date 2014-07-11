@@ -9,6 +9,7 @@
     type: "beacon"
     eachWidth: 10
     eachHeight: 10
+    minor : 0
     __width: ->
       @eachWidth * app.scale
     __height: ->
@@ -94,6 +95,7 @@
           "angle" : @angle
           "fill" : @fill
           "stroke" : @stroke
+          "minor" : @minor
       return data
 
     toSVG: (reviver) ->
@@ -108,6 +110,8 @@
             default: 0
             minimum: 0
             maximum: 360
+          minor:
+            type: "integer"
 #          eachWidth:
 #            type: "integer"
 #            default: 90

@@ -136,8 +136,6 @@ app =
     o =
       id : object.id
     props = [
-      'eachWidth'
-      'eachHeight'
       'type'
       'width'
       'height'
@@ -149,9 +147,9 @@ app =
       'fill'
       'stroke'
     ]
-    if object.type.match(/shelf$/)
-      props.push('count')
-      props.push('side')
+    schema = object.constructor.prototype.getJsonSchema()
+    for key of schema.properties
+      props.push(key)
     for prop in props
       if prop=='top'
         o.top_cm = @transformTopY_px2cm(object.top)
@@ -359,6 +357,9 @@ app =
     object.cornerColor = "#488BD4"
     object.borderOpacityWhenMoving = 0.8
     object.cornerSize = 10
+    schema = object.constructor.prototype.getJsonSchema()
+    for key of schema.properties
+      object[key] = o[key]
     @canvas.add(object)
   render_bg : ->
     if @bgimg
@@ -519,11 +520,7 @@ app =
           @last_id = object.properties.id
         klass = @get_class(object.properties.type)
         shape = new klass(
-          eachWidth: object.properties.eachWidth
-          eachHeight: object.properties.eachHeight
           id: object.properties.id
-          count: object.properties.count
-          side: object.properties.side
           top: @transformTopY_cm2px(object.properties.top_cm)
           left: @transformLeftX_cm2px(object.properties.left_cm)
           top_cm: object.properties.top_cm
@@ -532,6 +529,11 @@ app =
           stroke: object.properties.stroke
           angle: object.properties.angle
         )
+        schema = shape.constructor.prototype.getJsonSchema()
+        for key of schema.properties
+#          log key
+#          log object.properties[key]
+          shape[key] = object.properties[key]
         @add(shape)
     @render()
   get_haika_id : ->
@@ -606,12 +608,11 @@ app =
     @objects[count].angle   = object.angle
     @objects[count].fill    = object.fill
     @objects[count].stroke  = object.stroke
-    if object.type.match(/shelf$/)
-      schema = object.constructor.prototype.getJsonSchema()
-      for key of schema.properties
-#        log key
+    schema = object.constructor.prototype.getJsonSchema()
+    for key of schema.properties
+#      log key
 #        log object[key]
-        @objects[count][key] = object[key]
+      @objects[count][key] = object[key]
 #      @objects[count].count = object.count
 #      @objects[count].side  = object.side
 #      @objects[count].eachWidth  = object.eachWidth
@@ -682,7 +683,7 @@ app =
       properties = {}
       for key of editor.schema.properties
         if editor.schema.properties[key].type=='integer'
-          value = object[key].toFixed(0)
+          value = parseInt(object[key]).toFixed(0)
         else
           value = object[key]
         properties[key] = value

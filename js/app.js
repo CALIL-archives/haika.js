@@ -161,17 +161,17 @@ app = {
     return count;
   },
   add: function(object) {
-    var o, prop, props, _i, _len;
+    var key, o, prop, props, schema, _i, _len;
     if (object.id === '') {
       object.id = this.get_id();
     }
     o = {
       id: object.id
     };
-    props = ['eachWidth', 'eachHeight', 'type', 'width', 'height', 'scaleX', 'scaleY', 'left', 'top', 'angle', 'fill', 'stroke'];
-    if (object.type.match(/shelf$/)) {
-      props.push('count');
-      props.push('side');
+    props = ['type', 'width', 'height', 'scaleX', 'scaleY', 'left', 'top', 'angle', 'fill', 'stroke'];
+    schema = object.constructor.prototype.getJsonSchema();
+    for (key in schema.properties) {
+      props.push(key);
     }
     for (_i = 0, _len = props.length; _i < _len; _i++) {
       prop = props[_i];
@@ -433,7 +433,7 @@ app = {
     return this.debug();
   },
   render_object: function(o) {
-    var klass, object;
+    var key, klass, object, schema;
     klass = this.get_class(o.type);
     object = new klass();
     if (o.type.match(/shelf$/)) {
@@ -472,6 +472,10 @@ app = {
     object.cornerColor = "#488BD4";
     object.borderOpacityWhenMoving = 0.8;
     object.cornerSize = 10;
+    schema = object.constructor.prototype.getJsonSchema();
+    for (key in schema.properties) {
+      object[key] = o[key];
+    }
     return this.canvas.add(object);
   },
   render_bg: function() {
@@ -693,7 +697,7 @@ app = {
     }
   },
   load_render: function(data) {
-    var canvas, geojson, klass, object, shape, _i, _len, _ref;
+    var canvas, geojson, key, klass, object, schema, shape, _i, _len, _ref;
     log(data);
     canvas = data.canvas;
     geojson = data.geojson;
@@ -714,11 +718,7 @@ app = {
         }
         klass = this.get_class(object.properties.type);
         shape = new klass({
-          eachWidth: object.properties.eachWidth,
-          eachHeight: object.properties.eachHeight,
           id: object.properties.id,
-          count: object.properties.count,
-          side: object.properties.side,
           top: this.transformTopY_cm2px(object.properties.top_cm),
           left: this.transformLeftX_cm2px(object.properties.left_cm),
           top_cm: object.properties.top_cm,
@@ -727,6 +727,10 @@ app = {
           stroke: object.properties.stroke,
           angle: object.properties.angle
         });
+        schema = shape.constructor.prototype.getJsonSchema();
+        for (key in schema.properties) {
+          shape[key] = object.properties[key];
+        }
         this.add(shape);
       }
     }
@@ -830,14 +834,12 @@ app = {
     this.objects[count].angle = object.angle;
     this.objects[count].fill = object.fill;
     this.objects[count].stroke = object.stroke;
-    if (object.type.match(/shelf$/)) {
-      schema = object.constructor.prototype.getJsonSchema();
-      _results = [];
-      for (key in schema.properties) {
-        _results.push(this.objects[count][key] = object[key]);
-      }
-      return _results;
+    schema = object.constructor.prototype.getJsonSchema();
+    _results = [];
+    for (key in schema.properties) {
+      _results.push(this.objects[count][key] = object[key]);
     }
+    return _results;
   },
   mapCenter: null,
   mapAngle: 0,
@@ -923,7 +925,7 @@ app = {
       properties = {};
       for (key in editor.schema.properties) {
         if (editor.schema.properties[key].type === 'integer') {
-          value = object[key].toFixed(0);
+          value = parseInt(object[key]).toFixed(0);
         } else {
           value = object[key];
         }

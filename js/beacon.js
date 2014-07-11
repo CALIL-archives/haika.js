@@ -12,6 +12,7 @@
     type: "beacon",
     eachWidth: 10,
     eachHeight: 10,
+    minor: 0,
     __width: function() {
       return this.eachWidth * app.scale;
     },
@@ -122,7 +123,8 @@
           "id": this.id,
           "angle": this.angle,
           "fill": this.fill,
-          "stroke": this.stroke
+          "stroke": this.stroke,
+          "minor": this.minor
         }
       };
       return data;
@@ -141,6 +143,9 @@
             "default": 0,
             minimum: 0,
             maximum: 360
+          },
+          minor: {
+            type: "integer"
           }
         }
       };
