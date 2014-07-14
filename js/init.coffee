@@ -8,44 +8,51 @@ get_width = ->
 get_height = ->
   return window.innerHeight - $('.header').height() - scrollbar_height
 
-##キャンバスを作成 
-#canvas = document.createElement("canvas")
-##コンテキストを生成 
-#ctx = canvas.getContext("2d")
-##イメージオブジェクトを生成 
-#image = new Image()
-##image オブジェクトに画像が読み込まれた際のイベントハンドラを登録 
-##イベントハンドラ 
-#image.addEventListener "load", (->
-#  #image に読み込んだ画像を描画する 
-#  ctx.drawImage image, 0, 0
-#  #Canvas から DataURL (Base64 データ) を取り出しローカルストレージに保存
-##  log canvas.toDataURL()
-#), false
 
-#image オブジェクトに画像をロード 
-#image.src = "img/meidai2.png"
-
-loadBg = (file) ->
-  reader = new FileReader()
-  reader.onload = () ->
-    img = new Image()
-    img.src = @result
-    app.bgimg = new fabric.Image(img)
-    app.bgimg_width = img.width
-    app.bgimg_height = img.width
-    app.render()
-
-  reader.readAsDataURL file
 
 #背景画像ボタンクリック時
 $('#bgimg').change (e)->
   files = e.target.files
   if files.length==0
     return
-  loadBg files[0]
+  app.load_bg files[0]
 
-
+set_scrollbar = ->
+  # scrollbar
+  scroll_weight = 5000
+  bgimg_width = if app.bgimg then app.bgimg_width else 2500
+  bgimg_height = if app.bgimg then app.bgimg_height else 2500
+  maxX = bgimg_width * app.options.bgscale / 2
+  maxY = bgimg_height * app.options.bgscale / 2
+  defaultX =  -((app.centerX - scroll_weight) / 10000)
+  defaultY =  -((app.centerY - scroll_weight) / 10000)
+  new Dragdealer 'horizontal-scroller',
+    x: defaultX
+    animationCallback: (x, y)->
+#      log x
+      app.unselect()
+      centerX = x * 10000 - scroll_weight
+      if centerX > maxX - app.canvas.getWidth() / 2
+        centerX = maxX - app.canvas.getWidth() / 2
+      if centerX < -maxX + app.canvas.getWidth() / 2
+        centerX = -maxX + app.canvas.getWidth() / 2
+      app.centerX = -centerX.toFixed(0)
+      app.render()
+  new Dragdealer 'vertical-scroller',
+    y: defaultY
+    horizontal: false,
+    vertical: true,
+#    yPrecision: 500,
+    animationCallback: (x, y)->
+      app.unselect()
+      centerY = y * 10000 - scroll_weight
+      if centerY > maxY - app.canvas.getHeight() / 2
+        centerY = maxY - app.canvas.getHeight() / 2
+      if centerY < -maxY + app.canvas.getHeight() / 2
+        centerY = -maxY + app.canvas.getHeight() / 2
+      app.centerY = -centerY.toFixed(0)
+      app.render()
+  
 app.init(
   canvas : 'canvas'
   canvas_width : get_width()
@@ -53,46 +60,14 @@ app.init(
   scale : 1
   max_width: 10000
   max_height: 10000
-  #bgurl  : 'http://office.nanzan-u.ac.jp/TOSHOKAN/publication/bulletin/kiyo7/03-01.jpg'
-  bgurl  : 'img/meidai2.png'
+  #bgurl  : 'img/meidai2.png'
   #bgurl  : 'img/sample.png'
   bgopacity: 0.2
   bgscale  : 4.425
-  callback : ->
-    # scrollbar
-    scroll_weight = 5000
-    maxX = app.bgimg_width * app.options.bgscale / 2
-    maxY = app.bgimg_height * app.options.bgscale / 2
-    defaultX =  -((app.centerX - scroll_weight) / 10000)
-    defaultY =  -((app.centerY - scroll_weight) / 10000)
-    new Dragdealer 'horizontal-scroller',
-      x: defaultX
-      animationCallback: (x, y)->
-  #      log x
-        app.unselect()
-        centerX = x * 10000 - scroll_weight
-        if centerX > maxX - app.canvas.getWidth() / 2
-          centerX = maxX - app.canvas.getWidth() / 2
-        if centerX < -maxX + app.canvas.getWidth() / 2
-          centerX = -maxX + app.canvas.getWidth() / 2
-        app.centerX = -centerX.toFixed(0)
-        app.render()
-    new Dragdealer 'vertical-scroller',
-      y: defaultY
-      horizontal: false,
-      vertical: true,
-  #    yPrecision: 500,
-      animationCallback: (x, y)->
-        app.unselect()
-        centerY = y * 10000 - scroll_weight
-        if centerY > maxY - app.canvas.getHeight() / 2
-          centerY = maxY - app.canvas.getHeight() / 2
-        if centerY < -maxY + app.canvas.getHeight() / 2
-          centerY = -maxY + app.canvas.getHeight() / 2
-        app.centerY = -centerY.toFixed(0)
-        app.render()
-
+  callback : set_scrollbar
 )
+
+
 
 app.setMapCenter([136.963791, 35.155080])
 app.mapAngle = 25

@@ -21,6 +21,7 @@ app = {
   is_scaling: false,
   is_rotating: false,
   bgimg: null,
+  bgimg_data: null,
   bgimg_width: null,
   bgimg_height: null,
   fillColor: "#CFE2F3",
@@ -91,11 +92,14 @@ app = {
     setTimeout((function(_this) {
       return function() {
         _this.load();
-        if (options.callback != null) {
-          return options.callback();
+        if (_this.options.callback != null) {
+          return _this.options.callback();
         }
       };
     })(this), 500);
+    return this.event();
+  },
+  event: function() {
     this.canvas.on('object:selected', (function(_this) {
       return function(e) {
         var object;
@@ -142,6 +146,29 @@ app = {
         _this.save();
       };
     })(this));
+  },
+  load_bg: function(file) {
+    var reader;
+    reader = new FileReader();
+    reader.onload = (function(_this) {
+      return function(e) {
+        _this.bgimg_data = e.currentTarget.result;
+        return _this.set_bg();
+      };
+    })(this);
+    return reader.readAsDataURL(file);
+  },
+  set_bg: function() {
+    var img;
+    img = new Image();
+    img.src = this.bgimg_data;
+    this.bgimg = new fabric.Image(img);
+    this.bgimg_width = img.width;
+    this.bgimg_height = img.width;
+    this.render();
+    if (this.options.callback != null) {
+      return this.options.callback();
+    }
   },
   last_id: 0,
   get_id: function() {
@@ -709,6 +736,10 @@ app = {
       $('.zoom').html((this.scale * 100).toFixed(0) + '%');
       this.centerX = canvas.centerX;
       this.centerY = canvas.centerY;
+      this.bgimg_data = canvas.bgimg_data;
+      this.options.bgscale = canvas.bgscale ? canvas.bgscale : 4.425;
+      this.options.bgopacity = canvas.bgopacity;
+      this.set_bg();
     }
     if (geojson && geojson.features.length > 0) {
       _ref = geojson.features;
@@ -775,7 +806,10 @@ app = {
       state: this.state,
       scale: this.scale,
       centerX: this.centerX,
-      centerY: this.centerY
+      centerY: this.centerY,
+      bgimg_data: this.bgimg_data,
+      bgscale: this.options.bgscale,
+      bgopacity: this.options.bgopacity
     };
   },
   save_local: function() {

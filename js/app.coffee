@@ -16,6 +16,7 @@ app =
   is_scaling : false
   is_rotating: false
   bgimg: null
+  bgimg_data: null
   bgimg_width: null
   bgimg_height: null
   fillColor: "#CFE2F3"
@@ -81,9 +82,11 @@ app =
     @render()
     setTimeout =>
       @load()
-      if options.callback?
-        options.callback()
+      if @options.callback?
+        @options.callback()
     , 500
+    @event()
+  event : ->
     @canvas.on('object:selected', (e)=>
         #log 'selected'
         object = e.target
@@ -118,6 +121,23 @@ app =
       @render()
       @save()
       return
+  load_bg : (file) ->
+    reader = new FileReader()
+    reader.onload = (e) =>
+#      log e.currentTarget.result
+      @bgimg_data = e.currentTarget.result
+      @set_bg()
+    reader.readAsDataURL file
+  set_bg: ->
+    img = new Image()
+    img.src = @bgimg_data
+    @bgimg = new fabric.Image(img)
+    @bgimg_width = img.width
+    @bgimg_height = img.width
+    @render()
+    if @options.callback?
+      @options.callback()
+    
   last_id : 0
   get_id : ->
     if @objects.length==0
@@ -515,6 +535,10 @@ app =
       $('.zoom').html((@scale*100).toFixed(0)+'%')
       @centerX = canvas.centerX
       @centerY = canvas.centerY
+      @bgimg_data = canvas.bgimg_data
+      @options.bgscale = if canvas.bgscale then canvas.bgscale else 4.425
+      @options.bgopacity = canvas.bgopacity
+      @set_bg()
     if geojson and geojson.features.length>0
       for object in geojson.features
         if object.properties.id>@last_id
@@ -564,6 +588,9 @@ app =
       scale : @scale
       centerX : @centerX
       centerY : @centerY
+      bgimg_data: @bgimg_data
+      bgscale : @options.bgscale
+      bgopacity : @options.bgopacity
     }
   save_local : ->
     canvas = @get_canvas_data()
