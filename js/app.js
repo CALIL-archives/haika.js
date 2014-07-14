@@ -79,6 +79,7 @@ app = {
     if (this.options.bgurl) {
       fabric.Image.fromURL(this.options.bgurl, (function(_this) {
         return function(img) {
+          log(img);
           _this.bgimg = img;
           _this.bgimg_width = img.width;
           _this.bgimg_height = img.height;

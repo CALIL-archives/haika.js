@@ -8,6 +8,44 @@ get_width = ->
 get_height = ->
   return window.innerHeight - $('.header').height() - scrollbar_height
 
+##キャンバスを作成 
+#canvas = document.createElement("canvas")
+##コンテキストを生成 
+#ctx = canvas.getContext("2d")
+##イメージオブジェクトを生成 
+#image = new Image()
+##image オブジェクトに画像が読み込まれた際のイベントハンドラを登録 
+##イベントハンドラ 
+#image.addEventListener "load", (->
+#  #image に読み込んだ画像を描画する 
+#  ctx.drawImage image, 0, 0
+#  #Canvas から DataURL (Base64 データ) を取り出しローカルストレージに保存
+##  log canvas.toDataURL()
+#), false
+
+#image オブジェクトに画像をロード 
+#image.src = "img/meidai2.png"
+
+loadBg = (file) ->
+  reader = new FileReader()
+  reader.onload = () ->
+    img = new Image()
+    img.src = @result
+    app.bgimg = new fabric.Image(img)
+    app.bgimg_width = img.width
+    app.bgimg_height = img.width
+    app.render()
+
+  reader.readAsDataURL file
+
+#背景画像ボタンクリック時
+$('#bgimg').change (e)->
+  files = e.target.files
+  if files.length==0
+    return
+  loadBg files[0]
+
+
 app.init(
   canvas : 'canvas'
   canvas_width : get_width()

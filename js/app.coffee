@@ -73,6 +73,7 @@ app =
     @scale = options.scale
     if @options.bgurl
       fabric.Image.fromURL @options.bgurl, (img)=>
+        log img
         @bgimg = img
         @bgimg_width  = img.width
         @bgimg_height = img.height
