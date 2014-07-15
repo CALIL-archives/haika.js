@@ -15,8 +15,24 @@ $('#bgimg').change (e)->
   files = e.target.files
   if files.length==0
     return
-  app.load_bg files[0]
-
+  if app.is_local()
+    app.load_bg files[0]
+  else
+    data = new FormData()
+    data.append 'id', app.id
+    data.append 'userfile', files[0]
+    $.ajax
+      url: '/haika_store/upload.php'
+      data: data
+      cache: false
+      contentType: false
+      processData: false
+      type: 'POST'
+      success: (data) ->
+        log data
+        url = '/haika_store/image/'+app.id+'_'+files[0].name
+        app.load_bg_from_url(url)
+  
 set_scrollbar = ->
   # scrollbar
   scroll_weight = 5000
@@ -399,6 +415,15 @@ $ ->
     app.centerY = parseInt($(this).val())
   $('#canvas_bgscale').change ->
     app.options.bgscale = parseInt($(this).val())
+#  $('#canvas_bgopacity').change ->
+#    app.options.bgopacity = parseFloat($(this).val())
+  $('#ex1').slider
+    formater: (value)->
+      value = parseFloat(value).toFixed(1)
+      $('#canvas_bgopacity').val()
+      app.options.bgopacity = value
+      app.render()
+      return value
   $('#canvas_render').click ->
     app.render()
 

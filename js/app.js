@@ -78,15 +78,7 @@ app = {
     this.canvas = canvas;
     this.scale = options.scale;
     if (this.options.bgurl) {
-      fabric.Image.fromURL(this.options.bgurl, (function(_this) {
-        return function(img) {
-          log(img);
-          _this.bgimg = img;
-          _this.bgimg_width = img.width;
-          _this.bgimg_height = img.height;
-          return _this.render();
-        };
-      })(this));
+      this.load_bg_from_url(this.options.bgurl);
     }
     this.render();
     setTimeout((function(_this) {
@@ -147,19 +139,35 @@ app = {
       };
     })(this));
   },
+  load_bg_from_url: function(url) {
+    this.options.bgurl = url;
+    return fabric.Image.fromURL(url, (function(_this) {
+      return function(img) {
+        log(img);
+        _this.bgimg = img;
+        _this.bgimg_width = img.width;
+        _this.bgimg_height = img.height;
+        return _this.render();
+      };
+    })(this));
+  },
   load_bg: function(file) {
     var reader;
     reader = new FileReader();
     reader.onload = (function(_this) {
       return function(e) {
         _this.bgimg_data = e.currentTarget.result;
-        return _this.set_bg();
+        _this.set_bg();
+        return _this.save();
       };
     })(this);
     return reader.readAsDataURL(file);
   },
   set_bg: function() {
     var img;
+    if (!this.bgimg_data) {
+      return;
+    }
     img = new Image();
     img.src = this.bgimg_data;
     this.bgimg = new fabric.Image(img);
@@ -521,7 +529,8 @@ app = {
     $('#canvas_height').val(this.canvas.getHeight());
     $('#canvas_centerX').val(this.centerX);
     $('#canvas_centerY').val(this.centerY);
-    return $('#canvas_bgscale').val(this.options.bgscale);
+    $('#canvas_bgscale').val(this.options.bgscale);
+    return $('#canvas_bgopacity').val(this.options.bgopacity);
   },
   get_move: function(event) {
     if (event.shiftKey) {
@@ -739,7 +748,13 @@ app = {
       this.bgimg_data = canvas.bgimg_data;
       this.options.bgscale = canvas.bgscale ? canvas.bgscale : 4.425;
       this.options.bgopacity = canvas.bgopacity;
-      this.set_bg();
+      if (this.is_local()) {
+        this.set_bg();
+      } else {
+        if (canvas.bgurl != null) {
+          this.load_bg_from_url(canvas.bgurl);
+        }
+      }
     }
     if (geojson && geojson.features.length > 0) {
       _ref = geojson.features;
@@ -793,9 +808,12 @@ app = {
       type: "GET",
       cache: false,
       dataType: "json",
-      error: function() {},
+      error: function() {
+        return alert('load error');
+      },
       success: (function(_this) {
         return function(data) {
+          log(data);
           return _this.load_render(data);
         };
       })(this)
@@ -808,6 +826,7 @@ app = {
       centerX: this.centerX,
       centerY: this.centerY,
       bgimg_data: this.bgimg_data,
+      bgurl: this.options.bgurl,
       bgscale: this.options.bgscale,
       bgopacity: this.options.bgopacity
     };
@@ -829,7 +848,6 @@ app = {
       id: this.id,
       data: param
     };
-    log(data);
     url = '/haika_store/index.php';
     return $.ajax({
       url: url,

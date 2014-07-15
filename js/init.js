@@ -16,12 +16,32 @@ get_height = function() {
 };
 
 $('#bgimg').change(function(e) {
-  var files;
+  var data, files;
   files = e.target.files;
   if (files.length === 0) {
     return;
   }
-  return app.load_bg(files[0]);
+  if (app.is_local()) {
+    return app.load_bg(files[0]);
+  } else {
+    data = new FormData();
+    data.append('id', app.id);
+    data.append('userfile', files[0]);
+    return $.ajax({
+      url: '/haika_store/upload.php',
+      data: data,
+      cache: false,
+      contentType: false,
+      processData: false,
+      type: 'POST',
+      success: function(data) {
+        var url;
+        log(data);
+        url = '/haika_store/image/' + app.id + '_' + files[0].name;
+        return app.load_bg_from_url(url);
+      }
+    });
+  }
 });
 
 set_scrollbar = function() {
@@ -452,6 +472,15 @@ $(function() {
   });
   $('#canvas_bgscale').change(function() {
     return app.options.bgscale = parseInt($(this).val());
+  });
+  $('#ex1').slider({
+    formater: function(value) {
+      value = parseFloat(value).toFixed(1);
+      $('#canvas_bgopacity').val();
+      app.options.bgopacity = value;
+      app.render();
+      return value;
+    }
   });
   $('#canvas_render').click(function() {
     return app.render();

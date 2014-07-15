@@ -7,6 +7,7 @@
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="bower_components/dragdealer/dragdealer.css" rel="stylesheet">
     <link href="vendor/bootstrap-colorselector-0.2.0/css/bootstrap-colorselector.css" rel="stylesheet">
+    <link href="http://seiyria.github.io/bootstrap-slider/stylesheets/slider.css" rel="stylesheet">
     <link href="css/shelf.css" rel="stylesheet">
     <link href="css/app.css" rel="stylesheet">
 <!--    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">-->
@@ -162,11 +163,15 @@
           <label for="canvas_bgscale">
             bgscale:
             <input type="number" id="canvas_bgscale" class="form-control" value="0" step="0.01" />
+          <label for="canvas_bgscale">
+            bgopacity:
+            <input type="number" id="canvas_bgopacity" class="form-control" value="0" step="0.1" />
+            <input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
+          </label><br />
           <label for="canvas_bgimg">
             <input type="file" id="bgimg" />
           </label><br />
           <input type="button" id="canvas_render" class="btn btn-default" value="render">
-          <div class="rotate"></div>
         </div>
         <div class="object_panel">
           <h3>オブジェクトのプロパティ</h3>
@@ -231,6 +236,7 @@
     <script type="text/javascript" src="vendor/mousetrap.min.js"></script>
     <script type="text/javascript" src="bower_components/jquery.finger/dist/jquery.finger.min.js"></script>
     <script type="text/javascript" src="vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap-slider/bootstrap-slider.js"></script>
 <!--    <script type="text/javascript" src="vendor/fabric.min.js"></script>-->
     <script type="text/javascript" src="vendor/fabric.js"></script>
     <script type="text/javascript" src="vendor/aligning_guidelines.js"></script>

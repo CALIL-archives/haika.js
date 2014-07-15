@@ -73,12 +73,7 @@ app =
     #@canvas.centeredRotation = true
     @scale = options.scale
     if @options.bgurl
-      fabric.Image.fromURL @options.bgurl, (img)=>
-        log img
-        @bgimg = img
-        @bgimg_width  = img.width
-        @bgimg_height = img.height
-        @render()
+      @load_bg_from_url(@options.bgurl)
     @render()
     setTimeout =>
       @load()
@@ -121,14 +116,25 @@ app =
       @render()
       @save()
       return
+  load_bg_from_url : (url) ->
+    @options.bgurl = url
+    fabric.Image.fromURL url, (img)=>
+      log img
+      @bgimg = img
+      @bgimg_width  = img.width
+      @bgimg_height = img.height
+      @render()
   load_bg : (file) ->
     reader = new FileReader()
     reader.onload = (e) =>
 #      log e.currentTarget.result
       @bgimg_data = e.currentTarget.result
       @set_bg()
+      @save()
     reader.readAsDataURL file
   set_bg: ->
+    if not @bgimg_data
+      return
     img = new Image()
     img.src = @bgimg_data
     @bgimg = new fabric.Image(img)
@@ -397,6 +403,7 @@ app =
     $('#canvas_centerX').val(@centerX)
     $('#canvas_centerY').val(@centerY)
     $('#canvas_bgscale').val(@options.bgscale)
+    $('#canvas_bgopacity').val(@options.bgopacity)
   get_move : (event)->
     return if event.shiftKey then 10 else 1
   up : (event)->
@@ -538,7 +545,11 @@ app =
       @bgimg_data = canvas.bgimg_data
       @options.bgscale = if canvas.bgscale then canvas.bgscale else 4.425
       @options.bgopacity = canvas.bgopacity
-      @set_bg()
+      if @is_local()
+        @set_bg()
+      else
+        if canvas.bgurl?
+          @load_bg_from_url(canvas.bgurl)
     if geojson and geojson.features.length>0
       for object in geojson.features
         if object.properties.id>@last_id
@@ -580,7 +591,9 @@ app =
       cache : false
       dataType: "json"
       error: ()->
+        alert 'load error'
       success: (data)=>
+        log data
         @load_render(data)
   get_canvas_data : ->
     return {
@@ -589,6 +602,7 @@ app =
       centerX : @centerX
       centerY : @centerY
       bgimg_data: @bgimg_data
+      bgurl: @options.bgurl
       bgscale : @options.bgscale
       bgopacity : @options.bgopacity
     }
@@ -605,7 +619,7 @@ app =
     data =
       id  : @id
       data: param
-    log data
+#    log data
     url = '/haika_store/index.php'
     $.ajax
       url: url
