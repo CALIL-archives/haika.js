@@ -38,7 +38,10 @@ app = {
       scale: 1,
       bgurl: null,
       bgopacity: 1,
-      bgscale: 1
+      bgscale: 1,
+      lon: 0,
+      lat: 0,
+      angle: 0
     };
     this.options = $.extend(default_options, options);
     canvas = new fabric.Canvas(this.options.canvas, {
@@ -530,7 +533,10 @@ app = {
     $('#canvas_centerX').val(this.centerX);
     $('#canvas_centerY').val(this.centerY);
     $('#canvas_bgscale').val(this.options.bgscale);
-    return $('#canvas_bgopacity').val(this.options.bgopacity);
+    $('#canvas_bgopacity').val(this.options.bgopacity);
+    $('#canvas_lon').val(this.options.lon);
+    $('#canvas_lat').val(this.options.lat);
+    return $('#canvas_angle').val(this.options.angle);
   },
   get_move: function(event) {
     if (event.shiftKey) {
@@ -739,6 +745,7 @@ app = {
     canvas = data.canvas;
     geojson = data.geojson;
     if (canvas) {
+      log(canvas);
       this.state = canvas.state;
       $('.nav a.' + this.state).tab('show');
       this.scale = canvas.scale;
@@ -754,6 +761,11 @@ app = {
         if (canvas.bgurl != null) {
           this.load_bg_from_url(canvas.bgurl);
         }
+      }
+      if (canvas.lon != null) {
+        this.options.lon = parseFloat(canvas.lon);
+        this.options.lat = parseFloat(canvas.lat);
+        this.options.angle = parseInt(canvas.angle);
       }
     }
     if (geojson && geojson.features.length > 0) {
@@ -828,7 +840,10 @@ app = {
       bgimg_data: this.bgimg_data,
       bgurl: this.options.bgurl,
       bgscale: this.options.bgscale,
-      bgopacity: this.options.bgopacity
+      bgopacity: this.options.bgopacity,
+      lon: this.options.lon,
+      lat: this.options.lat,
+      angle: this.options.angle
     };
   },
   save_local: function() {
@@ -894,11 +909,6 @@ app = {
     }
     return _results;
   },
-  mapCenter: null,
-  mapAngle: 0,
-  setMapCenter: function(latlon) {
-    return this.mapCenter = proj4("EPSG:4326", "EPSG:3857", latlon);
-  },
   toGeoJSON: function() {
     var data, features, geojson, object, _i, _len, _ref;
     features = [];
@@ -915,7 +925,7 @@ app = {
     return data;
   },
   getGeoJSON: function() {
-    var coordinate, coordinates, features, geojson, geometry, new_coordinate, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
+    var coordinate, coordinates, features, geojson, geometry, mapCenter, new_coordinate, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
     this.unselect();
     this.render();
     geojson = this.toGeoJSON();
@@ -923,15 +933,16 @@ app = {
     _ref = geojson.features;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
-      if (this.mapCenter) {
+      mapCenter = proj4("EPSG:4326", "EPSG:3857", [this.options.lon, this.options.lat]);
+      if (mapCenter) {
         coordinates = [];
         _ref1 = object.geometry.coordinates[0];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           geometry = _ref1[_j];
           x = geometry[0];
           y = geometry[1];
-          new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.mapAngle));
-          coordinate = [this.mapCenter[0] + new_coordinate.x, this.mapCenter[1] + new_coordinate.y];
+          new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.options.angle));
+          coordinate = [mapCenter[0] + new_coordinate.x, mapCenter[1] + new_coordinate.y];
           coordinates.push(coordinate);
           log(coordinate);
         }

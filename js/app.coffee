@@ -33,6 +33,9 @@ app =
       bgurl    : null
       bgopacity: 1
       bgscale  : 1
+      lon      : 0
+      lat      : 0
+      angle    : 0
       
     @options = $.extend(default_options, options)
     canvas = new fabric.Canvas(@options.canvas, {
@@ -404,6 +407,9 @@ app =
     $('#canvas_centerY').val(@centerY)
     $('#canvas_bgscale').val(@options.bgscale)
     $('#canvas_bgopacity').val(@options.bgopacity)
+    $('#canvas_lon').val(@options.lon)
+    $('#canvas_lat').val(@options.lat)
+    $('#canvas_angle').val(@options.angle)
   get_move : (event)->
     return if event.shiftKey then 10 else 1
   up : (event)->
@@ -536,6 +542,7 @@ app =
     canvas = data.canvas
     geojson = data.geojson
     if canvas
+      log canvas
       @state   = canvas.state
       $('.nav a.'+@state).tab('show')
       @scale   = canvas.scale
@@ -550,6 +557,10 @@ app =
       else
         if canvas.bgurl?
           @load_bg_from_url(canvas.bgurl)
+      if canvas.lon?
+        @options.lon = parseFloat(canvas.lon)
+        @options.lat = parseFloat(canvas.lat)
+        @options.angle = parseInt(canvas.angle)
     if geojson and geojson.features.length>0
       for object in geojson.features
         if object.properties.id>@last_id
@@ -605,6 +616,9 @@ app =
       bgurl: @options.bgurl
       bgscale : @options.bgscale
       bgopacity : @options.bgopacity
+      lon : @options.lon
+      lat : @options.lat
+      angle: @options.angle
     }
   save_local : ->
     canvas = @get_canvas_data()
@@ -659,10 +673,6 @@ app =
 #      @objects[count].side  = object.side
 #      @objects[count].eachWidth  = object.eachWidth
 #      @objects[count].eachHeight = object.eachHeight
-  mapCenter : null
-  mapAngle  : 0
-  setMapCenter : (latlon)->
-    @mapCenter = proj4("EPSG:4326", "EPSG:3857", latlon)
   toGeoJSON : ->
     features = []
     for object in @canvas.getObjects()
@@ -678,14 +688,15 @@ app =
     geojson = @toGeoJSON()
     features = []
     for object in geojson.features
-      if @mapCenter
+      mapCenter = proj4("EPSG:4326", "EPSG:3857", [@options.lon, @options.lat])
+      if mapCenter
         coordinates = []
         for geometry in object.geometry.coordinates[0]
           x = geometry[0]
           y = geometry[1]
           # 回転の反映
-          new_coordinate =  fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-@mapAngle))
-          coordinate = [@mapCenter[0]+new_coordinate.x, @mapCenter[1]+new_coordinate.y]
+          new_coordinate =  fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-@options.angle))
+          coordinate = [mapCenter[0]+new_coordinate.x, mapCenter[1]+new_coordinate.y]
           coordinates.push(coordinate)
           log coordinate
         object.geometry.coordinates = [coordinates]

@@ -29,7 +29,7 @@ $('#bgimg').change (e)->
       processData: false
       type: 'POST'
       success: (data) ->
-        log data
+#        log data
         url = '/haika_store/image/'+app.id+'_'+files[0].name
         app.load_bg_from_url(url)
   
@@ -85,8 +85,12 @@ app.init(
 
 
 
-app.setMapCenter([136.963791, 35.155080])
-app.mapAngle = 25
+#app.setMapCenter([136.963791, 35.155080])
+#app.mapAngle = 25
+#app.options.lon = parseFloat($('#canvas_lon').val()) 
+#app.options.lat = parseFloat($('#canvas_lat').val())
+#app.options.angle = parseInt($('#canvas_angle').val())
+
 
 bind = (func, do_active=true)->
   object = app.canvas.getActiveObject()
@@ -365,6 +369,7 @@ $ ->
   $(".reset").click ->
     app.objects = []
     localStorage.clear()
+    $(window).off 'beforeunload'
     location.reload()
 #  $(".rotate").slider
 #    min: 0
@@ -415,6 +420,7 @@ $ ->
     app.centerY = parseInt($(this).val())
   $('#canvas_bgscale').change ->
     app.options.bgscale = parseInt($(this).val())
+#    app.save()
 #  $('#canvas_bgopacity').change ->
 #    app.options.bgopacity = parseFloat($(this).val())
   $('#ex1').slider
@@ -423,10 +429,20 @@ $ ->
       $('#canvas_bgopacity').val()
       app.options.bgopacity = value
       app.render()
+#      app.save()
       return value
   $('#canvas_render').click ->
     app.render()
 
+  $('#canvas_lat').change ->
+    app.options.lat = parseFloat($(this).val())
+    app.save()
+  $('#canvas_lon').change ->
+    app.options.lon = parseFloat($(this).val())
+    app.save()
+  $('#canvas_angle').change ->
+    app.options.angle = parseInt($(this).val())
+    app.save()
     
   $('.undo').click ->
     undo.undoManager.undo()

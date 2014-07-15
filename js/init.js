@@ -36,7 +36,6 @@ $('#bgimg').change(function(e) {
       type: 'POST',
       success: function(data) {
         var url;
-        log(data);
         url = '/haika_store/image/' + app.id + '_' + files[0].name;
         return app.load_bg_from_url(url);
       }
@@ -100,10 +99,6 @@ app.init({
   bgscale: 4.425,
   callback: set_scrollbar
 });
-
-app.setMapCenter([136.963791, 35.155080]);
-
-app.mapAngle = 25;
 
 bind = function(func, do_active) {
   var group, object, _i, _len, _ref, _results;
@@ -438,6 +433,7 @@ $(function() {
   $(".reset").click(function() {
     app.objects = [];
     localStorage.clear();
+    $(window).off('beforeunload');
     return location.reload();
   });
   timeout = false;
@@ -484,6 +480,18 @@ $(function() {
   });
   $('#canvas_render').click(function() {
     return app.render();
+  });
+  $('#canvas_lat').change(function() {
+    app.options.lat = parseFloat($(this).val());
+    return app.save();
+  });
+  $('#canvas_lon').change(function() {
+    app.options.lon = parseFloat($(this).val());
+    return app.save();
+  });
+  $('#canvas_angle').change(function() {
+    app.options.angle = parseInt($(this).val());
+    return app.save();
   });
   $('.undo').click(function() {
     return undo.undoManager.undo();
