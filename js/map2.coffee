@@ -71,10 +71,15 @@ console.log geojson
 #      map_center =
 #        lat : 35.155080
 #        lon : 136.963791
+canvas = JSON.parse(localStorage.getItem("canvas"))
+log canvas
+center = ol.proj.transform([
+  canvas.lon
+  canvas.lat
+], "EPSG:4326", "EPSG:3857")
 map_center =
-  lat : 15246739.471236346
-  lon : 4184975.9183342634
-
+  lon : center[0]
+  lat : center[1]
 #features = []
 #
 #if geojson and geojson.features.length>0
@@ -110,16 +115,16 @@ vectorLayer = new ol.layer.Vector(
   style: styleFunction
 )
 
-center = ol.proj.transform([
-  136.963791
-  35.155080
-], "EPSG:4326", "EPSG:3857")
-console.log center
-center = ol.proj.transform([
-  136.963791
-  35.155049
-], "EPSG:4326", "EPSG:3857")
-console.log center
+#center = ol.proj.transform([
+#  136.963791
+#  35.155080
+#], "EPSG:4326", "EPSG:3857")
+#console.log center
+#center = ol.proj.transform([
+#  136.963791
+#  35.155049
+#], "EPSG:4326", "EPSG:3857")
+#console.log center
 
 map = new ol.Map(
   layers: [

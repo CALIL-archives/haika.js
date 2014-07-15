@@ -274,7 +274,7 @@ add = function(val) {
 };
 
 $(function() {
-  var cancel_default, html, key, timeout, toolbar, val;
+  var cancel_default, html, key, map_created, timeout, toolbar, val;
   window.addmany = function() {
     var x, y;
     y = 0;
@@ -488,6 +488,18 @@ $(function() {
   $('#canvas_lon').change(function() {
     app.options.lon = parseFloat($(this).val());
     return app.save();
+  });
+  map_created = false;
+  $('#map_setting').click(function() {
+    if ($('.main_container').css('display') === 'block') {
+      if (!map_created) {
+        map_setting();
+        map_created = true;
+      }
+      return $('.main_container').hide();
+    } else {
+      return $('.main_container').show();
+    }
   });
   $('#canvas_angle').change(function() {
     app.options.angle = parseInt($(this).val());

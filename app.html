@@ -173,14 +173,15 @@
           </label><br />
           <input type="button" id="canvas_render" class="btn btn-default" value="render">
           <br />
-          <label for="canvas_lat">
+          <label for="canvas_lat" style="display:block;float:left;">
             lat:
-            <input type="number" id="canvas_lat" class="form-control" value="35.155080" />
-          </label><br />
-          <label for="canvas_lon">
+            <input type="number" id="canvas_lat" class="form-control" value="35.155080" style="width:100px;" disabled />
+          </label>
+          <label for="canvas_lon" style="display:block;">
             lon:
-            <input type="number" id="canvas_lon" class="form-control" value="136.963791" />
-          </label><br />
+            <input type="number" id="canvas_lon" class="form-control" value="136.963791" style="width:100px;" disabled />
+          </label>
+          <input type="button" value="setting" id="map_setting" class="btn btn-default" /><br />
           <label for="canvas_angle">
             angle:
             <input type="number" id="canvas_angle" class="form-control" value="25" />
@@ -235,6 +236,7 @@
         </div>
       </div>
     </div>
+    <div id="map"></div>
     <!-- External script dependencies  -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
@@ -263,5 +265,7 @@
     <script type="text/javascript" src="js/app.js"></script>
     <script type="text/javascript" src="js/init.js"></script>
     <script type="text/javascript" src="js/editor.js"></script>
+    <script src="vendor/ol.js"></script>
+    <script src="js/map_setting.js"></script>
   </body>
 </html>

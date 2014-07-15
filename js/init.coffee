@@ -440,6 +440,17 @@ $ ->
   $('#canvas_lon').change ->
     app.options.lon = parseFloat($(this).val())
     app.save()
+  
+  map_created = false
+  $('#map_setting').click ->
+    if $('.main_container').css('display')=='block'
+      if not map_created
+        map_setting()
+        map_created = true
+      $('.main_container').hide()
+    else
+      $('.main_container').show()
+    
   $('#canvas_angle').change ->
     app.options.angle = parseInt($(this).val())
     app.save()
