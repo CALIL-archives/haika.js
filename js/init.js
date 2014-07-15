@@ -496,9 +496,11 @@ $(function() {
         map_setting();
         map_created = true;
       }
-      return $('.main_container').hide();
+      $('.main_container').hide();
+      return $('#map_search').show();
     } else {
-      return $('.main_container').show();
+      $('.main_container').show();
+      return $('#map_search').hide();
     }
   });
   $('#canvas_angle').change(function() {

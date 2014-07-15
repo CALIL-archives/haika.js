@@ -1,6 +1,6 @@
 map_setting = ->
   center = ol.proj.transform([ app.options.lon, app.options.lat ], "EPSG:4326", "EPSG:3857")
-  map = new ol.Map(
+  window.map = new ol.Map(
     target: "map"
     ol3Logo: false
     layers: [new ol.layer.Tile(source: new ol.source.OSM())]
@@ -56,3 +56,26 @@ map_setting = ->
   #map.addInteraction(draw);
   map.addControl(new ol.control.ZoomSlider())
   map.addControl(new ol.control.ScaleLine())
+
+$('#map_search').submit ->
+  url = 'http://nominatim.openstreetmap.org/search'
+  $.ajax
+    url: url
+    type: "GET"
+    data:
+      q: $('#map_query').val()
+      format: "json"
+    dataType: "jsonp"
+    jsonp: "json_callback"
+    error: ()->
+    success: (data)=>
+      log data
+      if data.length>0
+        center = ol.proj.transform([ data[0].lon, data[0].lat ], "EPSG:4326", "EPSG:3857")
+        log center
+        log new ol.geom.Point(center)
+        map.getView().setCenter(new ol.geom.Point(center))
+        app.options.lat = parseFloat(data[0].lat)
+        app.options.lon = parseFloat(data[0].lon)
+        app.save()
+  return false;

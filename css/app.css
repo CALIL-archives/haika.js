@@ -115,3 +115,9 @@ body {
     width: 900px;
     height: 600px;
 }
+#map_search {
+  display: none;
+  position:absolute;
+  top: 100px;
+  left: 300px;
+}

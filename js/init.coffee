@@ -448,8 +448,10 @@ $ ->
         map_setting()
         map_created = true
       $('.main_container').hide()
+      $('#map_search').show()
     else
       $('.main_container').show()
+      $('#map_search').hide()
     
   $('#canvas_angle').change ->
     app.options.angle = parseInt($(this).val())
