@@ -15,8 +15,7 @@ map_setting = function() {
   view = new ol.View2D({
     center: center,
     zoom: 2,
-    maxZoom: 21,
-    maxResolution: 20
+    maxZoom: 21
   });
   view.on("change:center", function() {
     center = ol.proj.transform(view.getCenter(), "EPSG:3857", "EPSG:4326");
@@ -44,8 +43,8 @@ map_setting = function() {
   });
   view.setCenter(center);
   view.setZoom(20);
-  gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
-  return map.on('moveend', function(e) {});
+  olMapDiv.parentNode.removeChild(olMapDiv);
+  return gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
 };
 
 $('#map_search').submit(function() {

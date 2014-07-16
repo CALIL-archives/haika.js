@@ -16,7 +16,7 @@ map_setting = ->
     center: center
     zoom: 2
     maxZoom: 21
-    maxResolution: 20
+#    maxResolution: 20
   )
   view.on "change:center", ->
     center = ol.proj.transform(view.getCenter(), "EPSG:3857", "EPSG:4326")
@@ -40,10 +40,10 @@ map_setting = ->
   )
   view.setCenter(center)
   view.setZoom(20)
-#  olMapDiv.parentNode.removeChild olMapDiv
+  olMapDiv.parentNode.removeChild olMapDiv
   gmap.controls[google.maps.ControlPosition.TOP_LEFT].push olMapDiv
 
-  map.on 'moveend', (e)->
+#  map.on 'moveend', (e)->
 #    center = map.getView().getCenter()
 #    new_center = ol.proj.transform(center, "EPSG:3857", "EPSG:4326")
 #    $('#canvas_lon').val(new_center[0])
