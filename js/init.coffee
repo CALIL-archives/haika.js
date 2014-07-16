@@ -419,7 +419,7 @@ $ ->
   $('#canvas_centerY').change ->
     app.centerY = parseInt($(this).val())
   $('#canvas_bgscale').change ->
-    app.options.bgscale = parseFloat($(this).val())
+    app.options.bgscale = parseInt($(this).val())
 #    app.save()
 #  $('#canvas_bgopacity').change ->
 #    app.options.bgopacity = parseFloat($(this).val())
@@ -458,9 +458,9 @@ $ ->
       $('.haika_container').show()
       $('.map_container').hide()
   $('.map_setting').click toggle_map
-#  setTimeout ->
-#    toggle_map()
-#  , 1000
+  setTimeout ->
+    toggle_map()
+  , 1000
   
   $('.undo').click ->
     undo.undoManager.undo()

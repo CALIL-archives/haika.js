@@ -1,16 +1,48 @@
 map_setting = ->
+  gmap = new google.maps.Map(document.getElementById("gmap"),
+    disableDefaultUI: true
+    keyboardShortcuts: false
+    draggable: false
+    disableDoubleClickZoom: true
+    scrollwheel: false
+    streetViewControl: false
+  )
+
+  # make sure the view doesn't go beyond the 22 zoom levels of Google Maps
+#  view = new ol.View2D(maxZoom: 21)
+
   center = ol.proj.transform([ app.options.lon, app.options.lat ], "EPSG:4326", "EPSG:3857")
+  view = new ol.View2D(
+    center: center
+    zoom: 2
+    maxZoom: 21
+    maxResolution: 20
+  )
+  view.on "change:center", ->
+    center = ol.proj.transform(view.getCenter(), "EPSG:3857", "EPSG:4326")
+    gmap.setCenter new google.maps.LatLng(center[1], center[0])
+  view.on "change:resolution", ->
+    gmap.setZoom view.getZoom()
+
+  olMapDiv = document.getElementById("olmap")
   window.map = new ol.Map(
     target: "map"
     ol3Logo: false
-    layers: [new ol.layer.Tile(source: new ol.source.OSM())]
-    view: new ol.View2D(
-      center: center
-      zoom: 2
-      maxZoom: 5
-      maxResolution: 20
-    )
+    layers: [] #[vector]
+#    layers: [new ol.layer.Tile(source: new ol.source.OSM())]
+    interactions: ol.interaction.defaults(
+        altShiftDragRotate: false
+        dragPan: false
+        rotate: false
+    ).extend([new ol.interaction.DragPan(kinetic: null)])
+    target: olMapDiv
+    view: view
   )
+  view.setCenter(center)
+  view.setZoom(20)
+#  olMapDiv.parentNode.removeChild olMapDiv
+  gmap.controls[google.maps.ControlPosition.TOP_LEFT].push olMapDiv
+
   map.on 'moveend', (e)->
 #    center = map.getView().getCenter()
 #    new_center = ol.proj.transform(center, "EPSG:3857", "EPSG:4326")
@@ -20,42 +52,42 @@ map_setting = ->
 #    app.options.lat = new_center[1]
 #    app.save()
 
-  featureOverlay = new ol.FeatureOverlay({
-    style: new ol.style.Style({
-      fill: new ol.style.Fill({
-        color: 'rgba(255, 255, 255, 0.2)'
-      }),
-      stroke: new ol.style.Stroke({
-        color: '#ffcc33',
-        width: 2
-      }),
-      image: new ol.style.Circle({
-        radius: 7,
-        stroke: new ol.style.Stroke({
-          color: '#ffffff',
-          width: 2
-        }),
-        fill: new ol.style.Fill({
-          color: '#0077FF'
-        })
-      })
-    })
-  })
-  featureOverlay.addFeature(new ol.Feature(new ol.geom.Point(center)))
-
-  featureOverlay.setMap(map);
-  draw = new ol.interaction.Draw({features: featureOverlay.getFeatures(), type: "Point"})
-  modify = new ol.interaction.Modify({
-    features: featureOverlay.getFeatures(),
-    deleteCondition: (event) =>
-      return ol.events.condition.shiftKeyOnly(event) &&
-        ol.events.condition.singleClick(event);
-  })
+#  featureOverlay = new ol.FeatureOverlay({
+#    style: new ol.style.Style({
+#      fill: new ol.style.Fill({
+#        color: 'rgba(255, 255, 255, 0.2)'
+#      }),
+#      stroke: new ol.style.Stroke({
+#        color: '#ffcc33',
+#        width: 2
+#      }),
+#      image: new ol.style.Circle({
+#        radius: 7,
+#        stroke: new ol.style.Stroke({
+#          color: '#ffffff',
+#          width: 2
+#        }),
+#        fill: new ol.style.Fill({
+#          color: '#0077FF'
+#        })
+#      })
+#    })
+#  })
+#  featureOverlay.addFeature(new ol.Feature(new ol.geom.Point(center)))
+#
+#  featureOverlay.setMap(map);
+#  draw = new ol.interaction.Draw({features: featureOverlay.getFeatures(), type: "Point"})
+#  modify = new ol.interaction.Modify({
+#    features: featureOverlay.getFeatures(),
+#    deleteCondition: (event) =>
+#      return ol.events.condition.shiftKeyOnly(event) &&
+#        ol.events.condition.singleClick(event);
+#  })
   #map.addInteraction(modify);
   #map.addInteraction(new ol.interaction.DragRotateAndZoom())
   #map.addInteraction(draw);
-  map.addControl(new ol.control.ZoomSlider())
-  map.addControl(new ol.control.ScaleLine())
+#  map.addControl(new ol.control.ZoomSlider())
+#  map.addControl(new ol.control.ScaleLine())
 
 $('#map_search').submit ->
   url = 'http://nominatim.openstreetmap.org/search'
@@ -79,7 +111,7 @@ $('#map_search').submit ->
         center = ol.proj.transform([ app.options.lon, app.options.lat ], "EPSG:4326", "EPSG:3857")
         view = map.getView()
         view.setCenter(center)
-        view.setZoom(10)
+        view.setZoom(20)
       else
         alert '見つかりませんでした。'
   return false;

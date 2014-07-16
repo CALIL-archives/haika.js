@@ -467,7 +467,7 @@ $(function() {
     return app.centerY = parseInt($(this).val());
   });
   $('#canvas_bgscale').change(function() {
-    return app.options.bgscale = parseFloat($(this).val());
+    return app.options.bgscale = parseInt($(this).val());
   });
   $('#ex1').slider({
     formater: function(value) {
@@ -509,6 +509,9 @@ $(function() {
     }
   };
   $('.map_setting').click(toggle_map);
+  setTimeout(function() {
+    return toggle_map();
+  }, 1000);
   $('.undo').click(function() {
     return undo.undoManager.undo();
   });
