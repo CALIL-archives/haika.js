@@ -109,15 +109,14 @@ body {
 }
 
 /* map */
+.map_container {
+}
 #map {
-    margin: 0;
-    padding: 0;
-    width: 900px;
-    height: 600px;
+  margin: 0;
+  padding: 0;
+  width: 900px;
+  height: 400px;
 }
 #map_search {
-  display: none;
-  position:absolute;
-  top: 100px;
-  left: 300px;
+  width: 300px
 }

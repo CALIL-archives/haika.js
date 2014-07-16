@@ -19,16 +19,7 @@ map_setting = function() {
       maxResolution: 20
     })
   });
-  map.on('moveend', function(e) {
-    var new_center;
-    center = map.getView().getCenter();
-    new_center = ol.proj.transform(center, "EPSG:3857", "EPSG:4326");
-    $('#canvas_lon').val(new_center[0]);
-    app.options.lon = new_center[0];
-    $('#canvas_lat').val(new_center[1]);
-    app.options.lat = new_center[1];
-    return app.save();
-  });
+  map.on('moveend', function(e) {});
   featureOverlay = new ol.FeatureOverlay({
     style: new ol.style.Style({
       fill: new ol.style.Fill({
@@ -83,16 +74,20 @@ $('#map_search').submit(function() {
     error: function() {},
     success: (function(_this) {
       return function(data) {
-        var center;
+        var center, view;
         log(data);
         if (data.length > 0) {
-          center = ol.proj.transform([data[0].lon, data[0].lat], "EPSG:4326", "EPSG:3857");
-          log(center);
-          log(new ol.geom.Point(center));
-          map.getView().setCenter(new ol.geom.Point(center));
-          app.options.lat = parseFloat(data[0].lat);
           app.options.lon = parseFloat(data[0].lon);
-          return app.save();
+          app.options.lat = parseFloat(data[0].lat);
+          app.save();
+          $('#canvas_lon').val(app.options.lon);
+          $('#canvas_lat').val(app.options.lat);
+          center = ol.proj.transform([app.options.lon, app.options.lat], "EPSG:4326", "EPSG:3857");
+          view = map.getView();
+          view.setCenter(center);
+          return view.setZoom(10);
+        } else {
+          return alert('見つかりませんでした。');
         }
       };
     })(this)

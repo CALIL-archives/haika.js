@@ -13,6 +13,7 @@
 <!--    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">-->
   </head>
   <body>
+   <div class="haika_container">
     <div class="header">
       <ul class="nav nav-tabs">
         <li class="active"><a href="#" class="shelf">本棚</a></li>
@@ -99,7 +100,6 @@
             <input type="file" id="file" />
           </div>
         </div>
-      </div>
 <!--    </div>-->
     <div class="toolbar_container">
       <ul class="toolbar_menu">
@@ -181,7 +181,7 @@
             lon:
             <input type="number" id="canvas_lon" class="form-control" value="136.963791" style="width:100px;" disabled />
           </label>
-          <input type="button" value="setting" id="map_setting" class="btn btn-default" /><br />
+          <input type="button" value="setting" class="map_setting btn btn-default" /><br />
           <label for="canvas_angle">
             angle:
             <input type="number" id="canvas_angle" class="form-control" value="25" />
@@ -236,10 +236,19 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="map_container">
     <div id="map"></div>
     <form id="map_search">
+     <label for="map_query">
+       地名で位置検索:
       <input type="text" id="map_query" class="form-control" />
+     </label>
+     <br />
+      <input type="button" class="geojson btn btn-default" value="GeoJSON" />
+      <input type="button" value="close" class="map_setting btn btn-default" />
     </form>
+  </div>
     <!-- External script dependencies  -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 

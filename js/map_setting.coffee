@@ -12,13 +12,13 @@ map_setting = ->
     )
   )
   map.on 'moveend', (e)->
-    center = map.getView().getCenter()
-    new_center = ol.proj.transform(center, "EPSG:3857", "EPSG:4326")
-    $('#canvas_lon').val(new_center[0])
-    app.options.lon = new_center[0]
-    $('#canvas_lat').val(new_center[1])
-    app.options.lat = new_center[1]
-    app.save()
+#    center = map.getView().getCenter()
+#    new_center = ol.proj.transform(center, "EPSG:3857", "EPSG:4326")
+#    $('#canvas_lon').val(new_center[0])
+#    app.options.lon = new_center[0]
+#    $('#canvas_lat').val(new_center[1])
+#    app.options.lat = new_center[1]
+#    app.save()
 
   featureOverlay = new ol.FeatureOverlay({
     style: new ol.style.Style({
@@ -71,11 +71,15 @@ $('#map_search').submit ->
     success: (data)=>
       log data
       if data.length>0
-        center = ol.proj.transform([ data[0].lon, data[0].lat ], "EPSG:4326", "EPSG:3857")
-        log center
-        log new ol.geom.Point(center)
-        map.getView().setCenter(new ol.geom.Point(center))
-        app.options.lat = parseFloat(data[0].lat)
         app.options.lon = parseFloat(data[0].lon)
+        app.options.lat = parseFloat(data[0].lat)
         app.save()
+        $('#canvas_lon').val app.options.lon
+        $('#canvas_lat').val app.options.lat
+        center = ol.proj.transform([ app.options.lon, app.options.lat ], "EPSG:4326", "EPSG:3857")
+        view = map.getView()
+        view.setCenter(center)
+        view.setZoom(10)
+      else
+        alert '見つかりませんでした。'
   return false;

@@ -419,7 +419,7 @@ $ ->
   $('#canvas_centerY').change ->
     app.centerY = parseInt($(this).val())
   $('#canvas_bgscale').change ->
-    app.options.bgscale = parseInt($(this).val())
+    app.options.bgscale = parseFloat($(this).val())
 #    app.save()
 #  $('#canvas_bgopacity').change ->
 #    app.options.bgopacity = parseFloat($(this).val())
@@ -441,22 +441,27 @@ $ ->
     app.options.lon = parseFloat($(this).val())
     app.save()
   
-  map_created = false
-  $('#map_setting').click ->
-    if $('.main_container').css('display')=='block'
-      if not map_created
-        map_setting()
-        map_created = true
-      $('.main_container').hide()
-      $('#map_search').show()
-    else
-      $('.main_container').show()
-      $('#map_search').hide()
-    
   $('#canvas_angle').change ->
     app.options.angle = parseInt($(this).val())
     app.save()
-    
+
+  map_created = false
+  toggle_map = ->
+    if $('.haika_container').css('display')=='block'
+      if not map_created
+        map_setting()
+        map_created = true
+      $('.haika_container').hide()
+      $('.map_container').show()
+      $('#map_query').focus()
+    else
+      $('.haika_container').show()
+      $('.map_container').hide()
+  $('.map_setting').click toggle_map
+#  setTimeout ->
+#    toggle_map()
+#  , 1000
+  
   $('.undo').click ->
     undo.undoManager.undo()
 

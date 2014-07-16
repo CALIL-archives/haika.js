@@ -274,7 +274,7 @@ add = function(val) {
 };
 
 $(function() {
-  var cancel_default, html, key, map_created, timeout, toolbar, val;
+  var cancel_default, html, key, map_created, timeout, toggle_map, toolbar, val;
   window.addmany = function() {
     var x, y;
     y = 0;
@@ -467,7 +467,7 @@ $(function() {
     return app.centerY = parseInt($(this).val());
   });
   $('#canvas_bgscale').change(function() {
-    return app.options.bgscale = parseInt($(this).val());
+    return app.options.bgscale = parseFloat($(this).val());
   });
   $('#ex1').slider({
     formater: function(value) {
@@ -489,24 +489,26 @@ $(function() {
     app.options.lon = parseFloat($(this).val());
     return app.save();
   });
-  map_created = false;
-  $('#map_setting').click(function() {
-    if ($('.main_container').css('display') === 'block') {
-      if (!map_created) {
-        map_setting();
-        map_created = true;
-      }
-      $('.main_container').hide();
-      return $('#map_search').show();
-    } else {
-      $('.main_container').show();
-      return $('#map_search').hide();
-    }
-  });
   $('#canvas_angle').change(function() {
     app.options.angle = parseInt($(this).val());
     return app.save();
   });
+  map_created = false;
+  toggle_map = function() {
+    if ($('.haika_container').css('display') === 'block') {
+      if (!map_created) {
+        map_setting();
+        map_created = true;
+      }
+      $('.haika_container').hide();
+      $('.map_container').show();
+      return $('#map_query').focus();
+    } else {
+      $('.haika_container').show();
+      return $('.map_container').hide();
+    }
+  };
+  $('.map_setting').click(toggle_map);
   $('.undo').click(function() {
     return undo.undoManager.undo();
   });
