@@ -214,7 +214,7 @@
           "coordinates": [new_coordinates]
 #          "coordinates": coordinates
         "properties": 
-          "label" : @label
+          "label" : if @label then @label else ""
           "type"  : @type
           "left_cm" : @left_cm
           "top_cm"  : @top_cm
@@ -263,6 +263,7 @@
           label:
             title: "ラベル"
             type: "string"
+            default: ""
           count:
             title: "連数"
             type: "integer"

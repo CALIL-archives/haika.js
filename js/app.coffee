@@ -651,13 +651,10 @@ app =
     features = []
     if geojson and geojson.features.length>0
       for object in geojson.features
-        log object
         coordinates = []
         for geometry in object.geometry.coordinates[0]
-          log geometry
           x = geometry[0]
           y = geometry[1]
-          log coordinate
           coordinate = ol.proj.transform([x,y], "EPSG:3857", "EPSG:4326")
           coordinates.push(coordinate)
         data =
@@ -749,7 +746,6 @@ app =
           new_coordinate =  fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-@options.angle))
           coordinate = [mapCenter[0]+new_coordinate.x, mapCenter[1]+new_coordinate.y]
           coordinates.push(coordinate)
-          log coordinate
         object.geometry.coordinates = [coordinates]
       features.push(object)
     geojson.features = features

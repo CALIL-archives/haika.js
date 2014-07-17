@@ -249,7 +249,7 @@
           "coordinates": [new_coordinates]
         },
         "properties": {
-          "label": this.label,
+          "label": this.label ? this.label : "",
           "type": this.type,
           "left_cm": this.left_cm,
           "top_cm": this.top_cm,
@@ -303,7 +303,8 @@
         properties: {
           label: {
             title: "ラベル",
-            type: "string"
+            type: "string",
+            "default": ""
           },
           count: {
             title: "連数",

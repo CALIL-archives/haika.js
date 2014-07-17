@@ -887,15 +887,12 @@ app = {
       _ref = geojson.features;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
-        log(object);
         coordinates = [];
         _ref1 = object.geometry.coordinates[0];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           geometry = _ref1[_j];
-          log(geometry);
           x = geometry[0];
           y = geometry[1];
-          log(coordinate);
           coordinate = ol.proj.transform([x, y], "EPSG:3857", "EPSG:4326");
           coordinates.push(coordinate);
         }
@@ -1009,7 +1006,6 @@ app = {
           new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.options.angle));
           coordinate = [mapCenter[0] + new_coordinate.x, mapCenter[1] + new_coordinate.y];
           coordinates.push(coordinate);
-          log(coordinate);
         }
         object.geometry.coordinates = [coordinates];
       }
