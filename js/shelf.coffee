@@ -10,7 +10,7 @@
     console.warn "fabric.Shelf is already defined"
     return
   stateProperties = fabric.Object::stateProperties.concat()
-  stateProperties.push "id", "count", "side", "top_cm", "left_cm", "eachWidth", "eachHeight"
+  stateProperties.push "id", "count", "side", "top_cm", "left_cm", "eachWidth", "eachHeight", "label"
 
   fabric.Shelf = fabric.util.createClass(fabric.Object,
     stateProperties: stateProperties
@@ -27,6 +27,7 @@
       @eachHeight * app.scale
     count: 1
     side: 1
+    label: ''
     minScaleLimit: 1
     strokeDashArray: null
     initialize: (options) ->
@@ -213,6 +214,7 @@
           "coordinates": [new_coordinates]
 #          "coordinates": coordinates
         "properties": 
+          "label" : @label
           "type"  : @type
           "left_cm" : @left_cm
           "top_cm"  : @top_cm
@@ -258,13 +260,15 @@
         title: "基本情報"
         type: "object"
         properties:
+          label:
+            title: "ラベル"
+            type: "string"
           count:
             title: "連数"
             type: "integer"
             default: 3
             minimum: 1
             maximum: 10
-
           side:
             type: "integer"
             default: 1

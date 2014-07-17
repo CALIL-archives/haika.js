@@ -860,6 +860,63 @@ app = {
     };
     param = JSON.stringify(param);
     data = {
+      ext: 'json',
+      id: this.id,
+      data: param
+    };
+    url = '/haika_store/index.php';
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: data,
+      dataType: "json",
+      error: function() {},
+      success: (function(_this) {
+        return function(data) {
+          return log(data);
+        };
+      })(this)
+    });
+    return this.save_geojson();
+  },
+  save_geojson: function() {
+    var EPSG3857_geojson, coordinate, coordinates, data, features, geojson, geometry, object, param, url, x, y, _i, _j, _len, _len1, _ref, _ref1;
+    geojson = this.createGeoJSON();
+    features = [];
+    if (geojson && geojson.features.length > 0) {
+      _ref = geojson.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        log(object);
+        coordinates = [];
+        _ref1 = object.geometry.coordinates[0];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          geometry = _ref1[_j];
+          log(geometry);
+          x = geometry[0];
+          y = geometry[1];
+          log(coordinate);
+          coordinate = ol.proj.transform([x, y], "EPSG:3857", "EPSG:4326");
+          coordinates.push(coordinate);
+        }
+        data = {
+          "type": "Feature",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [coordinates]
+          },
+          "properties": object.properties
+        };
+        features.push(data);
+      }
+    }
+    EPSG3857_geojson = {
+      "type": "FeatureCollection",
+      "features": features
+    };
+    param = JSON.stringify(EPSG3857_geojson);
+    data = {
+      ext: 'geojson',
       id: this.id,
       data: param
     };
@@ -871,7 +928,7 @@ app = {
       dataType: "json",
       error: function() {},
       success: data > log(data)
-    });
+    }, log('geojson save'));
   },
   save: function() {
     var object, _i, _len, _ref;
@@ -925,9 +982,17 @@ app = {
     return data;
   },
   getGeoJSON: function() {
-    var coordinate, coordinates, features, geojson, geometry, mapCenter, new_coordinate, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
+    var geojson;
     this.unselect();
     this.render();
+    geojson = this.createGeoJSON();
+    localStorage.setItem('geojson', JSON.stringify(geojson));
+    log(geojson);
+    $(window).off('beforeunload');
+    return location.href = 'map2.html';
+  },
+  createGeoJSON: function() {
+    var coordinate, coordinates, features, geojson, geometry, mapCenter, new_coordinate, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
     geojson = this.toGeoJSON();
     features = [];
     _ref = geojson.features;
@@ -951,10 +1016,7 @@ app = {
       features.push(object);
     }
     geojson.features = features;
-    localStorage.setItem('geojson', JSON.stringify(geojson));
-    log(geojson);
-    $(window).off('beforeunload');
-    return location.href = 'map2.html';
+    return geojson;
   },
   getSVG: function() {
     var a, blob, canvas, svg, tmp_canvas, tmp_scale;

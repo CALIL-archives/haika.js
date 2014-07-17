@@ -80,7 +80,9 @@ editor = new JSONEditor(document.getElementById("editor"),
 #          type: "dog"
 #          name: "Walter"
 #        ]
-
+      label:
+        title: "ラベル"
+        type: "string"
       count:
         title: "連数"
         type: "integer"

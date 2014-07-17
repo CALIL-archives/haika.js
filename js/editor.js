@@ -10,6 +10,10 @@ editor = new JSONEditor(document.getElementById("editor"), {
     title: "基本情報",
     type: "object",
     properties: {
+      label: {
+        title: "ラベル",
+        type: "string"
+      },
       count: {
         title: "連数",
         type: "integer",

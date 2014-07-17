@@ -14,7 +14,7 @@
     return;
   }
   stateProperties = fabric.Object.prototype.stateProperties.concat();
-  stateProperties.push("id", "count", "side", "top_cm", "left_cm", "eachWidth", "eachHeight");
+  stateProperties.push("id", "count", "side", "top_cm", "left_cm", "eachWidth", "eachHeight", "label");
   fabric.Shelf = fabric.util.createClass(fabric.Object, {
     stateProperties: stateProperties,
     type: "shelf",
@@ -34,6 +34,7 @@
     },
     count: 1,
     side: 1,
+    label: '',
     minScaleLimit: 1,
     strokeDashArray: null,
     initialize: function(options) {
@@ -248,6 +249,7 @@
           "coordinates": [new_coordinates]
         },
         "properties": {
+          "label": this.label,
           "type": this.type,
           "left_cm": this.left_cm,
           "top_cm": this.top_cm,
@@ -299,6 +301,10 @@
         title: "基本情報",
         type: "object",
         properties: {
+          label: {
+            title: "ラベル",
+            type: "string"
+          },
           count: {
             title: "連数",
             type: "integer",

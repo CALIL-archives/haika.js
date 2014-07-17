@@ -631,6 +631,50 @@ app =
       geojson: @toGeoJSON()
     param = JSON.stringify(param)
     data =
+      ext: 'json'
+      id  : @id
+      data: param
+#    log data
+    url = '/haika_store/index.php'
+    $.ajax
+      url: url
+      type: "POST"
+      data: data
+      dataType: "json"
+      error: ()->
+      success: (data)=>
+        log data
+    @save_geojson()
+  # geojsonの保存
+  save_geojson : ->
+    geojson = @createGeoJSON()
+    features = []
+    if geojson and geojson.features.length>0
+      for object in geojson.features
+        log object
+        coordinates = []
+        for geometry in object.geometry.coordinates[0]
+          log geometry
+          x = geometry[0]
+          y = geometry[1]
+          log coordinate
+          coordinate = ol.proj.transform([x,y], "EPSG:3857", "EPSG:4326")
+          coordinates.push(coordinate)
+        data =
+          "type": "Feature"
+          "geometry":
+            "type": "Polygon",
+            "coordinates": [
+              coordinates
+            ]
+          "properties": object.properties
+        features.push(data)
+    EPSG3857_geojson =
+      "type": "FeatureCollection"
+      "features": features
+    param = JSON.stringify(EPSG3857_geojson)
+    data =
+      ext: 'geojson'
       id  : @id
       data: param
 #    log data
@@ -643,6 +687,7 @@ app =
       error: ()->
       success: (data) >
         log data
+        log 'geojson save'
   save : ->
     for object in @canvas.getObjects()
       @save_prop(object)
@@ -685,6 +730,12 @@ app =
   getGeoJSON : ->
     @unselect()
     @render()
+    geojson = @createGeoJSON()
+    localStorage.setItem('geojson', JSON.stringify(geojson))
+    log geojson
+    $(window).off 'beforeunload'
+    location.href = 'map2.html'
+  createGeoJSON : ->
     geojson = @toGeoJSON()
     features = []
     for object in geojson.features
@@ -702,10 +753,7 @@ app =
         object.geometry.coordinates = [coordinates]
       features.push(object)
     geojson.features = features
-    localStorage.setItem('geojson', JSON.stringify(geojson))
-    log geojson
-    $(window).off 'beforeunload'
-    location.href = 'map2.html'
+    return geojson
   getSVG : ->
     @unselect()
     canvas = document.createElement('canvas')
