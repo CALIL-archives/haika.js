@@ -458,9 +458,9 @@ $ ->
       $('.haika_container').show()
       $('.map_container').hide()
   $('.map_setting').click toggle_map
-  setTimeout ->
-    toggle_map()
-  , 1000
+#  setTimeout ->
+#    toggle_map()
+#  , 1000
   
   $('.undo').click ->
     undo.undoManager.undo()

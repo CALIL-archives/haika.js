@@ -44,7 +44,17 @@ map_setting = function() {
   view.setCenter(center);
   view.setZoom(20);
   olMapDiv.parentNode.removeChild(olMapDiv);
-  return gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
+  gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
+  return map.on('moveend', function(e) {
+    var new_center;
+    center = map.getView().getCenter();
+    new_center = ol.proj.transform(center, "EPSG:3857", "EPSG:4326");
+    $('#canvas_lon').val(new_center[0]);
+    app.options.lon = new_center[0];
+    $('#canvas_lat').val(new_center[1]);
+    app.options.lat = new_center[1];
+    return app.save();
+  });
 };
 
 $('#map_search').submit(function() {

@@ -509,9 +509,6 @@ $(function() {
     }
   };
   $('.map_setting').click(toggle_map);
-  setTimeout(function() {
-    return toggle_map();
-  }, 1000);
   $('.undo').click(function() {
     return undo.undoManager.undo();
   });

@@ -43,14 +43,14 @@ map_setting = ->
   olMapDiv.parentNode.removeChild olMapDiv
   gmap.controls[google.maps.ControlPosition.TOP_LEFT].push olMapDiv
 
-#  map.on 'moveend', (e)->
-#    center = map.getView().getCenter()
-#    new_center = ol.proj.transform(center, "EPSG:3857", "EPSG:4326")
-#    $('#canvas_lon').val(new_center[0])
-#    app.options.lon = new_center[0]
-#    $('#canvas_lat').val(new_center[1])
-#    app.options.lat = new_center[1]
-#    app.save()
+  map.on 'moveend', (e)->
+    center = map.getView().getCenter()
+    new_center = ol.proj.transform(center, "EPSG:3857", "EPSG:4326")
+    $('#canvas_lon').val(new_center[0])
+    app.options.lon = new_center[0]
+    $('#canvas_lat').val(new_center[1])
+    app.options.lat = new_center[1]
+    app.save()
 
 #  featureOverlay = new ol.FeatureOverlay({
 #    style: new ol.style.Style({
