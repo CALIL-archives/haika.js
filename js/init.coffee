@@ -419,7 +419,7 @@ $ ->
   $('#canvas_centerY').change ->
     app.centerY = parseInt($(this).val())
   $('#canvas_bgscale').change ->
-    app.options.bgscale = parseInt($(this).val())
+    app.options.bgscale = parseFloat($(this).val())
 #    app.save()
 #  $('#canvas_bgopacity').change ->
 #    app.options.bgopacity = parseFloat($(this).val())

@@ -467,7 +467,7 @@ $(function() {
     return app.centerY = parseInt($(this).val());
   });
   $('#canvas_bgscale').change(function() {
-    return app.options.bgscale = parseInt($(this).val());
+    return app.options.bgscale = parseFloat($(this).val());
   });
   $('#ex1').slider({
     formater: function(value) {
