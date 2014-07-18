@@ -113,6 +113,9 @@ editor = new JSONEditor(document.getElementById("editor"),
         minimum: 1
       minor:
         type: "integer"
+#      width_scale:
+#        type: "number"
+#        default: 1
 
 #      shelfs:
 #        type: "array"

@@ -4,36 +4,27 @@
   var extend, fabric;
   fabric = global.fabric || (global.fabric = {});
   extend = fabric.util.object.extend;
-  if (fabric.Beacon) {
-    console.warn("fabric.Beacon is already defined");
+  if (fabric.Wall) {
+    console.warn("fabric.Wall is already defined");
     return;
   }
-  fabric.Beacon = fabric.util.createClass(fabric.Object, {
-    type: "beacon",
-    eachWidth: 10,
-    eachHeight: 10,
-    minor: 0,
+  fabric.Wall = fabric.util.createClass(fabric.Rect, {
+    type: "wall",
+    eachWidth: 100,
+    eachHeight: 100,
+    width_scale: 1,
+    height_scale: 1,
     __width: function() {
-      return this.eachWidth * app.scale;
+      return this.eachWidth * this.width_scale * app.scale;
     },
     __height: function() {
-      return this.eachHeight * app.scale;
+      return this.eachHeight * this.height_scale * app.scale;
     },
     initialize: function(options) {
       options = options || {};
       this.callSuper("initialize", options);
       this.width = this.__width();
       this.height = this.__height();
-    },
-    _render: function(ctx) {
-      ctx.beginPath();
-      if (this.width === 1 && this.height === 1) {
-        ctx.fillRect(0, 0, 1, 1);
-        return;
-      }
-      ctx.fillRect(this.width / 2 * (-1), this.height / 2 * (-1), this.width, this.height);
-      this._renderFill(ctx);
-      this._renderStroke(ctx);
     },
     __resizeShelf: function() {
       return this.set({
@@ -55,51 +46,16 @@
       if (this.angle >= 260 && this.angle <= 280) {
         this.angle = 270;
       }
-      this.width = this.__width();
-      this.height = this.__height();
-      this.setCoords();
-      return this.__is_into();
-    },
-    __is_into: function() {
-      var bottom, half_height, half_width, left, object, objects, right, top, _i, _len, _results;
-      objects = app.canvas.getObjects();
-      _results = [];
-      for (_i = 0, _len = objects.length; _i < _len; _i++) {
-        object = objects[_i];
-        if (object.type.match(/shelf$/)) {
-          half_width = object.__width() / 2;
-          left = object.left - half_width;
-          right = object.left + half_width;
-          half_height = object.__height() / 2;
-          top = object.top - half_height;
-          bottom = object.top + half_height;
-          if ((this.left > left && this.left < right) && (this.top > top && this.top < bottom)) {
-            _results.push(log('into:' + object.id));
-          } else {
-            _results.push(void 0);
-          }
-        } else {
-          _results.push(void 0);
-        }
+      if (this.sacleX !== 1) {
+        this.width = this.width * this.scaleX;
+        this.width_scale = this.width / (this.eachWidth * app.scale);
       }
-      return _results;
-    },
-    _normalizeLeftTopProperties: function(parsedAttributes) {
-      if ("left" in parsedAttributes) {
-        this.set("left", parsedAttributes.left + this.getWidth() / 2);
+      if (this.sacleY !== 1) {
+        this.height = this.height * this.scaleY;
+        this.height_scale = this.height / (this.eachHeight * app.scale);
       }
-      if ("top" in parsedAttributes) {
-        this.set("top", parsedAttributes.top + this.getHeight() / 2);
-      }
-      return this;
-    },
-    toObject: function(propertiesToInclude) {
-      var object;
-      object = extend(this.callSuper("toObject", propertiesToInclude));
-      if (!this.includeDefaultValues) {
-        this._removeDefaultValues(object);
-      }
-      return object;
+      this.scaleX = this.scaleY = 1;
+      return this.setCoords();
     },
     toGeoJSON: function() {
       var c, coordinate, coordinates, data, h, new_coordinate, new_coordinates, w, x, y, _i, _j, _len, _len1;
@@ -131,7 +87,8 @@
           "angle": this.angle,
           "fill": this.fill,
           "stroke": this.stroke,
-          "minor": this.minor
+          "width_scale": this.width_scale,
+          "height_scale": this.height_scale
         }
       };
       return data;
@@ -151,8 +108,13 @@
             minimum: 0,
             maximum: 360
           },
-          minor: {
-            type: "integer"
+          width_scale: {
+            type: "number",
+            "default": 1
+          },
+          height_scale: {
+            type: "number",
+            "default": 1
           }
         }
       };
@@ -165,5 +127,5 @@
 })((typeof exports !== "undefined" ? exports : this));
 
 /*
-//@ sourceMappingURL=beacon.map
+//@ sourceMappingURL=wall.map
 */

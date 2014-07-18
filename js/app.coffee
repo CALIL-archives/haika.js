@@ -194,6 +194,8 @@ app =
     #layer tab
     if object.type.match(/shelf$/)
       state = 'shelf'
+    else if object.type=='wall'
+      state = 'wall'
     else
       state = 'beacon'
     @state = state
@@ -326,6 +328,8 @@ app =
       return fabric.curvedShelf
     else if classname=='beacon'
       return fabric.Beacon
+    else if classname=='wall'
+      return fabric.Wall
     else
       return fabric.Shelf
   render : ->
@@ -337,11 +341,16 @@ app =
     #@canvas.clear()
     beacons = []
     shelfs  = []
+    walls = []
     for o in @objects
       if o.type=='beacon'
         beacons.push(o)
+      if o.type=='wall'
+        walls.push(o)
       if o.type.match(/shelf$/)
         shelfs.push(o)
+    for o in walls
+      @render_object(o)
     for o in shelfs
       @render_object(o)
     for o in beacons
@@ -358,12 +367,15 @@ app =
       object.count = o.count
       object.eachWidth = o.eachWidth
       object.eachHeight = o.eachHeight
-        # layer
+    # layer
     object.selectable = (o.type.match(@state))
     if not o.type.match(@state)
       object.opacity = 0.5
     object.id     = o.id
     object.scaleX = object.scaleY = 1
+    if o.type=='wall'
+      object.width_scale = o.width_scale
+      object.height_scale = o.height_scale
     object.width  = object.__width()
     object.height = object.__height()
     object.top    = @transformTopY_cm2px(o.top_cm)
@@ -377,6 +389,9 @@ app =
       object.fill = "#000000"
       object.hasControls = false
       object.padding = 10
+      object.borderColor = "#0000ee"
+    else if o.type=='wall'
+      object.fill = "#000000"
       object.borderColor = "#0000ee"
     else
       object.borderColor = "#000000"

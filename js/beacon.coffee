@@ -72,21 +72,25 @@
       return object
 
     toGeoJSON: ->
-      w = @eachWidth
-      h = @eachHeight
-      center = @getCenterPoint()
-#      log center
-      x = -w / 2 + center.x
-      y = -h / 2 + center.y
-      x = app.transformLeftX_px2cm(x)
-      y = app.transformTopY_px2cm(y)
+      w = @__width() / 100
+      h = @__height() / 100
+      x = -w / 2 + @left_cm / 100
+      y = -h / 2 + @top_cm / 100
+      coordinates = [
+        [ [x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]
+      ]
+      new_coordinates = []
+      for c in coordinates
+        for coordinate in c
+          # 回転の反映
+          new_coordinate =  fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(@left_cm / 100, @top_cm / 100), fabric.util.degreesToRadians(@angle));
+          # fabricとGeoJSONではX軸が逆なので変更する
+          new_coordinates.push([-new_coordinate.x, new_coordinate.y])
       data =
         "type": "Feature"
         "geometry":
           "type": "Polygon",
-          "coordinates": [
-            [ [-x, y], [-(x + w), y], [-(x + w), y + h], [-x, y + h], [-x, y]]
-          ]
+          "coordinates": [new_coordinates]
         "properties":
           "type"  : @type
           "left_cm" : @left_cm

@@ -231,6 +231,8 @@ app = {
     var state;
     if (object.type.match(/shelf$/)) {
       state = 'shelf';
+    } else if (object.type === 'wall') {
+      state = 'wall';
     } else {
       state = 'beacon';
     }
@@ -437,33 +439,43 @@ app = {
       return fabric.curvedShelf;
     } else if (classname === 'beacon') {
       return fabric.Beacon;
+    } else if (classname === 'wall') {
+      return fabric.Wall;
     } else {
       return fabric.Shelf;
     }
   },
   render: function() {
-    var beacons, o, shelfs, _i, _j, _k, _len, _len1, _len2, _ref;
+    var beacons, o, shelfs, walls, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
     this.canvas.renderOnAddRemove = false;
     this.unselect();
     this.canvas._objects.length = 0;
     beacons = [];
     shelfs = [];
+    walls = [];
     _ref = this.objects;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       o = _ref[_i];
       if (o.type === 'beacon') {
         beacons.push(o);
       }
+      if (o.type === 'wall') {
+        walls.push(o);
+      }
       if (o.type.match(/shelf$/)) {
         shelfs.push(o);
       }
     }
-    for (_j = 0, _len1 = shelfs.length; _j < _len1; _j++) {
-      o = shelfs[_j];
+    for (_j = 0, _len1 = walls.length; _j < _len1; _j++) {
+      o = walls[_j];
       this.render_object(o);
     }
-    for (_k = 0, _len2 = beacons.length; _k < _len2; _k++) {
-      o = beacons[_k];
+    for (_k = 0, _len2 = shelfs.length; _k < _len2; _k++) {
+      o = shelfs[_k];
+      this.render_object(o);
+    }
+    for (_l = 0, _len3 = beacons.length; _l < _len3; _l++) {
+      o = beacons[_l];
       this.render_object(o);
     }
     this.render_bg();
@@ -487,6 +499,10 @@ app = {
     }
     object.id = o.id;
     object.scaleX = object.scaleY = 1;
+    if (o.type === 'wall') {
+      object.width_scale = o.width_scale;
+      object.height_scale = o.height_scale;
+    }
     object.width = object.__width();
     object.height = object.__height();
     object.top = this.transformTopY_cm2px(o.top_cm);
@@ -500,6 +516,9 @@ app = {
       object.fill = "#000000";
       object.hasControls = false;
       object.padding = 10;
+      object.borderColor = "#0000ee";
+    } else if (o.type === 'wall') {
+      object.fill = "#000000";
       object.borderColor = "#0000ee";
     } else {
       object.borderColor = "#000000";

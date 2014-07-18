@@ -349,6 +349,10 @@ $(function() {
     beacon: {
       icon: 'square',
       title: 'ビーコン'
+    },
+    wall: {
+      icon: 'square',
+      title: '壁'
     }
   };
   for (key in toolbar) {
