@@ -356,10 +356,14 @@ app =
         floors.push(o)
       if o.type.match(/shelf$/)
         shelfs.push(o)
+    if app.state!='floor'
+      for o in floors
+        @render_object(o)
     for o in walls
       @render_object(o)
-    for o in floors
-      @render_object(o)
+    if app.state=='floor'
+      for o in floors
+        @render_object(o)
     for o in shelfs
       @render_object(o)
     for o in beacons

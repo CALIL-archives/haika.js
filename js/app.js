@@ -450,7 +450,7 @@ app = {
     }
   },
   render: function() {
-    var beacons, floors, o, shelfs, walls, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref;
+    var beacons, floors, o, shelfs, walls, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref;
     this.canvas.renderOnAddRemove = false;
     this.unselect();
     this.canvas._objects.length = 0;
@@ -474,20 +474,28 @@ app = {
         shelfs.push(o);
       }
     }
-    for (_j = 0, _len1 = walls.length; _j < _len1; _j++) {
-      o = walls[_j];
+    if (app.state !== 'floor') {
+      for (_j = 0, _len1 = floors.length; _j < _len1; _j++) {
+        o = floors[_j];
+        this.render_object(o);
+      }
+    }
+    for (_k = 0, _len2 = walls.length; _k < _len2; _k++) {
+      o = walls[_k];
       this.render_object(o);
     }
-    for (_k = 0, _len2 = floors.length; _k < _len2; _k++) {
-      o = floors[_k];
+    if (app.state === 'floor') {
+      for (_l = 0, _len3 = floors.length; _l < _len3; _l++) {
+        o = floors[_l];
+        this.render_object(o);
+      }
+    }
+    for (_m = 0, _len4 = shelfs.length; _m < _len4; _m++) {
+      o = shelfs[_m];
       this.render_object(o);
     }
-    for (_l = 0, _len3 = shelfs.length; _l < _len3; _l++) {
-      o = shelfs[_l];
-      this.render_object(o);
-    }
-    for (_m = 0, _len4 = beacons.length; _m < _len4; _m++) {
-      o = beacons[_m];
+    for (_n = 0, _len5 = beacons.length; _n < _len5; _n++) {
+      o = beacons[_n];
       this.render_object(o);
     }
     this.render_bg();
