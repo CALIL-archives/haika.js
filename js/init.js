@@ -236,10 +236,6 @@ $(window).resize(function() {
   return app.render();
 });
 
-$(window).bind("hashchange", function() {
-  return location.reload();
-});
-
 add = function(val) {
   var id, klass, object;
   log(val);

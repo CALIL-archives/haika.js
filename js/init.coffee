@@ -202,9 +202,6 @@ $(window).resize ->
   $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height())
   $('.property_panel').css('height', get_height()+scrollbar_height)
   app.render()
-
-$(window).bind "hashchange", ->
-  location.reload()
   
 add = (val)->
   log val

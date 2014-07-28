@@ -757,7 +757,7 @@ app = {
   },
   load: function() {
     var data;
-    if (location.hash.length !== 7) {
+    if (location.hash !== '' && location.hash.length !== 7) {
       location.hash = sprintf('%06d', location.hash.split('#')[1]);
       return;
     }
@@ -776,6 +776,11 @@ app = {
     } else {
       return this.get_haika_id();
     }
+  },
+  set_hashchange: function() {
+    return $(window).bind("hashchange", function() {
+      return location.reload();
+    });
   },
   load_render: function(data) {
     var canvas, geojson, key, klass, object, schema, shape, _i, _len, _ref;
@@ -845,7 +850,8 @@ app = {
       success: (function(_this) {
         return function(data) {
           location.hash = data.id;
-          return _this.id = data.id;
+          _this.id = data.id;
+          return set_hashchange();
         };
       })(this)
     });
@@ -864,7 +870,8 @@ app = {
       success: (function(_this) {
         return function(data) {
           log(data);
-          return _this.load_render(data);
+          _this.load_render(data);
+          return set_hashchange();
         };
       })(this)
     });

@@ -548,7 +548,7 @@ app =
   is_local : ->
     return location.protocol=='file:' or location.port!=''
   load : ()->
-    if location.hash.length!=7
+    if location.hash!='' and location.hash.length!=7
       location.hash = sprintf('%06d',location.hash.split('#')[1])
       return
     # ローカルか？
@@ -567,6 +567,10 @@ app =
     else
       # 新規IDの取得, ハッシュに設定
       @get_haika_id()
+  set_hashchange : ()->
+    # ハッシュ変更時に再読み込み
+    $(window).bind "hashchange", ->
+      location.reload()
   load_render : (data)->
     log data
     canvas = data.canvas
@@ -624,6 +628,7 @@ app =
       success: (data)=>
         location.hash = data.id
         @id = data.id
+        set_hashchange()
   load_server : ->
     url = """/haika_store/data/#{@id}.json"""
     $.ajax
@@ -636,6 +641,7 @@ app =
       success: (data)=>
         log data
         @load_render(data)
+        set_hashchange()
   get_canvas_data : ->
     return {
       state : @state
