@@ -4,14 +4,14 @@
   var extend, fabric;
   fabric = global.fabric || (global.fabric = {});
   extend = fabric.util.object.extend;
-  if (fabric.Wall) {
-    console.warn("fabric.Wall is already defined");
+  if (fabric.Floor) {
+    console.warn("fabric.Floor is already defined");
     return;
   }
-  fabric.Wall = fabric.util.createClass(fabric.Rect, {
-    type: "wall",
-    eachWidth: 100,
-    eachHeight: 100,
+  fabric.Floor = fabric.util.createClass(fabric.Rect, {
+    type: "floor",
+    eachWidth: 2500,
+    eachHeight: 2500,
     width_scale: 1,
     height_scale: 1,
     __width: function() {
@@ -127,5 +127,5 @@
 })((typeof exports !== "undefined" ? exports : this));
 
 /*
-//@ sourceMappingURL=wall.map
+//@ sourceMappingURL=floor.map
 */

@@ -233,6 +233,8 @@ app = {
       state = 'shelf';
     } else if (object.type === 'wall') {
       state = 'wall';
+    } else if (object.type === 'floor') {
+      state = 'floor';
     } else {
       state = 'beacon';
     }
@@ -441,18 +443,21 @@ app = {
       return fabric.Beacon;
     } else if (classname === 'wall') {
       return fabric.Wall;
+    } else if (classname === 'floor') {
+      return fabric.Floor;
     } else {
       return fabric.Shelf;
     }
   },
   render: function() {
-    var beacons, o, shelfs, walls, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
+    var beacons, floors, o, shelfs, walls, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref;
     this.canvas.renderOnAddRemove = false;
     this.unselect();
     this.canvas._objects.length = 0;
     beacons = [];
     shelfs = [];
     walls = [];
+    floors = [];
     _ref = this.objects;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       o = _ref[_i];
@@ -462,20 +467,27 @@ app = {
       if (o.type === 'wall') {
         walls.push(o);
       }
+      if (o.type === 'floor') {
+        floors.push(o);
+      }
       if (o.type.match(/shelf$/)) {
         shelfs.push(o);
       }
     }
-    for (_j = 0, _len1 = walls.length; _j < _len1; _j++) {
-      o = walls[_j];
+    for (_j = 0, _len1 = floors.length; _j < _len1; _j++) {
+      o = floors[_j];
       this.render_object(o);
     }
-    for (_k = 0, _len2 = shelfs.length; _k < _len2; _k++) {
-      o = shelfs[_k];
+    for (_k = 0, _len2 = walls.length; _k < _len2; _k++) {
+      o = walls[_k];
       this.render_object(o);
     }
-    for (_l = 0, _len3 = beacons.length; _l < _len3; _l++) {
-      o = beacons[_l];
+    for (_l = 0, _len3 = shelfs.length; _l < _len3; _l++) {
+      o = shelfs[_l];
+      this.render_object(o);
+    }
+    for (_m = 0, _len4 = beacons.length; _m < _len4; _m++) {
+      o = beacons[_m];
       this.render_object(o);
     }
     this.render_bg();
@@ -499,7 +511,7 @@ app = {
     }
     object.id = o.id;
     object.scaleX = object.scaleY = 1;
-    if (o.type === 'wall') {
+    if (o.type === 'wall' || o.type === 'floor') {
       object.width_scale = o.width_scale;
       object.height_scale = o.height_scale;
     }
@@ -519,7 +531,10 @@ app = {
       object.borderColor = "#0000ee";
     } else if (o.type === 'wall') {
       object.fill = "#000000";
-      object.borderColor = "#0000ee";
+      object.borderColor = "#000000";
+    } else if (o.type === 'floor') {
+      object.fill = "";
+      object.borderColor = "#000000";
     } else {
       object.borderColor = "#000000";
       object.fill = o.fill;

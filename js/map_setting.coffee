@@ -7,12 +7,93 @@ map_setting = ->
     scrollwheel: false
     streetViewControl: false
   )
-
+  # Set the stroke width, and fill color for each polygon
+  featureStyle = {
+    fillColor: 'orange',
+    strokeWeight: 1
+  }
+  gmap.data.setStyle(featureStyle)
+  gmap.data.loadGeoJson('data/000087.geojson');
+  
   # make sure the view doesn't go beyond the 22 zoom levels of Google Maps
 #  view = new ol.View2D(maxZoom: 21)
 
+#  center = ol.proj.transform([
+#    app.options.lon
+#    app.options.lat
+#  ], "EPSG:4326", "EPSG:3857")
+#  map_center =
+#    lon : center[0]
+#    lat : center[1]
+  image = new ol.style.Circle(
+    radius: 5
+    fill: null
+    stroke: new ol.style.Stroke(
+      color: "blue"
+      width: 1
+    )
+  )
+  styles =
+    Point: [new ol.style.Style(image: image)]
+    LineString: [new ol.style.Style(stroke: new ol.style.Stroke(
+      color: "green"
+      width: 1
+    ))]
+    MultiLineString: [new ol.style.Style(stroke: new ol.style.Stroke(
+      color: "green"
+      width: 1
+    ))]
+    MultiPoint: [new ol.style.Style(image: image)]
+    MultiPolygon: [new ol.style.Style(
+      stroke: new ol.style.Stroke(
+        color: "yellow"
+        width: 1
+      )
+      fill: new ol.style.Fill(color: "rgba(255, 255, 0, 0.1)")
+    )]
+    Polygon: [new ol.style.Style(
+      stroke: new ol.style.Stroke(
+        color: "red"
+  #      lineDash: [4]
+        width: 3
+      )
+      fill: new ol.style.Fill(color: "rgba(255, 0, 0, 0.1)")
+    )]
+    GeometryCollection: [new ol.style.Style(
+      stroke: new ol.style.Stroke(
+        color: "magenta"
+        width: 2
+      )
+      fill: new ol.style.Fill(color: "magenta")
+      image: new ol.style.Circle(
+        radius: 10
+        fill: null
+        stroke: new ol.style.Stroke(color: "magenta")
+      )
+    )]
+    Circle: [new ol.style.Style(
+      stroke: new ol.style.Stroke(
+        color: "red"
+        width: 2
+      )
+      fill: new ol.style.Fill(color: "rgba(255,0,0,0.2)")
+    )]
+
+  styleFunction = (feature, resolution) ->
+    styles[feature.getGeometry().getType()]
+  geojson = app.toGeoJSON()
+  log geojson
+  vectorSource = new ol.source.GeoJSON(object: geojson)
+  features = vectorSource.getFeatures()
+  console.log features
+  vectorLayer = new ol.layer.Vector(
+    source: vectorSource
+    style: styleFunction
+  )
+
   center = ol.proj.transform([ app.options.lon, app.options.lat ], "EPSG:4326", "EPSG:3857")
   view = new ol.View2D(
+    layers: [vectorLayer]
     center: center
     zoom: 2
     maxZoom: 21
@@ -28,7 +109,7 @@ map_setting = ->
   window.map = new ol.Map(
     target: "map"
     ol3Logo: false
-    layers: [] #[vector]
+    layers: [vectorLayer]
 #    layers: [new ol.layer.Tile(source: new ol.source.OSM())]
     interactions: ol.interaction.defaults(
         altShiftDragRotate: false

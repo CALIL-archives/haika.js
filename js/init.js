@@ -353,6 +353,10 @@ $(function() {
     wall: {
       icon: 'square',
       title: '壁'
+    },
+    floor: {
+      icon: 'square',
+      title: '床'
     }
   };
   for (key in toolbar) {

@@ -196,6 +196,8 @@ app =
       state = 'shelf'
     else if object.type=='wall'
       state = 'wall'
+    else if object.type=='floor'
+      state = 'floor'
     else
       state = 'beacon'
     @state = state
@@ -330,6 +332,8 @@ app =
       return fabric.Beacon
     else if classname=='wall'
       return fabric.Wall
+    else if classname=='floor'
+      return fabric.Floor
     else
       return fabric.Shelf
   render : ->
@@ -342,13 +346,18 @@ app =
     beacons = []
     shelfs  = []
     walls = []
+    floors = []
     for o in @objects
       if o.type=='beacon'
         beacons.push(o)
       if o.type=='wall'
         walls.push(o)
+      if o.type=='floor'
+        floors.push(o)
       if o.type.match(/shelf$/)
         shelfs.push(o)
+    for o in floors
+      @render_object(o)
     for o in walls
       @render_object(o)
     for o in shelfs
@@ -373,7 +382,7 @@ app =
       object.opacity = 0.5
     object.id     = o.id
     object.scaleX = object.scaleY = 1
-    if o.type=='wall'
+    if o.type=='wall' or o.type=='floor'
       object.width_scale = o.width_scale
       object.height_scale = o.height_scale
     object.width  = object.__width()
@@ -392,7 +401,10 @@ app =
       object.borderColor = "#0000ee"
     else if o.type=='wall'
       object.fill = "#000000"
-      object.borderColor = "#0000ee"
+      object.borderColor = "#000000"
+    else if o.type=='floor'
+      object.fill = ""
+      object.borderColor = "#000000"
     else
       object.borderColor = "#000000"
       object.fill = o.fill

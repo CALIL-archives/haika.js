@@ -307,6 +307,9 @@ $ ->
     wall :
       icon  : 'square'
       title : '壁'
+    floor :
+      icon  : 'square'
+      title : '床'
   for key, val of toolbar
     html = """<li id="add_#{key}" key="#{key}"><i class="fa fa-#{val.icon}"></i> #{val.title}</li>"""
     $('.toolbar_container ul:first').append(html)
