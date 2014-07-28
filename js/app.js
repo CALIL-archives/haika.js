@@ -757,6 +757,10 @@ app = {
   },
   load: function() {
     var data;
+    if (location.hash.length !== 7) {
+      location.hash = sprintf('%06d', location.hash.split('#')[1]);
+      return;
+    }
     if (this.is_local()) {
       data = {
         canvas: JSON.parse(localStorage.getItem('canvas')),

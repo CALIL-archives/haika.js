@@ -203,6 +203,9 @@ $(window).resize ->
   $('.property_panel').css('height', get_height()+scrollbar_height)
   app.render()
 
+$(window).bind "hashchange", ->
+  location.reload()
+  
 add = (val)->
   log val
   klass = app.get_class(val.type)

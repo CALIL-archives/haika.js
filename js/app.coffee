@@ -548,6 +548,9 @@ app =
   is_local : ->
     return location.protocol=='file:' or location.port!=''
   load : ()->
+    if location.hash.length!=7
+      location.hash = sprintf('%06d',location.hash.split('#')[1])
+      return
     # ローカルか？
     if @is_local()
       data =
