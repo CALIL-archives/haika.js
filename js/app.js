@@ -474,12 +474,12 @@ app = {
         shelfs.push(o);
       }
     }
-    for (_j = 0, _len1 = floors.length; _j < _len1; _j++) {
-      o = floors[_j];
+    for (_j = 0, _len1 = walls.length; _j < _len1; _j++) {
+      o = walls[_j];
       this.render_object(o);
     }
-    for (_k = 0, _len2 = walls.length; _k < _len2; _k++) {
-      o = walls[_k];
+    for (_k = 0, _len2 = floors.length; _k < _len2; _k++) {
+      o = floors[_k];
       this.render_object(o);
     }
     for (_l = 0, _len3 = shelfs.length; _l < _len3; _l++) {
