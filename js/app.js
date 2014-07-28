@@ -851,7 +851,7 @@ app = {
         return function(data) {
           location.hash = data.id;
           _this.id = data.id;
-          return set_hashchange();
+          return _this.set_hashchange();
         };
       })(this)
     });
@@ -871,7 +871,7 @@ app = {
         return function(data) {
           log(data);
           _this.load_render(data);
-          return set_hashchange();
+          return _this.set_hashchange();
         };
       })(this)
     });

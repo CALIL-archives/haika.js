@@ -628,7 +628,7 @@ app =
       success: (data)=>
         location.hash = data.id
         @id = data.id
-        set_hashchange()
+        @set_hashchange()
   load_server : ->
     url = """/haika_store/data/#{@id}.json"""
     $.ajax
@@ -641,7 +641,7 @@ app =
       success: (data)=>
         log data
         @load_render(data)
-        set_hashchange()
+        @set_hashchange()
   get_canvas_data : ->
     return {
       state : @state

@@ -7,8 +7,8 @@
     return
   fabric.Floor = fabric.util.createClass(fabric.Rect,
     type: "floor"
-    eachWidth: 2500
-    eachHeight: 2500
+    eachWidth: 1000
+    eachHeight: 1000
     width_scale : 1
     height_scale : 1
     __width: ->
