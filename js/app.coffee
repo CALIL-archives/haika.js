@@ -86,7 +86,7 @@ app =
     @event()
   event : ->
     @canvas.on('object:selected', (e)=>
-        #log 'selected'
+#        log 'selected'
         object = e.target
         if object._objects?
           object.lockScalingX  = true
@@ -110,7 +110,7 @@ app =
       if object.__resizeShelf?
         object.__resizeShelf()
     @canvas.on 'object:modified', (e)=>
-        #log 'modified'
+#        log 'modified'
         object = e.target
         if object.__modifiedShelf?
           object.__modifiedShelf()
@@ -639,11 +639,17 @@ app =
       url: url
       type: "GET"
       cache : false
-      dataType: "json"
-      error: ()->
+      dataType: "text"
+      error: ()=>
         alert 'load error'
       success: (data)=>
         log data
+        try
+          data = JSON.parse(data)
+        catch
+          alert 'parse error'
+          $(window).off 'beforeunload'
+          location.href = """/haika_store/data/#{@id}.json"""
         @load_render(data)
         @set_hashchange()
   get_canvas_data : ->
@@ -670,6 +676,7 @@ app =
       canvas : @get_canvas_data()
       geojson: @toGeoJSON()
     param = JSON.stringify(param)
+    log param
     data =
       ext: 'json'
       id  : @id
@@ -687,7 +694,7 @@ app =
     @save_geojson()
   # geojsonの保存
   save_geojson : ->
-    geojson = @createGeoJSON()
+    geojson = @translateGeoJSON()
     features = []
     if geojson and geojson.features.length>0
       for object in geojson.features
@@ -726,6 +733,7 @@ app =
         log data
         log 'geojson save'
   save : ->
+    log 'save'
     for object in @canvas.getObjects()
       @save_prop(object)
     @save_local()
@@ -767,12 +775,12 @@ app =
   getGeoJSON : ->
     @unselect()
     @render()
-    geojson = @createGeoJSON()
+    geojson = @translateGeoJSON()
     localStorage.setItem('geojson', JSON.stringify(geojson))
     log geojson
     $(window).off 'beforeunload'
     location.href = 'map2.html'
-  createGeoJSON : ->
+  translateGeoJSON : ->
     geojson = @toGeoJSON()
     features = []
     for object in geojson.features

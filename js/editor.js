@@ -53,7 +53,7 @@ editor = new JSONEditor(document.getElementById("editor"), {
 });
 
 editor.on("change", function() {
-  var data, errors, key, object;
+  var changed, data, errors, key, object;
   log('change');
   errors = editor.validate();
   if (errors.length) {
@@ -62,10 +62,16 @@ editor.on("change", function() {
     data = editor.getValue();
     object = app.canvas.getActiveObject();
     if (object) {
+      changed = false;
       for (key in editor.schema.properties) {
-        object[key] = data[key];
+        if (object[key] !== data[key]) {
+          object[key] = data[key];
+          changed = true;
+        }
       }
-      app.save();
+      if (changed) {
+        app.save();
+      }
     }
   }
 });

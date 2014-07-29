@@ -148,12 +148,16 @@ editor.on "change", ->
     data = editor.getValue()
     object = app.canvas.getActiveObject()
     if object
+      changed = false
       for key of editor.schema.properties
 #        log key
 #        log data[key]
-        object[key] = data[key]
+        if object[key]!=data[key] 
+          object[key] = data[key]
+          changed = true
 #      app.canvas.renderAll()
-      app.save()
+      if changed
+        app.save()
 #      app.render()
 #      $(app.canvas.getObjects()).each (i, obj)=>
 #          if obj.id==object.id

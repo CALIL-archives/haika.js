@@ -871,13 +871,22 @@ app = {
       url: url,
       type: "GET",
       cache: false,
-      dataType: "json",
-      error: function() {
-        return alert('load error');
-      },
+      dataType: "text",
+      error: (function(_this) {
+        return function() {
+          return alert('load error');
+        };
+      })(this),
       success: (function(_this) {
         return function(data) {
           log(data);
+          try {
+            data = JSON.parse(data);
+          } catch (_error) {
+            alert('parse error');
+            $(window).off('beforeunload');
+            location.href = "/haika_store/data/" + _this.id + ".json";
+          }
           _this.load_render(data);
           return _this.set_hashchange();
         };
@@ -912,6 +921,7 @@ app = {
       geojson: this.toGeoJSON()
     };
     param = JSON.stringify(param);
+    log(param);
     data = {
       ext: 'json',
       id: this.id,
@@ -934,7 +944,7 @@ app = {
   },
   save_geojson: function() {
     var EPSG3857_geojson, coordinate, coordinates, data, features, geojson, geometry, object, param, url, x, y, _i, _j, _len, _len1, _ref, _ref1;
-    geojson = this.createGeoJSON();
+    geojson = this.translateGeoJSON();
     features = [];
     if (geojson && geojson.features.length > 0) {
       _ref = geojson.features;
@@ -982,6 +992,7 @@ app = {
   },
   save: function() {
     var object, _i, _len, _ref;
+    log('save');
     _ref = this.canvas.getObjects();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
@@ -1035,13 +1046,13 @@ app = {
     var geojson;
     this.unselect();
     this.render();
-    geojson = this.createGeoJSON();
+    geojson = this.translateGeoJSON();
     localStorage.setItem('geojson', JSON.stringify(geojson));
     log(geojson);
     $(window).off('beforeunload');
     return location.href = 'map2.html';
   },
-  createGeoJSON: function() {
+  translateGeoJSON: function() {
     var coordinate, coordinates, features, geojson, geometry, mapCenter, new_coordinate, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
     geojson = this.toGeoJSON();
     features = [];
