@@ -16,11 +16,7 @@ map_setting = function() {
     strokeWeight: 1
   };
   gmap.data.setStyle(featureStyle);
-  if (app.is_local()) {
-    gmap.data.loadGeoJson('data/000087.geojson');
-  } else {
-    gmap.data.loadGeoJson('/haika_store/data/' + sprintf('%06d', app.id) + '.geojson');
-  }
+  gmap.data.addGeoJson(app.create_geojson());
   center = ol.proj.transform([app.options.lon, app.options.lat], "EPSG:4326", "EPSG:3857");
   view = new ol.View2D({
     center: center,

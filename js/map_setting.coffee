@@ -1,3 +1,7 @@
+
+    
+
+
 map_setting = ->
   gmap = new google.maps.Map(document.getElementById("gmap"),
     disableDefaultUI: true
@@ -13,10 +17,11 @@ map_setting = ->
     strokeWeight: 1
   }
   gmap.data.setStyle(featureStyle)
-  if app.is_local()
-    gmap.data.loadGeoJson('data/000087.geojson')
-  else
-    gmap.data.loadGeoJson('/haika_store/data/'+sprintf('%06d',app.id)+'.geojson')
+  gmap.data.addGeoJson(app.create_geojson())
+#  if app.is_local()
+#    gmap.data.addGeoJson(app.create_geojson())
+#  else
+#    gmap.data.loadGeoJson('/haika_store/data/'+sprintf('%06d',app.id)+'.geojson')
   
   # make sure the view doesn't go beyond the 22 zoom levels of Google Maps
 #  view = new ol.View2D(maxZoom: 21)

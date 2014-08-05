@@ -943,38 +943,9 @@ app = {
     return this.save_geojson();
   },
   save_geojson: function() {
-    var EPSG3857_geojson, coordinate, coordinates, data, features, geojson, geometry, object, param, url, x, y, _i, _j, _len, _len1, _ref, _ref1;
-    geojson = this.translateGeoJSON();
-    features = [];
-    if (geojson && geojson.features.length > 0) {
-      _ref = geojson.features;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        object = _ref[_i];
-        coordinates = [];
-        _ref1 = object.geometry.coordinates[0];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          geometry = _ref1[_j];
-          x = geometry[0];
-          y = geometry[1];
-          coordinate = ol.proj.transform([x, y], "EPSG:3857", "EPSG:4326");
-          coordinates.push(coordinate);
-        }
-        data = {
-          "type": "Feature",
-          "geometry": {
-            "type": "Polygon",
-            "coordinates": [coordinates]
-          },
-          "properties": object.properties
-        };
-        features.push(data);
-      }
-    }
-    EPSG3857_geojson = {
-      "type": "FeatureCollection",
-      "features": features
-    };
-    param = JSON.stringify(EPSG3857_geojson);
+    var data, geojson, param, url;
+    geojson = this.create_geojson();
+    param = JSON.stringify(geojson);
     data = {
       ext: 'geojson',
       id: this.id,
@@ -1052,9 +1023,49 @@ app = {
     $(window).off('beforeunload');
     return location.href = 'map2.html';
   },
+  create_geojson: function() {
+    var EPSG3857_geojson, coordinate, coordinates, data, features, geojson, geometry, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
+    geojson = this.translateGeoJSON();
+    features = [];
+    if (geojson && geojson.features.length > 0) {
+      _ref = geojson.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        if (object.properties.type !== 'floor') {
+          coordinates = [];
+          _ref1 = object.geometry.coordinates[0];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            geometry = _ref1[_j];
+            x = geometry[0];
+            y = geometry[1];
+            coordinate = ol.proj.transform([x, y], "EPSG:3857", "EPSG:4326");
+            coordinates.push(coordinate);
+          }
+          if (object.properties.type === 'merge_floor') {
+            object.properties.type = 'floor';
+          }
+          data = {
+            "type": "Feature",
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [coordinates]
+            },
+            "properties": object.properties
+          };
+          features.push(data);
+        }
+      }
+    }
+    EPSG3857_geojson = {
+      "type": "FeatureCollection",
+      "features": features
+    };
+    return EPSG3857_geojson;
+  },
   translateGeoJSON: function() {
     var coordinate, coordinates, features, geojson, geometry, mapCenter, new_coordinate, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
     geojson = this.toGeoJSON();
+    geojson = this.mergeGeoJson(geojson);
     features = [];
     _ref = geojson.features;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1076,6 +1087,62 @@ app = {
       features.push(object);
     }
     geojson.features = features;
+    return geojson;
+  },
+  mergeGeoJson: function(geojson) {
+    var coordinates, cpr, first, first_coordinates, geometry, object, p, path, paths, solution_paths, succeeded, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
+    paths = [];
+    if (geojson && geojson.features.length > 0) {
+      _ref = geojson.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        if (object.properties.type === 'floor') {
+          path = [];
+          log(object.geometry.coordinates[0]);
+          _ref1 = object.geometry.coordinates[0];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            geometry = _ref1[_j];
+            p = {
+              X: geometry[0],
+              Y: geometry[1]
+            };
+            path.push(p);
+          }
+          paths.push([path]);
+        }
+      }
+      log(paths);
+      cpr = new ClipperLib.Clipper();
+      for (_k = 0, _len2 = paths.length; _k < _len2; _k++) {
+        path = paths[_k];
+        cpr.AddPaths(path, ClipperLib.PolyType.ptSubject, true);
+      }
+      solution_paths = new ClipperLib.Paths();
+      succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
+      log(solution_paths);
+      coordinates = [];
+      first = true;
+      _ref2 = solution_paths[0];
+      for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
+        path = _ref2[_l];
+        if (first) {
+          first_coordinates = [path.X, path.Y];
+          first = false;
+        }
+        coordinates.push([path.X, path.Y]);
+      }
+      coordinates.push(first_coordinates);
+      geojson.features.push({
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [coordinates]
+        },
+        "properties": {
+          "type": "merge_floor"
+        }
+      });
+    }
     return geojson;
   },
   getSVG: function() {

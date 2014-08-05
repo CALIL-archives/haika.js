@@ -694,29 +694,8 @@ app =
     @save_geojson()
   # geojsonの保存
   save_geojson : ->
-    geojson = @translateGeoJSON()
-    features = []
-    if geojson and geojson.features.length>0
-      for object in geojson.features
-        coordinates = []
-        for geometry in object.geometry.coordinates[0]
-          x = geometry[0]
-          y = geometry[1]
-          coordinate = ol.proj.transform([x,y], "EPSG:3857", "EPSG:4326")
-          coordinates.push(coordinate)
-        data =
-          "type": "Feature"
-          "geometry":
-            "type": "Polygon",
-            "coordinates": [
-              coordinates
-            ]
-          "properties": object.properties
-        features.push(data)
-    EPSG3857_geojson =
-      "type": "FeatureCollection"
-      "features": features
-    param = JSON.stringify(EPSG3857_geojson)
+    geojson = @create_geojson()
+    param = JSON.stringify(geojson)
     data =
       ext: 'geojson'
       id  : @id
@@ -780,8 +759,40 @@ app =
     log geojson
     $(window).off 'beforeunload'
     location.href = 'map2.html'
+  # geojsonの作成 座標変換
+  create_geojson : ->
+    geojson = @translateGeoJSON()
+    features = []
+    if geojson and geojson.features.length>0
+      for object in geojson.features
+        # 結合前の床は省く
+        if object.properties.type!='floor'
+          coordinates = []
+          for geometry in object.geometry.coordinates[0]
+            x = geometry[0]
+            y = geometry[1]
+            coordinate = ol.proj.transform([x,y], "EPSG:3857", "EPSG:4326")
+            coordinates.push(coordinate)
+          # 結合した床面をfloorに戻す
+          if object.properties.type=='merge_floor'
+            object.properties.type='floor'
+          data =
+            "type": "Feature"
+            "geometry":
+              "type": "Polygon",
+              "coordinates": [
+                coordinates
+              ]
+            "properties": object.properties
+          features.push(data)
+    EPSG3857_geojson =
+      "type": "FeatureCollection"
+      "features": features
+    return EPSG3857_geojson
+  # geojsonの回転
   translateGeoJSON : ->
     geojson = @toGeoJSON()
+    geojson = @mergeGeoJson(geojson)
     features = []
     for object in geojson.features
       mapCenter = proj4("EPSG:4326", "EPSG:3857", [@options.lon, @options.lat])
@@ -797,6 +808,49 @@ app =
         object.geometry.coordinates = [coordinates]
       features.push(object)
     geojson.features = features
+    return geojson
+  # geojson床オブジェクトのマージ
+  mergeGeoJson : (geojson) ->
+    paths = []
+    if geojson and geojson.features.length>0
+      for object in geojson.features
+        if object.properties.type=='floor'
+          path = []
+          log object.geometry.coordinates[0]
+          for geometry in object.geometry.coordinates[0]
+            p = {
+              X: geometry[0]
+              Y: geometry[1]
+            }
+            path.push(p)
+          paths.push([path])
+      log paths
+
+      cpr = new ClipperLib.Clipper()
+      for path in paths
+        cpr.AddPaths path, ClipperLib.PolyType.ptSubject, true # true means closed path
+      solution_paths = new ClipperLib.Paths()
+      succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero)
+
+      log solution_paths
+      coordinates = []
+      first = true
+      for path in solution_paths[0]
+        if first
+          first_coordinates = [path.X, path.Y]
+          first = false
+        coordinates.push [path.X, path.Y]
+      coordinates.push first_coordinates
+
+      geojson.features.push(
+        "type": "Feature"
+        "geometry":
+          "type": "Polygon",
+          "coordinates": [coordinates]
+        "properties":
+          "type": "merge_floor"
+      )
+
     return geojson
   getSVG : ->
     @unselect()
