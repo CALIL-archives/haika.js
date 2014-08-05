@@ -833,23 +833,24 @@ app =
       succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero)
 
       log solution_paths
-      coordinates = []
-      first = true
-      for path in solution_paths[0]
-        if first
-          first_coordinates = [path.X, path.Y]
-          first = false
-        coordinates.push [path.X, path.Y]
-      coordinates.push first_coordinates
+      for path in solution_paths
+        coordinates = []
+        first = true
+        for p in path
+          if first
+            first_coordinates = [p.X, p.Y]
+            first = false
+          coordinates.push [p.X, p.Y]
+        coordinates.push first_coordinates
 
-      geojson.features.push(
-        "type": "Feature"
-        "geometry":
-          "type": "Polygon",
-          "coordinates": [coordinates]
-        "properties":
-          "type": "merge_floor"
-      )
+        geojson.features.push(
+          "type": "Feature"
+          "geometry":
+            "type": "Polygon",
+            "coordinates": [coordinates]
+          "properties":
+            "type": "merge_floor"
+        )
 
     return geojson
   getSVG : ->

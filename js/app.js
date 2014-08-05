@@ -1090,7 +1090,7 @@ app = {
     return geojson;
   },
   mergeGeoJson: function(geojson) {
-    var coordinates, cpr, first, first_coordinates, geometry, object, p, path, paths, solution_paths, succeeded, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
+    var coordinates, cpr, first, first_coordinates, geometry, object, p, path, paths, solution_paths, succeeded, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
     paths = [];
     if (geojson && geojson.features.length > 0) {
       _ref = geojson.features;
@@ -1120,28 +1120,30 @@ app = {
       solution_paths = new ClipperLib.Paths();
       succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
       log(solution_paths);
-      coordinates = [];
-      first = true;
-      _ref2 = solution_paths[0];
-      for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
-        path = _ref2[_l];
-        if (first) {
-          first_coordinates = [path.X, path.Y];
-          first = false;
+      for (_l = 0, _len3 = solution_paths.length; _l < _len3; _l++) {
+        path = solution_paths[_l];
+        coordinates = [];
+        first = true;
+        for (_m = 0, _len4 = path.length; _m < _len4; _m++) {
+          p = path[_m];
+          if (first) {
+            first_coordinates = [p.X, p.Y];
+            first = false;
+          }
+          coordinates.push([p.X, p.Y]);
         }
-        coordinates.push([path.X, path.Y]);
+        coordinates.push(first_coordinates);
+        geojson.features.push({
+          "type": "Feature",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [coordinates]
+          },
+          "properties": {
+            "type": "merge_floor"
+          }
+        });
       }
-      coordinates.push(first_coordinates);
-      geojson.features.push({
-        "type": "Feature",
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [coordinates]
-        },
-        "properties": {
-          "type": "merge_floor"
-        }
-      });
     }
     return geojson;
   },
