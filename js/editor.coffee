@@ -136,9 +136,12 @@ editor = new JSONEditor(document.getElementById("editor"),
 
 # Listen for changes
 editor.on "change", ->
-  log 'change'
+  log 'onchange'
   # Do something...
   # Validate
+  editor_change()
+
+editor_change = ()->
   errors = editor.validate()
   if errors.length
     # Not valid
@@ -146,17 +149,20 @@ editor.on "change", ->
 #    alert '入力値が正しくありません。'
   else
     data = editor.getValue()
+    log data
     object = app.canvas.getActiveObject()
+    log object
     if object
       changed = false
       for key of editor.schema.properties
-#        log key
-#        log data[key]
+        log key
+        log data[key]
         if object[key]!=data[key] 
           object[key] = data[key]
           changed = true
 #      app.canvas.renderAll()
       if changed
+        log 'change'
         app.save()
 #      app.render()
 #      $(app.canvas.getObjects()).each (i, obj)=>

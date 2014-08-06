@@ -104,6 +104,7 @@ app =
       object = e.target
       @canvas.deactivateAll().renderAll()
       @save()
+      editor_change()
       @set_propety_panel()
     @canvas.on 'object:scaling', (e) =>
       object = e.target
@@ -900,4 +901,4 @@ app =
       $('.group_panel').show()
       return
     else
-      $('.canvas_panel').show()      
+      $('.canvas_panel').show()

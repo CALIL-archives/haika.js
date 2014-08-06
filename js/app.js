@@ -113,6 +113,7 @@ app = {
         object = e.target;
         _this.canvas.deactivateAll().renderAll();
         _this.save();
+        editor_change();
         return _this.set_propety_panel();
       };
     })(this));
