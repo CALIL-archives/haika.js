@@ -365,18 +365,18 @@ $ ->
 #    app.toTop()
 #  $(".tobottom").click ->
 #    app.toBottom()
-  $(".svg").click ->
-    app.getSVG()
-  $(".loadsvg").click ->
-    loadSVG 'http://fabreasy.com/demo_front.svg', app.canvas, ->
-      alert('done');
-  $(".geojson").click ->
-    app.getGeoJSON()
-  $(".reset").click ->
-    app.objects = []
-    localStorage.clear()
-    $(window).off 'beforeunload'
-    location.reload()
+#  $(".svg").click ->
+#    app.getSVG()
+#  $(".loadsvg").click ->
+#    loadSVG 'http://fabreasy.com/demo_front.svg', app.canvas, ->
+#      alert('done');
+#  $(".geojson").click ->
+#    app.getGeoJSON()
+#  $(".reset").click ->
+#    app.objects = []
+#    localStorage.clear()
+#    $(window).off 'beforeunload'
+#    location.reload()
 #  $(".rotate").slider
 #    min: 0
 #    max: 360

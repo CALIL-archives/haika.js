@@ -1,7 +1,3 @@
-
-    
-
-
 map_setting = ->
   gmap = new google.maps.Map(document.getElementById("gmap"),
     disableDefaultUI: true

@@ -427,23 +427,6 @@ $(function() {
   $(".align-bottom").click(function() {
     return app.alignBottom();
   });
-  $(".svg").click(function() {
-    return app.getSVG();
-  });
-  $(".loadsvg").click(function() {
-    return loadSVG('http://fabreasy.com/demo_front.svg', app.canvas, function() {
-      return alert('done');
-    });
-  });
-  $(".geojson").click(function() {
-    return app.getGeoJSON();
-  });
-  $(".reset").click(function() {
-    app.objects = [];
-    localStorage.clear();
-    $(window).off('beforeunload');
-    return location.reload();
-  });
   timeout = false;
   $('canvas').on('mousewheel', (function(_this) {
     return function(event) {
