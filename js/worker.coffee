@@ -5,9 +5,9 @@ onmessage = (e) ->
       w = data.w
       h = data.h
       y = 0
-      while y < h - 1
+      while y < h
         x = 0
-        while x < w - 1
+        while x < w
           n = x * 4 + y * w * 4
           # RGB
           r = data.image[n]

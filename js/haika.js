@@ -1030,6 +1030,7 @@ haika = {
             coordinates.push(coordinate);
           }
           if (object.properties.type === 'merge_floor') {
+            log(object.properties);
             object.properties.type = 'floor';
           }
           data = {
@@ -1128,7 +1129,9 @@ haika = {
             "coordinates": [coordinates]
           },
           "properties": {
-            "type": "merge_floor"
+            "type": "merge_floor",
+            "fill": "#FFFFFF",
+            "stroke": "#FFFFFF"
           }
         });
       }

@@ -827,6 +827,7 @@ haika =
             coordinates.push(coordinate)
           # 結合した床面をfloorに戻す
           if object.properties.type=='merge_floor'
+            log object.properties
             object.properties.type='floor'
           data =
             "type": "Feature"
@@ -901,7 +902,9 @@ haika =
             "type": "Polygon",
             "coordinates": [coordinates]
           "properties":
-            "type": "merge_floor"
+            "type": "merge_floor",
+            "fill"  :"#FFFFFF",
+            "stroke":"#FFFFFF"
         )
 
     return geojson
