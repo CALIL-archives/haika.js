@@ -114,6 +114,7 @@ haika =
         if object.__modifiedShelf?
           object.__modifiedShelf()
         @setPropetyPanel()
+    # 画面遷移時に保存
     $(window).on 'beforeunload', (event)=>
       @render()
       @save()
@@ -148,7 +149,7 @@ haika =
     @render()
     if @options.callback?
       @options.callback()
-  # オブジェクトにふるid 通し番号
+  # オブジェクトにつけるid 通し番号
   lastId : 0
   # idを取得
   getId : ->
@@ -156,7 +157,7 @@ haika =
       return 0
     @lastId += 1
     return @lastId
-  # idからオブジェクトを取得
+  # idからオブジェクトの配列番号を取得
   findById : (id)->
     count = null
     $(@objects).each (i, obj)->
@@ -208,7 +209,7 @@ haika =
       state = 'beacon'
     @state = state
     $('.nav a.'+@state).tab('show')
-  # fabric上のオブジェクトの取得共通関数
+  # fabric上のオブジェクトの取得 共通関数
   bind : (func, do_active=true)->
     object = @canvas.getActiveObject()
     if object
