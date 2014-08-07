@@ -22,9 +22,9 @@
     __height: ->
       @__eachHeight() * @side
     __eachWidth: ->
-      @eachWidth * app.scale
+      @eachWidth * haika.scale
     __eachHeight: ->
-      @eachHeight * app.scale
+      @eachHeight * haika.scale
     count: 1
     side: 1
     label: ''
@@ -62,7 +62,7 @@
 
       if @side is 1
         @__renderShelf ctx, x, y, w, h
-        if app.scale > 0.5
+        if haika.scale > 0.5
           @__renderSide ctx, x, y, w, h
       if @side is 2
         @__renderShelf ctx, x, y, w, h
@@ -77,7 +77,7 @@
         label = "[" + @id + "] " + label + @count + "連"
         ctx.fillText(label,0,(@height*@scaleY)/2+15);
 
-      #if app.scale > 0.5
+      #if haika.scale > 0.5
       #  ctx.font = "30px FontAwesome";
       #  ctx.textAlign = "right"
       #  ctx.textBaseline = "middle"

@@ -8,17 +8,17 @@
     width = ctx.canvas.width
     height = ctx.canvas.height
 
-    size = 100 * app.scale
-    if size < 50 then size=500 * app.scale
-    if size < 50 then size=1000 * app.scale
+    size = 100 * haika.scale
+    if size < 50 then size=500 * haika.scale
+    if size < 50 then size=1000 * haika.scale
     ctx.save()
     ctx.beginPath()
     ctx.setLineDash([2,2])
     ctx.lineWidth = 1
     ctx.strokeStyle = '#999999'
     ctx.opacity = 1
-    sx = (app.transformLeftX_cm2px(0)*1000 % Math.floor(size*1000))/1000
-    sy = (app.transformTopY_cm2px(0)*1000 % Math.floor(size*1000))/1000
+    sx = (haika.transformLeftX_cm2px(0)*1000 % Math.floor(size*1000))/1000
+    sy = (haika.transformTopY_cm2px(0)*1000 % Math.floor(size*1000))/1000
     i = 0
     while i < Math.ceil(width / size)+1
         ctx.moveTo(Math.floor(i * size+sx)+0.5, 0)

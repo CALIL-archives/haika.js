@@ -12,9 +12,9 @@
     width_scale : 1
     height_scale : 1
     __width: ->
-      @eachWidth * @width_scale * app.scale
+      @eachWidth * @width_scale * haika.scale
     __height: ->
-      @eachHeight * @height_scale* app.scale
+      @eachHeight * @height_scale* haika.scale
 
     initialize: (options) ->
       options = options or {}
@@ -47,10 +47,10 @@
 
       if @sacleX!=1
         @width = @width * @scaleX
-        @width_scale = @width / (@eachWidth * app.scale)
+        @width_scale = @width / (@eachWidth * haika.scale)
       if @sacleY!=1
         @height = @height * @scaleY
-        @height_scale = @height / (@eachHeight * app.scale)
+        @height_scale = @height / (@eachHeight * haika.scale)
       @scaleX = @scaleY = 1
       @setCoords()
 

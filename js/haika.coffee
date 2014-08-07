@@ -2,7 +2,7 @@ log = (obj) ->
   try
     console.log obj
 
-app = 
+haika = 
   id         : null
   state      : 'shelf'
   width      : 800
@@ -318,9 +318,9 @@ app =
   transformTopY_px2cm : (px)->
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
   unselect : ->
-    object = app.canvas.getActiveObject()
+    object = haika.canvas.getActiveObject()
     if not object
-      object = app.canvas.getActiveGroup()
+      object = haika.canvas.getActiveGroup()
     if object
       @canvas.fire('before:selection:cleared', { target: object })
       @canvas.fire('selection:cleared', { target: object })
@@ -357,12 +357,12 @@ app =
         floors.push(o)
       if o.type.match(/shelf$/)
         shelfs.push(o)
-    if app.state!='floor'
+    if haika.state!='floor'
       for o in floors
         @render_object(o)
     for o in walls
       @render_object(o)
-    if app.state=='floor'
+    if haika.state=='floor'
       for o in floors
         @render_object(o)
     for o in shelfs

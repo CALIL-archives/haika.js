@@ -23,9 +23,9 @@
     __height: ->
       @__eachHeight() * @side
     __eachWidth: ->
-      90 * app.scale
+      90 * haika.scale
     __eachHeight: ->
-      25 * app.scale
+      25 * haika.scale
     count: 1
     side: 1
     minScaleLimit: 1
@@ -134,8 +134,8 @@
 #      log center
       x = -w / 2 + center.x # / 100)
       y = -h / 2 + center.y # / 100)
-      x = app.transformLeftX_px2cm(x)
-      y = app.transformTopY_px2cm(y)
+      x = haika.transformLeftX_px2cm(x)
+      y = haika.transformTopY_px2cm(y)
       data =
         "type": "Feature"
         "geometry":

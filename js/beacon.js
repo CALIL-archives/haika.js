@@ -14,10 +14,10 @@
     eachHeight: 10,
     minor: 0,
     __width: function() {
-      return this.eachWidth * app.scale;
+      return this.eachWidth * haika.scale;
     },
     __height: function() {
-      return this.eachHeight * app.scale;
+      return this.eachHeight * haika.scale;
     },
     initialize: function(options) {
       options = options || {};
@@ -62,7 +62,7 @@
     },
     __is_into: function() {
       var bottom, half_height, half_width, left, object, objects, right, top, _i, _len, _results;
-      objects = app.canvas.getObjects();
+      objects = haika.canvas.getObjects();
       _results = [];
       for (_i = 0, _len = objects.length; _i < _len; _i++) {
         object = objects[_i];

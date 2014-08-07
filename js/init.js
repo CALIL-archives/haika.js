@@ -21,11 +21,11 @@ $('#bgimg').change(function(e) {
   if (files.length === 0) {
     return;
   }
-  if (app.is_local()) {
-    return app.load_bg(files[0]);
+  if (haika.is_local()) {
+    return haika.load_bg(files[0]);
   } else {
     data = new FormData();
-    data.append('id', app.id);
+    data.append('id', haika.id);
     data.append('userfile', files[0]);
     return $.ajax({
       url: '/haika_store/upload.php',
@@ -36,8 +36,8 @@ $('#bgimg').change(function(e) {
       type: 'POST',
       success: function(data) {
         var url;
-        url = '/haika_store/image/' + app.id + '_' + files[0].name;
-        return app.load_bg_from_url(url);
+        url = '/haika_store/image/' + haika.id + '_' + files[0].name;
+        return haika.load_bg_from_url(url);
       }
     });
   }
@@ -46,26 +46,26 @@ $('#bgimg').change(function(e) {
 set_scrollbar = function() {
   var bgimg_height, bgimg_width, defaultX, defaultY, maxX, maxY, scroll_weight;
   scroll_weight = 5000;
-  bgimg_width = app.bgimg ? app.bgimg_width : 2500;
-  bgimg_height = app.bgimg ? app.bgimg_height : 2500;
-  maxX = bgimg_width * app.options.bgscale / 2;
-  maxY = bgimg_height * app.options.bgscale / 2;
-  defaultX = -((app.centerX - scroll_weight) / 10000);
-  defaultY = -((app.centerY - scroll_weight) / 10000);
+  bgimg_width = haika.bgimg ? haika.bgimg_width : 2500;
+  bgimg_height = haika.bgimg ? haika.bgimg_height : 2500;
+  maxX = bgimg_width * haika.options.bgscale / 2;
+  maxY = bgimg_height * haika.options.bgscale / 2;
+  defaultX = -((haika.centerX - scroll_weight) / 10000);
+  defaultY = -((haika.centerY - scroll_weight) / 10000);
   new Dragdealer('horizontal-scroller', {
     x: defaultX,
     animationCallback: function(x, y) {
       var centerX;
-      app.unselect();
+      haika.unselect();
       centerX = x * 10000 - scroll_weight;
-      if (centerX > maxX - app.canvas.getWidth() / 2) {
-        centerX = maxX - app.canvas.getWidth() / 2;
+      if (centerX > maxX - haika.canvas.getWidth() / 2) {
+        centerX = maxX - haika.canvas.getWidth() / 2;
       }
-      if (centerX < -maxX + app.canvas.getWidth() / 2) {
-        centerX = -maxX + app.canvas.getWidth() / 2;
+      if (centerX < -maxX + haika.canvas.getWidth() / 2) {
+        centerX = -maxX + haika.canvas.getWidth() / 2;
       }
-      app.centerX = -centerX.toFixed(0);
-      return app.render();
+      haika.centerX = -centerX.toFixed(0);
+      return haika.render();
     }
   });
   return new Dragdealer('vertical-scroller', {
@@ -74,21 +74,21 @@ set_scrollbar = function() {
     vertical: true,
     animationCallback: function(x, y) {
       var centerY;
-      app.unselect();
+      haika.unselect();
       centerY = y * 10000 - scroll_weight;
-      if (centerY > maxY - app.canvas.getHeight() / 2) {
-        centerY = maxY - app.canvas.getHeight() / 2;
+      if (centerY > maxY - haika.canvas.getHeight() / 2) {
+        centerY = maxY - haika.canvas.getHeight() / 2;
       }
-      if (centerY < -maxY + app.canvas.getHeight() / 2) {
-        centerY = -maxY + app.canvas.getHeight() / 2;
+      if (centerY < -maxY + haika.canvas.getHeight() / 2) {
+        centerY = -maxY + haika.canvas.getHeight() / 2;
       }
-      app.centerY = -centerY.toFixed(0);
-      return app.render();
+      haika.centerY = -centerY.toFixed(0);
+      return haika.render();
     }
   });
 };
 
-app.init({
+haika.init({
   canvas: 'canvas',
   canvas_width: get_width(),
   canvas_height: get_height(),
@@ -105,11 +105,11 @@ bind = function(func, do_active) {
   if (do_active == null) {
     do_active = true;
   }
-  object = app.canvas.getActiveObject();
+  object = haika.canvas.getActiveObject();
   if (object) {
     func(object);
   }
-  group = app.canvas.getActiveGroup();
+  group = haika.canvas.getActiveGroup();
   if (group) {
     _ref = group.getObjects();
     _results = [];
@@ -123,21 +123,21 @@ bind = function(func, do_active) {
 
 $('#fill-color').colorselector({
   callback: function(value, color, title) {
-    app.fillColor = color;
+    haika.fillColor = color;
     bind(function(object) {
       return object.fill = color;
     });
-    return app.canvas.renderAll();
+    return haika.canvas.renderAll();
   }
 });
 
 $('#stroke-color').colorselector({
   callback: function(value, color, title) {
-    app.strokeColor = color;
+    haika.strokeColor = color;
     bind(function(object) {
       return object.stroke = color;
     });
-    return app.canvas.renderAll();
+    return haika.canvas.renderAll();
   }
 });
 
@@ -197,7 +197,7 @@ loadComplete = function(data) {
           result = results[_i];
           add_pixel(result.x, result.y, result.color);
         }
-        return app.render();
+        return haika.render();
     }
   };
   return worker.postMessage(params);
@@ -206,10 +206,10 @@ loadComplete = function(data) {
 add_pixel = function(x, y, color) {
   var dot, klass, object;
   dot = 10;
-  klass = app.get_class('shelf');
+  klass = haika.get_class('shelf');
   object = new klass({
-    top: app.transformTopY_cm2px(y * dot),
-    left: app.transformLeftX_cm2px(x * dot),
+    top: haika.transformTopY_cm2px(y * dot),
+    left: haika.transformLeftX_cm2px(x * dot),
     fill: color,
     stroke: color,
     angle: 0,
@@ -218,7 +218,7 @@ add_pixel = function(x, y, color) {
     eachWidth: dot,
     eachHeight: dot
   });
-  return app.add(object);
+  return haika.add(object);
 };
 
 $('.main_container, .canvas_panel').css('width', get_width());
@@ -228,23 +228,23 @@ $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height
 $('.property_panel').css('height', get_height() + scrollbar_height);
 
 $(window).resize(function() {
-  app.canvas.setWidth(get_width());
-  app.canvas.setHeight(get_height());
+  haika.canvas.setWidth(get_width());
+  haika.canvas.setHeight(get_height());
   $('.main_container, .canvas_panel').css('width', get_width());
   $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height());
   $('.property_panel').css('height', get_height() + scrollbar_height);
-  return app.render();
+  return haika.render();
 });
 
 add = function(val) {
   var id, klass, object;
   log(val);
-  klass = app.get_class(val.type);
+  klass = haika.get_class(val.type);
   object = new klass({
-    top: app.transformTopY_cm2px(app.centerY),
-    left: app.transformLeftX_cm2px(app.centerX),
-    fill: app.fillColor,
-    stroke: app.strokeColor,
+    top: haika.transformTopY_cm2px(haika.centerY),
+    left: haika.transformLeftX_cm2px(haika.centerX),
+    fill: haika.fillColor,
+    stroke: haika.strokeColor,
     angle: val.angle != null ? val.angle : 0
   });
   if (val.count != null) {
@@ -257,15 +257,15 @@ add = function(val) {
     object.eachWidth = val.eachWidth;
     object.eachHeight = val.eachHeight;
   }
-  id = app.add(object);
-  app.set_state(object);
-  app.render();
+  id = haika.add(object);
+  haika.set_state(object);
+  haika.render();
   undo.add(id);
-  return $(app.canvas.getObjects()).each((function(_this) {
+  return $(haika.canvas.getObjects()).each((function(_this) {
     return function(i, obj) {
       if (obj.id === object.id) {
         return setTimeout(function() {
-          app.canvas.setActiveObject(app.canvas.item(i));
+          haika.canvas.setActiveObject(haika.canvas.item(i));
           return $('.add').blur();
         }, 10);
       }
@@ -286,17 +286,17 @@ $(function() {
       }
       y++;
     }
-    app.render();
+    haika.render();
   };
   $('.nav-tabs a').click(function(e) {
     e.preventDefault();
-    app.state = $(e.target).attr('class');
-    app.render();
+    haika.state = $(e.target).attr('class');
+    haika.render();
     return $(this).tab('show');
   });
   $(".add").click(function() {
     add();
-    return app.render();
+    return haika.render();
   });
   toolbar = {
     shelf: {
@@ -369,63 +369,63 @@ $(function() {
       object = toolbar[key];
       object.type = key;
       add(object);
-      return app.render();
+      return haika.render();
     });
   }
   $(".add_custom_shelf").click(function() {
     add('custom_shelf');
-    return app.render();
+    return haika.render();
   });
   $(".add_beacon").click(function() {
     add('beacon');
-    return app.render();
+    return haika.render();
   });
   $(".remove").click(function() {
     var object;
-    object = app.canvas.getActiveObject();
-    app.remove();
+    object = haika.canvas.getActiveObject();
+    haika.remove();
     if (object) {
       return undo.remove(object);
     }
   });
   $(".zoomin").click(function() {
-    return app.zoomIn();
+    return haika.zoomIn();
   });
   $(".zoomout").click(function() {
-    return app.zoomOut();
+    return haika.zoomOut();
   });
   $(".zoomreset").click(function() {
-    return app.zoomReset();
+    return haika.zoomReset();
   });
   $(".bringtofront").click(function() {
-    return app.bringToFront();
+    return haika.bringToFront();
   });
   $(".duplicate").click(function() {
-    return app.duplicate();
+    return haika.duplicate();
   });
   $(".copy").click(function() {
-    return app.copy();
+    return haika.copy();
   });
   $(".paste").click(function() {
-    return app.paste();
+    return haika.paste();
   });
   $(".align-left").click(function() {
-    return app.alignLeft();
+    return haika.alignLeft();
   });
   $(".align-center").click(function() {
-    return app.alignCenter();
+    return haika.alignCenter();
   });
   $(".align-right").click(function() {
-    return app.alignRight();
+    return haika.alignRight();
   });
   $(".align-top").click(function() {
-    return app.alignTop();
+    return haika.alignTop();
   });
   $(".align-vcenter").click(function() {
-    return app.alignVcenter();
+    return haika.alignVcenter();
   });
   $(".align-bottom").click(function() {
-    return app.alignBottom();
+    return haika.alignBottom();
   });
   timeout = false;
   $('canvas').on('mousewheel', (function(_this) {
@@ -438,51 +438,51 @@ $(function() {
         }, 100);
       }
       if (event.deltaY > 0) {
-        app.zoomIn();
+        haika.zoomIn();
       }
       if (event.deltaY < 0) {
-        return app.zoomOut();
+        return haika.zoomOut();
       }
     };
   })(this));
   $('#canvas_width').change(function() {
-    return app.canvas.setWidth($(this).val());
+    return haika.canvas.setWidth($(this).val());
   });
   $('#canvas_height').change(function() {
-    return app.canvas.setHeight($(this).val());
+    return haika.canvas.setHeight($(this).val());
   });
   $('#canvas_centerX').change(function() {
-    return app.centerX = parseInt($(this).val());
+    return haika.centerX = parseInt($(this).val());
   });
   $('#canvas_centerY').change(function() {
-    return app.centerY = parseInt($(this).val());
+    return haika.centerY = parseInt($(this).val());
   });
   $('#canvas_bgscale').change(function() {
-    return app.options.bgscale = parseFloat($(this).val());
+    return haika.options.bgscale = parseFloat($(this).val());
   });
   $('#ex1').slider({
     formater: function(value) {
       value = parseFloat(value).toFixed(1);
       $('#canvas_bgopacity').val();
-      app.options.bgopacity = value;
-      app.render();
+      haika.options.bgopacity = value;
+      haika.render();
       return value;
     }
   });
   $('#canvas_render').click(function() {
-    return app.render();
+    return haika.render();
   });
   $('#canvas_lat').change(function() {
-    app.options.lat = parseFloat($(this).val());
-    return app.save();
+    haika.options.lat = parseFloat($(this).val());
+    return haika.save();
   });
   $('#canvas_lon').change(function() {
-    app.options.lon = parseFloat($(this).val());
-    return app.save();
+    haika.options.lon = parseFloat($(this).val());
+    return haika.save();
   });
   $('#canvas_angle').change(function() {
-    app.options.angle = parseInt($(this).val());
-    return app.save();
+    haika.options.angle = parseInt($(this).val());
+    return haika.save();
   });
   map_created = false;
   toggle_map = function() {
@@ -515,21 +515,21 @@ $(function() {
     return false;
   });
   Mousetrap.bind('mod+c', function() {
-    app.copy();
+    haika.copy();
     return false;
   });
   Mousetrap.bind('mod+v', function() {
-    app.paste();
+    haika.paste();
     return false;
   });
   Mousetrap.bind('mod+d', function(e) {
     cancel_default(e);
-    app.duplicate();
+    haika.duplicate();
     return false;
   });
   Mousetrap.bind('mod+a', function(e) {
     cancel_default(e);
-    app.select_all();
+    haika.select_all();
     return false;
   });
   Mousetrap.bind('mod+z', function(e) {
@@ -539,27 +539,27 @@ $(function() {
   });
   Mousetrap.bind(['esc', 'escape'], function(e) {
     cancel_default(e);
-    app.unselect_all();
+    haika.unselect_all();
     return false;
   });
   Mousetrap.bind(['up', 'shift+up'], function(e) {
     cancel_default(e);
-    app.up(e);
+    haika.up(e);
     return false;
   });
   Mousetrap.bind(['down', 'shift+down'], function(e) {
     cancel_default(e);
-    app.down(e);
+    haika.down(e);
     return false;
   });
   Mousetrap.bind(['left', 'shift+left'], function(e) {
     cancel_default(e);
-    app.left(e);
+    haika.left(e);
     return false;
   });
   Mousetrap.bind(['right', 'shift+right'], function(e) {
     cancel_default(e);
-    app.right(e);
+    haika.right(e);
     return false;
   });
   return $(document).unbind("keydown").bind("keydown", function(event) {
@@ -575,7 +575,7 @@ $(function() {
     }
     if (doPrevent) {
       event.preventDefault();
-      app.remove();
+      haika.remove();
     }
   });
 });
@@ -593,7 +593,7 @@ undo = {
           log('undo add ' + id);
           object = _this.get_object(id);
           log(object);
-          return app.__remove(object);
+          return haika.__remove(object);
         };
       })(this),
       redo: (function(_this) {
@@ -608,8 +608,8 @@ undo = {
         return function() {
           log('undo remove ' + object.id);
           log(object);
-          app.add(object);
-          return app.render();
+          haika.add(object);
+          return haika.render();
         };
       })(this),
       redo: (function(_this) {
@@ -618,7 +618,7 @@ undo = {
     });
   },
   init: function() {
-    app.canvas.on("object:selected", (function(_this) {
+    haika.canvas.on("object:selected", (function(_this) {
       return function(e) {
         var object, originalState;
         object = e.target;
@@ -634,13 +634,13 @@ undo = {
         }
       };
     })(this));
-    app.canvas.on("selection:cleared", (function(_this) {
+    haika.canvas.on("selection:cleared", (function(_this) {
       return function(e) {
         var object;
         return object = e.target;
       };
     })(this));
-    return app.canvas.on("object:modified", (function(_this) {
+    return haika.canvas.on("object:modified", (function(_this) {
       return function(e) {
         var object, originalState;
         object = e.target;
@@ -652,7 +652,7 @@ undo = {
           undo: function() {
             var state;
             if (_this.states.length > 0) {
-              app.canvas.deactivateAll();
+              haika.canvas.deactivateAll();
               state = _this.states[_this.states.length - 2];
               object = _this.get_object(state.id);
               if (object) {
@@ -662,7 +662,7 @@ undo = {
                   _this.states.pop();
                 }
                 _this.set_selected = false;
-                app.canvas.setActiveObject(object);
+                haika.canvas.setActiveObject(object);
               }
               return log(_this.states);
             }
@@ -675,7 +675,7 @@ undo = {
   get_object: function(id) {
     var o, object, _i, _len, _ref;
     object = null;
-    _ref = app.canvas.getObjects();
+    _ref = haika.canvas.getObjects();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       o = _ref[_i];
       if (o.id === id) {

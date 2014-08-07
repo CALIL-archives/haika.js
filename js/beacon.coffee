@@ -11,9 +11,9 @@
     eachHeight: 10
     minor : 0
     __width: ->
-      @eachWidth * app.scale
+      @eachWidth * haika.scale
     __height: ->
-      @eachHeight * app.scale
+      @eachHeight * haika.scale
 
     initialize: (options) ->
       options = options or {}
@@ -49,7 +49,7 @@
       @__is_into()
 
     __is_into: () ->
-      objects = app.canvas.getObjects()
+      objects = haika.canvas.getObjects()
       for object in objects
         if object.type.match(/shelf$/)
           half_width = object.__width() / 2

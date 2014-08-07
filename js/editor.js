@@ -65,7 +65,7 @@ editor_change = function() {
   } else {
     data = editor.getValue();
     log(data);
-    object = app.canvas.getActiveObject();
+    object = haika.canvas.getActiveObject();
     log(object);
     if (object) {
       changed = false;
@@ -79,7 +79,7 @@ editor_change = function() {
       }
       if (changed) {
         log('change');
-        app.save();
+        haika.save();
       }
     }
   }

@@ -13,16 +13,16 @@ map_setting = ->
     strokeWeight: 1
   }
   gmap.data.setStyle(featureStyle)
-  gmap.data.addGeoJson(app.create_geojson())
-#  if app.is_local()
-#    gmap.data.addGeoJson(app.create_geojson())
+  gmap.data.addGeoJson(haika.create_geojson())
+#  if haika.is_local()
+#    gmap.data.addGeoJson(haika.create_geojson())
 #  else
-#    gmap.data.loadGeoJson('/haika_store/data/'+sprintf('%06d',app.id)+'.geojson')
+#    gmap.data.loadGeoJson('/haika_store/data/'+sprintf('%06d',haika.id)+'.geojson')
   
   # make sure the view doesn't go beyond the 22 zoom levels of Google Maps
 #  view = new ol.View2D(maxZoom: 21)
 
-  center = ol.proj.transform([ app.options.lon, app.options.lat ], "EPSG:4326", "EPSG:3857")
+  center = ol.proj.transform([ haika.options.lon, haika.options.lat ], "EPSG:4326", "EPSG:3857")
   view = new ol.View2D(
     center: center
     zoom: 2
@@ -58,10 +58,10 @@ map_setting = ->
     center = map.getView().getCenter()
     new_center = ol.proj.transform(center, "EPSG:3857", "EPSG:4326")
     $('#canvas_lon').val(new_center[0])
-    app.options.lon = new_center[0]
+    haika.options.lon = new_center[0]
     $('#canvas_lat').val(new_center[1])
-    app.options.lat = new_center[1]
-    app.save()
+    haika.options.lat = new_center[1]
+    haika.save()
 
 #  featureOverlay = new ol.FeatureOverlay({
 #    style: new ol.style.Style({
@@ -114,12 +114,12 @@ $('#map_search').submit ->
     success: (data)=>
       log data
       if data.length>0
-        app.options.lon = parseFloat(data[0].lon)
-        app.options.lat = parseFloat(data[0].lat)
-        app.save()
-        $('#canvas_lon').val app.options.lon
-        $('#canvas_lat').val app.options.lat
-        center = ol.proj.transform([ app.options.lon, app.options.lat ], "EPSG:4326", "EPSG:3857")
+        haika.options.lon = parseFloat(data[0].lon)
+        haika.options.lat = parseFloat(data[0].lat)
+        haika.save()
+        $('#canvas_lon').val haika.options.lon
+        $('#canvas_lat').val haika.options.lat
+        center = ol.proj.transform([ haika.options.lon, haika.options.lat ], "EPSG:4326", "EPSG:3857")
         view = map.getView()
         view.setCenter(center)
         view.setZoom(20)

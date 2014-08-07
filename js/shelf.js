@@ -27,10 +27,10 @@
       return this.__eachHeight() * this.side;
     },
     __eachWidth: function() {
-      return this.eachWidth * app.scale;
+      return this.eachWidth * haika.scale;
     },
     __eachHeight: function() {
-      return this.eachHeight * app.scale;
+      return this.eachHeight * haika.scale;
     },
     count: 1,
     side: 1,
@@ -71,7 +71,7 @@
       }
       if (this.side === 1) {
         this.__renderShelf(ctx, x, y, w, h);
-        if (app.scale > 0.5) {
+        if (haika.scale > 0.5) {
           this.__renderSide(ctx, x, y, w, h);
         }
       }

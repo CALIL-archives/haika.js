@@ -15,11 +15,11 @@ $('#bgimg').change (e)->
   files = e.target.files
   if files.length==0
     return
-  if app.is_local()
-    app.load_bg files[0]
+  if haika.is_local()
+    haika.load_bg files[0]
   else
     data = new FormData()
-    data.append 'id', app.id
+    data.append 'id', haika.id
     data.append 'userfile', files[0]
     $.ajax
       url: '/haika_store/upload.php'
@@ -30,46 +30,46 @@ $('#bgimg').change (e)->
       type: 'POST'
       success: (data) ->
 #        log data
-        url = '/haika_store/image/'+app.id+'_'+files[0].name
-        app.load_bg_from_url(url)
+        url = '/haika_store/image/'+haika.id+'_'+files[0].name
+        haika.load_bg_from_url(url)
   
 set_scrollbar = ->
   # scrollbar
   scroll_weight = 5000
-  bgimg_width = if app.bgimg then app.bgimg_width else 2500
-  bgimg_height = if app.bgimg then app.bgimg_height else 2500
-  maxX = bgimg_width * app.options.bgscale / 2
-  maxY = bgimg_height * app.options.bgscale / 2
-  defaultX =  -((app.centerX - scroll_weight) / 10000)
-  defaultY =  -((app.centerY - scroll_weight) / 10000)
+  bgimg_width = if haika.bgimg then haika.bgimg_width else 2500
+  bgimg_height = if haika.bgimg then haika.bgimg_height else 2500
+  maxX = bgimg_width * haika.options.bgscale / 2
+  maxY = bgimg_height * haika.options.bgscale / 2
+  defaultX =  -((haika.centerX - scroll_weight) / 10000)
+  defaultY =  -((haika.centerY - scroll_weight) / 10000)
   new Dragdealer 'horizontal-scroller',
     x: defaultX
     animationCallback: (x, y)->
 #      log x
-      app.unselect()
+      haika.unselect()
       centerX = x * 10000 - scroll_weight
-      if centerX > maxX - app.canvas.getWidth() / 2
-        centerX = maxX - app.canvas.getWidth() / 2
-      if centerX < -maxX + app.canvas.getWidth() / 2
-        centerX = -maxX + app.canvas.getWidth() / 2
-      app.centerX = -centerX.toFixed(0)
-      app.render()
+      if centerX > maxX - haika.canvas.getWidth() / 2
+        centerX = maxX - haika.canvas.getWidth() / 2
+      if centerX < -maxX + haika.canvas.getWidth() / 2
+        centerX = -maxX + haika.canvas.getWidth() / 2
+      haika.centerX = -centerX.toFixed(0)
+      haika.render()
   new Dragdealer 'vertical-scroller',
     y: defaultY
     horizontal: false,
     vertical: true,
 #    yPrecision: 500,
     animationCallback: (x, y)->
-      app.unselect()
+      haika.unselect()
       centerY = y * 10000 - scroll_weight
-      if centerY > maxY - app.canvas.getHeight() / 2
-        centerY = maxY - app.canvas.getHeight() / 2
-      if centerY < -maxY + app.canvas.getHeight() / 2
-        centerY = -maxY + app.canvas.getHeight() / 2
-      app.centerY = -centerY.toFixed(0)
-      app.render()
+      if centerY > maxY - haika.canvas.getHeight() / 2
+        centerY = maxY - haika.canvas.getHeight() / 2
+      if centerY < -maxY + haika.canvas.getHeight() / 2
+        centerY = -maxY + haika.canvas.getHeight() / 2
+      haika.centerY = -centerY.toFixed(0)
+      haika.render()
   
-app.init(
+haika.init(
   canvas : 'canvas'
   canvas_width : get_width()
   canvas_height : get_height()
@@ -85,34 +85,34 @@ app.init(
 
 
 
-#app.setMapCenter([136.963791, 35.155080])
-#app.mapAngle = 25
-#app.options.lon = parseFloat($('#canvas_lon').val()) 
-#app.options.lat = parseFloat($('#canvas_lat').val())
-#app.options.angle = parseInt($('#canvas_angle').val())
+#haika.setMapCenter([136.963791, 35.155080])
+#haika.mapAngle = 25
+#haika.options.lon = parseFloat($('#canvas_lon').val()) 
+#haika.options.lat = parseFloat($('#canvas_lat').val())
+#haika.options.angle = parseInt($('#canvas_angle').val())
 
 
 bind = (func, do_active=true)->
-  object = app.canvas.getActiveObject()
+  object = haika.canvas.getActiveObject()
   if object
     func(object)
-  group = app.canvas.getActiveGroup()
+  group = haika.canvas.getActiveGroup()
   if group
     for object in group.getObjects()
       func(object)
 $('#fill-color').colorselector(
   callback: (value, color, title)->
-    app.fillColor = color
+    haika.fillColor = color
     bind (object)->
       object.fill = color
-    app.canvas.renderAll()
+    haika.canvas.renderAll()
 )
 $('#stroke-color').colorselector(
   callback: (value, color, title)->
-    app.strokeColor = color
+    haika.strokeColor = color
     bind (object)->
       object.stroke = color
-    app.canvas.renderAll()
+    haika.canvas.renderAll()
 )
 
 
@@ -167,17 +167,17 @@ loadComplete = (data)->
         results = e.data.result
         for result in results
           add_pixel(result.x, result.y, result.color)
-        app.render()
+        haika.render()
 
   worker.postMessage params
 
 
 add_pixel = (x, y, color)->
   dot = 10
-  klass = app.get_class('shelf')
+  klass = haika.get_class('shelf')
   object = new klass(
-    top: app.transformTopY_cm2px(y*dot)
-    left: app.transformLeftX_cm2px(x*dot)
+    top: haika.transformTopY_cm2px(y*dot)
+    left: haika.transformLeftX_cm2px(x*dot)
     fill: color
     stroke: color
     angle: 0
@@ -186,7 +186,7 @@ add_pixel = (x, y, color)->
     eachWidth: dot
     eachHeight: dot
   )
-  app.add(object)
+  haika.add(object)
     
 
 $('.main_container, .canvas_panel').css('width', get_width())
@@ -196,21 +196,21 @@ $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height
 $('.property_panel').css('height', get_height()+scrollbar_height)
 
 $(window).resize ->
-  app.canvas.setWidth(get_width())
-  app.canvas.setHeight(get_height())
+  haika.canvas.setWidth(get_width())
+  haika.canvas.setHeight(get_height())
   $('.main_container, .canvas_panel').css('width', get_width())
   $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height())
   $('.property_panel').css('height', get_height()+scrollbar_height)
-  app.render()
+  haika.render()
   
 add = (val)->
   log val
-  klass = app.get_class(val.type)
+  klass = haika.get_class(val.type)
   object = new klass(
-    top: app.transformTopY_cm2px(app.centerY)
-    left: app.transformLeftX_cm2px(app.centerX)
-    fill: app.fillColor
-    stroke: app.strokeColor
+    top: haika.transformTopY_cm2px(haika.centerY)
+    left: haika.transformLeftX_cm2px(haika.centerX)
+    fill: haika.fillColor
+    stroke: haika.strokeColor
     angle: if val.angle? then val.angle else 0
     #lockScalingY: true
   )
@@ -221,14 +221,14 @@ add = (val)->
   if val.type.match(/shelf$/)
     object.eachWidth = val.eachWidth
     object.eachHeight = val.eachHeight
-  id = app.add(object)
-  app.set_state(object)
-  app.render()
+  id = haika.add(object)
+  haika.set_state(object)
+  haika.render()
   undo.add(id)
-  $(app.canvas.getObjects()).each (i, obj)=>
+  $(haika.canvas.getObjects()).each (i, obj)=>
     if obj.id==object.id
       setTimeout ->
-        app.canvas.setActiveObject(app.canvas.item(i))
+        haika.canvas.setActiveObject(haika.canvas.item(i))
         $('.add').blur()
       , 10
 #setTimeout(->
@@ -247,17 +247,17 @@ $ ->
         add 200 + 400 * y, 100 + 50 * x, 90
         x++
       y++
-    app.render()
+    haika.render()
     return
 
   $('.nav-tabs a').click (e)->
     e.preventDefault()
-    app.state = $(e.target).attr('class')
-    app.render()
+    haika.state = $(e.target).attr('class')
+    haika.render()
     $(this).tab('show')
   $(".add").click ->
     add()
-    app.render()
+    haika.render()
 
   toolbar = 
     shelf :
@@ -318,62 +318,62 @@ $ ->
       object = toolbar[key]
       object.type = key
       add(object)
-      app.render()
+      haika.render()
   # toolbar
   $(".add_custom_shelf").click ->
     add('custom_shelf')
-    app.render()
+    haika.render()
   $(".add_beacon").click ->
     add('beacon')
-    app.render()
+    haika.render()
   $(".remove").click ->
-    object = app.canvas.getActiveObject()
-    app.remove()
+    object = haika.canvas.getActiveObject()
+    haika.remove()
     if object
       undo.remove(object)
   $(".zoomin").click ->
-    app.zoomIn()
+    haika.zoomIn()
   $(".zoomout").click ->
-    app.zoomOut()
+    haika.zoomOut()
   $(".zoomreset").click ->
-    app.zoomReset()
+    haika.zoomReset()
   $(".bringtofront").click ->
-    app.bringToFront()
+    haika.bringToFront()
   $(".duplicate").click ->
-    app.duplicate()
+    haika.duplicate()
   $(".copy").click ->
-    app.copy()
+    haika.copy()
   $(".paste").click ->
-    app.paste()
+    haika.paste()
   $(".align-left").click ->
-    app.alignLeft()
+    haika.alignLeft()
   $(".align-center").click ->
-    app.alignCenter()
+    haika.alignCenter()
   $(".align-right").click ->
-    app.alignRight()
+    haika.alignRight()
   $(".align-top").click ->
-    app.alignTop()
+    haika.alignTop()
   $(".align-vcenter").click ->
-    app.alignVcenter()
+    haika.alignVcenter()
   $(".align-bottom").click ->
-    app.alignBottom()
+    haika.alignBottom()
 #  $(".toright").click ->
-#    app.toRight()
+#    haika.toRight()
 #  $(".toleft").click ->
-#    app.toLeft()
+#    haika.toLeft()
 #  $(".totop").click ->
-#    app.toTop()
+#    haika.toTop()
 #  $(".tobottom").click ->
-#    app.toBottom()
+#    haika.toBottom()
 #  $(".svg").click ->
-#    app.getSVG()
+#    haika.getSVG()
 #  $(".loadsvg").click ->
-#    loadSVG 'http://fabreasy.com/demo_front.svg', app.canvas, ->
+#    loadSVG 'http://fabreasy.com/demo_front.svg', haika.canvas, ->
 #      alert('done');
 #  $(".geojson").click ->
-#    app.getGeoJSON()
+#    haika.getGeoJSON()
 #  $(".reset").click ->
-#    app.objects = []
+#    haika.objects = []
 #    localStorage.clear()
 #    $(window).off 'beforeunload'
 #    location.reload()
@@ -383,11 +383,11 @@ $ ->
 #    step: 10
 #    value: 0
 #    slide: (event, ui) ->
-#      activeObject = app.canvas.getActiveObject()
+#      activeObject = haika.canvas.getActiveObject()
 #      if activeObject
 #        activeObject.angle = ui.value
 #        activeObject.setCoords()
-#        app.canvas.renderAll()
+#        haika.canvas.renderAll()
 
   timeout = false
   $('canvas').on 'mousewheel', (event)=>
@@ -402,9 +402,9 @@ $ ->
           timeout = false
       , 100
     if event.deltaY>0
-      app.zoomIn()
+      haika.zoomIn()
     if event.deltaY<0
-      app.zoomOut()
+      haika.zoomOut()
 
 #  @shiftKey = false
 #  $(document.body).keydown (e)=>
@@ -417,39 +417,39 @@ $ ->
 #      @zoomIn()
   # デバッグパネル
   $('#canvas_width').change ->
-    app.canvas.setWidth($(this).val())
+    haika.canvas.setWidth($(this).val())
   $('#canvas_height').change ->
-    app.canvas.setHeight($(this).val())
+    haika.canvas.setHeight($(this).val())
   $('#canvas_centerX').change ->
-    app.centerX = parseInt($(this).val())
+    haika.centerX = parseInt($(this).val())
   $('#canvas_centerY').change ->
-    app.centerY = parseInt($(this).val())
+    haika.centerY = parseInt($(this).val())
   $('#canvas_bgscale').change ->
-    app.options.bgscale = parseFloat($(this).val())
-#    app.save()
+    haika.options.bgscale = parseFloat($(this).val())
+#    haika.save()
 #  $('#canvas_bgopacity').change ->
-#    app.options.bgopacity = parseFloat($(this).val())
+#    haika.options.bgopacity = parseFloat($(this).val())
   $('#ex1').slider
     formater: (value)->
       value = parseFloat(value).toFixed(1)
       $('#canvas_bgopacity').val()
-      app.options.bgopacity = value
-      app.render()
-#      app.save()
+      haika.options.bgopacity = value
+      haika.render()
+#      haika.save()
       return value
   $('#canvas_render').click ->
-    app.render()
+    haika.render()
 
   $('#canvas_lat').change ->
-    app.options.lat = parseFloat($(this).val())
-    app.save()
+    haika.options.lat = parseFloat($(this).val())
+    haika.save()
   $('#canvas_lon').change ->
-    app.options.lon = parseFloat($(this).val())
-    app.save()
+    haika.options.lon = parseFloat($(this).val())
+    haika.save()
   
   $('#canvas_angle').change ->
-    app.options.angle = parseInt($(this).val())
-    app.save()
+    haika.options.angle = parseInt($(this).val())
+    haika.save()
 
   map_created = false
   toggle_map = ->
@@ -482,18 +482,18 @@ $ ->
     $('#file').trigger('click')
     return false
   Mousetrap.bind 'mod+c', ->
-    app.copy()
+    haika.copy()
     return false
   Mousetrap.bind 'mod+v', ->
-    app.paste()
+    haika.paste()
     return false
   Mousetrap.bind 'mod+d', (e)->
     cancel_default(e)
-    app.duplicate()
+    haika.duplicate()
     return false
   Mousetrap.bind 'mod+a', (e)->
     cancel_default(e)
-    app.select_all()
+    haika.select_all()
     return false
   Mousetrap.bind 'mod+z', (e)->
     cancel_default(e)
@@ -501,35 +501,35 @@ $ ->
     return false
   Mousetrap.bind ['esc', 'escape'], (e)->
     cancel_default(e)
-    app.unselect_all()
+    haika.unselect_all()
     return false
   Mousetrap.bind ['up', 'shift+up'], (e)->
     cancel_default(e)
-    app.up(e)
+    haika.up(e)
     return false
   Mousetrap.bind ['down', 'shift+down'], (e)->
     cancel_default(e)
-    app.down(e)
+    haika.down(e)
     return false
   Mousetrap.bind ['left', 'shift+left'], (e)->
     cancel_default(e)
-    app.left(e)
+    haika.left(e)
     return false
   Mousetrap.bind ['right', 'shift+right'], (e)->
     cancel_default(e)
-    app.right(e)
+    haika.right(e)
     return false
 #  Mousetrap.bind '=', (e)->
 #    cancel_default(e)
-#    app.zoomIn()
+#    haika.zoomIn()
 #    return false
 #  Mousetrap.bind '-', (e)->
 #    cancel_default(e)
-#    app.zoomOut()
+#    haika.zoomOut()
 #    return false
 #  Mousetrap.bind '0', (e)->
 #    cancel_default(e)
-#    app.zoomReset()
+#    haika.zoomReset()
 #    return false
   # Prevent the backspace key from navigating back.
   $(document).unbind("keydown").bind "keydown", (event) ->
@@ -542,7 +542,7 @@ $ ->
         doPrevent = true
     if doPrevent
       event.preventDefault()
-      app.remove()
+      haika.remove()
     return
 
 # Undo
@@ -557,9 +557,9 @@ undo =
         log 'undo add '+id
         object = @get_object(id)
         log object
-        app.__remove(object)
-#        app.save()
-#        app.render()
+        haika.__remove(object)
+#        haika.save()
+#        haika.render()
       redo: =>
   remove : (object)->
     log 'remove set'
@@ -567,11 +567,11 @@ undo =
       undo: =>
         log 'undo remove '+object.id
         log object
-        app.add(object)
-        app.render()
+        haika.add(object)
+        haika.render()
       redo: =>
   init : ->
-    app.canvas.on "object:selected", (e) =>
+    haika.canvas.on "object:selected", (e) =>
       object = e.target
 #      console.log "object:selected"
       if not @set_selected
@@ -584,16 +584,16 @@ undo =
         @states.push(originalState)
 #        log @states
 
-    app.canvas.on "selection:cleared", (e) =>
+    haika.canvas.on "selection:cleared", (e) =>
       object = e.target
     #  console.log "selection:cleared"
 
 
-    app.canvas.on "object:modified", (e) =>
+    haika.canvas.on "object:modified", (e) =>
       object = e.target
     #  console.log "object:modified"
 #      log object
-#      group = app.canvas.getActiveGroup()
+#      group = haika.canvas.getActiveGroup()
 #      if group
 #        objects = group.getObjects()
 #        log group.top
@@ -614,7 +614,7 @@ undo =
         undo: =>
     #      log 'undo'
           if @states.length>0
-            app.canvas.deactivateAll()
+            haika.canvas.deactivateAll()
             state = @states[@states.length-2]
             object = @get_object(state.id)
     #        log object
@@ -624,16 +624,16 @@ undo =
 #              log @states[@states.length-1].state_type
               if @states[@states.length-1].state_type=='selected'
                 @states.pop()
-    #          app.canvas.renderAll()
+    #          haika.canvas.renderAll()
               @set_selected = false
-              app.canvas.setActiveObject(object)
+              haika.canvas.setActiveObject(object)
             log @states
         redo: =>
     #      redo()
       return
   get_object : (id)->
     object = null
-    for o in app.canvas.getObjects()
+    for o in haika.canvas.getObjects()
       if o.id==id
         object = o
         break

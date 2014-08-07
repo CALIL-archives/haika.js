@@ -150,7 +150,7 @@ editor_change = ()->
   else
     data = editor.getValue()
     log data
-    object = app.canvas.getActiveObject()
+    object = haika.canvas.getActiveObject()
     log object
     if object
       changed = false
@@ -160,13 +160,13 @@ editor_change = ()->
         if object[key]!=data[key] 
           object[key] = data[key]
           changed = true
-#      app.canvas.renderAll()
+#      haika.canvas.renderAll()
       if changed
         log 'change'
-        app.save()
-#      app.render()
-#      $(app.canvas.getObjects()).each (i, obj)=>
+        haika.save()
+#      haika.render()
+#      $(haika.canvas.getObjects()).each (i, obj)=>
 #          if obj.id==object.id
-#            app.canvas.setActiveObject(obj)
+#            haika.canvas.setActiveObject(obj)
 #    console.log data
   return

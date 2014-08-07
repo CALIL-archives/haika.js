@@ -15,10 +15,10 @@
     width_scale: 1,
     height_scale: 1,
     __width: function() {
-      return this.eachWidth * this.width_scale * app.scale;
+      return this.eachWidth * this.width_scale * haika.scale;
     },
     __height: function() {
-      return this.eachHeight * this.height_scale * app.scale;
+      return this.eachHeight * this.height_scale * haika.scale;
     },
     initialize: function(options) {
       options = options || {};
@@ -48,11 +48,11 @@
       }
       if (this.sacleX !== 1) {
         this.width = this.width * this.scaleX;
-        this.width_scale = this.width / (this.eachWidth * app.scale);
+        this.width_scale = this.width / (this.eachWidth * haika.scale);
       }
       if (this.sacleY !== 1) {
         this.height = this.height * this.scaleY;
-        this.height_scale = this.height / (this.eachHeight * app.scale);
+        this.height_scale = this.height / (this.eachHeight * haika.scale);
       }
       this.scaleX = this.scaleY = 1;
       return this.setCoords();

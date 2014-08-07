@@ -29,10 +29,10 @@
       return this.__eachHeight() * this.side;
     },
     __eachWidth: function() {
-      return 90 * app.scale;
+      return 90 * haika.scale;
     },
     __eachHeight: function() {
-      return 25 * app.scale;
+      return 25 * haika.scale;
     },
     count: 1,
     side: 1,
@@ -173,8 +173,8 @@
       center = this.getCenterPoint();
       x = -w / 2 + center.x;
       y = -h / 2 + center.y;
-      x = app.transformLeftX_px2cm(x);
-      y = app.transformTopY_px2cm(y);
+      x = haika.transformLeftX_px2cm(x);
+      y = haika.transformTopY_px2cm(y);
       data = {
         "type": "Feature",
         "geometry": {
