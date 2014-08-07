@@ -607,6 +607,8 @@ loadComplete = (data)->
   canvas.height = img.height
   ctx.translate(0,img.height);
   ctx.scale(1,-1);
+  ctx.translate(img.width,0);
+  ctx.scale(-1,1);
   ctx.drawImage(img, 0, 0)
   # 画像の色情報を取得
   w = canvas.width
