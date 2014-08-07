@@ -2,10 +2,10 @@ scrollbar_width = $('#vertical-scroller').width()
 scrollbar_height = $('#horizontal-scroller').height()
 property_panel_width = $('.property_panel').width()
 
-get_width = ->
+getWidth = ->
   return window.innerWidth - scrollbar_width - property_panel_width - 20
 
-get_height = ->
+getHeight = ->
   return window.innerHeight - $('.header').height() - scrollbar_height
 
 
@@ -32,9 +32,9 @@ $('#bgimg').change (e)->
 #        log data
         url = '/haika_store/image/'+haika.id+'_'+files[0].name
         haika.loadBgFromUrl(url)
-  
-set_scrollbar = ->
-  # scrollbar
+
+# スクロールバーの設定
+setScrollbar = ->
   scroll_weight = 5000
   bgimg_width = if haika.bgimg then haika.bgimg_width else 2500
   bgimg_height = if haika.bgimg then haika.bgimg_height else 2500
@@ -71,8 +71,8 @@ set_scrollbar = ->
   
 haika.init(
   canvas : 'canvas'
-  canvas_width : get_width()
-  canvas_height : get_height()
+  canvas_width : getWidth()
+  canvas_height : getHeight()
   scale : 1
   max_width: 10000
   max_height: 10000
@@ -80,18 +80,11 @@ haika.init(
   #bgurl  : 'img/sample.png'
   bgopacity: 0.2
   bgscale  : 4.425
-  callback : set_scrollbar
+  callback : setScrollbar
 )
 
 
-
-#haika.setMapCenter([136.963791, 35.155080])
-#haika.mapAngle = 25
-#haika.options.lon = parseFloat($('#canvas_lon').val()) 
-#haika.options.lat = parseFloat($('#canvas_lat').val())
-#haika.options.angle = parseInt($('#canvas_angle').val())
-
-
+# 色の設定
 bind = (func, do_active=true)->
   object = haika.canvas.getActiveObject()
   if object
@@ -116,8 +109,8 @@ $('#stroke-color').colorselector(
 )
 
 
-
-#画像を読み込む
+# 画像配架図変換
+# 画像を読み込む
 loadImg = (file) ->
   if not file.type.match(/image\/.+/)
     return  
@@ -166,15 +159,15 @@ loadComplete = (data)->
       when "end"
         results = e.data.result
         for result in results
-          add_pixel(result.x, result.y, result.color)
+          addPixel(result.x, result.y, result.color)
         haika.render()
 
   worker.postMessage params
 
 
-add_pixel = (x, y, color)->
+addPixel = (x, y, color)->
   dot = 10
-  klass = haika.get_class('shelf')
+  klass = haika.getClass('shelf')
   object = new klass(
     top: haika.transformTopY_cm2px(y*dot)
     left: haika.transformLeftX_cm2px(x*dot)
@@ -189,18 +182,18 @@ add_pixel = (x, y, color)->
   haika.add(object)
     
 
-$('.main_container, .canvas_panel').css('width', get_width())
+$('.main_container, .canvas_panel').css('width', getWidth())
 
 
-$('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height())
-$('.property_panel').css('height', get_height()+scrollbar_height)
+$('#vertical-scroller, #vertical-scroller .dragdealer').css('height', getHeight())
+$('.property_panel').css('height', getHeight()+scrollbar_height)
 
 $(window).resize ->
-  haika.canvas.setWidth(get_width())
-  haika.canvas.setHeight(get_height())
-  $('.main_container, .canvas_panel').css('width', get_width())
-  $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', get_height())
-  $('.property_panel').css('height', get_height()+scrollbar_height)
+  haika.canvas.setWidth(getWidth())
+  haika.canvas.setHeight(getHeight())
+  $('.main_container, .canvas_panel').css('width', getWidth())
+  $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', getHeight())
+  $('.property_panel').css('height', getHeight()+scrollbar_height)
   haika.render()
   
 add = (val)->
@@ -236,19 +229,20 @@ add = (val)->
   #add(250, 250)
 #, 500)
 
+# テスト用
+addmany = ->
+  y = 0
+  while y < 8
+    x = 0
+    while x < 22
+      add 200 + 400 * y, 100 + 50 * x, 90
+      x++
+    y++
+  haika.render()
+  return
 
 #    fabric.Shelf.async = true;
 $ ->
-  window.addmany = ->
-    y = 0
-    while y < 8
-      x = 0
-      while x < 22
-        add 200 + 400 * y, 100 + 50 * x, 90
-        x++
-      y++
-    haika.render()
-    return
 
   $('.nav-tabs a').click (e)->
     e.preventDefault()
@@ -555,7 +549,7 @@ undo =
     @undoManager.add
       undo: =>
         log 'undo add '+id
-        object = @get_object(id)
+        object = @getObject(id)
         log object
         haika.__remove(object)
 #        haika.save()
@@ -616,10 +610,10 @@ undo =
           if @states.length>0
             haika.canvas.deactivateAll()
             state = @states[@states.length-2]
-            object = @get_object(state.id)
+            object = @getObject(state.id)
     #        log object
             if object
-              @set_state(object, state)
+              @setState(object, state)
               @states.pop()
 #              log @states[@states.length-1].state_type
               if @states[@states.length-1].state_type=='selected'
@@ -631,14 +625,14 @@ undo =
         redo: =>
     #      redo()
       return
-  get_object : (id)->
+  getObject : (id)->
     object = null
     for o in haika.canvas.getObjects()
       if o.id==id
         object = o
         break
     return object
-  set_state : (object, state)->
+  setState : (object, state)->
     object.setOptions state
     object.setCoords()
 
