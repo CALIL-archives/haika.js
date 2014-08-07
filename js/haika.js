@@ -152,7 +152,7 @@ haika = {
       };
     })(this));
   },
-  loadBg: function(file) {
+  loadBgFromFile: function(file) {
     var reader;
     reader = new FileReader();
     reader.onload = (function(_this) {
@@ -323,7 +323,7 @@ haika = {
       };
     })(this));
   },
-  addActive: function(object, top, left) {
+  addRender: function(object, top, left) {
     var new_id;
     this.save();
     object.id = this.getId();
@@ -339,7 +339,7 @@ haika = {
         var new_id, o;
         _this.canvas.discardActiveGroup();
         o = fabric.util.object.clone(object);
-        new_id = _this.addActive(o, o.top + 10, o.left + 10);
+        new_id = _this.addRender(o, o.top + 10, o.left + 10);
         return new_id;
       };
     })(this));
@@ -386,7 +386,7 @@ haika = {
     o = fabric.util.object.clone(object);
     top = o.top + this.clipboardCount * o.height / 2;
     left = o.left + this.clipboardCount * o.width / 10;
-    new_id = this.addActive(o, top, left);
+    new_id = this.addRender(o, top, left);
     return new_id;
   },
   selectAll: function() {
@@ -475,33 +475,33 @@ haika = {
     if (haika.state !== 'floor') {
       for (_j = 0, _len1 = floors.length; _j < _len1; _j++) {
         o = floors[_j];
-        this.renderObject(o);
+        this.addObjectToCanvas(o);
       }
     }
     for (_k = 0, _len2 = walls.length; _k < _len2; _k++) {
       o = walls[_k];
-      this.renderObject(o);
+      this.addObjectToCanvas(o);
     }
     if (haika.state === 'floor') {
       for (_l = 0, _len3 = floors.length; _l < _len3; _l++) {
         o = floors[_l];
-        this.renderObject(o);
+        this.addObjectToCanvas(o);
       }
     }
     for (_m = 0, _len4 = shelfs.length; _m < _len4; _m++) {
       o = shelfs[_m];
-      this.renderObject(o);
+      this.addObjectToCanvas(o);
     }
     for (_n = 0, _len5 = beacons.length; _n < _len5; _n++) {
       o = beacons[_n];
-      this.renderObject(o);
+      this.addObjectToCanvas(o);
     }
     this.renderBg();
     this.canvas.renderAll();
     this.canvas.renderOnAddRemove = true;
     return this.setCanvasProperty();
   },
-  renderObject: function(o) {
+  addObjectToCanvas: function(o) {
     var key, klass, object, schema;
     klass = this.getClass(o.type);
     object = new klass();
@@ -578,7 +578,7 @@ haika = {
     $('#canvas_lat').val(this.options.lat);
     return $('#canvas_angle').val(this.options.angle);
   },
-  getMove: function(event) {
+  getMovePixel: function(event) {
     if (event.shiftKey) {
       return 10;
     } else {
@@ -589,7 +589,7 @@ haika = {
     var object;
     object = this.canvas.getActiveObject();
     if (object) {
-      object.top = object.top - this.getMove(event);
+      object.top = object.top - this.getMovePixel(event);
       return this.canvas.renderAll();
     }
   },
@@ -597,7 +597,7 @@ haika = {
     var object;
     object = this.canvas.getActiveObject();
     if (object) {
-      object.top = object.top + this.getMove(event);
+      object.top = object.top + this.getMovePixel(event);
       return this.canvas.renderAll();
     }
   },
@@ -605,7 +605,7 @@ haika = {
     var object;
     object = this.canvas.getActiveObject();
     if (object) {
-      object.left = object.left - this.getMove(event);
+      object.left = object.left - this.getMovePixel(event);
       return this.canvas.renderAll();
     }
   },
@@ -613,7 +613,7 @@ haika = {
     var object;
     object = this.canvas.getActiveObject();
     if (object) {
-      object.left = object.left + this.getMove(event);
+      object.left = object.left + this.getMovePixel(event);
       return this.canvas.renderAll();
     }
   },
@@ -761,6 +761,11 @@ haika = {
   isLocal: function() {
     return location.protocol === 'file:' || location.port !== '';
   },
+  setHashChange: function() {
+    return $(window).bind("hashchange", function() {
+      return location.reload();
+    });
+  },
   load: function() {
     var data;
     if (location.hash !== '' && location.hash.length !== 7) {
@@ -782,11 +787,6 @@ haika = {
     } else {
       return this.getHaikaId();
     }
-  },
-  setHashChange: function() {
-    return $(window).bind("hashchange", function() {
-      return location.reload();
-    });
   },
   loadRender: function(data) {
     var canvas, geojson, key, klass, object, schema, shape, _i, _len, _ref;
@@ -1011,16 +1011,6 @@ haika = {
     };
     return data;
   },
-  getGeoJSON: function() {
-    var geojson;
-    this.unselect();
-    this.render();
-    geojson = this.translateGeoJSON();
-    localStorage.setItem('geojson', JSON.stringify(geojson));
-    log(geojson);
-    $(window).off('beforeunload');
-    return location.href = 'map2.html';
-  },
   createGeoJson: function() {
     var EPSG3857_geojson, coordinate, coordinates, data, features, geojson, geometry, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
     geojson = this.translateGeoJSON();
@@ -1144,30 +1134,6 @@ haika = {
       }
     }
     return geojson;
-  },
-  getSVG: function() {
-    var a, blob, canvas, svg, tmp_canvas, tmp_scale;
-    this.unselect();
-    canvas = document.createElement('canvas');
-    canvas = new fabric.Canvas(canvas);
-    canvas.setWidth(this.options.max_width);
-    canvas.setHeight(this.options.max_height);
-    tmp_canvas = this.canvas;
-    tmp_scale = this.scale;
-    this.canvas = canvas;
-    this.scale = 1;
-    this.render();
-    svg = this.canvas.toSVG();
-    this.canvas = tmp_canvas;
-    this.scale = tmp_scale;
-    a = document.createElement('a');
-    a.download = 'sample.svg';
-    a.type = 'image/svg+xml';
-    blob = new Blob([svg], {
-      "type": "image/svg+xml"
-    });
-    a.href = (window.URL || webkitURL).createObjectURL(blob);
-    return a.click();
   },
   setPropetyPanel: function(object) {
     var group, key, objects, properties, value;

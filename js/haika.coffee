@@ -81,6 +81,7 @@ haika =
         @options.callback()
     , 500
     @bindEvent()
+  # Fabricのイベント追加
   bindEvent : ->
     @canvas.on('object:selected', (e)=>
 #        log 'selected'
@@ -117,6 +118,7 @@ haika =
       @render()
       @save()
       return
+  # 背景画像をURLからロード
   loadBgFromUrl : (url) ->
     @options.bgurl = url
     fabric.Image.fromURL url, (img)=>
@@ -125,7 +127,8 @@ haika =
       @bgimg_width  = img.width
       @bgimg_height = img.height
       @render()
-  loadBg : (file) ->
+  # 背景画像をファイルからロード
+  loadBgFromFile : (file) ->
     reader = new FileReader()
     reader.onload = (e) =>
 #      log e.currentTarget.result
@@ -133,6 +136,7 @@ haika =
       @setBg()
       @save()
     reader.readAsDataURL file
+  # 背景の設定
   setBg: ->
     if not @bgimg_data
       return
@@ -144,19 +148,22 @@ haika =
     @render()
     if @options.callback?
       @options.callback()
-    
+  # オブジェクトにふるid 通し番号
   lastId : 0
+  # idを取得
   getId : ->
     if @objects.length==0
       return 0
     @lastId += 1
     return @lastId
+  # idからオブジェクトを取得
   findById : (id)->
     count = null
     $(@objects).each (i, obj)->
       if obj.id==id
         count = i
     return count
+  # オブジェクトの追加
   add : (object)->
     # new object
     if object.id==''
@@ -188,6 +195,7 @@ haika =
       o[prop] = object[prop]
     @objects.push(o)
     return o.id
+  # レイヤーの状態をセット
   setState : (object)->
     #layer tab
     if object.type.match(/shelf$/)
@@ -200,6 +208,7 @@ haika =
       state = 'beacon'
     @state = state
     $('.nav a.'+@state).tab('show')
+  # fabric上のオブジェクトの取得共通関数
   bind : (func, do_active=true)->
     object = @canvas.getActiveObject()
     if object
@@ -218,6 +227,7 @@ haika =
         @activeGroup(new_ids)
       else
         @render()
+  # アクティブなグループを設定
   activeGroup : (new_ids)->
     new_objects = []
     for object in @canvas.getObjects()
@@ -233,6 +243,7 @@ haika =
     )
     @canvas._activeObject = null
     @canvas.setActiveGroup(group.setCoords()).renderAll()
+  # 削除
   remove : ->
     @bind((object)=>
       @__remove(object)
@@ -242,6 +253,7 @@ haika =
     count = @findById(object.id)
     @objects.splice(count, 1)
     return object
+  # 最前面に移動
   bringToFront : ->
     @bind (object)=>
       count = @findById(object.id)
@@ -250,7 +262,8 @@ haika =
       @objects.splice(count, 1)
       @objects.push(obj)
       return obj.id
-  addActive : (object, top, left)->
+  # 追加して描画
+  addRender : (object, top, left)->
     @save()
     object.id = @getId()
     object.top  = top
@@ -258,20 +271,23 @@ haika =
     new_id = @add(object)
     @render()
     return new_id
+  # 複製
   duplicate : ->
     @bind (object)=>
       @canvas.discardActiveGroup()
       o = fabric.util.object.clone(object)
-      new_id = @addActive(o, o.top+10,o.left+10)
+      new_id = @addRender(o, o.top+10,o.left+10)
       return new_id
   clipboard : []
   clipboardCount : 1
+  # コピー
   copy  : ->
     @clipboard = []
     @clipboardCount = 1
     @bind (object)=>
       @clipboard.push(object)
     , false
+  # ペースト
   paste : ->
     if @clipboard.length<=0
       return
@@ -291,8 +307,9 @@ haika =
     o = fabric.util.object.clone(object)
     top = o.top+@clipboardCount*o.height/2
     left = o.left+@clipboardCount*o.width/10
-    new_id = @addActive(o, top, left)
+    new_id = @addRender(o, top, left)
     return new_id
+  # すべてを選択(全レイヤー)
   selectAll : ()->
     @canvas.discardActiveGroup()
     objects = @canvas.getObjects().map((o) ->
@@ -304,16 +321,22 @@ haika =
     )
     @canvas._activeObject = null
     @canvas.setActiveGroup(group.setCoords()).renderAll()
+  # すべての選択解除
   unselectAll : ()->
     @canvas.deactivateAll().renderAll()
+  # left,x値のcm->px変換
   transformLeftX_cm2px : (cm)->
     return @canvas.getWidth()/2+(@centerX-cm)*@scale
+  # top,y値のcm->px変換
   transformTopY_cm2px : (cm)->
     return @canvas.getHeight()/2+(@centerY-cm)*@scale
+  # left,x値のpx->px変換
   transformLeftX_px2cm : (px)->
     return @centerX - (px - @canvas.getWidth() / 2) / @scale
+  # top,y値のcm->px変換
   transformTopY_px2cm : (px)->
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
+  # 選択解除
   unselect : ->
     object = haika.canvas.getActiveObject()
     if not object
@@ -321,6 +344,7 @@ haika =
     if object
       @canvas.fire('before:selection:cleared', { target: object })
       @canvas.fire('selection:cleared', { target: object })
+  # クラス名の取得
   getClass : (classname)->
     if classname=='shelf'
       return fabric.Shelf
@@ -334,6 +358,7 @@ haika =
       return fabric.Floor
     else
       return fabric.Shelf
+  # canvasの描画
   render : ->
 #    log 'render'
     #オブジェクトをクリア
@@ -356,21 +381,22 @@ haika =
         shelfs.push(o)
     if haika.state!='floor'
       for o in floors
-        @renderObject(o)
+        @addObjectToCanvas(o)
     for o in walls
-      @renderObject(o)
+      @addObjectToCanvas(o)
     if haika.state=='floor'
       for o in floors
-        @renderObject(o)
+        @addObjectToCanvas(o)
     for o in shelfs
-      @renderObject(o)
+      @addObjectToCanvas(o)
     for o in beacons
-      @renderObject(o)
+      @addObjectToCanvas(o)
     @renderBg()
     @canvas.renderAll()
     @canvas.renderOnAddRemove=true
     @setCanvasProperty()
-  renderObject : (o)->
+  # canvasにオブジェクトを追加
+  addObjectToCanvas : (o)->
     klass = @getClass(o.type)
     object = new klass()
     if o.type.match(/shelf$/)
@@ -420,6 +446,7 @@ haika =
     for key of schema.properties
       object[key] = o[key]
     @canvas.add(object)
+  # 背景を描画
   renderBg : ->
     if @bgimg
       @bgimg.left    = Math.floor( @canvas.getWidth()/2 + (-@bgimg_width*@options.bgscale/2 + @centerX) * @scale )
@@ -428,7 +455,7 @@ haika =
       @bgimg.height  = Math.floor( @bgimg_height*@options.bgscale*@scale )
       @bgimg.opacity = @options.bgopacity
       @canvas.setBackgroundImage @bgimg
-
+  # キャンバスのプロパティを設定
   setCanvasProperty : ->
     $('#canvas_width').val(@canvas.getWidth())
     $('#canvas_height').val(@canvas.getHeight())
@@ -439,28 +466,34 @@ haika =
     $('#canvas_lon').val(@options.lon)
     $('#canvas_lat').val(@options.lat)
     $('#canvas_angle').val(@options.angle)
-  getMove : (event)->
+  # 移動ピクセル数を取得
+  getMovePixel : (event)->
     return if event.shiftKey then 10 else 1
+  # 上に移動
   up : (event)->
     object = @canvas.getActiveObject()
     if object
-      object.top = object.top - @getMove(event)
+      object.top = object.top - @getMovePixel(event)
       @canvas.renderAll()
+  # 下に移動
   down : (event)->
     object = @canvas.getActiveObject()
     if object
-      object.top = object.top + @getMove(event)
+      object.top = object.top + @getMovePixel(event)
       @canvas.renderAll()
+  # 左に移動
   left : (event)->
     object = @canvas.getActiveObject()
     if object
-      object.left = object.left - @getMove(event)
+      object.left = object.left - @getMovePixel(event)
       @canvas.renderAll()
+  # 右に移動
   right : (event)->
     object = @canvas.getActiveObject()
     if object
-      object.left = object.left + @getMove(event)
+      object.left = object.left + @getMovePixel(event)
       @canvas.renderAll()
+  # 左に整列
   alignLeft : ()->
     group = @canvas.getActiveGroup()
     if group._objects
@@ -473,6 +506,7 @@ haika =
         object.left = left + bound.width/2
       @save()
       @canvas.renderAll()
+  # 右に整列
   alignRight : ()->
     group = @canvas.getActiveGroup()
     if group._objects
@@ -484,12 +518,14 @@ haika =
         bound = object.getBoundingRect()
         object.left = left - bound.width/2
       @canvas.renderAll()
+  # 横中央に整列
   alignCenter : ()->
     group = @canvas.getActiveGroup()
     if group._objects
       for object in group._objects
         object.left = 0
       @canvas.renderAll()
+  # 上に整列
   alignTop : ()->
     group = @canvas.getActiveGroup()
     if group._objects
@@ -501,6 +537,7 @@ haika =
         bound = object.getBoundingRect()
         object.top = top + bound.height/2
       @canvas.renderAll()
+  # 下に整列
   alignBottom : ()->
     group = @canvas.getActiveGroup()
     if group._objects
@@ -512,12 +549,14 @@ haika =
         bound = object.getBoundingRect()
         object.top = top - bound.height/2
       @canvas.renderAll()
+  # 縦中央に整列
   alignVcenter : ()->
     group = @canvas.getActiveGroup()
     if group._objects
       for object in group._objects
         object.top = 0
       @canvas.renderAll()
+  # ズームイン
   zoomIn : ->
     @unselect()
 #    @scale += 0.1
@@ -530,6 +569,7 @@ haika =
     @scale = (@scale*100).toFixed(0)/100
     @render()
     $('.zoom').html((@scale*100).toFixed(0)+'%')
+  # ズームアウト
   zoomOut : ->
     @unselect()
 #    @scale -= 0.1
@@ -542,13 +582,21 @@ haika =
     @scale = (@scale*100).toFixed(0)/100
     @render()
     $('.zoom').html((@scale*100).toFixed(0)+'%')
+  # ズームリセット
   zoomReset : ->
     @unselect()
     @scale = 1
     @render()
     $('.zoom').html('100%')
+  # 実行環境 ローカルか？
   isLocal : ->
     return location.protocol=='file:' or location.port!=''
+  # ハッシュの変更イベント
+  setHashChange : ()->
+    # ハッシュ変更時に再読み込み
+    $(window).bind "hashchange", ->
+      location.reload()
+  # データのロード
   load : ()->
     if location.hash!='' and location.hash.length!=7
       location.hash = sprintf('%06d',location.hash.split('#')[1])
@@ -569,10 +617,7 @@ haika =
     else
       # 新規IDの取得, ハッシュに設定
       @getHaikaId()
-  setHashChange : ()->
-    # ハッシュ変更時に再読み込み
-    $(window).bind "hashchange", ->
-      location.reload()
+  # ロードして描画
   loadRender : (data)->
     log data
     canvas = data.canvas
@@ -619,6 +664,7 @@ haika =
           shape[key] = object.properties[key]
         @add(shape)
     @render()
+  # 新規配架図idを取得
   getHaikaId : ->
     url = '/haika_store/index.php'
     $.ajax
@@ -631,6 +677,7 @@ haika =
         location.hash = data.id
         @id = data.id
         @setHashChange()
+  # サーバーからデータをロード
   load_server : ->
     url = """/haika_store/data/#{@id}.json"""
     $.ajax
@@ -650,6 +697,7 @@ haika =
           location.href = """/haika_store/data/#{@id}.json"""
         @loadRender(data)
         @setHashChange()
+  # キャンバスのプロパティを取得
   getCanvasProperty : ->
     return {
       state : @state
@@ -664,11 +712,13 @@ haika =
       lat : @options.lat
       angle: @options.angle
     }
+  # ローカルストレージに保存
   saveLocal : ->
     canvas = @getCanvasProperty()
     localStorage.setItem('canvas', JSON.stringify(canvas))
 #    localStorage.setItem('app_data', JSON.stringify(@objects))
     localStorage.setItem('geojson', JSON.stringify(@toGeoJSON(), null, 4))
+  # サーバーに保存
   saveServer : ->
     param = 
       canvas : @getCanvasProperty()
@@ -709,6 +759,7 @@ haika =
       success: (data) >
         log data
         log 'geojson save'
+  # 保存
   save : ->
     log 'save'
     for object in @canvas.getObjects()
@@ -716,6 +767,7 @@ haika =
     @saveLocal()
     if not @isLocal()
       @saveServer()
+  # オブジェクトのプロパティの保存
   saveProperty : (object, group=false)->
 #    log object.__proto__.getJsonSchema()
 #    log object.constructor.prototype.getJsonSchema()
@@ -740,6 +792,7 @@ haika =
 #      @objects[count].side  = object.side
 #      @objects[count].eachWidth  = object.eachWidth
 #      @objects[count].eachHeight = object.eachHeight
+  # オブジェクトをgeojsonに変換
   toGeoJSON : ->
     features = []
     for object in @canvas.getObjects()
@@ -749,14 +802,14 @@ haika =
       "type": "FeatureCollection"
       "features": features
     return data
-  getGeoJSON : ->
-    @unselect()
-    @render()
-    geojson = @translateGeoJSON()
-    localStorage.setItem('geojson', JSON.stringify(geojson))
-    log geojson
-    $(window).off 'beforeunload'
-    location.href = 'map2.html'
+#  getGeoJSON : ->
+#    @unselect()
+#    @render()
+#    geojson = @translateGeoJSON()
+#    localStorage.setItem('geojson', JSON.stringify(geojson))
+#    log geojson
+#    $(window).off 'beforeunload'
+#    location.href = 'map2.html'
   # geojsonの作成 座標変換
   createGeoJson : ->
     geojson = @translateGeoJSON()
@@ -851,26 +904,28 @@ haika =
         )
 
     return geojson
-  getSVG : ->
-    @unselect()
-    canvas = document.createElement('canvas')
-    canvas = new fabric.Canvas(canvas);
-    canvas.setWidth @options.max_width
-    canvas.setHeight @options.max_height
-    tmp_canvas = @canvas
-    tmp_scale = @scale
-    @canvas = canvas
-    @scale = 1
-    @render()
-    svg = @canvas.toSVG()
-    @canvas = tmp_canvas
-    @scale = tmp_scale
-    a = document.createElement('a')
-    a.download = 'sample.svg'
-    a.type = 'image/svg+xml'
-    blob = new Blob([svg], {"type": "image/svg+xml"})
-    a.href = (window.URL || webkitURL).createObjectURL(blob)
-    a.click()
+#  getSVG : ->
+#    @unselect()
+#    canvas = document.createElement('canvas')
+#    canvas = new fabric.Canvas(canvas);
+#    canvas.setWidth @options.max_width
+#    canvas.setHeight @options.max_height
+#    tmp_canvas = @canvas
+#    tmp_scale = @scale
+#    @canvas = canvas
+#    @scale = 1
+#    @render()
+#    svg = @canvas.toSVG()
+#    @canvas = tmp_canvas
+#    @scale = tmp_scale
+#    a = document.createElement('a')
+#    a.download = 'sample.svg'
+#    a.type = 'image/svg+xml'
+#    blob = new Blob([svg], {"type": "image/svg+xml"})
+#    a.href = (window.URL || webkitURL).createObjectURL(blob)
+#    a.click()
+
+  # プロパティパネルの設定
   setPropetyPanel : (object)->
 #    log 'setPropetyPanel'
     $('.canvas_panel, .object_panel, .group_panel').hide()

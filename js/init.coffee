@@ -16,7 +16,7 @@ $('#bgimg').change (e)->
   if files.length==0
     return
   if haika.isLocal()
-    haika.loadBg files[0]
+    haika.loadBgFromFile files[0]
   else
     data = new FormData()
     data.append 'id', haika.id

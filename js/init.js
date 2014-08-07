@@ -22,7 +22,7 @@ $('#bgimg').change(function(e) {
     return;
   }
   if (haika.isLocal()) {
-    return haika.loadBg(files[0]);
+    return haika.loadBgFromFile(files[0]);
   } else {
     data = new FormData();
     data.append('id', haika.id);
