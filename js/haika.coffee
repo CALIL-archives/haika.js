@@ -12,9 +12,6 @@ haika =
   scale      : 1
   objects    : []
   canvas     : false
-  is_moving  : false
-  is_scaling : false
-  is_rotating: false
   bgimg: null
   bgimg_data: null
   bgimg_width: null
@@ -76,15 +73,15 @@ haika =
     #@canvas.centeredRotation = true
     @scale = options.scale
     if @options.bgurl
-      @load_bg_from_url(@options.bgurl)
+      @loadBgFromUrl(@options.bgurl)
     @render()
     setTimeout =>
       @load()
       if @options.callback?
         @options.callback()
     , 500
-    @event()
-  event : ->
+    @bindEvent()
+  bindEvent : ->
     @canvas.on('object:selected', (e)=>
 #        log 'selected'
         object = e.target
@@ -94,7 +91,7 @@ haika =
         #else
         #  object.lockScalingY  = true
         @save()
-        @set_propety_panel()
+        @setPropetyPanel()
     )
 
 #    @canvas.on 'selection:created', (e)=>
@@ -105,7 +102,7 @@ haika =
       @canvas.deactivateAll().renderAll()
       @save()
       editor_change()
-      @set_propety_panel()
+      @setPropetyPanel()
     @canvas.on 'object:scaling', (e) =>
       object = e.target
       if object.__resizeShelf?
@@ -115,12 +112,12 @@ haika =
         object = e.target
         if object.__modifiedShelf?
           object.__modifiedShelf()
-        @set_propety_panel()
+        @setPropetyPanel()
     $(window).on 'beforeunload', (event)=>
       @render()
       @save()
       return
-  load_bg_from_url : (url) ->
+  loadBgFromUrl : (url) ->
     @options.bgurl = url
     fabric.Image.fromURL url, (img)=>
       log img
@@ -128,15 +125,15 @@ haika =
       @bgimg_width  = img.width
       @bgimg_height = img.height
       @render()
-  load_bg : (file) ->
+  loadBg : (file) ->
     reader = new FileReader()
     reader.onload = (e) =>
 #      log e.currentTarget.result
       @bgimg_data = e.currentTarget.result
-      @set_bg()
+      @setBg()
       @save()
     reader.readAsDataURL file
-  set_bg: ->
+  setBg: ->
     if not @bgimg_data
       return
     img = new Image()
@@ -148,13 +145,13 @@ haika =
     if @options.callback?
       @options.callback()
     
-  last_id : 0
-  get_id : ->
+  lastId : 0
+  getId : ->
     if @objects.length==0
       return 0
-    @last_id += 1
-    return @last_id
-  findbyid : (id)->
+    @lastId += 1
+    return @lastId
+  findById : (id)->
     count = null
     $(@objects).each (i, obj)->
       if obj.id==id
@@ -163,7 +160,7 @@ haika =
   add : (object)->
     # new object
     if object.id==''
-      object.id = @get_id()
+      object.id = @getId()
     o =
       id : object.id
     props = [
@@ -191,7 +188,7 @@ haika =
       o[prop] = object[prop]
     @objects.push(o)
     return o.id
-  set_state : (object)->
+  setState : (object)->
     #layer tab
     if object.type.match(/shelf$/)
       state = 'shelf'
@@ -218,10 +215,10 @@ haika =
         new_id = func(object)
         new_ids.push(new_id)
       if do_active
-        @active_group(new_ids)
+        @activeGroup(new_ids)
       else
         @render()
-  active_group : (new_ids)->
+  activeGroup : (new_ids)->
     new_objects = []
     for object in @canvas.getObjects()
       for new_id in new_ids
@@ -242,20 +239,20 @@ haika =
     , false)
   __remove : (object)->
     @canvas.remove(object)
-    count = @findbyid(object.id)
+    count = @findById(object.id)
     @objects.splice(count, 1)
     return object
   bringToFront : ->
     @bind (object)=>
-      count = @findbyid(object.id)
+      count = @findById(object.id)
       object.bringToFront()
       obj = @objects[count]
       @objects.splice(count, 1)
       @objects.push(obj)
       return obj.id
-  add_active : (object, top, left)->
+  addActive : (object, top, left)->
     @save()
-    object.id = @get_id()
+    object.id = @getId()
     object.top  = top
     object.left = left
     new_id = @add(object)
@@ -265,13 +262,13 @@ haika =
     @bind (object)=>
       @canvas.discardActiveGroup()
       o = fabric.util.object.clone(object)
-      new_id = @add_active(o, o.top+10,o.left+10)
+      new_id = @addActive(o, o.top+10,o.left+10)
       return new_id
   clipboard : []
-  clipboard_count : 1
+  clipboardCount : 1
   copy  : ->
     @clipboard = []
-    @clipboard_count = 1
+    @clipboardCount = 1
     @bind (object)=>
       @clipboard.push(object)
     , false
@@ -288,15 +285,15 @@ haika =
       for object in @clipboard
         new_id = @__paste(object)
         new_ids.push(new_id)
-      @active_group(new_ids)
-    @clipboard_count += 1
+      @activeGroup(new_ids)
+    @clipboardCount += 1
   __paste : (object)->
     o = fabric.util.object.clone(object)
-    top = o.top+@clipboard_count*o.height/2
-    left = o.left+@clipboard_count*o.width/10
-    new_id = @add_active(o, top, left)
+    top = o.top+@clipboardCount*o.height/2
+    left = o.left+@clipboardCount*o.width/10
+    new_id = @addActive(o, top, left)
     return new_id
-  select_all : ()->
+  selectAll : ()->
     @canvas.discardActiveGroup()
     objects = @canvas.getObjects().map((o) ->
       o.set "active", true
@@ -307,7 +304,7 @@ haika =
     )
     @canvas._activeObject = null
     @canvas.setActiveGroup(group.setCoords()).renderAll()
-  unselect_all : ()->
+  unselectAll : ()->
     @canvas.deactivateAll().renderAll()
   transformLeftX_cm2px : (cm)->
     return @canvas.getWidth()/2+(@centerX-cm)*@scale
@@ -324,7 +321,7 @@ haika =
     if object
       @canvas.fire('before:selection:cleared', { target: object })
       @canvas.fire('selection:cleared', { target: object })
-  get_class : (classname)->
+  getClass : (classname)->
     if classname=='shelf'
       return fabric.Shelf
     else if classname=='curved_shelf'
@@ -359,22 +356,22 @@ haika =
         shelfs.push(o)
     if haika.state!='floor'
       for o in floors
-        @render_object(o)
+        @renderObject(o)
     for o in walls
-      @render_object(o)
+      @renderObject(o)
     if haika.state=='floor'
       for o in floors
-        @render_object(o)
+        @renderObject(o)
     for o in shelfs
-      @render_object(o)
+      @renderObject(o)
     for o in beacons
-      @render_object(o)
-    @render_bg()
+      @renderObject(o)
+    @renderBg()
     @canvas.renderAll()
     @canvas.renderOnAddRemove=true
-    @debug()
-  render_object : (o)->
-    klass = @get_class(o.type)
+    @setCanvasProperty()
+  renderObject : (o)->
+    klass = @getClass(o.type)
     object = new klass()
     if o.type.match(/shelf$/)
       object.side  = o.side
@@ -423,7 +420,7 @@ haika =
     for key of schema.properties
       object[key] = o[key]
     @canvas.add(object)
-  render_bg : ->
+  renderBg : ->
     if @bgimg
       @bgimg.left    = Math.floor( @canvas.getWidth()/2 + (-@bgimg_width*@options.bgscale/2 + @centerX) * @scale )
       @bgimg.top     = Math.floor( @canvas.getHeight()/2 + (-@bgimg_height*@options.bgscale/2 + @centerY) * @scale )
@@ -432,7 +429,7 @@ haika =
       @bgimg.opacity = @options.bgopacity
       @canvas.setBackgroundImage @bgimg
 
-  debug : ->
+  setCanvasProperty : ->
     $('#canvas_width').val(@canvas.getWidth())
     $('#canvas_height').val(@canvas.getHeight())
     $('#canvas_centerX').val(@centerX)
@@ -442,27 +439,27 @@ haika =
     $('#canvas_lon').val(@options.lon)
     $('#canvas_lat').val(@options.lat)
     $('#canvas_angle').val(@options.angle)
-  get_move : (event)->
+  getMove : (event)->
     return if event.shiftKey then 10 else 1
   up : (event)->
     object = @canvas.getActiveObject()
     if object
-      object.top = object.top - @get_move(event)
+      object.top = object.top - @getMove(event)
       @canvas.renderAll()
   down : (event)->
     object = @canvas.getActiveObject()
     if object
-      object.top = object.top + @get_move(event)
+      object.top = object.top + @getMove(event)
       @canvas.renderAll()
   left : (event)->
     object = @canvas.getActiveObject()
     if object
-      object.left = object.left - @get_move(event)
+      object.left = object.left - @getMove(event)
       @canvas.renderAll()
   right : (event)->
     object = @canvas.getActiveObject()
     if object
-      object.left = object.left + @get_move(event)
+      object.left = object.left + @getMove(event)
       @canvas.renderAll()
   alignLeft : ()->
     group = @canvas.getActiveGroup()
@@ -550,19 +547,19 @@ haika =
     @scale = 1
     @render()
     $('.zoom').html('100%')
-  is_local : ->
+  isLocal : ->
     return location.protocol=='file:' or location.port!=''
   load : ()->
     if location.hash!='' and location.hash.length!=7
       location.hash = sprintf('%06d',location.hash.split('#')[1])
       return
     # ローカルか？
-    if @is_local()
+    if @isLocal()
       data =
         canvas : JSON.parse(localStorage.getItem('canvas'))
         geojson : JSON.parse(localStorage.getItem('geojson'))
       log data
-      @load_render(data)
+      @loadRender(data)
       return
     # location.hashにIDはあるか？
     if location.hash!=''
@@ -571,12 +568,12 @@ haika =
       @load_server()
     else
       # 新規IDの取得, ハッシュに設定
-      @get_haika_id()
-  set_hashchange : ()->
+      @getHaikaId()
+  setHashChange : ()->
     # ハッシュ変更時に再読み込み
     $(window).bind "hashchange", ->
       location.reload()
-  load_render : (data)->
+  loadRender : (data)->
     log data
     canvas = data.canvas
     geojson = data.geojson
@@ -591,20 +588,20 @@ haika =
       @bgimg_data = canvas.bgimg_data
       @options.bgscale = if canvas.bgscale then canvas.bgscale else 4.425
       @options.bgopacity = canvas.bgopacity
-      if @is_local()
-        @set_bg()
+      if @isLocal()
+        @setBg()
       else
         if canvas.bgurl?
-          @load_bg_from_url(canvas.bgurl)
+          @loadBgFromUrl(canvas.bgurl)
       if canvas.lon?
         @options.lon = parseFloat(canvas.lon)
         @options.lat = parseFloat(canvas.lat)
         @options.angle = parseInt(canvas.angle)
     if geojson and geojson.features.length>0
       for object in geojson.features
-        if object.properties.id>@last_id
-          @last_id = object.properties.id
-        klass = @get_class(object.properties.type)
+        if object.properties.id>@lastId
+          @lastId = object.properties.id
+        klass = @getClass(object.properties.type)
         shape = new klass(
           id: object.properties.id
           top: @transformTopY_cm2px(object.properties.top_cm)
@@ -622,7 +619,7 @@ haika =
           shape[key] = object.properties[key]
         @add(shape)
     @render()
-  get_haika_id : ->
+  getHaikaId : ->
     url = '/haika_store/index.php'
     $.ajax
       url: url
@@ -633,7 +630,7 @@ haika =
       success: (data)=>
         location.hash = data.id
         @id = data.id
-        @set_hashchange()
+        @setHashChange()
   load_server : ->
     url = """/haika_store/data/#{@id}.json"""
     $.ajax
@@ -651,9 +648,9 @@ haika =
           alert 'parse error'
           $(window).off 'beforeunload'
           location.href = """/haika_store/data/#{@id}.json"""
-        @load_render(data)
-        @set_hashchange()
-  get_canvas_data : ->
+        @loadRender(data)
+        @setHashChange()
+  getCanvasProperty : ->
     return {
       state : @state
       scale : @scale
@@ -667,14 +664,14 @@ haika =
       lat : @options.lat
       angle: @options.angle
     }
-  save_local : ->
-    canvas = @get_canvas_data()
+  saveLocal : ->
+    canvas = @getCanvasProperty()
     localStorage.setItem('canvas', JSON.stringify(canvas))
 #    localStorage.setItem('app_data', JSON.stringify(@objects))
     localStorage.setItem('geojson', JSON.stringify(@toGeoJSON(), null, 4))
-  save_server : ->
+  saveServer : ->
     param = 
-      canvas : @get_canvas_data()
+      canvas : @getCanvasProperty()
       geojson: @toGeoJSON()
     param = JSON.stringify(param)
     log param
@@ -692,10 +689,10 @@ haika =
       error: ()->
       success: (data)=>
         log data
-    @save_geojson()
+    @saveGeoJson()
   # geojsonの保存
-  save_geojson : ->
-    geojson = @create_geojson()
+  saveGeoJson : ->
+    geojson = @createGeoJson()
     param = JSON.stringify(geojson)
     data =
       ext: 'geojson'
@@ -715,14 +712,14 @@ haika =
   save : ->
     log 'save'
     for object in @canvas.getObjects()
-      @save_prop(object)
-    @save_local()
-    if not @is_local()
-      @save_server()
-  save_prop : (object, group=false)->
+      @saveProperty(object)
+    @saveLocal()
+    if not @isLocal()
+      @saveServer()
+  saveProperty : (object, group=false)->
 #    log object.__proto__.getJsonSchema()
 #    log object.constructor.prototype.getJsonSchema()
-    count = @findbyid(object.id)
+    count = @findById(object.id)
     @objects[count].id      = object.id
     @objects[count].type    = object.type
     @objects[count].top_cm  = @transformTopY_px2cm(object.top)
@@ -761,7 +758,7 @@ haika =
     $(window).off 'beforeunload'
     location.href = 'map2.html'
   # geojsonの作成 座標変換
-  create_geojson : ->
+  createGeoJson : ->
     geojson = @translateGeoJSON()
     features = []
     if geojson and geojson.features.length>0
@@ -874,8 +871,8 @@ haika =
     blob = new Blob([svg], {"type": "image/svg+xml"})
     a.href = (window.URL || webkitURL).createObjectURL(blob)
     a.click()
-  set_propety_panel : (object)->
-#    log 'set_propety_panel'
+  setPropetyPanel : (object)->
+#    log 'setPropetyPanel'
     $('.canvas_panel, .object_panel, .group_panel').hide()
     object = @canvas.getActiveObject()
     if object and object.getJsonSchema?

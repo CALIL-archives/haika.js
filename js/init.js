@@ -21,8 +21,8 @@ $('#bgimg').change(function(e) {
   if (files.length === 0) {
     return;
   }
-  if (haika.is_local()) {
-    return haika.load_bg(files[0]);
+  if (haika.isLocal()) {
+    return haika.loadBg(files[0]);
   } else {
     data = new FormData();
     data.append('id', haika.id);
@@ -37,7 +37,7 @@ $('#bgimg').change(function(e) {
       success: function(data) {
         var url;
         url = '/haika_store/image/' + haika.id + '_' + files[0].name;
-        return haika.load_bg_from_url(url);
+        return haika.loadBgFromUrl(url);
       }
     });
   }
@@ -206,7 +206,7 @@ loadComplete = function(data) {
 add_pixel = function(x, y, color) {
   var dot, klass, object;
   dot = 10;
-  klass = haika.get_class('shelf');
+  klass = haika.getClass('shelf');
   object = new klass({
     top: haika.transformTopY_cm2px(y * dot),
     left: haika.transformLeftX_cm2px(x * dot),
@@ -239,7 +239,7 @@ $(window).resize(function() {
 add = function(val) {
   var id, klass, object;
   log(val);
-  klass = haika.get_class(val.type);
+  klass = haika.getClass(val.type);
   object = new klass({
     top: haika.transformTopY_cm2px(haika.centerY),
     left: haika.transformLeftX_cm2px(haika.centerX),
@@ -258,7 +258,7 @@ add = function(val) {
     object.eachHeight = val.eachHeight;
   }
   id = haika.add(object);
-  haika.set_state(object);
+  haika.setState(object);
   haika.render();
   undo.add(id);
   return $(haika.canvas.getObjects()).each((function(_this) {
@@ -529,7 +529,7 @@ $(function() {
   });
   Mousetrap.bind('mod+a', function(e) {
     cancel_default(e);
-    haika.select_all();
+    haika.selectAll();
     return false;
   });
   Mousetrap.bind('mod+z', function(e) {
@@ -539,7 +539,7 @@ $(function() {
   });
   Mousetrap.bind(['esc', 'escape'], function(e) {
     cancel_default(e);
-    haika.unselect_all();
+    haika.unselectAll();
     return false;
   });
   Mousetrap.bind(['up', 'shift+up'], function(e) {

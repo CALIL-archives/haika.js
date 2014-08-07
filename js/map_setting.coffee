@@ -13,9 +13,9 @@ map_setting = ->
     strokeWeight: 1
   }
   gmap.data.setStyle(featureStyle)
-  gmap.data.addGeoJson(haika.create_geojson())
-#  if haika.is_local()
-#    gmap.data.addGeoJson(haika.create_geojson())
+  gmap.data.addGeoJson(haika.createGeoJson())
+#  if haika.isLocal()
+#    gmap.data.addGeoJson(haika.createGeoJson())
 #  else
 #    gmap.data.loadGeoJson('/haika_store/data/'+sprintf('%06d',haika.id)+'.geojson')
   

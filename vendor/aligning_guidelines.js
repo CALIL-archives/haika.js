@@ -53,18 +53,18 @@ function initAligningGuidelines(canvas) {
   var verticalLines = [ ],
       horizontalLines = [ ];
 
-  function getObjects(){
-    var objects = [];
-    $(app.objects).each(function(i, object){
-      objects.push(object);
-    });
-    return objects;
-  }
+//  function getObjects(){
+//    var objects = [];
+//    $(haika.objects).each(function(i, object){
+//      objects.push(object);
+//    });
+//    return objects;
+//  }
   canvas.on('object:moving', function(e) {
 
     var activeObject = e.target,
         canvasObjects = canvas.getObjects(),
-        appObjects = getObjects(),
+//        appObjects = getObjects(),
         activeObjectCenter = activeObject.getCenterPoint(),
         activeObjectLeft = activeObjectCenter.x,
         activeObjectTop = activeObjectCenter.y,
@@ -81,8 +81,7 @@ function initAligningGuidelines(canvas) {
     // It should be trivial to DRY this up by encapsulating (repeating) creation of x1, x2, y1, and y2 into functions,
     // but we're not doing it here for perf. reasons -- as this a function that's invoked on every mouse move
 
-//    for (var i = canvasObjects.length; i--; ) {
-    for (var i = appObjects.length; i--; ) {
+    for (var i = canvasObjects.length; i--; ) {
 
       if (canvasObjects[i] === activeObject) continue;
 

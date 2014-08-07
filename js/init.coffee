@@ -15,8 +15,8 @@ $('#bgimg').change (e)->
   files = e.target.files
   if files.length==0
     return
-  if haika.is_local()
-    haika.load_bg files[0]
+  if haika.isLocal()
+    haika.loadBg files[0]
   else
     data = new FormData()
     data.append 'id', haika.id
@@ -31,7 +31,7 @@ $('#bgimg').change (e)->
       success: (data) ->
 #        log data
         url = '/haika_store/image/'+haika.id+'_'+files[0].name
-        haika.load_bg_from_url(url)
+        haika.loadBgFromUrl(url)
   
 set_scrollbar = ->
   # scrollbar
@@ -222,7 +222,7 @@ add = (val)->
     object.eachWidth = val.eachWidth
     object.eachHeight = val.eachHeight
   id = haika.add(object)
-  haika.set_state(object)
+  haika.setState(object)
   haika.render()
   undo.add(id)
   $(haika.canvas.getObjects()).each (i, obj)=>
@@ -493,7 +493,7 @@ $ ->
     return false
   Mousetrap.bind 'mod+a', (e)->
     cancel_default(e)
-    haika.select_all()
+    haika.selectAll()
     return false
   Mousetrap.bind 'mod+z', (e)->
     cancel_default(e)
@@ -501,7 +501,7 @@ $ ->
     return false
   Mousetrap.bind ['esc', 'escape'], (e)->
     cancel_default(e)
-    haika.unselect_all()
+    haika.unselectAll()
     return false
   Mousetrap.bind ['up', 'shift+up'], (e)->
     cancel_default(e)

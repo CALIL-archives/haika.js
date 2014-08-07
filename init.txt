@@ -151,13 +151,13 @@ app.resetZoom = ->
             @rotating(object)
     )
     
-            #if @is_moving
+            #if @isMoving
         #  @moving(object)
         #if @is_scaling
         #  @scaling(object)
         #if @is_rotating
         #  @rotating(object)
-        #@is_moving  = false
+        #@isMoving  = false
         #@is_scaling = false
         #@is_rotating= false
     @canvas.on('object:selected', (e)=>
@@ -170,7 +170,7 @@ app.resetZoom = ->
     @canvas.on('object:moving', (e)=>
         object = e.target
         log 'moving'
-        @is_moving  = true
+        @isMoving  = true
     )
     @canvas.on('object:scaling', (e)=>
         object = e.target

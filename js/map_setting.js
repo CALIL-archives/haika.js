@@ -16,7 +16,7 @@ map_setting = function() {
     strokeWeight: 1
   };
   gmap.data.setStyle(featureStyle);
-  gmap.data.addGeoJson(haika.create_geojson());
+  gmap.data.addGeoJson(haika.createGeoJson());
   center = ol.proj.transform([haika.options.lon, haika.options.lat], "EPSG:4326", "EPSG:3857");
   view = new ol.View2D({
     center: center,
