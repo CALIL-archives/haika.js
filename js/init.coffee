@@ -2,9 +2,11 @@ scrollbar_width = $('#vertical-scroller').width()
 scrollbar_height = $('#horizontal-scroller').height()
 property_panel_width = $('.property_panel').width()
 
+# キャンバスの横幅計算
 getWidth = ->
   return window.innerWidth - scrollbar_width - property_panel_width - 20
 
+# キャンバスの縦幅計算
 getHeight = ->
   return window.innerHeight - $('.header').height() - scrollbar_height
 
@@ -84,7 +86,31 @@ haika.init(
 )
 
 
-# 色の設定
+# 色・カラーピッカーの設定
+
+html = ''
+hex = new Array("f", "c", "9", "6", "3", "0")
+count = 2
+j = 0
+while j < 6
+  k = 0
+  while k < 6
+    l = 0
+    while l < 6
+      hexColor = hex[j] + hex[j] + hex[k] + hex[k] + hex[l] + hex[l]
+      html += """<option data-color="##{hexColor}" value="#{count}"></option>"""
+      l++
+      count++
+    k++
+  j++
+i = 0
+while i < 6
+  hexColor = hex[i] + hex[i] + hex[i] + hex[i] + hex[i] + hex[i]
+  html += """<option data-color="##{hexColor}" value="#{count}"></option>"""
+  i++
+$('#fill-color').append(html)
+$('#stroke-color').append(html)
+
 bind = (func, do_active=true)->
   object = haika.canvas.getActiveObject()
   if object
@@ -345,7 +371,7 @@ $ ->
 #      @zoomOut()
 #    else
 #      @zoomIn()
-  # デバッグパネル
+  # キャンバスパネル
   $('#canvas_width').change ->
     haika.canvas.setWidth($(this).val())
   $('#canvas_height').change ->
