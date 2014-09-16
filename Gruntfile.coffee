@@ -67,11 +67,24 @@ module.exports = (grunt) ->
         files:
           "js/haika.all.min.js": ["js/haika.all.js"]
 
-  grunt.loadNpmTasks "grunt-contrib-jshint"
-  grunt.loadNpmTasks "grunt-contrib-uglify"
-  grunt.loadNpmTasks "grunt-contrib-concat"
-  grunt.loadNpmTasks "grunt-contrib-copy"
-  grunt.loadNpmTasks "grunt-bower-task"
+    #監視: 一個でも変更あったら全部コンパイルし直しててダサし
+    watch:
+      devel:
+        files: ['js/*.coffee', 'css/*.css']
+        tasks: ["concat:js", "concat:css", "uglify"]
+      options:
+        # 死んでも死なないようにする
+        nospawn: false
+        # 嬉しい
+        livereload: false
+  # loadNpmTasks
+  require('load-grunt-tasks')(grunt);
+  # # package.jsonから読み込んでるもの
+  # grunt.loadNpmTasks "grunt-contrib-jshint"
+  # grunt.loadNpmTasks "grunt-contrib-uglify"
+  # grunt.loadNpmTasks "grunt-contrib-concat"
+  # grunt.loadNpmTasks "grunt-contrib-copy"
+  # grunt.loadNpmTasks "grunt-bower-task"
   grunt.registerTask "default", [
     "bower"
     "concat:js"
