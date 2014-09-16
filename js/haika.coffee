@@ -45,7 +45,7 @@ haika =
       lon      : 0
       lat      : 0
       angle    : 0
-      
+    # オプションの上書き
     @options = $.extend(default_options, options)
     canvas = new fabric.Canvas(@options.canvas, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
@@ -179,7 +179,7 @@ haika =
   # オブジェクトの追加
   add : (object)->
     # new object
-    if object.id==''
+    if object.id=='' or not object.id
       object.id = @getId()
     o =
       id : object.id

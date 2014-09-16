@@ -211,7 +211,7 @@ haika = {
   },
   add: function(object) {
     var key, o, prop, props, schema, _i, _len;
-    if (object.id === '') {
+    if (object.id === '' || !object.id) {
       object.id = this.getId();
     }
     o = {
