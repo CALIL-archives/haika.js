@@ -3,3 +3,4 @@
 /server.jar
 data/
 .brackets.json
+node_modules/
