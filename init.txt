@@ -521,3 +521,12 @@ canvas:
 #        left = x * 100 + w / 2
 #        top = @transformTopY_cm2px(top)
 #        left = @transformLeftX_cm2px(left)
+
+#  getGeoJSON : ->
+#    @unselect()
+#    @render()
+#    geojson = @translateGeoJSON()
+#    localStorage.setItem('geojson', JSON.stringify(geojson))
+#    log geojson
+#    $(window).off 'beforeunload'
+#    location.href = 'map2.html'

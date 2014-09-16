@@ -1,3 +1,4 @@
+# haikaのsave, load関連の関数
 # haikaを拡張
 $.extend haika, 
   # 実行環境 ローカルか？
@@ -214,14 +215,6 @@ $.extend haika,
       "type": "FeatureCollection"
       "features": features
     return data
-#  getGeoJSON : ->
-#    @unselect()
-#    @render()
-#    geojson = @translateGeoJSON()
-#    localStorage.setItem('geojson', JSON.stringify(geojson))
-#    log geojson
-#    $(window).off 'beforeunload'
-#    location.href = 'map2.html'
   # geojsonの作成 座標変換
   createGeoJson : ->
     geojson = @translateGeoJSON()
