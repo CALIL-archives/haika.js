@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<!-- saved from url=(0026)https://app.haika.io/maps/ -->
+<html lang="jp"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+        <title>マップの管理</title>
+        <link rel="stylesheet" href="https://app.haika.io/static/css/flow.all.css">
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+        <!--
+        <link rel="stylesheet" href="/static/css/backbase.css">
+        -->
+        <link rel="stylesheet" href="https://app.haika.io/static/assets/css/ace.min.css" id="main-ace-style">
+        <link rel="stylesheet" href="https://app.haika.io/static/assets/css/ace-skins.min.css">
+        <link rel="stylesheet" href="https://app.haika.io/static/assets/css/ace-rtl.min.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+        <script src="https://app.haika.io/static/assets/js/ace-extra.min.js"></script>
+<script src="https://app.haika.io/static/js/flow.all.min.js"></script>
+<style type="text/css"></style></head>
+<body class="no-skin">
+<style>
+    .ace-nav > li.light-blue > a {
+        background-color: #384352;
+    }
+
+    .ace-nav > li.light-blue > a:focus, .ace-nav > li.light-blue > a:hover, .ace-nav > li.open.light-blue > a {
+        background-color: #777;
+    }
+
+    .ace-nav > li.open > a, .ace-nav > li > a:focus, .ace-nav > li > a:hover {
+        background-color: #666;
+        color: #FFF;
+    }
+
+    .ace-nav > li {
+        border-left: 1px solid #999;
+    }
+
+    .no-skin .navbar .navbar-toggle {
+        background-color: #29678B;
+    }
+
+    .navbar .navbar-toggle {
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        width: 40px;
+        height: 35px;
+        line-height: 0;
+        padding: 0 0 1px;
+        text-align: center;
+    }
+
+    .ace-nav > li:first-child {
+        border-left-width: 1px;
+    }
+
+    .nav-list > li > a > .menu-icon {
+        vertical-align: top;
+    }
+
+    .nav-list > li > a > .menu-text {
+        font-size: 15px;
+        -webkit-font-smoothing: antialiased;
+    }
+</style>
+<div id="pjax-container">
+<!-- #section:basics/navbar.layout -->
+<div id="navbar" class="navbar navbar-default" style="background-color: #12364B">
+    <script type="text/javascript">
+        try {
+            ace.settings.check('navbar', 'fixed')
+        } catch (e) {
+        }
+    </script>
+    <div class="navbar-container" id="navbar-container" style="padding-right:0px;padding-left: 0px;">
+        <!-- #section:basics/sidebar.mobile.toggle -->
+        <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler">
+            <span class="sr-only">Toggle sidebar</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <!-- /section:basics/sidebar.mobile.toggle -->
+        <div class="navbar-header pull-left">
+            <!-- #section:basics/navbar.layout.brand -->
+            <a href="https://app.haika.io/home" class="navbar-brand" data-pjax="" style="font-family: &#39;Open Sans&#39;, sans-serif;text-shadow: 1px 1px 0px #050C1F;">
+                <small>Haika Cloud Manager</small>
+            </a>
+        </div>
+        <!-- #section:basics/navbar.dropdown -->
+        <div class="navbar-buttons navbar-header pull-right" role="navigation">
+            <ul class="nav ace-nav">
+                
+                    <li class="light-blue">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="https://app.haika.io/maps/#" style="padding-left:15px;padding-right:15px;">
+                            <i class="ace-icon fa fa-tasks"></i> 名古屋大学附属図書館
+                        </a>
+                        <ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+                            <li class="dropdown-header">アカウントの切り替え</li>
+                            
+                                
+                                    <li>
+                                        <a href="https://app.haika.io/accounts/?switch=1"><i class="fa fa-check fa-fw"></i>
+                                            名古屋大学附属図書館</a>
+                                    </li>
+                                
+                            
+                        </ul>
+                    </li>
+                
+
+                <!-- #section:basics/navbar.user_menu -->
+                <li class="light-blue">
+                    <a data-toggle="dropdown" href="https://app.haika.io/maps/#" class="dropdown-toggle" style="padding-left:15px;padding-right:5px;">
+                        <i class="fa fa-user" style="margin-right: 5px;"></i><span class="hidden-xs"> deguchi@calil.jp</span>
+                        <i class="ace-icon fa fa-caret-down"></i>
+                    </a>
+                    <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close" style="right:5px">
+                        <li>
+                            <a href="https://app.haika.io/preference" data-pjax="">
+                                <i class="ace-icon fa fa-cog"></i>
+                                ユーザー設定
+                            </a>
+                        </li>
+                        
+                        <li class="divider"></li>
+
+                        <li>
+                            <a href="https://app.haika.io/logout">
+                                <i class="ace-icon fa fa-power-off"></i>
+                                ログアウト
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- /section:basics/navbar.user_menu -->
+            </ul>
+        </div>
+        <!-- /section:basics/navbar.dropdown -->
+    </div>
+    <!-- /.navbar-container -->
+</div>
+
+
+<!-- /section:basics/navbar.layout -->
+<div class="main-container" id="main-container">
+<!-- #section:basics/sidebar -->
+<div id="sidebar" class="sidebar responsive">
+    <ul class="nav nav-list">
+        
+            <li class="active open hsub">
+                <a href="https://app.haika.io/maps/#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-university"></i> <span class="menu-text">図書館と配架図</span>
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+                <b class="arrow"></b>
+                <ul class="submenu nav-hide">
+
+
+                    <li>
+                        <a href="https://app.haika.io/home" data-pjax="">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            ダッシュボード
+                        </a>
+                        <b class="arrow"></b>
+                    </li>
+                    <li class="active">
+                        <a href="https://app.haika.io/static/assets/js/haika.html" data-pjax="">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            フロアの編集
+                        </a>
+
+                        <b class="arrow"></b>
+                    </li>
+
+                    <li>
+                        <a href="https://app.haika.io/static/assets/js/haika.html" data-pjax="">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            請求記号マッピング
+                        </a>
+
+                        <b class="arrow"></b>
+                    </li>
+
+
+                    <li>
+                        <a href="https://app.haika.io/static/assets/js/haika.html" data-pjax="">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            テスト
+                        </a>
+
+                        <b class="arrow"></b>
+                    </li>
+
+
+                </ul>
+            </li>
+
+
+            <li>
+                <a href="https://app.haika.io/beacons/" data-pjax="">
+                    <i class="menu-icon fa fa-rss"></i>
+                    <span class="menu-text">ビーコン管理</span></a>
+            </li>
+
+
+
+            <li>
+                <a href="https://app.haika.io/maps/#" data-pjax="">
+                    <i class="menu-icon fa fa-users"></i>
+                    <span class="menu-text">アプリ管理</span></a>
+            </li>
+            <li>
+                <a href="https://app.haika.io/maps/#" data-pjax="">
+                    <i class="menu-icon fa fa-code"></i>
+                    <span class="menu-text">APIと外部連携</span></a>
+            </li>
+            <li>
+                <a href="https://app.haika.io/maps/#" data-pjax="">
+                    <i class="menu-icon fa fa-file-code-o"></i>
+                    <span class="menu-text">オープンデータ</span></a>
+            </li>
+
+            <li>
+                <a href="https://app.haika.io/preference" data-pjax="">
+                    <i class="menu-icon fa fa-cogs"></i>
+                    <span class="menu-text">アカウント設定</span></a>
+            </li>
+
+        
+
+
+    </ul>
+    <!-- /.nav-list -->
+
+    <!-- #section:basics/sidebar.layout.minimize -->
+    <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+        <i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+    </div>
+
+    <!-- /section:basics/sidebar.layout.minimize -->
+    <script type="text/javascript">
+        try {
+            ace.settings.check('sidebar', 'collapsed')
+        } catch (e) {
+        }
+    </script>
+</div>
+
+<!-- /section:basics/sidebar -->
+<div class="main-content">
+    <!-- #section:basics/content.breadcrumbs -->
+    
+    <!-- /section:basics/content.breadcrumbs -->
+    <div class="page-content">
+        <!-- /section:settings.box -->
+        <div class="page-content-area">
+
+            <div class="row">
+                <div class="col-xs-12">
+                    
+    
+
+
+
+
+                    <!-- PAGE CONTENT ENDS -->
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.page-content-area -->
+    </div>
+    <!-- /.page-content -->
+</div>
+<!-- /.main-content -->
+
+<div class="footer">
+    <div class="footer-inner">
+        <!-- #section:basics/footer -->
+        <div class="footer-content" style="text-align: right;color:#555">
+						<span class="bigger-120">
+							Powered by CALIL Inc. © 2014
+						</span>
+        </div>
+        <!-- /section:basics/footer -->
+    </div>
+</div>
+
+<a href="https://app.haika.io/maps/#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+    <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+</a>
+</div>
+<!-- /.main-container -->
+</div>
+<script src="https://app.haika.io/static/assets/js/jquery-ui.custom.min.js"></script>
+<script src="https://app.haika.io/static/assets/js/jquery.ui.touch-punch.min.js"></script>
+<script src="https://app.haika.io/static/assets/js/bootbox.min.js"></script>
+<script src="https://app.haika.io/static/assets/js/jquery.easypiechart.min.js"></script>
+<script src="https://app.haika.io/static/assets/js/jquery.gritter.min.js"></script>
+<script src="https://app.haika.io/static/assets/js/spin.min.js"></script>
+<script src="https://app.haika.io/static/assets/js/ace.min.js"></script>
+<script src="https://app.haika.io/static/assets/js/ace-elements.min.js"></script>
+<script type="text/javascript">
+    if ('ontouchstart' in document.documentElement) document.write("<script src='/static/assets/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
+</script>
+<script type="text/javascript">
+    $(function () {
+        if ($.support.pjax) {
+            $(document).pjax('[data-pjax] a, a[data-pjax]', '#pjax-container', {'fragment': '#pjax-container'});
+            $(document).on('submit', 'form', function (event) {
+                $.pjax.submit(event, {
+                    container: '#pjax-container',
+                    fragment: '#pjax-container'
+                });
+            });
+        }
+    });
+</script>
+
+</body></html>
