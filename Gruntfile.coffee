@@ -58,7 +58,15 @@ module.exports = (grunt) ->
         ]
         dest: "css/haika.all.css"
         nonull: true
-
+    cssmin:
+      minify:
+        expand: true
+        cwd: 'css/'
+        src: ['haika.all.css', '!*.min.css']
+        dest: 'css/'
+        ext: '.min.css'
+        options:
+          noAdvanced: true
     uglify:
       options:
         banner: "/*! <%= pkg.name %> <%= grunt.template.today(\"dd-mm-yyyy\") %> */\n"
@@ -89,5 +97,6 @@ module.exports = (grunt) ->
     "bower"
     "concat:js"
     "concat:css"
+    "cssmin"
     "uglify"
   ]
