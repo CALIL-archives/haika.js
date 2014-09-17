@@ -24580,8 +24580,6 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
 //# sourceMappingURL=grid.js.map
 ;var haika, log;
 
-console.log('test24');
-
 log = function(obj) {
   try {
     return console.log(obj);
@@ -25694,7 +25692,7 @@ $(function() {
 });
 
 $(function() {
-  var cancel_default, map_created, timeout, toggle_map;
+  var cancel_default, timeout;
   timeout = false;
   $('canvas').on('mousewheel', (function(_this) {
     return function(event) {
@@ -25750,24 +25748,9 @@ $(function() {
   });
   $('#canvas_angle').change(function() {
     haika.options.angle = parseInt($(this).val());
-    return haika.save();
+    haika.save();
+    return $('.canvas_angle').val($('#canvas_angle').val());
   });
-  map_created = false;
-  toggle_map = function() {
-    if ($('.haika_container').css('display') === 'block') {
-      if (!map_created) {
-        map_setting();
-        map_created = true;
-      }
-      $('.haika_container').hide();
-      $('.map_container').show();
-      return $('#map_query').focus();
-    } else {
-      $('.haika_container').show();
-      return $('.map_container').hide();
-    }
-  };
-  $('.map_setting').click(toggle_map);
   $('.undo').click(function() {
     return undo.undoManager.undo();
   });
@@ -26735,3 +26718,91 @@ t("ol.style.Image",Li);Li.prototype.getRotation=Li.prototype.g;Li.prototype.getS
 Oi.prototype.getText=Oi.prototype.rh;Oi.prototype.getZIndex=Oi.prototype.Af;t("ol.style.Text",Vv);Vv.prototype.getFill=Vv.prototype.sh;Vv.prototype.getFont=Vv.prototype.ff;Vv.prototype.getRotation=Vv.prototype.th;Vv.prototype.getScale=Vv.prototype.uh;Vv.prototype.getStroke=Vv.prototype.vh;Vv.prototype.getText=Vv.prototype.wh;Vv.prototype.getTextAlign=Vv.prototype.vf;Vv.prototype.getTextBaseline=Vv.prototype.wf;t("ol.tilegrid.TileGrid",Hk);Hk.prototype.getMinZoom=Hk.prototype.Hc;
 Hk.prototype.getOrigin=Hk.prototype.lb;Hk.prototype.getResolution=Hk.prototype.ca;Hk.prototype.getTileSize=Hk.prototype.ia;t("ol.tilegrid.WMTS",Nv);Nv.prototype.getMatrixIds=Nv.prototype.i;Nv.prototype.getMinZoom=Nv.prototype.Hc;Nv.prototype.getOrigin=Nv.prototype.lb;Nv.prototype.getResolution=Nv.prototype.ca;Nv.prototype.getTileSize=Nv.prototype.ia;t("ol.tilegrid.XYZ",Bu);Bu.prototype.getMinZoom=Bu.prototype.Hc;Bu.prototype.getOrigin=Bu.prototype.lb;Bu.prototype.getResolution=Bu.prototype.ca;
 Bu.prototype.getTileSize=Bu.prototype.ia;t("ol.tilegrid.Zoomify",Sv);Sv.prototype.getMinZoom=Sv.prototype.Hc;Sv.prototype.getOrigin=Sv.prototype.lb;Sv.prototype.getResolution=Sv.prototype.ca;Sv.prototype.getTileSize=Sv.prototype.ia;t("ol.webgl.Context",Jn);Jn.prototype.getGL=Jn.prototype.xh;Jn.prototype.useProgram=Jn.prototype.wd;})();
+;var map_created, map_setting;
+
+$(function() {
+  return setTimeout(function() {
+    return $($('.map_setting')[0]).trigger('click');
+  }, 1000);
+});
+
+map_created = false;
+
+$('.map_setting').click(function() {
+  if ($('.haika_container').css('display') === 'block') {
+    if (!map_created) {
+      map_setting();
+      map_created = true;
+    }
+    $('.haika_container').hide();
+    $('.map_container').show();
+    return $('#map_query').focus();
+  } else {
+    $('.haika_container').show();
+    return $('.map_container').hide();
+  }
+});
+
+map_setting = function() {
+  var featureStyle, features, map;
+  map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 20,
+    maxZoom: 28,
+    center: {
+      lat: haika.options.lat,
+      lng: haika.options.lon
+    }
+  });
+  featureStyle = {
+    fillColor: 'orange',
+    strokeWeight: 1
+  };
+  map.data.setStyle(featureStyle);
+  features = map.data.addGeoJson(haika.createGeoJson());
+  google.maps.event.addListener(map, 'dragend', function() {
+    var feature, lat, lon, _i, _len;
+    log(map.getCenter());
+    lon = map.getCenter().lng();
+    lat = map.getCenter().lat();
+    $('#canvas_lon').val(lon);
+    $('#canvas_lat').val(lat);
+    haika.options.lon = lon;
+    haika.options.lat = lat;
+    haika.save();
+    for (_i = 0, _len = features.length; _i < _len; _i++) {
+      feature = features[_i];
+      map.data.remove(feature);
+    }
+    return features = map.data.addGeoJson(haika.createGeoJson());
+  });
+  $('#map_search').submit(function() {
+    var address, geocoder;
+    address = $('#map_query').val();
+    geocoder = new google.maps.Geocoder();
+    geocoder.geocode({
+      address: address
+    }, function(results, status) {
+      if (status === google.maps.GeocoderStatus.OK) {
+        return map.setCenter(results[0].geometry.location);
+      } else {
+        return alert("ジオコーディングがうまくいきませんでした。: " + status);
+      }
+    });
+    return false;
+  });
+  return $('.canvas_angle').change(function() {
+    var feature, _i, _len;
+    $('#canvas_angle').val($('.canvas_angle').val());
+    haika.options.angle = $('.canvas_angle').val();
+    haika.save();
+    if (features.length > 0) {
+      for (_i = 0, _len = features.length; _i < _len; _i++) {
+        feature = features[_i];
+        map.data.remove(feature);
+      }
+    }
+    return features = map.data.addGeoJson(haika.createGeoJson());
+  });
+};
+
+//# sourceMappingURL=haika-map.js.map

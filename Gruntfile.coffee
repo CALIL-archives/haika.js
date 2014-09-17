@@ -70,7 +70,7 @@ module.exports = (grunt) ->
           "js/haika-image.js"
           "js/haika-editor.js"
           "vendor/ol.js"
-#          "js/haika-map.js"
+          "js/haika-map.js"
         ]
         dest: "js/haika.all.js"
         nonull: true
@@ -117,7 +117,9 @@ module.exports = (grunt) ->
             port: 35729
       # 更新されたファイルだけコンパイルするように指定する
       'coffee': (path) ->
-          ['newer:coffee','concat']
+          ['newer:coffee','concat:js']
+      'css': (path) ->
+          ['newer:concat:css']
   # loadNpmTasks
   require('load-grunt-tasks')(grunt);
   # # package.jsonから読み込んでるもの

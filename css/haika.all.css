@@ -420,6 +420,8 @@ body {
 
 /* map */
 .map_container {
+  width: 900px;
+  margin: 30px auto;
 }
 div.fill {
   width: 100%;
@@ -427,10 +429,11 @@ div.fill {
 }
 #map {
   margin: 0;
+  margin-top: 10px;
   padding: 0;
   width: 900px;
-  height: 400px;
+  height: 600px;
 }
 #map_search {
-  width: 300px
+  width: 900px
 }

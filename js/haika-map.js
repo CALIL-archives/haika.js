@@ -1,101 +1,88 @@
-var map_setting;
+var map_created, map_setting;
+
+$(function() {
+  return setTimeout(function() {
+    return $($('.map_setting')[0]).trigger('click');
+  }, 1000);
+});
+
+map_created = false;
+
+$('.map_setting').click(function() {
+  if ($('.haika_container').css('display') === 'block') {
+    if (!map_created) {
+      map_setting();
+      map_created = true;
+    }
+    $('.haika_container').hide();
+    $('.map_container').show();
+    return $('#map_query').focus();
+  } else {
+    $('.haika_container').show();
+    return $('.map_container').hide();
+  }
+});
 
 map_setting = function() {
-  var center, featureStyle, gmap, olMapDiv, view;
-  gmap = new google.maps.Map(document.getElementById("gmap"), {
-    disableDefaultUI: true,
-    keyboardShortcuts: false,
-    draggable: false,
-    disableDoubleClickZoom: true,
-    scrollwheel: false,
-    streetViewControl: false
+  var featureStyle, features, map;
+  map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 20,
+    maxZoom: 28,
+    center: {
+      lat: haika.options.lat,
+      lng: haika.options.lon
+    }
   });
   featureStyle = {
     fillColor: 'orange',
     strokeWeight: 1
   };
-  gmap.data.setStyle(featureStyle);
-  gmap.data.addGeoJson(haika.createGeoJson());
-  center = ol.proj.transform([haika.options.lon, haika.options.lat], "EPSG:4326", "EPSG:3857");
-  view = new ol.View2D({
-    center: center,
-    zoom: 2,
-    maxZoom: 21
+  map.data.setStyle(featureStyle);
+  features = map.data.addGeoJson(haika.createGeoJson());
+  google.maps.event.addListener(map, 'dragend', function() {
+    var feature, lat, lon, _i, _len;
+    log(map.getCenter());
+    lon = map.getCenter().lng();
+    lat = map.getCenter().lat();
+    $('#canvas_lon').val(lon);
+    $('#canvas_lat').val(lat);
+    haika.options.lon = lon;
+    haika.options.lat = lat;
+    haika.save();
+    for (_i = 0, _len = features.length; _i < _len; _i++) {
+      feature = features[_i];
+      map.data.remove(feature);
+    }
+    return features = map.data.addGeoJson(haika.createGeoJson());
   });
-  view.on("change:center", function() {
-    center = ol.proj.transform(view.getCenter(), "EPSG:3857", "EPSG:4326");
-    return gmap.setCenter(new google.maps.LatLng(center[1], center[0]));
+  $('#map_search').submit(function() {
+    var address, geocoder;
+    address = $('#map_query').val();
+    geocoder = new google.maps.Geocoder();
+    geocoder.geocode({
+      address: address
+    }, function(results, status) {
+      if (status === google.maps.GeocoderStatus.OK) {
+        return map.setCenter(results[0].geometry.location);
+      } else {
+        return alert("ジオコーディングがうまくいきませんでした。: " + status);
+      }
+    });
+    return false;
   });
-  view.on("change:resolution", function() {
-    return gmap.setZoom(view.getZoom());
-  });
-  olMapDiv = document.getElementById("olmap");
-  window.map = new ol.Map({
-    target: "map",
-    ol3Logo: false,
-    layers: [],
-    interactions: ol.interaction.defaults({
-      altShiftDragRotate: false,
-      dragPan: false,
-      rotate: false
-    }).extend([
-      new ol.interaction.DragPan({
-        kinetic: null
-      })
-    ]),
-    target: olMapDiv,
-    view: view
-  });
-  view.setCenter(center);
-  view.setZoom(20);
-  olMapDiv.parentNode.removeChild(olMapDiv);
-  gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
-  return map.on('moveend', function(e) {
-    var new_center;
-    center = map.getView().getCenter();
-    new_center = ol.proj.transform(center, "EPSG:3857", "EPSG:4326");
-    $('#canvas_lon').val(new_center[0]);
-    haika.options.lon = new_center[0];
-    $('#canvas_lat').val(new_center[1]);
-    haika.options.lat = new_center[1];
-    return haika.save();
+  return $('.canvas_angle').change(function() {
+    var feature, _i, _len;
+    $('#canvas_angle').val($('.canvas_angle').val());
+    haika.options.angle = $('.canvas_angle').val();
+    haika.save();
+    if (features.length > 0) {
+      for (_i = 0, _len = features.length; _i < _len; _i++) {
+        feature = features[_i];
+        map.data.remove(feature);
+      }
+    }
+    return features = map.data.addGeoJson(haika.createGeoJson());
   });
 };
-
-$('#map_search').submit(function() {
-  var url;
-  url = 'http://nominatim.openstreetmap.org/search';
-  $.ajax({
-    url: url,
-    type: "GET",
-    data: {
-      q: $('#map_query').val(),
-      format: "json"
-    },
-    dataType: "jsonp",
-    jsonp: "json_callback",
-    error: function() {},
-    success: (function(_this) {
-      return function(data) {
-        var center, view;
-        log(data);
-        if (data.length > 0) {
-          haika.options.lon = parseFloat(data[0].lon);
-          haika.options.lat = parseFloat(data[0].lat);
-          haika.save();
-          $('#canvas_lon').val(haika.options.lon);
-          $('#canvas_lat').val(haika.options.lat);
-          center = ol.proj.transform([haika.options.lon, haika.options.lat], "EPSG:4326", "EPSG:3857");
-          view = map.getView();
-          view.setCenter(center);
-          return view.setZoom(20);
-        } else {
-          return alert('見つかりませんでした。');
-        }
-      };
-    })(this)
-  });
-  return false;
-});
 
 //# sourceMappingURL=haika-map.js.map

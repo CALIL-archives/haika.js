@@ -85,7 +85,7 @@ $(function() {
 });
 
 $(function() {
-  var cancel_default, map_created, timeout, toggle_map;
+  var cancel_default, timeout;
   timeout = false;
   $('canvas').on('mousewheel', (function(_this) {
     return function(event) {
@@ -141,24 +141,9 @@ $(function() {
   });
   $('#canvas_angle').change(function() {
     haika.options.angle = parseInt($(this).val());
-    return haika.save();
+    haika.save();
+    return $('.canvas_angle').val($('#canvas_angle').val());
   });
-  map_created = false;
-  toggle_map = function() {
-    if ($('.haika_container').css('display') === 'block') {
-      if (!map_created) {
-        map_setting();
-        map_created = true;
-      }
-      $('.haika_container').hide();
-      $('.map_container').show();
-      return $('#map_query').focus();
-    } else {
-      $('.haika_container').show();
-      return $('.map_container').hide();
-    }
-  };
-  $('.map_setting').click(toggle_map);
   $('.undo').click(function() {
     return undo.undoManager.undo();
   });

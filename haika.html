@@ -220,20 +220,34 @@
     </div>
   </div>
   <div class="map_container">
-    <div id="map">
-      <div id="gmap" class="fill"></div>
-      <div id="olmap" class="fill"></div>
-    </div>
-    <form id="map_search">
-     <label for="map_query">
-       地名で位置検索:
-      <input type="text" id="map_query" class="form-control" />
-     </label>
-     <br />
-     <br />
-      <input type="button" class="geojson btn btn-default" value="GeoJSON" />
-      <input type="button" value="close" class="map_setting btn btn-default" />
+    <form id="map_search" class="clearfix">
+      <div class="pull-left">
+         <div class="row">
+          <div class="col-sm-8">
+            <input type="text" placeholder="図書館名で場所を検索" id="map_query" class="form-control" />
+          </div>
+          <div class="col-sm-4">
+            <div class="row">
+              <div class="col-sm-5">
+                角度:
+              </div>
+              <div class="col-sm-7">
+                <input type="number" class="canvas_angle" class="form-control" value="25" />
+              </div>
+            </div>
+          </div>
+         </div>
+      </div>
+      <div class="pull-right" style="text-align:right;">
+<!--        <input type="button" value="close" class="map_setting btn btn-default" />-->
+        <span class="map_setting btn btn-default">
+          <i class="fa fa-times"></i>
+          close
+        </span>
+      </div>
     </form>
+    <div id="map">
+    </div>
   </div>
     <!-- External script dependencies  -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>

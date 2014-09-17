@@ -1,7 +1,5 @@
 var haika, log;
 
-console.log('test24');
-
 log = function(obj) {
   try {
     return console.log(obj);

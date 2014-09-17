@@ -75,8 +75,6 @@ $ ->
 #  $(".loadsvg").click ->
 #    loadSVG 'http://fabreasy.com/demo_front.svg', haika.canvas, ->
 #      alert('done');
-#  $(".geojson").click ->
-#    haika.getGeoJSON()
 #  $(".reset").click ->
 #    haika.objects = []
 #    localStorage.clear()
@@ -160,23 +158,8 @@ $ ->
   $('#canvas_angle').change ->
     haika.options.angle = parseInt($(this).val())
     haika.save()
+    $('.canvas_angle').val($('#canvas_angle').val())
 
-  map_created = false
-  toggle_map = ->
-    if $('.haika_container').css('display')=='block'
-      if not map_created
-        map_setting()
-        map_created = true
-      $('.haika_container').hide()
-      $('.map_container').show()
-      $('#map_query').focus()
-    else
-      $('.haika_container').show()
-      $('.map_container').hide()
-  $('.map_setting').click toggle_map
-#  setTimeout ->
-#    toggle_map()
-#  , 1000
   
   $('.undo').click ->
     undo.undoManager.undo()
