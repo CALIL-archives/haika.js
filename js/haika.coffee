@@ -1,3 +1,4 @@
+console.log 'test24'
 log = (obj) ->
   try
     console.log obj

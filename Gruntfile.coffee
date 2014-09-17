@@ -11,7 +11,27 @@ module.exports = (grunt) ->
           copy: false
           cleanTargetDir: false
           cleanBowerDir: false
-
+    coffee:
+      compile:
+          options:
+            sourceMap: true
+            bare: true
+          expand: true,
+          flatten: true,
+          cwd: 'js/',
+          src: ['*.coffee'],
+          dest: 'js/',
+          ext: '.js'
+       fabric_obiect:
+          options:
+            sourceMap: true
+            bare: true
+          expand: true,
+          flatten: true,
+          cwd: 'js/fabric_obiect/',
+          src: ['*.coffee'],
+          dest: 'js/fabric_obiect/',
+          ext: '.js'
     concat:
       js:
         options:
@@ -40,17 +60,17 @@ module.exports = (grunt) ->
           "js/fabric_obiect/floor.js"
           "js/fabric_obiect/grid.js"
           "js/haika.js"
-#          "js/haika_io_v1.js"
-          "js/haika.scrollbar.js"
-          "js/haika.init.js"
-          "js/haika.addbuttons.js"
-          "js/haika.colorpicker.js"
-          "js/haika.event.js"
-          "js/haika.undo.js"
-          "js/haika.image.js"
-          "js/editor.js"
+#          "js/haika-io-v1.js"
+          "js/haika-scrollbar.js"
+          "js/haika-init.js"
+          "js/haika-addbuttons.js"
+          "js/haika-colorpicker.js"
+          "js/haika-event.js"
+          "js/haika-undo.js"
+          "js/haika-image.js"
+          "js/haika-editor.js"
           "vendor/ol.js"
-#          "js/map_setting.js"
+#          "js/haika-map.js"
         ]
         dest: "js/haika.all.js"
         nonull: true
@@ -81,16 +101,23 @@ module.exports = (grunt) ->
         files:
           "js/haika.all.min.js": ["js/haika.all.js"]
 
-    #監視: 一個でも変更あったら全部コンパイルし直しててダサし
-    watch:
-      devel:
-        files: ['js/*.coffee', 'css/*.css']
-        tasks: ["concat:js", "concat:css", "uglify"]
+#    watch:
+#      devel:
+#        files: ['js/*.coffee', 'css/*.css']
+#        tasks: ["coffee", "concat:js", "concat:css"]
+#      options:
+#        nospawn: false
+#        livereload: true
+    esteWatch:
       options:
-        # 死んでも死なないようにする
-        nospawn: false
-        # 嬉しい
-        livereload: false
+          dirs: ['.', 'js/**/', 'css/']
+          livereload:
+            enabled: true
+            extensions: ['js', 'html', 'css']
+            port: 35729
+      # 更新されたファイルだけコンパイルするように指定する
+      'coffee': (path) ->
+          ['newer:coffee','concat']
   # loadNpmTasks
   require('load-grunt-tasks')(grunt);
   # # package.jsonから読み込んでるもの
@@ -99,10 +126,11 @@ module.exports = (grunt) ->
   # grunt.loadNpmTasks "grunt-contrib-concat"
   # grunt.loadNpmTasks "grunt-contrib-copy"
   # grunt.loadNpmTasks "grunt-bower-task"
+#  grunt.renameTask('esteWatch', 'watch');
   grunt.registerTask "default", [
     "bower"
-    "concat:js"
-    "concat:css"
+    "coffee"
+    "concat"
     "cssmin"
     "uglify"
   ]

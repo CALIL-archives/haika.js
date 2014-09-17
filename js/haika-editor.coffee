@@ -1,5 +1,5 @@
 # Initialize the editor
-editor = new JSONEditor(document.getElementById("editor"),
+editor = new JSONEditor document.getElementById("editor"),
   theme: "bootstrap3"
   iconlib: "fontawesome4"
   disable_edit_json: true
@@ -126,7 +126,6 @@ editor = new JSONEditor(document.getElementById("editor"),
 #            "value1"
 #            "value2"
 #          ]
-)
 
 
 # Get the value
