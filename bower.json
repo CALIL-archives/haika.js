@@ -24,7 +24,6 @@
     "Javascript-Undo-Manager": "*",
     "proj4": "~2.1.2",
     "json-editor": "~0.6.17",
-    "bootstrap-slider": "*",
-    "topojson": "~1.6.15"
+    "seiyria-bootstrap-slider": "~4.0.1"
   }
 }
