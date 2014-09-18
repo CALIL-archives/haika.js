@@ -108,12 +108,18 @@ $(function() {
     haika.options.bgscale = parseFloat($(this).val());
     return haika.render();
   });
+  $('#bgreset').click(function() {
+    return haika.resetBg();
+  });
   $('#bgopacity_slider').slider({
-    formater: function(value) {
-      value = parseFloat(value).toFixed(1);
-      haika.options.bgopacity = value;
+    step: 1,
+    min: 1,
+    max: 100,
+    value: haika.options.bgopacity * 100,
+    formatter: function(value) {
+      haika.options.bgopacity = value / 100;
       haika.render();
-      return value;
+      return value / 100;
     }
   });
   $('.undo').click(function() {

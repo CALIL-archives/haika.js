@@ -137,14 +137,19 @@ $ ->
     haika.render()
 #    haika.save()
 
+  $('#bgreset').click ->
+    haika.resetBg()
+
   $('#bgopacity_slider').slider
-    formater: (value)->
-      value = parseFloat(value).toFixed(1)
-#      $('#canvas_bgopacity').val()
-      haika.options.bgopacity = value
+    step: 1
+    min: 1
+    max: 100
+    value: haika.options.bgopacity * 100
+    formatter: (value) ->
+      haika.options.bgopacity = value / 100
       haika.render()
 #      haika.save()
-      return value
+      return value / 100
 
   
   $('.undo').click ->

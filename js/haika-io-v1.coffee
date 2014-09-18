@@ -47,7 +47,8 @@ $.extend haika,
       @options.bgscale = if canvas.bgscale then canvas.bgscale else 4.425
       @options.bgopacity = canvas.bgopacity
       @options.angle = canvas.angle
-      @options.geojson_scale = canvas.geojson_scale
+      if canvas.geojson_scale?
+        @options.geojson_scale = canvas.geojson_scale
       if @isLocal()
         @setBg()
       else
@@ -56,9 +57,6 @@ $.extend haika,
       if canvas.lon?
         @options.lon = parseFloat(canvas.lon)
         @options.lat = parseFloat(canvas.lat)
-        @options.angle = parseInt(canvas.angle)
-    else
-      @scale = 1
     if geojson and geojson.features.length>0
       for object in geojson.features
         if object.properties.id>@lastId
@@ -261,7 +259,6 @@ $.extend haika,
       if mapCenter
         coordinates = []
         for geometry in object.geometry.coordinates[0]
-          log @options.scale
           x = geometry[0] * @options.geojson_scale
           y = geometry[1] * @options.geojson_scale
           # 回転の反映

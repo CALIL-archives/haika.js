@@ -33,9 +33,10 @@ map_set = (lat, lon)->
   haika.options.lon = lon
   haika.options.lat = lat
   haika.save()
-      
-map_setting = ->
 
+log haika.options.angle
+map_setting = ->
+  log haika.options.angle
 
   map = new google.maps.Map(document.getElementById('map'),
     zoom: 20
@@ -90,21 +91,27 @@ map_setting = ->
 
   $('#canvas_angle').slider
     tooltip: 'always'
-    formater: (value)->
-      value = parseFloat(value).toFixed(1)
+    step: 1
+    min: 0
+    max: 360
+    value: haika.options.angle
+    formatter: (value) ->
       haika.options.angle = parseFloat(value)
       haika.save()
       map_redraw()
-      return value
+      return value+'度'
 
   $('#geojson_scale').slider
     tooltip: 'always'
-    formater: (value)->
-      value = parseFloat(value).toFixed(2)
-      haika.options.geojson_scale = parseFloat(value)
+    step: 1
+    min: 0
+    max: 400
+    value: haika.options.geojson_scale * 100
+    formatter: (value) ->
+      haika.options.geojson_scale = parseFloat(value) / 100
       haika.save()
       map_redraw()
-      return value
+      return value+'%'
 
 
 #  if haika.isLocal()

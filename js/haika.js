@@ -88,7 +88,9 @@ haika = {
     };
     initAligningGuidelines(canvas);
     this.canvas = canvas;
-    this.scale = options.scale;
+    if (options.scale != null) {
+      this.scale = options.scale;
+    }
     if (this.options.bgurl) {
       this.loadBgFromUrl(this.options.bgurl);
     }
@@ -190,6 +192,11 @@ haika = {
     if (this.options.callback != null) {
       return this.options.callback();
     }
+  },
+  resetBg: function() {
+    haika.bgimg_data = null;
+    haika.save();
+    return location.reload();
   },
   lastId: 0,
   getId: function() {
@@ -575,7 +582,9 @@ haika = {
     $('#canvas_bgscale').val(this.options.bgscale);
     $('#canvas_bgopacity').val(this.options.bgopacity);
     $('#canvas_lon').val(this.options.lon);
-    return $('#canvas_lat').val(this.options.lat);
+    $('#canvas_lat').val(this.options.lat);
+    $('#canvas_angle').val(canvas.angle);
+    return $('#geojson_scale').val(canvas.geojson_scale);
   },
   getMovePixel: function(event) {
     if (event.shiftKey) {

@@ -46,7 +46,9 @@ $.extend(haika, {
       this.options.bgscale = canvas.bgscale ? canvas.bgscale : 4.425;
       this.options.bgopacity = canvas.bgopacity;
       this.options.angle = canvas.angle;
-      this.options.geojson_scale = canvas.geojson_scale;
+      if (canvas.geojson_scale != null) {
+        this.options.geojson_scale = canvas.geojson_scale;
+      }
       if (this.isLocal()) {
         this.setBg();
       } else {
@@ -57,10 +59,7 @@ $.extend(haika, {
       if (canvas.lon != null) {
         this.options.lon = parseFloat(canvas.lon);
         this.options.lat = parseFloat(canvas.lat);
-        this.options.angle = parseInt(canvas.angle);
       }
-    } else {
-      this.scale = 1;
     }
     if (geojson && geojson.features.length > 0) {
       _ref = geojson.features;
@@ -311,7 +310,6 @@ $.extend(haika, {
         _ref1 = object.geometry.coordinates[0];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           geometry = _ref1[_j];
-          log(this.options.scale);
           x = geometry[0] * this.options.geojson_scale;
           y = geometry[1] * this.options.geojson_scale;
           new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.options.angle));

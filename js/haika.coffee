@@ -84,7 +84,8 @@ haika =
     #initCenteringGuidelines(canvas)
     @canvas = canvas
     #@canvas.centeredRotation = true
-    @scale = options.scale
+    if options.scale?
+      @scale = options.scale
     if @options.bgurl
       @loadBgFromUrl(@options.bgurl)
     @render()
@@ -162,6 +163,10 @@ haika =
     @render()
     if @options.callback?
       @options.callback()
+  resetBg: ->
+    haika.bgimg_data=null
+    haika.save()
+    location.reload()
   # オブジェクトにつけるid 通し番号
   lastId : 0
   # idを取得
@@ -467,9 +472,8 @@ haika =
     $('#canvas_bgopacity').val(@options.bgopacity)
     $('#canvas_lon').val(@options.lon)
     $('#canvas_lat').val(@options.lat)
-#    $('#canvas_angle').attr('data-slider-value', canvas.angle)
-#    $('#geojson_scale').attr('data-slider-value', canvas.geojson_scale)
-#    $('#canvas_angle').val(@options.angle)
+    $('#canvas_angle').val(canvas.angle)
+    $('#geojson_scale').val(canvas.geojson_scale)
   # 移動ピクセル数を取得
   getMovePixel : (event)->
     return if event.shiftKey then 10 else 1
