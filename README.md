@@ -7,6 +7,13 @@ haika.js
 ## Example
 
 
+## Support Browser
+
+InternetExplorer 10+
+Firefox 32+
+Google Chrome 36+
+Safari 7+
+
 ## Licence
 
 MIT
