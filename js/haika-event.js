@@ -104,45 +104,17 @@ $(function() {
       }
     };
   })(this));
-  $('#canvas_width').change(function() {
-    return haika.canvas.setWidth($(this).val());
-  });
-  $('#canvas_height').change(function() {
-    return haika.canvas.setHeight($(this).val());
-  });
-  $('#canvas_centerX').change(function() {
-    return haika.centerX = parseInt($(this).val());
-  });
-  $('#canvas_centerY').change(function() {
-    return haika.centerY = parseInt($(this).val());
-  });
   $('#canvas_bgscale').change(function() {
-    return haika.options.bgscale = parseFloat($(this).val());
+    haika.options.bgscale = parseFloat($(this).val());
+    return haika.render();
   });
-  $('#ex1').slider({
+  $('#bgopacity_slider').slider({
     formater: function(value) {
       value = parseFloat(value).toFixed(1);
-      $('#canvas_bgopacity').val();
       haika.options.bgopacity = value;
       haika.render();
       return value;
     }
-  });
-  $('#canvas_render').click(function() {
-    return haika.render();
-  });
-  $('#canvas_lat').change(function() {
-    haika.options.lat = parseFloat($(this).val());
-    return haika.save();
-  });
-  $('#canvas_lon').change(function() {
-    haika.options.lon = parseFloat($(this).val());
-    return haika.save();
-  });
-  $('#canvas_angle').change(function() {
-    haika.options.angle = parseInt($(this).val());
-    haika.save();
-    return $('.canvas_angle').val($('#canvas_angle').val());
   });
   $('.undo').click(function() {
     return undo.undoManager.undo();

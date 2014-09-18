@@ -124,41 +124,27 @@ $ ->
 #    else
 #      @zoomIn()
   # キャンバスパネル
-  $('#canvas_width').change ->
-    haika.canvas.setWidth($(this).val())
-  $('#canvas_height').change ->
-    haika.canvas.setHeight($(this).val())
-  $('#canvas_centerX').change ->
-    haika.centerX = parseInt($(this).val())
-  $('#canvas_centerY').change ->
-    haika.centerY = parseInt($(this).val())
+#  $('#canvas_width').change ->
+#    haika.canvas.setWidth($(this).val())
+#  $('#canvas_height').change ->
+#    haika.canvas.setHeight($(this).val())
+#  $('#canvas_centerX').change ->
+#    haika.centerX = parseInt($(this).val())
+#  $('#canvas_centerY').change ->
+#    haika.centerY = parseInt($(this).val())
   $('#canvas_bgscale').change ->
     haika.options.bgscale = parseFloat($(this).val())
+    haika.render()
 #    haika.save()
-#  $('#canvas_bgopacity').change ->
-#    haika.options.bgopacity = parseFloat($(this).val())
-  $('#ex1').slider
+
+  $('#bgopacity_slider').slider
     formater: (value)->
       value = parseFloat(value).toFixed(1)
-      $('#canvas_bgopacity').val()
+#      $('#canvas_bgopacity').val()
       haika.options.bgopacity = value
       haika.render()
 #      haika.save()
       return value
-  $('#canvas_render').click ->
-    haika.render()
-
-  $('#canvas_lat').change ->
-    haika.options.lat = parseFloat($(this).val())
-    haika.save()
-  $('#canvas_lon').change ->
-    haika.options.lon = parseFloat($(this).val())
-    haika.save()
-  
-  $('#canvas_angle').change ->
-    haika.options.angle = parseInt($(this).val())
-    haika.save()
-    $('.canvas_angle').val($('#canvas_angle').val())
 
   
   $('.undo').click ->

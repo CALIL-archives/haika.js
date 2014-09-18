@@ -26,13 +26,12 @@ haika.init(
   canvas : 'canvas'
   canvas_width : getWidth()
   canvas_height : getHeight()
-  scale : 1
   max_width: 10000
   max_height: 10000
   #bgurl  : 'img/meidai2.png'
   #bgurl  : 'img/sample.png'
   bgopacity: 0.2
-  bgscale  : 4.425
+  bgscale  : 4
   callback : setScrollbar
 )
 

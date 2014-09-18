@@ -49,7 +49,8 @@ haika = {
       bgscale: 1,
       lon: 0,
       lat: 0,
-      angle: 0
+      angle: 0,
+      geojson_scale: 1.5
     };
     this.options = $.extend(default_options, options);
     canvas = new fabric.Canvas(this.options.canvas, {
@@ -567,15 +568,14 @@ haika = {
     }
   },
   setCanvasProperty: function() {
-    $('#canvas_width').val(this.canvas.getWidth());
-    $('#canvas_height').val(this.canvas.getHeight());
-    $('#canvas_centerX').val(this.centerX);
-    $('#canvas_centerY').val(this.centerY);
+    $('#canvas_width').html(this.canvas.getWidth());
+    $('#canvas_height').html(this.canvas.getHeight());
+    $('#canvas_centerX').html(this.centerX);
+    $('#canvas_centerY').html(this.centerY);
     $('#canvas_bgscale').val(this.options.bgscale);
     $('#canvas_bgopacity').val(this.options.bgopacity);
     $('#canvas_lon').val(this.options.lon);
-    $('#canvas_lat').val(this.options.lat);
-    return $('#canvas_angle').val(this.options.angle);
+    return $('#canvas_lat').val(this.options.lat);
   },
   getMovePixel: function(event) {
     if (event.shiftKey) {
@@ -756,6 +756,12 @@ haika = {
     this.scale = 1;
     this.render();
     return $('.zoom').html('100%');
+  },
+  reset: function() {
+    haika.objects = [];
+    localStorage.clear();
+    $(window).off('beforeunload');
+    return location.reload();
   },
   setPropetyPanel: function(object) {
     var group, key, objects, properties, value;

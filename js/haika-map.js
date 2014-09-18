@@ -1,10 +1,4 @@
-var map_created, map_setting;
-
-$(function() {
-  return setTimeout(function() {
-    return $($('.map_setting')[0]).trigger('click');
-  }, 1000);
-});
+var features, map, map_created, map_redraw, map_set, map_setting;
 
 map_created = false;
 
@@ -15,16 +9,42 @@ $('.map_setting').click(function() {
       map_created = true;
     }
     $('.haika_container').hide();
+    $(document.body).css('background', '#333333');
+    map_redraw();
     $('.map_container').show();
     return $('#map_query').focus();
   } else {
+    $(document.body).css('background', '#FFFFFF');
     $('.haika_container').show();
     return $('.map_container').hide();
   }
 });
 
+map = null;
+
+features = [];
+
+map_redraw = function() {
+  var feature, _i, _len;
+  if (features.length > 0) {
+    for (_i = 0, _len = features.length; _i < _len; _i++) {
+      feature = features[_i];
+      map.data.remove(feature);
+    }
+    return features = map.data.addGeoJson(haika.createGeoJson());
+  }
+};
+
+map_set = function(lat, lon) {
+  $('#canvas_lon').val(lon);
+  $('#canvas_lat').val(lat);
+  haika.options.lon = lon;
+  haika.options.lat = lat;
+  return haika.save();
+};
+
 map_setting = function() {
-  var featureStyle, features, map;
+  var featureStyle;
   map = new google.maps.Map(document.getElementById('map'), {
     zoom: 20,
     maxZoom: 28,
@@ -40,20 +60,12 @@ map_setting = function() {
   map.data.setStyle(featureStyle);
   features = map.data.addGeoJson(haika.createGeoJson());
   google.maps.event.addListener(map, 'dragend', function() {
-    var feature, lat, lon, _i, _len;
+    var lat, lon;
     log(map.getCenter());
     lon = map.getCenter().lng();
     lat = map.getCenter().lat();
-    $('#canvas_lon').val(lon);
-    $('#canvas_lat').val(lat);
-    haika.options.lon = lon;
-    haika.options.lat = lat;
-    haika.save();
-    for (_i = 0, _len = features.length; _i < _len; _i++) {
-      feature = features[_i];
-      map.data.remove(feature);
-    }
-    return features = map.data.addGeoJson(haika.createGeoJson());
+    map_set(lat, lon);
+    return map_redraw();
   });
   $('#map_search').submit(function() {
     var address, geocoder;
@@ -63,25 +75,45 @@ map_setting = function() {
       address: address
     }, function(results, status) {
       if (status === google.maps.GeocoderStatus.OK) {
-        return map.setCenter(results[0].geometry.location);
+        map.setCenter(results[0].geometry.location);
+        map_set(results[0].geometry.location.lat(), results[0].geometry.location.lng());
+        return map_redraw();
       } else {
         return alert("ジオコーディングがうまくいきませんでした。: " + status);
       }
     });
     return false;
   });
-  return $('.canvas_angle').change(function() {
-    var feature, _i, _len;
-    $('#canvas_angle').val($('.canvas_angle').val());
-    haika.options.angle = $('.canvas_angle').val();
-    haika.save();
-    if (features.length > 0) {
-      for (_i = 0, _len = features.length; _i < _len; _i++) {
-        feature = features[_i];
-        map.data.remove(feature);
-      }
+  $('#canvas_lat').change(function() {
+    haika.options.lat = parseFloat($(this).val());
+    return haika.save();
+  });
+  $('#canvas_lon').change(function() {
+    haika.options.lon = parseFloat($(this).val());
+    return haika.save();
+  });
+  $('#canvas_angle').change(function() {
+    return map_redraw();
+  });
+  $('#canvas_angle').slider({
+    tooltip: 'always',
+    formater: function(value) {
+      value = parseFloat(value).toFixed(1);
+      haika.options.angle = parseFloat(value);
+      haika.save();
+      map_redraw();
+      return value;
     }
-    return features = map.data.addGeoJson(haika.createGeoJson());
+  });
+  return $('#geojson_scale').slider({
+    tooltip: 'always',
+    formater: function(value) {
+      value = parseFloat(value).toFixed(2);
+      haika.options.geojson_scale = parseFloat(value);
+      haika.save();
+      map_redraw();
+      return value;
+    }
   });
 };
 

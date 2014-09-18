@@ -308,7 +308,8 @@ body {
 }
 
 .header {
-  height: 42px;  
+  height: 42px;
+  border-bottom: 1px solid #CCCCCC;
 }
 .nav {
   float: left;
@@ -385,6 +386,11 @@ body {
   float: left;
   z-index: 10001;
 }
+#vertical-scroller.dragdealer {
+  border-left: 1px solid #CCCCCC; 
+/*  border-top: 1px solid #CCCCCC; */
+  border-bottom: 1px solid #CCCCCC; 
+}
 #vertical-scroller .dragdealer {
   width: 30px;
 }
@@ -399,6 +405,9 @@ body {
 
 #horizontal-scroller {
   z-index: 10000;
+  border-top: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+  border-left: 1px solid #CCCCCC;
 }
 
 .gray-bar {

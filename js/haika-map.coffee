@@ -1,7 +1,7 @@
-$ ->
-  setTimeout ->
-    $($('.map_setting')[0]).trigger('click')
-  , 1000
+#$ ->
+#  setTimeout ->
+#    $($('.map_setting')[0]).trigger('click')
+#  , 1000
 
 map_created = false
 $('.map_setting').click ->
@@ -10,13 +10,30 @@ $('.map_setting').click ->
       map_setting()
       map_created = true
     $('.haika_container').hide()
+    $(document.body).css('background', '#333333')
+    map_redraw()
     $('.map_container').show()
     $('#map_query').focus()
   else
+    $(document.body).css('background', '#FFFFFF')
     $('.haika_container').show()
     $('.map_container').hide()
 
+map = null
+features = []
+map_redraw = ()->
+  if features.length>0
+    for feature in features
+        map.data.remove feature
+      features = map.data.addGeoJson(haika.createGeoJson())
 
+map_set = (lat, lon)->
+  $('#canvas_lon').val(lon)
+  $('#canvas_lat').val(lat)
+  haika.options.lon = lon
+  haika.options.lat = lat
+  haika.save()
+      
 map_setting = ->
 
 
@@ -39,17 +56,11 @@ map_setting = ->
     log map.getCenter()
     lon = map.getCenter().lng()
     lat = map.getCenter().lat()
-    $('#canvas_lon').val(lon)
-    $('#canvas_lat').val(lat)
-    haika.options.lon = lon
-    haika.options.lat = lat
-    haika.save()
-    for feature in features
-      map.data.remove feature
-    features = map.data.addGeoJson(haika.createGeoJson())
+    map_set(lat, lon)
+    map_redraw()
 
   $('#map_search').submit ->
-  #  alert $('#map_query').val()
+#    alert $('#map_query').val()
     address = $('#map_query').val()
     geocoder = new google.maps.Geocoder()
     geocoder.geocode
@@ -57,27 +68,47 @@ map_setting = ->
     , (results, status) ->
       if status==google.maps.GeocoderStatus.OK
         map.setCenter results[0].geometry.location
-#        marker = new google.maps.Marker(
-#          map: map
-#          position: results[0].geometry.location
-#        )
+  #        marker = new google.maps.Marker(
+  #          map: map
+  #          position: results[0].geometry.location
+  #        )
+        map_set(results[0].geometry.location.lat(), results[0].geometry.location.lng())
+        map_redraw()
       else
         alert "ジオコーディングがうまくいきませんでした。: " + status
     return false
 
-  $('.canvas_angle').change ->
-    $('#canvas_angle').val($('.canvas_angle').val())
-    haika.options.angle = $('.canvas_angle').val()
+  $('#canvas_lat').change ->
+    haika.options.lat = parseFloat($(this).val())
     haika.save()
-    if features.length>0
-      for feature in features
-        map.data.remove feature
-    features = map.data.addGeoJson(haika.createGeoJson())
+  $('#canvas_lon').change ->
+    haika.options.lon = parseFloat($(this).val())
+    haika.save()
+
+  $('#canvas_angle').change ->
+    map_redraw()
+
+  $('#canvas_angle').slider
+    tooltip: 'always'
+    formater: (value)->
+      value = parseFloat(value).toFixed(1)
+      haika.options.angle = parseFloat(value)
+      haika.save()
+      map_redraw()
+      return value
+
+  $('#geojson_scale').slider
+    tooltip: 'always'
+    formater: (value)->
+      value = parseFloat(value).toFixed(2)
+      haika.options.geojson_scale = parseFloat(value)
+      haika.save()
+      map_redraw()
+      return value
+
 
 #  if haika.isLocal()
 #    gmap.data.addGeoJson(haika.createGeoJson())
 #  else
 #    gmap.data.loadGeoJson('/haika_store/data/'+sprintf('%06d',haika.id)+'.geojson')
   
-
-

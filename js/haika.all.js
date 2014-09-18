@@ -24629,7 +24629,8 @@ haika = {
       bgscale: 1,
       lon: 0,
       lat: 0,
-      angle: 0
+      angle: 0,
+      geojson_scale: 1.5
     };
     this.options = $.extend(default_options, options);
     canvas = new fabric.Canvas(this.options.canvas, {
@@ -25147,15 +25148,14 @@ haika = {
     }
   },
   setCanvasProperty: function() {
-    $('#canvas_width').val(this.canvas.getWidth());
-    $('#canvas_height').val(this.canvas.getHeight());
-    $('#canvas_centerX').val(this.centerX);
-    $('#canvas_centerY').val(this.centerY);
+    $('#canvas_width').html(this.canvas.getWidth());
+    $('#canvas_height').html(this.canvas.getHeight());
+    $('#canvas_centerX').html(this.centerX);
+    $('#canvas_centerY').html(this.centerY);
     $('#canvas_bgscale').val(this.options.bgscale);
     $('#canvas_bgopacity').val(this.options.bgopacity);
     $('#canvas_lon').val(this.options.lon);
-    $('#canvas_lat').val(this.options.lat);
-    return $('#canvas_angle').val(this.options.angle);
+    return $('#canvas_lat').val(this.options.lat);
   },
   getMovePixel: function(event) {
     if (event.shiftKey) {
@@ -25337,6 +25337,12 @@ haika = {
     this.render();
     return $('.zoom').html('100%');
   },
+  reset: function() {
+    haika.objects = [];
+    localStorage.clear();
+    $(window).off('beforeunload');
+    return location.reload();
+  },
   setPropetyPanel: function(object) {
     var group, key, objects, properties, value;
     $('.canvas_panel, .object_panel, .group_panel').hide();
@@ -25372,6 +25378,396 @@ haika = {
 };
 
 //# sourceMappingURL=haika.js.map
+;$.extend(haika, {
+  isLocal: function() {
+    return location.protocol === 'file:' || location.port !== '';
+  },
+  setHashChange: function() {
+    return $(window).bind("hashchange", function() {
+      return location.reload();
+    });
+  },
+  load: function() {
+    var data;
+    if (location.hash !== '' && location.hash.length !== 7) {
+      location.hash = sprintf('%06d', location.hash.split('#')[1]);
+      return;
+    }
+    if (this.isLocal()) {
+      data = {
+        canvas: JSON.parse(localStorage.getItem('canvas')),
+        geojson: JSON.parse(localStorage.getItem('geojson'))
+      };
+      log(data);
+      this.loadRender(data);
+      return;
+    }
+    if (location.hash !== '') {
+      this.id = location.hash.split('#')[1];
+      return this.load_server();
+    } else {
+      return this.getHaikaId();
+    }
+  },
+  loadRender: function(data) {
+    var canvas, geojson, key, klass, object, schema, shape, _i, _len, _ref;
+    log(data);
+    canvas = data.canvas;
+    geojson = data.geojson;
+    if (canvas) {
+      log(canvas);
+      this.state = canvas.state;
+      $('.nav a.' + this.state).tab('show');
+      this.scale = canvas.scale;
+      $('.zoom').html((this.scale * 100).toFixed(0) + '%');
+      this.centerX = canvas.centerX;
+      this.centerY = canvas.centerY;
+      this.bgimg_data = canvas.bgimg_data;
+      this.options.bgscale = canvas.bgscale ? canvas.bgscale : 4.425;
+      this.options.bgopacity = canvas.bgopacity;
+      this.options.angle = canvas.angle;
+      this.options.geojson_scale = canvas.geojson_scale;
+      if (this.isLocal()) {
+        this.setBg();
+      } else {
+        if (canvas.bgurl != null) {
+          this.loadBgFromUrl(canvas.bgurl);
+        }
+      }
+      if (canvas.lon != null) {
+        this.options.lon = parseFloat(canvas.lon);
+        this.options.lat = parseFloat(canvas.lat);
+        this.options.angle = parseInt(canvas.angle);
+      }
+    } else {
+      this.scale = 1;
+    }
+    if (geojson && geojson.features.length > 0) {
+      _ref = geojson.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        if (object.properties.id > this.lastId) {
+          this.lastId = object.properties.id;
+        }
+        klass = this.getClass(object.properties.type);
+        shape = new klass({
+          id: object.properties.id,
+          top: this.transformTopY_cm2px(object.properties.top_cm),
+          left: this.transformLeftX_cm2px(object.properties.left_cm),
+          top_cm: object.properties.top_cm,
+          left_cm: object.properties.left_cm,
+          fill: object.properties.fill,
+          stroke: object.properties.stroke,
+          angle: object.properties.angle
+        });
+        schema = shape.constructor.prototype.getJsonSchema();
+        for (key in schema.properties) {
+          shape[key] = object.properties[key];
+        }
+        this.add(shape);
+      }
+    }
+    return this.render();
+  },
+  getHaikaId: function() {
+    var url;
+    url = '/haika_store/index.php';
+    return $.ajax({
+      url: url,
+      type: "GET",
+      cache: false,
+      dataType: "json",
+      error: function() {},
+      success: (function(_this) {
+        return function(data) {
+          location.hash = data.id;
+          _this.id = data.id;
+          return _this.setHashChange();
+        };
+      })(this)
+    });
+  },
+  load_server: function() {
+    var url;
+    url = "/haika_store/data/" + this.id + ".json";
+    return $.ajax({
+      url: url,
+      type: "GET",
+      cache: false,
+      dataType: "text",
+      error: (function(_this) {
+        return function() {
+          return alert('load error');
+        };
+      })(this),
+      success: (function(_this) {
+        return function(data) {
+          log(data);
+          try {
+            data = JSON.parse(data);
+          } catch (_error) {
+            alert('parse error');
+            $(window).off('beforeunload');
+            location.href = "/haika_store/data/" + _this.id + ".json";
+          }
+          _this.loadRender(data);
+          return _this.setHashChange();
+        };
+      })(this)
+    });
+  },
+  getCanvasProperty: function() {
+    return {
+      state: this.state,
+      scale: this.scale,
+      centerX: this.centerX,
+      centerY: this.centerY,
+      bgimg_data: this.bgimg_data,
+      bgurl: this.options.bgurl,
+      bgscale: this.options.bgscale,
+      bgopacity: this.options.bgopacity,
+      lon: this.options.lon,
+      lat: this.options.lat,
+      angle: this.options.angle,
+      geojson_scale: this.options.geojson_scale
+    };
+  },
+  saveLocal: function() {
+    var canvas;
+    canvas = this.getCanvasProperty();
+    localStorage.setItem('canvas', JSON.stringify(canvas));
+    return localStorage.setItem('geojson', JSON.stringify(this.toGeoJSON(), null, 4));
+  },
+  saveServer: function() {
+    var data, param, url;
+    param = {
+      canvas: this.getCanvasProperty(),
+      geojson: this.toGeoJSON()
+    };
+    param = JSON.stringify(param);
+    log(param);
+    data = {
+      ext: 'json',
+      id: this.id,
+      data: param
+    };
+    url = '/haika_store/index.php';
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: data,
+      dataType: "json",
+      error: function() {},
+      success: (function(_this) {
+        return function(data) {
+          return log(data);
+        };
+      })(this)
+    });
+    return this.saveGeoJson();
+  },
+  saveGeoJson: function() {
+    var data, geojson, param, url;
+    geojson = this.createGeoJson();
+    param = JSON.stringify(geojson);
+    data = {
+      ext: 'geojson',
+      id: this.id,
+      data: param
+    };
+    url = '/haika_store/index.php';
+    return $.ajax({
+      url: url,
+      type: "POST",
+      data: data,
+      dataType: "json",
+      error: function() {},
+      success: data > log(data)
+    }, log('geojson save'));
+  },
+  save: function() {
+    var object, _i, _len, _ref;
+    log('save');
+    _ref = this.canvas.getObjects();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      this.saveProperty(object);
+    }
+    this.saveLocal();
+    if (!this.isLocal()) {
+      return this.saveServer();
+    }
+  },
+  saveProperty: function(object, group) {
+    var count, key, schema, _results;
+    if (group == null) {
+      group = false;
+    }
+    count = this.findById(object.id);
+    this.objects[count].id = object.id;
+    this.objects[count].type = object.type;
+    this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
+    object.top_cm = this.objects[count].top_cm;
+    this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
+    object.left_cm = this.objects[count].left_cm;
+    this.objects[count].scaleX = object.scaleX / this.scale;
+    this.objects[count].scaleY = object.scaleY / this.scale;
+    this.objects[count].angle = object.angle;
+    this.objects[count].fill = object.fill;
+    this.objects[count].stroke = object.stroke;
+    schema = object.constructor.prototype.getJsonSchema();
+    _results = [];
+    for (key in schema.properties) {
+      _results.push(this.objects[count][key] = object[key]);
+    }
+    return _results;
+  },
+  toGeoJSON: function() {
+    var data, features, geojson, object, _i, _len, _ref;
+    features = [];
+    _ref = this.canvas.getObjects();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      geojson = object.toGeoJSON();
+      features.push(geojson);
+    }
+    data = {
+      "type": "FeatureCollection",
+      "features": features
+    };
+    return data;
+  },
+  createGeoJson: function() {
+    var EPSG3857_geojson, coordinate, coordinates, data, features, geojson, geometry, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
+    geojson = this.translateGeoJSON();
+    features = [];
+    if (geojson && geojson.features.length > 0) {
+      _ref = geojson.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        if (object.properties.type !== 'floor') {
+          coordinates = [];
+          _ref1 = object.geometry.coordinates[0];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            geometry = _ref1[_j];
+            x = geometry[0];
+            y = geometry[1];
+            coordinate = ol.proj.transform([x, y], "EPSG:3857", "EPSG:4326");
+            coordinates.push(coordinate);
+          }
+          if (object.properties.type === 'merge_floor') {
+            log(object.properties);
+            object.properties.type = 'floor';
+          }
+          data = {
+            "type": "Feature",
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [coordinates]
+            },
+            "properties": object.properties
+          };
+          features.push(data);
+        }
+      }
+    }
+    EPSG3857_geojson = {
+      "type": "FeatureCollection",
+      "features": features
+    };
+    return EPSG3857_geojson;
+  },
+  translateGeoJSON: function() {
+    var coordinate, coordinates, features, geojson, geometry, mapCenter, new_coordinate, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
+    geojson = this.toGeoJSON();
+    geojson = this.mergeGeoJson(geojson);
+    features = [];
+    _ref = geojson.features;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      mapCenter = proj4("EPSG:4326", "EPSG:3857", [this.options.lon, this.options.lat]);
+      if (mapCenter) {
+        coordinates = [];
+        _ref1 = object.geometry.coordinates[0];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          geometry = _ref1[_j];
+          log(this.options.scale);
+          x = geometry[0] * this.options.geojson_scale;
+          y = geometry[1] * this.options.geojson_scale;
+          new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.options.angle));
+          coordinate = [mapCenter[0] + new_coordinate.x, mapCenter[1] + new_coordinate.y];
+          coordinates.push(coordinate);
+        }
+        object.geometry.coordinates = [coordinates];
+      }
+      features.push(object);
+    }
+    geojson.features = features;
+    return geojson;
+  },
+  mergeGeoJson: function(geojson) {
+    var coordinates, cpr, first, first_coordinates, geometry, object, p, path, paths, solution_paths, succeeded, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
+    paths = [];
+    if (geojson && geojson.features.length > 0) {
+      _ref = geojson.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        if (object.properties.type === 'floor') {
+          path = [];
+          log(object.geometry.coordinates[0]);
+          _ref1 = object.geometry.coordinates[0];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            geometry = _ref1[_j];
+            p = {
+              X: geometry[0],
+              Y: geometry[1]
+            };
+            path.push(p);
+          }
+          paths.push([path]);
+        }
+      }
+      log(paths);
+      cpr = new ClipperLib.Clipper();
+      for (_k = 0, _len2 = paths.length; _k < _len2; _k++) {
+        path = paths[_k];
+        cpr.AddPaths(path, ClipperLib.PolyType.ptSubject, true);
+      }
+      solution_paths = new ClipperLib.Paths();
+      succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
+      log(solution_paths);
+      for (_l = 0, _len3 = solution_paths.length; _l < _len3; _l++) {
+        path = solution_paths[_l];
+        coordinates = [];
+        first = true;
+        for (_m = 0, _len4 = path.length; _m < _len4; _m++) {
+          p = path[_m];
+          if (first) {
+            first_coordinates = [p.X, p.Y];
+            first = false;
+          }
+          coordinates.push([p.X, p.Y]);
+        }
+        coordinates.push(first_coordinates);
+        geojson.features.push({
+          "type": "Feature",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [coordinates]
+          },
+          "properties": {
+            "type": "merge_floor",
+            "fill": "#FFFFFF",
+            "stroke": "#FFFFFF"
+          }
+        });
+      }
+    }
+    return geojson;
+  }
+});
+
+//# sourceMappingURL=haika-io-v1.js.map
 ;var setScrollbar;
 
 setScrollbar = function() {
@@ -25455,11 +25851,10 @@ haika.init({
   canvas: 'canvas',
   canvas_width: getWidth(),
   canvas_height: getHeight(),
-  scale: 1,
   max_width: 10000,
   max_height: 10000,
   bgopacity: 0.2,
-  bgscale: 4.425,
+  bgscale: 4,
   callback: setScrollbar
 });
 
@@ -25605,6 +26000,85 @@ $(function() {
 });
 
 //# sourceMappingURL=haika-addbuttons.js.map
+;var bind, count, hex, hexColor, html, i, j, k, l;
+
+html = '';
+
+hex = new Array("f", "c", "9", "6", "3", "0");
+
+count = 2;
+
+j = 0;
+
+while (j < 6) {
+  k = 0;
+  while (k < 6) {
+    l = 0;
+    while (l < 6) {
+      hexColor = hex[j] + hex[j] + hex[k] + hex[k] + hex[l] + hex[l];
+      html += "<option data-color=\"#" + hexColor + "\" value=\"" + count + "\"></option>";
+      l++;
+      count++;
+    }
+    k++;
+  }
+  j++;
+}
+
+i = 0;
+
+while (i < 6) {
+  hexColor = hex[i] + hex[i] + hex[i] + hex[i] + hex[i] + hex[i];
+  html += "<option data-color=\"#" + hexColor + "\" value=\"" + count + "\"></option>";
+  i++;
+}
+
+$('#fill-color').append(html);
+
+$('#stroke-color').append(html);
+
+bind = function(func, do_active) {
+  var group, object, _i, _len, _ref, _results;
+  if (do_active == null) {
+    do_active = true;
+  }
+  object = haika.canvas.getActiveObject();
+  if (object) {
+    func(object);
+  }
+  group = haika.canvas.getActiveGroup();
+  if (group) {
+    _ref = group.getObjects();
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      _results.push(func(object));
+    }
+    return _results;
+  }
+};
+
+$('#fill-color').colorselector({
+  callback: function(value, color, title) {
+    haika.fillColor = color;
+    bind(function(object) {
+      return object.fill = color;
+    });
+    return haika.canvas.renderAll();
+  }
+});
+
+$('#stroke-color').colorselector({
+  callback: function(value, color, title) {
+    haika.strokeColor = color;
+    bind(function(object) {
+      return object.stroke = color;
+    });
+    return haika.canvas.renderAll();
+  }
+});
+
+//# sourceMappingURL=haika-colorpicker.js.map
 ;$('#bgimg').change(function(e) {
   var data, files;
   files = e.target.files;
@@ -25711,45 +26185,17 @@ $(function() {
       }
     };
   })(this));
-  $('#canvas_width').change(function() {
-    return haika.canvas.setWidth($(this).val());
-  });
-  $('#canvas_height').change(function() {
-    return haika.canvas.setHeight($(this).val());
-  });
-  $('#canvas_centerX').change(function() {
-    return haika.centerX = parseInt($(this).val());
-  });
-  $('#canvas_centerY').change(function() {
-    return haika.centerY = parseInt($(this).val());
-  });
   $('#canvas_bgscale').change(function() {
-    return haika.options.bgscale = parseFloat($(this).val());
+    haika.options.bgscale = parseFloat($(this).val());
+    return haika.render();
   });
-  $('#ex1').slider({
+  $('#bgopacity_slider').slider({
     formater: function(value) {
       value = parseFloat(value).toFixed(1);
-      $('#canvas_bgopacity').val();
       haika.options.bgopacity = value;
       haika.render();
       return value;
     }
-  });
-  $('#canvas_render').click(function() {
-    return haika.render();
-  });
-  $('#canvas_lat').change(function() {
-    haika.options.lat = parseFloat($(this).val());
-    return haika.save();
-  });
-  $('#canvas_lon').change(function() {
-    haika.options.lon = parseFloat($(this).val());
-    return haika.save();
-  });
-  $('#canvas_angle').change(function() {
-    haika.options.angle = parseInt($(this).val());
-    haika.save();
-    return $('.canvas_angle').val($('#canvas_angle').val());
   });
   $('.undo').click(function() {
     return undo.undoManager.undo();
@@ -25948,6 +26394,91 @@ undo = {
 undo.init();
 
 //# sourceMappingURL=haika-undo.js.map
+;var addPixel, loadComplete, loadImg;
+
+loadImg = function(file) {
+  var reader;
+  if (!file.type.match(/image\/.+/)) {
+    return;
+  }
+  if (file.type === "image/svg+xml") {
+    return;
+  }
+  reader = new FileReader();
+  reader.onload = function() {
+    return loadComplete(this.result);
+  };
+  return reader.readAsDataURL(file);
+};
+
+$('#file').change(function(e) {
+  var files;
+  files = e.target.files;
+  if (files.length === 0) {
+    return;
+  }
+  return loadImg(files[0]);
+});
+
+loadComplete = function(data) {
+  var canvas, ctx, h, img, params, w, worker;
+  img = new Image();
+  img.src = data;
+  canvas = document.createElement('canvas');
+  ctx = canvas.getContext('2d');
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.translate(0, img.height);
+  ctx.scale(1, -1);
+  ctx.translate(img.width, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(img, 0, 0);
+  w = canvas.width;
+  h = canvas.height;
+  data = ctx.getImageData(0, 0, w, h).data;
+  params = {
+    image: data,
+    w: w,
+    h: h
+  };
+  worker = new Worker("js/worker.js");
+  worker.onmessage = function(e) {
+    var result, results, _i, _len;
+    log(e.data);
+    switch (e.data.status) {
+      case "working":
+        return log(e.data.count);
+      case "end":
+        results = e.data.result;
+        for (_i = 0, _len = results.length; _i < _len; _i++) {
+          result = results[_i];
+          addPixel(result.x, result.y, result.color);
+        }
+        return haika.render();
+    }
+  };
+  return worker.postMessage(params);
+};
+
+addPixel = function(x, y, color) {
+  var dot, klass, object;
+  dot = 10;
+  klass = haika.getClass('shelf');
+  object = new klass({
+    top: haika.transformTopY_cm2px(y * dot),
+    left: haika.transformLeftX_cm2px(x * dot),
+    fill: color,
+    stroke: color,
+    angle: 0,
+    count: 1,
+    side: 1,
+    eachWidth: dot,
+    eachHeight: dot
+  });
+  return haika.add(object);
+};
+
+//# sourceMappingURL=haika-image.js.map
 ;var editor, editor_change;
 
 editor = new JSONEditor(document.getElementById("editor"), {
@@ -26718,13 +27249,7 @@ t("ol.style.Image",Li);Li.prototype.getRotation=Li.prototype.g;Li.prototype.getS
 Oi.prototype.getText=Oi.prototype.rh;Oi.prototype.getZIndex=Oi.prototype.Af;t("ol.style.Text",Vv);Vv.prototype.getFill=Vv.prototype.sh;Vv.prototype.getFont=Vv.prototype.ff;Vv.prototype.getRotation=Vv.prototype.th;Vv.prototype.getScale=Vv.prototype.uh;Vv.prototype.getStroke=Vv.prototype.vh;Vv.prototype.getText=Vv.prototype.wh;Vv.prototype.getTextAlign=Vv.prototype.vf;Vv.prototype.getTextBaseline=Vv.prototype.wf;t("ol.tilegrid.TileGrid",Hk);Hk.prototype.getMinZoom=Hk.prototype.Hc;
 Hk.prototype.getOrigin=Hk.prototype.lb;Hk.prototype.getResolution=Hk.prototype.ca;Hk.prototype.getTileSize=Hk.prototype.ia;t("ol.tilegrid.WMTS",Nv);Nv.prototype.getMatrixIds=Nv.prototype.i;Nv.prototype.getMinZoom=Nv.prototype.Hc;Nv.prototype.getOrigin=Nv.prototype.lb;Nv.prototype.getResolution=Nv.prototype.ca;Nv.prototype.getTileSize=Nv.prototype.ia;t("ol.tilegrid.XYZ",Bu);Bu.prototype.getMinZoom=Bu.prototype.Hc;Bu.prototype.getOrigin=Bu.prototype.lb;Bu.prototype.getResolution=Bu.prototype.ca;
 Bu.prototype.getTileSize=Bu.prototype.ia;t("ol.tilegrid.Zoomify",Sv);Sv.prototype.getMinZoom=Sv.prototype.Hc;Sv.prototype.getOrigin=Sv.prototype.lb;Sv.prototype.getResolution=Sv.prototype.ca;Sv.prototype.getTileSize=Sv.prototype.ia;t("ol.webgl.Context",Jn);Jn.prototype.getGL=Jn.prototype.xh;Jn.prototype.useProgram=Jn.prototype.wd;})();
-;var map_created, map_setting;
-
-$(function() {
-  return setTimeout(function() {
-    return $($('.map_setting')[0]).trigger('click');
-  }, 1000);
-});
+;var features, map, map_created, map_redraw, map_set, map_setting;
 
 map_created = false;
 
@@ -26735,16 +27260,42 @@ $('.map_setting').click(function() {
       map_created = true;
     }
     $('.haika_container').hide();
+    $(document.body).css('background', '#333333');
+    map_redraw();
     $('.map_container').show();
     return $('#map_query').focus();
   } else {
+    $(document.body).css('background', '#FFFFFF');
     $('.haika_container').show();
     return $('.map_container').hide();
   }
 });
 
+map = null;
+
+features = [];
+
+map_redraw = function() {
+  var feature, _i, _len;
+  if (features.length > 0) {
+    for (_i = 0, _len = features.length; _i < _len; _i++) {
+      feature = features[_i];
+      map.data.remove(feature);
+    }
+    return features = map.data.addGeoJson(haika.createGeoJson());
+  }
+};
+
+map_set = function(lat, lon) {
+  $('#canvas_lon').val(lon);
+  $('#canvas_lat').val(lat);
+  haika.options.lon = lon;
+  haika.options.lat = lat;
+  return haika.save();
+};
+
 map_setting = function() {
-  var featureStyle, features, map;
+  var featureStyle;
   map = new google.maps.Map(document.getElementById('map'), {
     zoom: 20,
     maxZoom: 28,
@@ -26760,20 +27311,12 @@ map_setting = function() {
   map.data.setStyle(featureStyle);
   features = map.data.addGeoJson(haika.createGeoJson());
   google.maps.event.addListener(map, 'dragend', function() {
-    var feature, lat, lon, _i, _len;
+    var lat, lon;
     log(map.getCenter());
     lon = map.getCenter().lng();
     lat = map.getCenter().lat();
-    $('#canvas_lon').val(lon);
-    $('#canvas_lat').val(lat);
-    haika.options.lon = lon;
-    haika.options.lat = lat;
-    haika.save();
-    for (_i = 0, _len = features.length; _i < _len; _i++) {
-      feature = features[_i];
-      map.data.remove(feature);
-    }
-    return features = map.data.addGeoJson(haika.createGeoJson());
+    map_set(lat, lon);
+    return map_redraw();
   });
   $('#map_search').submit(function() {
     var address, geocoder;
@@ -26783,25 +27326,45 @@ map_setting = function() {
       address: address
     }, function(results, status) {
       if (status === google.maps.GeocoderStatus.OK) {
-        return map.setCenter(results[0].geometry.location);
+        map.setCenter(results[0].geometry.location);
+        map_set(results[0].geometry.location.lat(), results[0].geometry.location.lng());
+        return map_redraw();
       } else {
         return alert("ジオコーディングがうまくいきませんでした。: " + status);
       }
     });
     return false;
   });
-  return $('.canvas_angle').change(function() {
-    var feature, _i, _len;
-    $('#canvas_angle').val($('.canvas_angle').val());
-    haika.options.angle = $('.canvas_angle').val();
-    haika.save();
-    if (features.length > 0) {
-      for (_i = 0, _len = features.length; _i < _len; _i++) {
-        feature = features[_i];
-        map.data.remove(feature);
-      }
+  $('#canvas_lat').change(function() {
+    haika.options.lat = parseFloat($(this).val());
+    return haika.save();
+  });
+  $('#canvas_lon').change(function() {
+    haika.options.lon = parseFloat($(this).val());
+    return haika.save();
+  });
+  $('#canvas_angle').change(function() {
+    return map_redraw();
+  });
+  $('#canvas_angle').slider({
+    tooltip: 'always',
+    formater: function(value) {
+      value = parseFloat(value).toFixed(1);
+      haika.options.angle = parseFloat(value);
+      haika.save();
+      map_redraw();
+      return value;
     }
-    return features = map.data.addGeoJson(haika.createGeoJson());
+  });
+  return $('#geojson_scale').slider({
+    tooltip: 'always',
+    formater: function(value) {
+      value = parseFloat(value).toFixed(2);
+      haika.options.geojson_scale = parseFloat(value);
+      haika.save();
+      map_redraw();
+      return value;
+    }
   });
 };
 

@@ -45,6 +45,7 @@ haika =
       lon      : 0
       lat      : 0
       angle    : 0
+      geojson_scale: 1.5
     # オプションの上書き
     @options = $.extend(default_options, options)
     canvas = new fabric.Canvas(@options.canvas, {
@@ -458,15 +459,17 @@ haika =
       @canvas.setBackgroundImage @bgimg
   # キャンバスのプロパティを設定
   setCanvasProperty : ->
-    $('#canvas_width').val(@canvas.getWidth())
-    $('#canvas_height').val(@canvas.getHeight())
-    $('#canvas_centerX').val(@centerX)
-    $('#canvas_centerY').val(@centerY)
+    $('#canvas_width').html(@canvas.getWidth())
+    $('#canvas_height').html(@canvas.getHeight())
+    $('#canvas_centerX').html(@centerX)
+    $('#canvas_centerY').html(@centerY)
     $('#canvas_bgscale').val(@options.bgscale)
     $('#canvas_bgopacity').val(@options.bgopacity)
     $('#canvas_lon').val(@options.lon)
     $('#canvas_lat').val(@options.lat)
-    $('#canvas_angle').val(@options.angle)
+#    $('#canvas_angle').attr('data-slider-value', canvas.angle)
+#    $('#geojson_scale').attr('data-slider-value', canvas.geojson_scale)
+#    $('#canvas_angle').val(@options.angle)
   # 移動ピクセル数を取得
   getMovePixel : (event)->
     return if event.shiftKey then 10 else 1
@@ -589,6 +592,11 @@ haika =
     @scale = 1
     @render()
     $('.zoom').html('100%')
+  reset : ->
+    haika.objects = []
+    localStorage.clear()
+    $(window).off('beforeunload')
+    location.reload()
 #  getSVG : ->
 #    @unselect()
 #    canvas = document.createElement('canvas')

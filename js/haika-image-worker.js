@@ -47,4 +47,4 @@ onmessage = function(e) {
   return postMessage(result);
 };
 
-//# sourceMappingURL=haika-map-worker.js.map
+//# sourceMappingURL=haika-image-worker.js.map

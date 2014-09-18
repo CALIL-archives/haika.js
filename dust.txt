@@ -657,3 +657,77 @@ canvas:
 
 #  $(".geojson").click ->
 #    haika.getGeoJSON()
+
+  $('#canvas_render').click ->
+    haika.render()
+<!--
+      <div class="row">
+        <div class="col-md-2" style="text-align:center;width: 120px;">
+          <input type="button" class="totop btn btn-default" value="↑" /><br />
+          <input type="button" class="toleft btn btn-default" value="←" />
+          <input type="button" class="toright btn btn-default" value="→" /><br />
+          <input type="button" class="tobottom btn btn-default" value="↓" />
+        </div>
+        <div class="col-md-10">
+
+          <div class="btn-group btn-group-sm is_visible" data-toggle="buttons">
+            <label class="btn btn-sm btn-default">
+              <input type="radio" name="display" id="true" value="move">移動
+            </label>
+            <label class="btn btn-sm btn-primary">
+              <input type="radio" name="display" id="false" value="edit">編集
+            </label>
+          </div>
+-->
+          <div class="btn-group">
+            <button type="button" class="btn btn-danger">オブジェクトを追加</button>
+            <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li role="presentation" class="dropdown-header">書架</li>
+                <li><a href="#">一般</a></li>
+                <li><a href="#">文庫・新書用</a></li>
+                <li><a href="#">大型本</a></li>
+                <li><a href="#">CD/DVD</a></li>
+                <li><a href="#">新聞</a></li>
+                <li><a href="#">雑誌</a></li>
+                <li class="divider"></li>
+                <li role="presentation" class="dropdown-header">特殊な書架</li>
+                <li><a href="#">曲面</a></li>
+                <li class="divider"></li>
+                <li role="presentation" class="dropdown-header">インドアロケーション</li>
+                <li><a href="#">BLEビーコン</a></li>
+            </ul>
+          </div>
+
+          <div style="display: none;">
+
+          <label for="type">type:
+              <select id="type" class="form-control">
+                  <option value="shelf">Shelf</option>
+                  <option value="curved_shelf">curvedShelf</option>
+                  <option value="mini_shelf">miniShelf</option>
+                  <option value="beacon">Beacon</option>
+              </select>
+          </label>
+          <label for="count">count:
+              <input type="text" id="count" class="form-control" value="3" style="width: 60px;" />
+          </label>
+          <label for="side">side:
+              <select id="side" class="form-control">
+                  <option value="1">one</option>
+                  <option value="2">both</option>
+              </select>
+          </label>
+          <label for="angle">angle:
+              <select id="angle" class="form-control">
+                  <option value="0">0</option>
+                  <option value="90">90</option>
+                  <option value="180">180</option>
+                  <option value="270">270</option>
+              </select>
+          </label>
+          <input type="button" class="add btn btn-default" value="add" />
+          </div>
