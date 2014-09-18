@@ -26982,7 +26982,7 @@ map_setting = function() {
   $('#canvas_angle').change(function() {
     return map_redraw();
   });
-  $('#canvas_angle').slider({
+  return $('#canvas_angle').slider({
     tooltip: 'always',
     step: 1,
     min: 0,
@@ -26995,19 +26995,20 @@ map_setting = function() {
       return value + '度';
     }
   });
-  return $('#geojson_scale').slider({
-    tooltip: 'always',
-    step: 1,
-    min: 0,
-    max: 400,
-    value: haika.options.geojson_scale * 100,
-    formatter: function(value) {
-      haika.options.geojson_scale = parseFloat(value) / 100;
-      haika.save();
-      map_redraw();
-      return value + '%';
-    }
-  });
 };
+
+$('#geojson_scale').slider({
+  tooltip: 'always',
+  step: 1,
+  min: 0,
+  max: 400,
+  value: haika.options.geojson_scale * 100,
+  formatter: function(value) {
+    haika.options.geojson_scale = parseFloat(value) / 100;
+    haika.save();
+    map_redraw();
+    return value + '%';
+  }
+});
 
 //# sourceMappingURL=haika-map.js.map

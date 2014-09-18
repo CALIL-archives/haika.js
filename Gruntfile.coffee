@@ -117,9 +117,14 @@ module.exports = (grunt) ->
             port: 35729
       # 更新されたファイルだけコンパイルするように指定する
       'coffee': (path) ->
-          ['newer:coffee','concat:js']
+          ['newer:coffee','concat:js','notify:complete']
       'css': (path) ->
-          ['newer:concat:css']
+          ['newer:concat:css','notify:complete']
+    notify:
+      complete:
+        options:
+          title: 'Compile&Build'
+          message: 'Complete'
   # loadNpmTasks
   require('load-grunt-tasks')(grunt);
   # # package.jsonから読み込んでるもの
@@ -135,4 +140,5 @@ module.exports = (grunt) ->
     "concat"
     "cssmin"
     "uglify"
+    'notify:complete'
   ]

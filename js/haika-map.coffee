@@ -101,7 +101,7 @@ map_setting = ->
       map_redraw()
       return value+'度'
 
-  $('#geojson_scale').slider
+$('#geojson_scale').slider
     tooltip: 'always'
     step: 1
     min: 0
