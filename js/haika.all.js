@@ -25443,16 +25443,18 @@ setScrollbar = function() {
 };
 
 //# sourceMappingURL=haika-scrollbar.js.map
-;var getHeight, getWidth, property_panel_width, scrollbar_height, scrollbar_width;
+;var getHeight, getWidth, property_panel_width, scrollbar_height, scrollbar_width, toolbar_width;
 
 scrollbar_width = $('#vertical-scroller').width();
 
 scrollbar_height = $('#horizontal-scroller').height();
 
+toolbar_width = $('.toolbar_container').width() + 14;
+
 property_panel_width = $('.property_panel').width();
 
 getWidth = function() {
-  return window.innerWidth - scrollbar_width - property_panel_width - 20;
+  return window.innerWidth - toolbar_width - scrollbar_width - property_panel_width - 20;
 };
 
 getHeight = function() {
@@ -25461,9 +25463,11 @@ getHeight = function() {
 
 $('.main_container, .canvas_panel').css('width', getWidth());
 
+$('.main_container').css('margin-left', toolbar_width);
+
 $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', getHeight());
 
-$('.property_panel').css('height', getHeight() + scrollbar_height);
+$('.toolbar_container,.property_panel').css('height', getHeight() + scrollbar_height);
 
 $(window).resize(function() {
   haika.canvas.setWidth(getWidth());
@@ -25471,7 +25475,7 @@ $(window).resize(function() {
   haika.canvas.setHeight(getHeight());
   $('.main_container, .canvas_panel').css('width', getWidth());
   $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', getHeight());
-  $('.property_panel').css('height', getHeight() + scrollbar_height);
+  $('.toolbar_container,.property_panel').css('height', getHeight() + scrollbar_height);
   return haika.render();
 });
 
@@ -25491,12 +25495,13 @@ $(function() {
     e.preventDefault();
     haika.state = $(e.target).attr('class');
     haika.render();
+    showAddButtons(haika.state);
     return $(this).tab('show');
   });
 });
 
 //# sourceMappingURL=haika-init.js.map
-;var add, addmany;
+;var add, addmany, showAddButtons;
 
 add = function(val) {
   var id, klass, object;
@@ -25558,7 +25563,8 @@ $(function() {
       eachWidth: 90,
       eachHeight: 26,
       count: 5,
-      side: 1
+      side: 1,
+      state: 'shelf'
     },
     big_shelf: {
       icon: 'square-o',
@@ -25566,7 +25572,8 @@ $(function() {
       eachWidth: 90,
       eachHeight: 33,
       count: 5,
-      side: 1
+      side: 1,
+      state: 'shelf'
     },
     magazine_shelf: {
       icon: 'square-o',
@@ -25574,7 +25581,8 @@ $(function() {
       eachWidth: 90,
       eachHeight: 45,
       count: 5,
-      side: 1
+      side: 1,
+      state: 'shelf'
     },
     kamishibai_shelf: {
       icon: 'square-o',
@@ -25582,7 +25590,8 @@ $(function() {
       eachWidth: 90,
       eachHeight: 90,
       count: 1,
-      side: 1
+      side: 1,
+      state: 'shelf'
     },
     booktrack_shelf: {
       icon: 'square-o',
@@ -25591,32 +25600,38 @@ $(function() {
       eachHeight: 40,
       count: 1,
       side: 1,
-      angle: 20
+      angle: 20,
+      state: 'shelf'
     },
     curved_shelf: {
       icon: 'dot-circle-o',
       title: '円形本棚',
       count: 3,
-      side: 2
+      side: 2,
+      state: 'shelf'
     },
     beacon: {
       icon: 'square',
-      title: 'ビーコン'
+      title: 'ビーコン',
+      state: 'beacon'
     },
     wall: {
       icon: 'square',
-      title: '壁'
+      title: '壁',
+      state: 'wall'
     },
     floor: {
       icon: 'square',
-      title: '床'
+      title: '床',
+      state: 'floor'
     }
   };
   _results = [];
   for (key in addButtons) {
     val = addButtons[key];
-    html = "<li id=\"add_" + key + "\" key=\"" + key + "\"><i class=\"fa fa-" + val.icon + "\"></i> " + val.title + "</li>";
+    html = "<li id=\"add_" + key + "\" key=\"" + key + "\" state=\"" + val.state + "\"><i class=\"fa fa-" + val.icon + "\"></i> " + val.title + "</li>";
     $('.toolbar_container ul:first').append(html);
+    showAddButtons('shelf');
     _results.push($('#add_' + key).click(function(e) {
       var object;
       key = $(e.target).attr('key');
@@ -25628,6 +25643,16 @@ $(function() {
   }
   return _results;
 });
+
+showAddButtons = function(state) {
+  return $('.toolbar_container ul:first>li').each(function(i, button) {
+    if ($(button).attr('state') === state) {
+      return $(button).show();
+    } else {
+      return $(button).hide();
+    }
+  });
+};
 
 //# sourceMappingURL=haika-addbuttons.js.map
 ;var bind, count, hex, hexColor, html, i, j, k, l;

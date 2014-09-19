@@ -186,12 +186,13 @@ body {
 
 /* toolbar */
 .toolbar_container {
+  width: 156px;
   position: absolute;
-  left: 50px;
-  top:  100px;
+  left: 0;
+  top:  42px;
   z-index: 10000000;
   padding: 10px;
-  border: 1px solid #999999;
+  border-right: 1px solid #CCCCCC;
   background-color: #FFFFFF;
 }
 .toolbar_container ul {

@@ -1,18 +1,20 @@
 scrollbar_width = $('#vertical-scroller').width()
 scrollbar_height = $('#horizontal-scroller').height()
+toolbar_width = $('.toolbar_container').width() + 14
 property_panel_width = $('.property_panel').width()
 
 # キャンバスの横幅計算
 getWidth = ->
-  return window.innerWidth - scrollbar_width - property_panel_width - 20
+  return window.innerWidth - toolbar_width - scrollbar_width - property_panel_width - 20
 
 # キャンバスの縦幅計算
 getHeight = ->
   return window.innerHeight - $('.header').height() - scrollbar_height
 
 $('.main_container, .canvas_panel').css('width', getWidth())
+$('.main_container').css('margin-left', toolbar_width)
 $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', getHeight())
-$('.property_panel').css('height', getHeight()+scrollbar_height)
+$('.toolbar_container,.property_panel').css('height', getHeight()+scrollbar_height)
 
 $(window).resize ->
   haika.canvas.setWidth(getWidth())
@@ -20,7 +22,7 @@ $(window).resize ->
   haika.canvas.setHeight(getHeight())
   $('.main_container, .canvas_panel').css('width', getWidth())
   $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', getHeight())
-  $('.property_panel').css('height', getHeight()+scrollbar_height)
+  $('.toolbar_container,.property_panel').css('height', getHeight()+scrollbar_height)
   haika.render()
 
 haika.init(
@@ -42,6 +44,7 @@ $ ->
     e.preventDefault()
     haika.state = $(e.target).attr('class')
     haika.render()
+    showAddButtons(haika.state)
     $(this).tab('show')
   
 #  $('.add').click ->

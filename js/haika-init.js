@@ -1,13 +1,15 @@
-var getHeight, getWidth, property_panel_width, scrollbar_height, scrollbar_width;
+var getHeight, getWidth, property_panel_width, scrollbar_height, scrollbar_width, toolbar_width;
 
 scrollbar_width = $('#vertical-scroller').width();
 
 scrollbar_height = $('#horizontal-scroller').height();
 
+toolbar_width = $('.toolbar_container').width() + 14;
+
 property_panel_width = $('.property_panel').width();
 
 getWidth = function() {
-  return window.innerWidth - scrollbar_width - property_panel_width - 20;
+  return window.innerWidth - toolbar_width - scrollbar_width - property_panel_width - 20;
 };
 
 getHeight = function() {
@@ -16,9 +18,11 @@ getHeight = function() {
 
 $('.main_container, .canvas_panel').css('width', getWidth());
 
+$('.main_container').css('margin-left', toolbar_width);
+
 $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', getHeight());
 
-$('.property_panel').css('height', getHeight() + scrollbar_height);
+$('.toolbar_container,.property_panel').css('height', getHeight() + scrollbar_height);
 
 $(window).resize(function() {
   haika.canvas.setWidth(getWidth());
@@ -26,7 +30,7 @@ $(window).resize(function() {
   haika.canvas.setHeight(getHeight());
   $('.main_container, .canvas_panel').css('width', getWidth());
   $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', getHeight());
-  $('.property_panel').css('height', getHeight() + scrollbar_height);
+  $('.toolbar_container,.property_panel').css('height', getHeight() + scrollbar_height);
   return haika.render();
 });
 
@@ -46,6 +50,7 @@ $(function() {
     e.preventDefault();
     haika.state = $(e.target).attr('class');
     haika.render();
+    showAddButtons(haika.state);
     return $(this).tab('show');
   });
 });

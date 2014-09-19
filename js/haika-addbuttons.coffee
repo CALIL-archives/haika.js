@@ -55,6 +55,7 @@ $ ->
       eachHeight: 26
       count : 5
       side  : 1
+      state : 'shelf'
     big_shelf :
       icon  : 'square-o'
       title : '大型本棚'
@@ -62,6 +63,7 @@ $ ->
       eachHeight: 33
       count : 5
       side  : 1
+      state : 'shelf'
     magazine_shelf :
       icon  : 'square-o'
       title : '雑誌本棚'
@@ -69,6 +71,7 @@ $ ->
       eachHeight: 45
       count : 5
       side  : 1
+      state : 'shelf'
     kamishibai_shelf :
       icon  : 'square-o'
       title : '紙芝居'
@@ -76,6 +79,7 @@ $ ->
       eachHeight: 90
       count : 1
       side  : 1
+      state : 'shelf'
     booktrack_shelf :
       icon  : 'square-o'
       title : 'ブックトラック'
@@ -84,23 +88,29 @@ $ ->
       count : 1
       side  : 1
       angle : 20
+      state : 'shelf'
     curved_shelf :
       icon  : 'dot-circle-o'
       title : '円形本棚'
       count : 3
       side  : 2
+      state : 'shelf'
     beacon :
       icon  : 'square'
       title : 'ビーコン'
+      state : 'beacon'
     wall :
       icon  : 'square'
       title : '壁'
+      state : 'wall'
     floor :
       icon  : 'square'
       title : '床'
+      state : 'floor'
   for key, val of addButtons
-    html = """<li id="add_#{key}" key="#{key}"><i class="fa fa-#{val.icon}"></i> #{val.title}</li>"""
+    html = """<li id="add_#{key}" key="#{key}" state="#{val.state}"><i class="fa fa-#{val.icon}"></i> #{val.title}</li>"""
     $('.toolbar_container ul:first').append(html)
+    showAddButtons('shelf')
     $('#add_'+key).click (e)->
       key =  $(e.target).attr('key')
       object = addButtons[key]
@@ -108,3 +118,9 @@ $ ->
       add(object)
       haika.render()
 
+showAddButtons = (state)->
+  $('.toolbar_container ul:first>li').each (i,button)->
+    if $(button).attr('state')==state
+      $(button).show()
+    else
+      $(button).hide()
