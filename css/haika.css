@@ -115,6 +115,13 @@ body {
   text-align: center;
 }
 
+/* zoom */
+.zoom {
+  display: inline-block;
+  width: 3em;
+  text-align: center;
+}
+
 /* editor */
 
 #editor {
