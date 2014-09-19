@@ -15,10 +15,6 @@ body {
   float: left;
 }
 
-.side_container {
-  float: right;
-  width: 360px;
-}
 
 /* toolbar */
 .toolbar_container {
@@ -51,29 +47,6 @@ body {
   width: 730px;
 }
 
-/* property_panel */
-.property_panel {
-  float: right;
-  width: 330px;
-  color: #ffffff;
-  padding: 10px;
-  background-color: #000000;
-}
-
-.canvas_panel {
-}
-.object_panel {
-  display: none;
-}
-.group_panel {
-  display: none;
-}
-
-#geojson {
-  width: 300px;
-  height: 500px;
-  color: #000000;
-}
 
 /* scrollbar */
 
@@ -129,6 +102,37 @@ body {
   background-color: #ffffff;
 }
 
+/* property_panel */
+.side_container {
+  float: right;
+  width: 270px;
+}
+.property_panel {
+  float: right;
+  width: 240px;
+  color: #ffffff;
+  padding: 10px;
+  background-color: #000000;
+}
+.property_panel h3 {
+  font-size: 16px;
+}
+.canvas_panel {
+}
+.object_panel {
+  display: none;
+}
+.group_panel {
+  display: none;
+}
+
+#geojson {
+  width: 300px;
+  height: 500px;
+  color: #000000;
+}
+
+
 /* map */
 .map_container {
   width: 900px;
@@ -148,3 +152,4 @@ div.fill {
 #map_search {
   width: 900px
 }
+

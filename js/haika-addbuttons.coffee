@@ -1,4 +1,51 @@
 # オブジェクト追加ボタン
+
+# オブジェクトの追加
+add = (val)->
+  log val
+  klass = haika.getClass(val.type)
+  object = new klass(
+    top: haika.transformTopY_cm2px(haika.centerY)
+    left: haika.transformLeftX_cm2px(haika.centerX)
+    fill: haika.fillColor
+    stroke: haika.strokeColor
+    angle: if val.angle? then val.angle else 0
+    #lockScalingY: true
+  )
+  if val.count?
+    object.count = val.count
+  if val.side?
+    object.side = val.side
+  if val.type.match(/shelf$/)
+    object.eachWidth = val.eachWidth
+    object.eachHeight = val.eachHeight
+  id = haika.add(object)
+  haika.setState(object)
+  haika.render()
+  undo.add(id)
+  $(haika.canvas.getObjects()).each (i, obj)=>
+    if obj.id==object.id
+      setTimeout ->
+        haika.canvas.setActiveObject(haika.canvas.item(i))
+        $('.add').blur()
+      , 10
+#setTimeout(->
+  #addmany()
+  #add(250, 250)
+#, 500)
+
+# テスト用
+addmany = ->
+  y = 0
+  while y < 8
+    x = 0
+    while x < 22
+      add 200 + 400 * y, 100 + 50 * x, 90
+      x++
+    y++
+  haika.render()
+  return
+
 $ ->
   addButtons = 
     shelf :

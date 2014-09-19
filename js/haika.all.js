@@ -25443,7 +25443,7 @@ setScrollbar = function() {
 };
 
 //# sourceMappingURL=haika-scrollbar.js.map
-;var add, addmany, getHeight, getWidth, property_panel_width, scrollbar_height, scrollbar_width;
+;var getHeight, getWidth, property_panel_width, scrollbar_height, scrollbar_width;
 
 scrollbar_width = $('#vertical-scroller').width();
 
@@ -25467,6 +25467,7 @@ $('.property_panel').css('height', getHeight() + scrollbar_height);
 
 $(window).resize(function() {
   haika.canvas.setWidth(getWidth());
+  log(getWidth());
   haika.canvas.setHeight(getHeight());
   $('.main_container, .canvas_panel').css('width', getWidth());
   $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', getHeight());
@@ -25484,6 +25485,18 @@ haika.init({
   bgscale: 4,
   callback: setScrollbar
 });
+
+$(function() {
+  return $('.nav-tabs a').click(function(e) {
+    e.preventDefault();
+    haika.state = $(e.target).attr('class');
+    haika.render();
+    return $(this).tab('show');
+  });
+});
+
+//# sourceMappingURL=haika-init.js.map
+;var add, addmany;
 
 add = function(val) {
   var id, klass, object;
@@ -25537,16 +25550,6 @@ addmany = function() {
 };
 
 $(function() {
-  return $('.nav-tabs a').click(function(e) {
-    e.preventDefault();
-    haika.state = $(e.target).attr('class');
-    haika.render();
-    return $(this).tab('show');
-  });
-});
-
-//# sourceMappingURL=haika-init.js.map
-;$(function() {
   var addButtons, html, key, val, _results;
   addButtons = {
     shelf: {
