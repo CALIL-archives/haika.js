@@ -91,8 +91,7 @@ haika =
     @render()
     setTimeout =>
       @load()
-      if @options.callback?
-        @options.callback()
+      $(@).trigger('haika:initialized')
     , 500
     @bindEvent()
   # Fabricのイベント追加
@@ -182,7 +181,7 @@ haika =
       if obj.id==id
         count = i
     return count
-  # オブジェクトの追加
+  # haikaオブジェクトの追加
   add : (object)->
     # new object
     if object.id=='' or not object.id
@@ -228,7 +227,7 @@ haika =
     @state = state
     $('.nav a.'+@state).tab('show')
   # fabric上のオブジェクトの取得 共通関数
-  bind : (func, do_active=true)->
+  getObjects : (func, do_active=true)->
     object = @canvas.getActiveObject()
     if object
       new_id = func(object)
@@ -264,7 +263,7 @@ haika =
     @canvas.setActiveGroup(group.setCoords()).renderAll()
   # 削除
   remove : ->
-    @bind((object)=>
+    @getObjects((object)=>
       @__remove(object)
     , false)
   __remove : (object)->
@@ -274,7 +273,7 @@ haika =
     return object
   # 最前面に移動
   bringToFront : ->
-    @bind((object)=>
+    @getObjects((object)=>
       count = @findById(object.id)
       object.bringToFront()
       obj = @objects[count]
@@ -284,7 +283,6 @@ haika =
     )
   # 複製
   duplicate : ->
-    # bindを使うとバグが起きるためベタ書き
     object = @canvas.getActiveObject()
     if object
       o = fabric.util.object.clone(object)
@@ -341,6 +339,7 @@ haika =
           @canvas.setActiveObject(obj)
     # クリップボードに複数
     else
+      object = null
       new_ids = []
       for object in @clipboard
         o = fabric.util.object.clone(object)

@@ -33,3 +33,6 @@ setScrollbar = ->
         centerY = -maxY + haika.canvas.getHeight() / 2
       haika.centerY = -centerY.toFixed(0)
       haika.render()
+
+$(haika).on 'haika:initialized', ->
+  setScrollbar()

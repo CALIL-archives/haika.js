@@ -41,8 +41,7 @@ haika.init({
   max_width: 10000,
   max_height: 10000,
   bgopacity: 0.2,
-  bgscale: 4,
-  callback: setScrollbar
+  bgscale: 4
 });
 
 $(function() {

@@ -22,7 +22,7 @@ module.exports = (grunt) ->
           src: ['*.coffee'],
           dest: 'js/',
           ext: '.js'
-       fabric_obiect:
+       fabric_object:
           options:
             sourceMap: true
             bare: true

@@ -45,4 +45,8 @@ setScrollbar = function() {
   });
 };
 
+$(haika).on('haika:initialized', function() {
+  return setScrollbar();
+});
+
 //# sourceMappingURL=haika-scrollbar.js.map

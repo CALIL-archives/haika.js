@@ -124,3 +124,9 @@ showAddButtons = (state)->
       $(button).show()
     else
       $(button).hide()
+
+      
+      
+$(haika).on 'haika:initialized', ->
+  showAddButtons(haika.state)
+

@@ -24298,9 +24298,7 @@ haika = {
     setTimeout((function(_this) {
       return function() {
         _this.load();
-        if (_this.options.callback != null) {
-          return _this.options.callback();
-        }
+        return $(_this).trigger('haika:initialized');
       };
     })(this), 500);
     return this.bindEvent();
@@ -24458,7 +24456,7 @@ haika = {
     this.state = state;
     return $('.nav a.' + this.state).tab('show');
   },
-  bind: function(func, do_active) {
+  getObjects: function(func, do_active) {
     var group, new_id, new_ids, object, _i, _len, _ref;
     if (do_active == null) {
       do_active = true;
@@ -24516,7 +24514,7 @@ haika = {
     return this.canvas.setActiveGroup(group.setCoords()).renderAll();
   },
   remove: function() {
-    return this.bind((function(_this) {
+    return this.getObjects((function(_this) {
       return function(object) {
         return _this.__remove(object);
       };
@@ -24530,7 +24528,7 @@ haika = {
     return object;
   },
   bringToFront: function() {
-    return this.bind((function(_this) {
+    return this.getObjects((function(_this) {
       return function(object) {
         var count, obj;
         count = _this.findById(object.id);
@@ -24622,6 +24620,7 @@ haika = {
         };
       })(this));
     } else {
+      object = null;
       new_ids = [];
       _ref = this.clipboard;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -25472,6 +25471,10 @@ setScrollbar = function() {
   });
 };
 
+$(haika).on('haika:initialized', function() {
+  return setScrollbar();
+});
+
 //# sourceMappingURL=haika-scrollbar.js.map
 ;var getHeight, getWidth, property_panel_width, scrollbar_height, scrollbar_width, toolbar_width;
 
@@ -25516,8 +25519,7 @@ haika.init({
   max_width: 10000,
   max_height: 10000,
   bgopacity: 0.2,
-  bgscale: 4,
-  callback: setScrollbar
+  bgscale: 4
 });
 
 $(function() {
@@ -25683,6 +25685,10 @@ showAddButtons = function(state) {
     }
   });
 };
+
+$(haika).on('haika:initialized', function() {
+  return showAddButtons(haika.state);
+});
 
 //# sourceMappingURL=haika-addbuttons.js.map
 ;var bind, count, hex, hexColor, html, i, j, k, l;

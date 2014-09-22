@@ -151,4 +151,8 @@ showAddButtons = function(state) {
   });
 };
 
+$(haika).on('haika:initialized', function() {
+  return showAddButtons(haika.state);
+});
+
 //# sourceMappingURL=haika-addbuttons.js.map

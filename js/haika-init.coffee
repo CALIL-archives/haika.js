@@ -35,7 +35,6 @@ haika.init(
   #bgurl  : 'img/sample.png'
   bgopacity: 0.2
   bgscale  : 4
-  callback : setScrollbar
 )
 
 $ ->
