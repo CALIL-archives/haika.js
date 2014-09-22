@@ -163,8 +163,8 @@ haika =
     if @options.callback?
       @options.callback()
   resetBg: ->
-    haika.bgimg_data=null
-    haika.save()
+    @bgimg_data=null
+    @save()
     location.reload()
   # オブジェクトにつけるid 通し番号
   lastId : 0
@@ -212,6 +212,7 @@ haika =
         continue
       o[prop] = object[prop]
     @objects.push(o)
+    $(@).trigger('haika:add')
     return o.id
   # レイヤーの状態をセット
   setState : (object)->
@@ -266,6 +267,7 @@ haika =
     @getObjects((object)=>
       @__remove(object)
     , false)
+    $(@).trigger('haika:remove')
   __remove : (object)->
     @canvas.remove(object)
     count = @findById(object.id)
@@ -308,6 +310,7 @@ haika =
           @canvas.setActiveObject(obj)
     if group
       @activeGroup(new_ids)
+    $(@).trigger('haika:duplicate')
   clipboard : []
   # コピー
   copy  : ->
@@ -319,6 +322,7 @@ haika =
     if group
       for object in group.getObjects()
         @clipboard.push(object)
+    $(@).trigger('haika:copy')
   # ペースト
   paste : ->
     # クリップボードになにもない
@@ -351,6 +355,7 @@ haika =
       @save()
       @render()
       @activeGroup(new_ids)
+      $(@).trigger('haika:paste')
   # すべてを選択(全レイヤー)
   selectAll : ()->
     @canvas.discardActiveGroup()
@@ -368,9 +373,9 @@ haika =
     @canvas.deactivateAll().renderAll()
   # 選択解除
   unselect : ->
-    object = haika.canvas.getActiveObject()
+    object = @canvas.getActiveObject()
     if not object
-      object = haika.canvas.getActiveGroup()
+      object = @canvas.getActiveGroup()
     if object
       @canvas.fire('before:selection:cleared', { target: object })
       @canvas.fire('selection:cleared', { target: object })
@@ -409,12 +414,12 @@ haika =
         floors.push(o)
       if o.type.match(/shelf$/)
         shelfs.push(o)
-    if haika.state!='floor'
+    if @state!='floor'
       for o in floors
         @addObjectToCanvas(o)
     for o in walls
       @addObjectToCanvas(o)
-    if haika.state=='floor'
+    if @state=='floor'
       for o in floors
         @addObjectToCanvas(o)
     for o in shelfs
@@ -425,6 +430,7 @@ haika =
     @canvas.renderAll()
     @canvas.renderOnAddRemove=true
     @setCanvasProperty()
+    $(@).trigger('haika:render')
   # canvasにオブジェクトを追加
   addObjectToCanvas : (o)->
     klass = @getClass(o.type)
@@ -620,7 +626,7 @@ haika =
     @render()
     $('.zoom').html('100%')
   reset : ->
-    haika.objects = []
+    @objects = []
     localStorage.clear()
     $(window).off('beforeunload')
     location.reload()

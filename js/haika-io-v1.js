@@ -20,14 +20,16 @@ $.extend(haika, {
       };
       log(data);
       this.loadRender(data);
+      $(this).trigger('haika:load');
       return;
     }
     if (location.hash !== '') {
       this.id = location.hash.split('#')[1];
-      return this.load_server();
+      this.load_server();
     } else {
-      return this.getHaikaId();
+      this.getHaikaId();
     }
+    return $(this).trigger('haika:load');
   },
   loadRender: function(data) {
     var canvas, geojson, key, klass, object, schema, shape, _i, _len, _ref;
@@ -214,8 +216,9 @@ $.extend(haika, {
     }
     this.saveLocal();
     if (!this.isLocal()) {
-      return this.saveServer();
+      this.saveServer();
     }
+    return $(this).trigger('haika:save');
   },
   saveProperty: function(object, group) {
     var count, key, schema, _results;

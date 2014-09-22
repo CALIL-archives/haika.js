@@ -21,6 +21,7 @@ $.extend haika,
         geojson : JSON.parse(localStorage.getItem('geojson'))
       log data
       @loadRender(data)
+      $(@).trigger('haika:load')
       return
     # location.hashにIDはあるか？
     if location.hash!=''
@@ -30,6 +31,7 @@ $.extend haika,
     else
       # 新規IDの取得, ハッシュに設定
       @getHaikaId()
+    $(@).trigger('haika:load')
   # ロードして描画
   loadRender : (data)->
     log data
@@ -183,6 +185,7 @@ $.extend haika,
     @saveLocal()
     if not @isLocal()
       @saveServer()
+    $(@).trigger('haika:save')
   # オブジェクトのプロパティの保存
   saveProperty : (object, group=false)->
 #    log object.__proto__.getJsonSchema()

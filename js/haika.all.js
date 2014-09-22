@@ -24392,8 +24392,8 @@ haika = {
     }
   },
   resetBg: function() {
-    haika.bgimg_data = null;
-    haika.save();
+    this.bgimg_data = null;
+    this.save();
     return location.reload();
   },
   lastId: 0,
@@ -24440,6 +24440,7 @@ haika = {
       o[prop] = object[prop];
     }
     this.objects.push(o);
+    $(this).trigger('haika:add');
     return o.id;
   },
   setState: function(object) {
@@ -24514,11 +24515,12 @@ haika = {
     return this.canvas.setActiveGroup(group.setCoords()).renderAll();
   },
   remove: function() {
-    return this.getObjects((function(_this) {
+    this.getObjects((function(_this) {
       return function(object) {
         return _this.__remove(object);
       };
     })(this), false);
+    return $(this).trigger('haika:remove');
   },
   __remove: function(object) {
     var count;
@@ -24576,12 +24578,13 @@ haika = {
       })(this));
     }
     if (group) {
-      return this.activeGroup(new_ids);
+      this.activeGroup(new_ids);
     }
+    return $(this).trigger('haika:duplicate');
   },
   clipboard: [],
   copy: function() {
-    var group, object, _i, _len, _ref, _results;
+    var group, object, _i, _len, _ref;
     this.clipboard = [];
     object = this.canvas.getActiveObject();
     if (object) {
@@ -24590,13 +24593,12 @@ haika = {
     group = this.canvas.getActiveGroup();
     if (group) {
       _ref = group.getObjects();
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
-        _results.push(this.clipboard.push(object));
+        this.clipboard.push(object);
       }
-      return _results;
     }
+    return $(this).trigger('haika:copy');
   },
   paste: function() {
     var new_id, new_ids, o, object, _i, _len, _ref;
@@ -24634,7 +24636,8 @@ haika = {
       }
       this.save();
       this.render();
-      return this.activeGroup(new_ids);
+      this.activeGroup(new_ids);
+      return $(this).trigger('haika:paste');
     }
   },
   selectAll: function() {
@@ -24655,9 +24658,9 @@ haika = {
   },
   unselect: function() {
     var object;
-    object = haika.canvas.getActiveObject();
+    object = this.canvas.getActiveObject();
     if (!object) {
-      object = haika.canvas.getActiveGroup();
+      object = this.canvas.getActiveGroup();
     }
     if (object) {
       this.canvas.fire('before:selection:cleared', {
@@ -24708,7 +24711,7 @@ haika = {
         shelfs.push(o);
       }
     }
-    if (haika.state !== 'floor') {
+    if (this.state !== 'floor') {
       for (_j = 0, _len1 = floors.length; _j < _len1; _j++) {
         o = floors[_j];
         this.addObjectToCanvas(o);
@@ -24718,7 +24721,7 @@ haika = {
       o = walls[_k];
       this.addObjectToCanvas(o);
     }
-    if (haika.state === 'floor') {
+    if (this.state === 'floor') {
       for (_l = 0, _len3 = floors.length; _l < _len3; _l++) {
         o = floors[_l];
         this.addObjectToCanvas(o);
@@ -24735,7 +24738,8 @@ haika = {
     this.renderBg();
     this.canvas.renderAll();
     this.canvas.renderOnAddRemove = true;
-    return this.setCanvasProperty();
+    this.setCanvasProperty();
+    return $(this).trigger('haika:render');
   },
   addObjectToCanvas: function(o) {
     var key, klass, object, schema;
@@ -24996,7 +25000,7 @@ haika = {
     return $('.zoom').html('100%');
   },
   reset: function() {
-    haika.objects = [];
+    this.objects = [];
     localStorage.clear();
     $(window).off('beforeunload');
     return location.reload();
@@ -25058,14 +25062,16 @@ haika = {
       };
       log(data);
       this.loadRender(data);
+      $(this).trigger('haika:load');
       return;
     }
     if (location.hash !== '') {
       this.id = location.hash.split('#')[1];
-      return this.load_server();
+      this.load_server();
     } else {
-      return this.getHaikaId();
+      this.getHaikaId();
     }
+    return $(this).trigger('haika:load');
   },
   loadRender: function(data) {
     var canvas, geojson, key, klass, object, schema, shape, _i, _len, _ref;
@@ -25252,8 +25258,9 @@ haika = {
     }
     this.saveLocal();
     if (!this.isLocal()) {
-      return this.saveServer();
+      this.saveServer();
     }
+    return $(this).trigger('haika:save');
   },
   saveProperty: function(object, group) {
     var count, key, schema, _results;
