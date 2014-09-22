@@ -342,46 +342,79 @@ haika = {
       };
     })(this));
   },
-  addRender: function(object, top, left) {
-    var new_id;
-    this.save();
-    object.id = this.getId();
-    object.top = top;
-    object.left = left;
-    new_id = this.add(object);
-    this.render();
-    return new_id;
-  },
   duplicate: function() {
-    return this.bind((function(_this) {
-      return function(object) {
-        var new_id, o;
-        _this.canvas.discardActiveGroup();
+    var group, new_id, new_ids, o, object, _i, _len, _ref;
+    object = this.canvas.getActiveObject();
+    if (object) {
+      o = fabric.util.object.clone(object);
+      o.id = this.getId();
+      o.top = this.transformTopY_cm2px(this.centerY);
+      o.left = this.transformLeftX_cm2px(this.centerX);
+      new_id = this.add(o);
+    }
+    group = this.canvas.getActiveGroup();
+    if (group) {
+      new_ids = [];
+      _ref = group.getObjects();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
         o = fabric.util.object.clone(object);
-        new_id = _this.addRender(o, o.top + 10, o.left + 10);
-        return new_id;
-      };
-    })(this));
+        o.id = this.getId();
+        o.top = this.transformTopY_cm2px(this.centerY) + object.top;
+        o.left = this.transformLeftX_cm2px(this.centerX) + object.left;
+        new_id = this.add(o);
+        new_ids.push(new_id);
+      }
+    }
+    this.save();
+    this.render();
+    if (object) {
+      $(this.canvas.getObjects()).each((function(_this) {
+        return function(i, obj) {
+          if (obj.id === new_id) {
+            return _this.canvas.setActiveObject(obj);
+          }
+        };
+      })(this));
+    }
+    if (group) {
+      return this.activeGroup(new_ids);
+    }
   },
   clipboard: [],
-  clipboardCount: 1,
   copy: function() {
+    var group, object, _i, _len, _ref, _results;
     this.clipboard = [];
-    this.clipboardCount = 1;
-    return this.bind((function(_this) {
-      return function(object) {
-        return _this.clipboard.push(object);
-      };
-    })(this), false);
+    object = this.canvas.getActiveObject();
+    if (object) {
+      this.clipboard.push(object);
+    }
+    group = this.canvas.getActiveGroup();
+    if (group) {
+      _ref = group.getObjects();
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        _results.push(this.clipboard.push(object));
+      }
+      return _results;
+    }
   },
   paste: function() {
-    var new_id, new_ids, object, _i, _len, _ref;
+    var new_id, new_ids, o, object, _i, _len, _ref;
     if (this.clipboard.length <= 0) {
       return;
     }
     if (this.clipboard.length === 1) {
-      new_id = this.__paste(this.clipboard[0]);
-      $(this.canvas.getObjects()).each((function(_this) {
+      object = this.clipboard[0];
+      o = fabric.util.object.clone(object);
+      o.id = this.getId();
+      o.top = this.transformTopY_cm2px(this.centerY);
+      o.left = this.transformLeftX_cm2px(this.centerX);
+      new_id = this.add(o);
+      this.save();
+      this.render();
+      return $(this.canvas.getObjects()).each((function(_this) {
         return function(i, obj) {
           if (obj.id === new_id) {
             return _this.canvas.setActiveObject(obj);
@@ -393,20 +426,17 @@ haika = {
       _ref = this.clipboard;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
-        new_id = this.__paste(object);
+        o = fabric.util.object.clone(object);
+        o.id = this.getId();
+        o.top = this.transformTopY_cm2px(this.centerY) + object.top;
+        o.left = this.transformLeftX_cm2px(this.centerX) + object.left;
+        new_id = this.add(o);
         new_ids.push(new_id);
       }
-      this.activeGroup(new_ids);
+      this.save();
+      this.render();
+      return this.activeGroup(new_ids);
     }
-    return this.clipboardCount += 1;
-  },
-  __paste: function(object) {
-    var left, new_id, o, top;
-    o = fabric.util.object.clone(object);
-    top = o.top + this.clipboardCount * o.height / 2;
-    left = o.left + this.clipboardCount * o.width / 10;
-    new_id = this.addRender(o, top, left);
-    return new_id;
   },
   selectAll: function() {
     var group, objects;

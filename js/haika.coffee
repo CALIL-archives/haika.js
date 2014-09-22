@@ -274,60 +274,84 @@ haika =
     return object
   # 最前面に移動
   bringToFront : ->
-    @bind (object)=>
+    @bind((object)=>
       count = @findById(object.id)
       object.bringToFront()
       obj = @objects[count]
       @objects.splice(count, 1)
       @objects.push(obj)
       return obj.id
-  # 追加して描画
-  addRender : (object, top, left)->
-    @save()
-    object.id = @getId()
-    object.top  = top
-    object.left = left
-    new_id = @add(object)
-    @render()
-    return new_id
+    )
   # 複製
   duplicate : ->
-    @bind (object)=>
-      @canvas.discardActiveGroup()
+    # bindを使うとバグが起きるためベタ書き
+    object = @canvas.getActiveObject()
+    if object
       o = fabric.util.object.clone(object)
-      new_id = @addRender(o, o.top+10,o.left+10)
-      return new_id
-  clipboard : []
-  clipboardCount : 1
-  # コピー
-  copy  : ->
-    @clipboard = []
-    @clipboardCount = 1
-    @bind (object)=>
-      @clipboard.push(object)
-    , false
-  # ペースト
-  paste : ->
-    if @clipboard.length<=0
-      return
-    if @clipboard.length==1
-      new_id = @__paste(@clipboard[0])
+      o.id   = @getId()
+      o.top  = @transformTopY_cm2px(@centerY)
+      o.left = @transformLeftX_cm2px(@centerX)
+      new_id = @add(o)
+    group = @canvas.getActiveGroup()
+    if group
+      new_ids = []
+      for object in group.getObjects()
+        o = fabric.util.object.clone(object)
+        o.id   = @getId()
+        o.top  = @transformTopY_cm2px(@centerY)+object.top
+        o.left = @transformLeftX_cm2px(@centerX)+object.left
+        new_id = @add(o)
+        new_ids.push(new_id)
+    @save()
+    @render()
+    if object
       $(@canvas.getObjects()).each (i, obj)=>
         if obj.id==new_id
           @canvas.setActiveObject(obj)
+    if group
+      @activeGroup(new_ids)
+  clipboard : []
+  # コピー
+  copy  : ->
+    @clipboard = []
+    object = @canvas.getActiveObject()
+    if object
+      @clipboard.push(object)
+    group = @canvas.getActiveGroup()
+    if group
+      for object in group.getObjects()
+        @clipboard.push(object)
+  # ペースト
+  paste : ->
+    # クリップボードになにもない
+    if @clipboard.length<=0
+      return
+    # クリップボードに１つ
+    if @clipboard.length==1
+      object = @clipboard[0]
+      o = fabric.util.object.clone(object)
+      o.id   = @getId()
+      o.top  = @transformTopY_cm2px(@centerY)
+      o.left = @transformLeftX_cm2px(@centerX)
+      new_id = @add(o)
+      @save()
+      @render()
+      $(@canvas.getObjects()).each (i, obj)=>
+        if obj.id==new_id
+          @canvas.setActiveObject(obj)
+    # クリップボードに複数
     else
       new_ids = []
       for object in @clipboard
-        new_id = @__paste(object)
+        o = fabric.util.object.clone(object)
+        o.id   = @getId()
+        o.top  = @transformTopY_cm2px(@centerY)+object.top
+        o.left = @transformLeftX_cm2px(@centerX)+object.left
+        new_id = @add(o)
         new_ids.push(new_id)
+      @save()
+      @render()
       @activeGroup(new_ids)
-    @clipboardCount += 1
-  __paste : (object)->
-    o = fabric.util.object.clone(object)
-    top = o.top+@clipboardCount*o.height/2
-    left = o.left+@clipboardCount*o.width/10
-    new_id = @addRender(o, top, left)
-    return new_id
   # すべてを選択(全レイヤー)
   selectAll : ()->
     @canvas.discardActiveGroup()
