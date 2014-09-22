@@ -225,7 +225,7 @@ $.extend(haika, {
     if (group == null) {
       group = false;
     }
-    count = this.findById(object.id);
+    count = this.countFindById(object.id);
     this.objects[count].id = object.id;
     this.objects[count].type = object.type;
     this.objects[count].top_cm = this.transformTopY_px2cm(object.top);

@@ -175,12 +175,20 @@ haika =
     @lastId += 1
     return @lastId
   # idからオブジェクトの配列番号を取得
-  findById : (id)->
+  countFindById : (id)->
     count = null
     $(@objects).each (i, obj)->
       if obj.id==id
         count = i
     return count
+  # idからfabricオブジェクトを探して返す
+  fabricObjectFindById : (id)->
+    object = null
+    objects = @canvas.getObjects().map((o) ->
+      if o.id==id
+        object = o
+    )
+    return object
   # haikaオブジェクトの追加
   add : (object)->
     # new object
@@ -270,13 +278,13 @@ haika =
     $(@).trigger('haika:remove')
   __remove : (object)->
     @canvas.remove(object)
-    count = @findById(object.id)
+    count = @countFindById(object.id)
     @objects.splice(count, 1)
     return object
   # 最前面に移動
   bringToFront : ->
     @getObjects((object)=>
-      count = @findById(object.id)
+      count = @countFindById(object.id)
       object.bringToFront()
       obj = @objects[count]
       @objects.splice(count, 1)
@@ -317,11 +325,11 @@ haika =
     @clipboard = []
     object = @canvas.getActiveObject()
     if object
-      @clipboard.push(object)
+      @clipboard.push(fabric.util.object.clone(object))
     group = @canvas.getActiveGroup()
     if group
       for object in group.getObjects()
-        @clipboard.push(object)
+        @clipboard.push(fabric.util.object.clone(object))
     $(@).trigger('haika:copy')
   # ペースト
   paste : ->
@@ -343,7 +351,6 @@ haika =
           @canvas.setActiveObject(obj)
     # クリップボードに複数
     else
-      object = null
       new_ids = []
       for object in @clipboard
         o = fabric.util.object.clone(object)
@@ -353,7 +360,9 @@ haika =
         new_id = @add(o)
         new_ids.push(new_id)
       @save()
+      log 'pre render' + @clipboard[0].top
       @render()
+      log 'after render' + @clipboard[0].top
       @activeGroup(new_ids)
       $(@).trigger('haika:paste')
   # すべてを選択(全レイヤー)

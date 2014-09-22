@@ -24404,7 +24404,7 @@ haika = {
     this.lastId += 1;
     return this.lastId;
   },
-  findById: function(id) {
+  countFindById: function(id) {
     var count;
     count = null;
     $(this.objects).each(function(i, obj) {
@@ -24413,6 +24413,16 @@ haika = {
       }
     });
     return count;
+  },
+  fabricObjectFindById: function(id) {
+    var object, objects;
+    object = null;
+    objects = this.canvas.getObjects().map(function(o) {
+      if (o.id === id) {
+        return object = o;
+      }
+    });
+    return object;
   },
   add: function(object) {
     var key, o, prop, props, schema, _i, _len;
@@ -24525,7 +24535,7 @@ haika = {
   __remove: function(object) {
     var count;
     this.canvas.remove(object);
-    count = this.findById(object.id);
+    count = this.countFindById(object.id);
     this.objects.splice(count, 1);
     return object;
   },
@@ -24533,7 +24543,7 @@ haika = {
     return this.getObjects((function(_this) {
       return function(object) {
         var count, obj;
-        count = _this.findById(object.id);
+        count = _this.countFindById(object.id);
         object.bringToFront();
         obj = _this.objects[count];
         _this.objects.splice(count, 1);
@@ -24588,14 +24598,14 @@ haika = {
     this.clipboard = [];
     object = this.canvas.getActiveObject();
     if (object) {
-      this.clipboard.push(object);
+      this.clipboard.push(fabric.util.object.clone(object));
     }
     group = this.canvas.getActiveGroup();
     if (group) {
       _ref = group.getObjects();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
-        this.clipboard.push(object);
+        this.clipboard.push(fabric.util.object.clone(object));
       }
     }
     return $(this).trigger('haika:copy');
@@ -24622,7 +24632,6 @@ haika = {
         };
       })(this));
     } else {
-      object = null;
       new_ids = [];
       _ref = this.clipboard;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -24635,7 +24644,9 @@ haika = {
         new_ids.push(new_id);
       }
       this.save();
+      log('pre render' + this.clipboard[0].top);
       this.render();
+      log('after render' + this.clipboard[0].top);
       this.activeGroup(new_ids);
       return $(this).trigger('haika:paste');
     }
@@ -25267,7 +25278,7 @@ haika = {
     if (group == null) {
       group = false;
     }
-    count = this.findById(object.id);
+    count = this.countFindById(object.id);
     this.objects[count].id = object.id;
     this.objects[count].type = object.type;
     this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
