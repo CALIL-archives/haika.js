@@ -24593,6 +24593,7 @@ haika = {
     return $(this).trigger('haika:duplicate');
   },
   clipboard: [],
+  clipboard_scale: 0,
   copy: function() {
     var group, object, _i, _len, _ref;
     this.clipboard = [];
@@ -24608,6 +24609,7 @@ haika = {
         this.clipboard.push(fabric.util.object.clone(object));
       }
     }
+    this.clipboard_scale = this.scale;
     return $(this).trigger('haika:copy');
   },
   paste: function() {
@@ -24638,8 +24640,8 @@ haika = {
         object = _ref[_i];
         o = fabric.util.object.clone(object);
         o.id = this.getId();
-        o.top = this.transformTopY_cm2px(this.centerY) + object.top;
-        o.left = this.transformLeftX_cm2px(this.centerX) + object.left;
+        o.top = this.transformTopY_cm2px(this.centerY) + object.top * this.scale / this.clipboard_scale;
+        o.left = this.transformLeftX_cm2px(this.centerX) + object.left * this.scale / this.clipboard_scale;
         new_id = this.add(o);
         new_ids.push(new_id);
       }

@@ -320,6 +320,7 @@ haika =
       @activeGroup(new_ids)
     $(@).trigger('haika:duplicate')
   clipboard : []
+  clipboard_scale : 0
   # コピー
   copy  : ->
     @clipboard = []
@@ -330,6 +331,7 @@ haika =
     if group
       for object in group.getObjects()
         @clipboard.push(fabric.util.object.clone(object))
+    @clipboard_scale = @scale
     $(@).trigger('haika:copy')
   # ペースト
   paste : ->
@@ -355,8 +357,8 @@ haika =
       for object in @clipboard
         o = fabric.util.object.clone(object)
         o.id   = @getId()
-        o.top  = @transformTopY_cm2px(@centerY)+object.top
-        o.left = @transformLeftX_cm2px(@centerX)+object.left
+        o.top  = @transformTopY_cm2px(@centerY)+object.top*@scale/@clipboard_scale
+        o.left = @transformLeftX_cm2px(@centerX)+object.left*@scale/@clipboard_scale
         new_id = @add(o)
         new_ids.push(new_id)
       @save()
