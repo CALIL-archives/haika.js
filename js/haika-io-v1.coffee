@@ -13,6 +13,7 @@ $.extend haika,
   load : ()->
     if location.hash!='' and location.hash.length!=7
       location.hash = sprintf('%06d',location.hash.split('#')[1])
+      location.reload()
       return
     # ローカルか？
     if @isLocal()

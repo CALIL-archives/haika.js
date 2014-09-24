@@ -11,6 +11,7 @@ $.extend(haika, {
     var data;
     if (location.hash !== '' && location.hash.length !== 7) {
       location.hash = sprintf('%06d', location.hash.split('#')[1]);
+      location.reload();
       return;
     }
     if (this.isLocal()) {
