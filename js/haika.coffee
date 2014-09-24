@@ -175,20 +175,12 @@ haika =
     @lastId += 1
     return @lastId
   # idからオブジェクトの配列番号を取得
-  countFindById : (id)->
+  getCountFindById : (id)->
     count = null
     $(@objects).each (i, obj)->
       if obj.id==id
         count = i
     return count
-  # idからfabricオブジェクトを探して返す
-  fabricObjectFindById : (id)->
-    object = null
-    objects = @canvas.getObjects().map((o) ->
-      if o.id==id
-        object = o
-    )
-    return object
   # haikaオブジェクトの追加
   add : (object)->
     # new object
@@ -278,13 +270,13 @@ haika =
     $(@).trigger('haika:remove')
   __remove : (object)->
     @canvas.remove(object)
-    count = @countFindById(object.id)
+    count = @getCountFindById(object.id)
     @objects.splice(count, 1)
     return object
   # 最前面に移動
   bringToFront : ->
     @getObjects((object)=>
-      count = @countFindById(object.id)
+      count = @getCountFindById(object.id)
       object.bringToFront()
       obj = @objects[count]
       @objects.splice(count, 1)

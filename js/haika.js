@@ -204,7 +204,7 @@ haika = {
     this.lastId += 1;
     return this.lastId;
   },
-  countFindById: function(id) {
+  getCountFindById: function(id) {
     var count;
     count = null;
     $(this.objects).each(function(i, obj) {
@@ -213,16 +213,6 @@ haika = {
       }
     });
     return count;
-  },
-  fabricObjectFindById: function(id) {
-    var object, objects;
-    object = null;
-    objects = this.canvas.getObjects().map(function(o) {
-      if (o.id === id) {
-        return object = o;
-      }
-    });
-    return object;
   },
   add: function(object) {
     var key, o, prop, props, schema, _i, _len;
@@ -335,7 +325,7 @@ haika = {
   __remove: function(object) {
     var count;
     this.canvas.remove(object);
-    count = this.countFindById(object.id);
+    count = this.getCountFindById(object.id);
     this.objects.splice(count, 1);
     return object;
   },
@@ -343,7 +333,7 @@ haika = {
     return this.getObjects((function(_this) {
       return function(object) {
         var count, obj;
-        count = _this.countFindById(object.id);
+        count = _this.getCountFindById(object.id);
         object.bringToFront();
         obj = _this.objects[count];
         _this.objects.splice(count, 1);

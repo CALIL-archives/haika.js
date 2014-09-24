@@ -190,7 +190,7 @@ $.extend haika,
   saveProperty : (object, group=false)->
 #    log object.__proto__.getJsonSchema()
 #    log object.constructor.prototype.getJsonSchema()
-    count = @countFindById(object.id)
+    count = @getCountFindById(object.id)
     @objects[count].id      = object.id
     @objects[count].type    = object.type
     @objects[count].top_cm  = @transformTopY_px2cm(object.top)
