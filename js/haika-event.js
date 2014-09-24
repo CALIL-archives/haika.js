@@ -40,7 +40,7 @@ $(function() {
     object = haika.canvas.getActiveObject();
     haika.remove();
     if (object) {
-      return undo.remove(object);
+      return haika.undo.remove(object);
     }
   });
   $(".zoomin").click(function() {
@@ -123,7 +123,7 @@ $(function() {
     }
   });
   $('.undo').click(function() {
-    return undo.undoManager.undo();
+    return haika.undo.undoManager.undo();
   });
   cancel_default = function(e) {
     if (e.preventDefault) {
@@ -156,7 +156,7 @@ $(function() {
   });
   Mousetrap.bind('mod+z', function(e) {
     cancel_default(e);
-    undo.undoManager.undo();
+    haika.undo.undoManager.undo();
     return false;
   });
   Mousetrap.bind(['esc', 'escape'], function(e) {

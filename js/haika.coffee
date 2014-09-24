@@ -115,7 +115,7 @@ haika =
       object = e.target
       @canvas.deactivateAll().renderAll()
       @save()
-      editor_change()
+      @editor_change()
       @setPropetyPanel()
     @canvas.on 'object:scaling', (e) =>
       object = e.target
@@ -660,16 +660,16 @@ haika =
     $('.canvas_panel, .object_panel, .group_panel').hide()
     object = @canvas.getActiveObject()
     if object and object.getJsonSchema?
-      editor.schema = object.getJsonSchema()
+      @editor.schema = object.getJsonSchema()
       # Set the value
       properties = {}
-      for key of editor.schema.properties
-        if editor.schema.properties[key].type=='integer'
+      for key of @editor.schema.properties
+        if @editor.schema.properties[key].type=='integer'
           value = parseInt(object[key]).toFixed(0)
         else
           value = object[key]
         properties[key] = value
-      editor.setValue properties
+      @editor.setValue properties
       if object.toGeoJSON?
         $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4))
       $('.object_panel').show()

@@ -24322,7 +24322,7 @@ haika = {
         object = e.target;
         _this.canvas.deactivateAll().renderAll();
         _this.save();
-        editor_change();
+        _this.editor_change();
         return _this.setPropetyPanel();
       };
     })(this));
@@ -25013,17 +25013,17 @@ haika = {
     $('.canvas_panel, .object_panel, .group_panel').hide();
     object = this.canvas.getActiveObject();
     if (object && (object.getJsonSchema != null)) {
-      editor.schema = object.getJsonSchema();
+      this.editor.schema = object.getJsonSchema();
       properties = {};
-      for (key in editor.schema.properties) {
-        if (editor.schema.properties[key].type === 'integer') {
+      for (key in this.editor.schema.properties) {
+        if (this.editor.schema.properties[key].type === 'integer') {
           value = parseInt(object[key]).toFixed(0);
         } else {
           value = object[key];
         }
         properties[key] = value;
       }
-      editor.setValue(properties);
+      this.editor.setValue(properties);
       if (object.toGeoJSON != null) {
         $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4));
       }
@@ -25434,9 +25434,7 @@ haika = {
 });
 
 //# sourceMappingURL=haika-io-v1.js.map
-;var setScrollbar;
-
-setScrollbar = function() {
+;$(haika).on('haika:initialized', function() {
   var bgimg_height, bgimg_width, defaultX, defaultY, maxX, maxY, scroll_weight;
   scroll_weight = 5000;
   bgimg_width = haika.bgimg ? haika.bgimg_width : 2500;
@@ -25479,57 +25477,47 @@ setScrollbar = function() {
       return haika.render();
     }
   });
-};
-
-$(haika).on('haika:initialized', function() {
-  return setScrollbar();
 });
 
 //# sourceMappingURL=haika-scrollbar.js.map
-;var getHeight, getWidth, property_panel_width, scrollbar_height, scrollbar_width, toolbar_width;
-
-scrollbar_width = $('#vertical-scroller').width();
-
-scrollbar_height = $('#horizontal-scroller').height();
-
-toolbar_width = $('.toolbar_container').width() + 14;
-
-property_panel_width = $('.property_panel').width();
-
-getWidth = function() {
-  return window.innerWidth - toolbar_width - scrollbar_width - property_panel_width - 20;
-};
-
-getHeight = function() {
-  return window.innerHeight - $('.header').height() - scrollbar_height;
-};
-
-$('.main_container, .canvas_panel').css('width', getWidth());
-
-$('.main_container').css('margin-left', toolbar_width);
-
-$('#vertical-scroller, #vertical-scroller .dragdealer').css('height', getHeight());
-
-$('.toolbar_container,.property_panel').css('height', getHeight() + scrollbar_height);
-
-$(window).resize(function() {
-  haika.canvas.setWidth(getWidth());
-  log(getWidth());
-  haika.canvas.setHeight(getHeight());
-  $('.main_container, .canvas_panel').css('width', getWidth());
-  $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', getHeight());
-  $('.toolbar_container,.property_panel').css('height', getHeight() + scrollbar_height);
-  return haika.render();
-});
-
-haika.init({
-  canvas: 'canvas',
-  canvas_width: getWidth(),
-  canvas_height: getHeight(),
-  max_width: 10000,
-  max_height: 10000,
-  bgopacity: 0.2,
-  bgscale: 4
+;$.extend(haika, {
+  setting: {
+    scrollbar_width: $('#vertical-scroller').width(),
+    scrollbar_height: $('#horizontal-scroller').height(),
+    toolbar_width: $('.toolbar_container').width() + 14,
+    property_panel_width: $('.property_panel').width(),
+    getWidth: function() {
+      return window.innerWidth - this.toolbar_width - this.scrollbar_width - this.property_panel_width - 20;
+    },
+    getHeight: function() {
+      return window.innerHeight - $('.header').height() - this.scrollbar_height;
+    },
+    start: function() {
+      $('.main_container, .canvas_panel').css('width', this.getWidth());
+      $('.main_container').css('margin-left', this.toolbar_width);
+      $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', this.getHeight());
+      $('.toolbar_container,.property_panel').css('height', this.getHeight() + this.scrollbar_height);
+      $(window).resize((function(_this) {
+        return function() {
+          haika.canvas.setWidth(_this.getWidth());
+          haika.canvas.setHeight(_this.getHeight());
+          $('.main_container, .canvas_panel').css('width', _this.getWidth());
+          $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', _this.getHeight());
+          $('.toolbar_container,.property_panel').css('height', _this.getHeight() + _this.scrollbar_height);
+          return haika.render();
+        };
+      })(this));
+      return haika.init({
+        canvas: 'canvas',
+        canvas_width: this.getWidth(),
+        canvas_height: this.getHeight(),
+        max_width: 10000,
+        max_height: 10000,
+        bgopacity: 0.2,
+        bgscale: 4
+      });
+    }
+  }
 });
 
 $(function() {
@@ -25542,59 +25530,71 @@ $(function() {
   });
 });
 
+haika.setting.start();
+
 //# sourceMappingURL=haika-init.js.map
-;var add, addmany, showAddButtons;
-
-add = function(val) {
-  var id, klass, object;
-  log(val);
-  klass = haika.getClass(val.type);
-  object = new klass({
-    top: haika.transformTopY_cm2px(haika.centerY),
-    left: haika.transformLeftX_cm2px(haika.centerX),
-    fill: haika.fillColor,
-    stroke: haika.strokeColor,
-    angle: val.angle != null ? val.angle : 0
-  });
-  if (val.count != null) {
-    object.count = val.count;
-  }
-  if (val.side != null) {
-    object.side = val.side;
-  }
-  if (val.type.match(/shelf$/)) {
-    object.eachWidth = val.eachWidth;
-    object.eachHeight = val.eachHeight;
-  }
-  id = haika.add(object);
-  haika.setState(object);
-  haika.render();
-  undo.add(id);
-  return $(haika.canvas.getObjects()).each((function(_this) {
-    return function(i, obj) {
-      if (obj.id === object.id) {
-        return setTimeout(function() {
-          haika.canvas.setActiveObject(haika.canvas.item(i));
-          return $('.add').blur();
-        }, 10);
+;$.extend(haika, {
+  addbuttons: {
+    add: function(val) {
+      var id, klass, object;
+      log(val);
+      klass = haika.getClass(val.type);
+      object = new klass({
+        top: haika.transformTopY_cm2px(haika.centerY),
+        left: haika.transformLeftX_cm2px(haika.centerX),
+        fill: haika.fillColor,
+        stroke: haika.strokeColor,
+        angle: val.angle != null ? val.angle : 0
+      });
+      if (val.count != null) {
+        object.count = val.count;
       }
-    };
-  })(this));
-};
-
-addmany = function() {
-  var x, y;
-  y = 0;
-  while (y < 8) {
-    x = 0;
-    while (x < 22) {
-      add(200 + 400 * y, 100 + 50 * x, 90);
-      x++;
+      if (val.side != null) {
+        object.side = val.side;
+      }
+      if (val.type.match(/shelf$/)) {
+        object.eachWidth = val.eachWidth;
+        object.eachHeight = val.eachHeight;
+      }
+      id = haika.add(object);
+      haika.setState(object);
+      haika.render();
+      undo.add(id);
+      return $(haika.canvas.getObjects()).each((function(_this) {
+        return function(i, obj) {
+          if (obj.id === object.id) {
+            return setTimeout(function() {
+              haika.canvas.setActiveObject(haika.canvas.item(i));
+              return $('.add').blur();
+            }, 10);
+          }
+        };
+      })(this));
+    },
+    addmany: function() {
+      var x, y;
+      y = 0;
+      while (y < 8) {
+        x = 0;
+        while (x < 22) {
+          this.add(200 + 400 * y, 100 + 50 * x, 90);
+          x++;
+        }
+        y++;
+      }
+      haika.render();
+    },
+    showAddButtons: function(state) {
+      return $('.toolbar_container ul:first>li').each(function(i, button) {
+        if ($(button).attr('state') === state) {
+          return $(button).show();
+        } else {
+          return $(button).hide();
+        }
+      });
     }
-    y++;
   }
-  haika.render();
-};
+});
 
 $(function() {
   var addButtons, html, key, val, _results;
@@ -25673,111 +25673,97 @@ $(function() {
     val = addButtons[key];
     html = "<li id=\"add_" + key + "\" key=\"" + key + "\" state=\"" + val.state + "\"><i class=\"fa fa-" + val.icon + "\"></i> " + val.title + "</li>";
     $('.toolbar_container ul:first').append(html);
-    showAddButtons('shelf');
+    haika.addbuttons.showAddButtons('shelf');
     _results.push($('#add_' + key).click(function(e) {
       var object;
       key = $(e.target).attr('key');
       object = addButtons[key];
       object.type = key;
-      add(object);
+      haika.addbuttons.add(object);
       return haika.render();
     }));
   }
   return _results;
 });
 
-showAddButtons = function(state) {
-  return $('.toolbar_container ul:first>li').each(function(i, button) {
-    if ($(button).attr('state') === state) {
-      return $(button).show();
-    } else {
-      return $(button).hide();
-    }
-  });
-};
-
 $(haika).on('haika:initialized', function() {
-  return showAddButtons(haika.state);
+  return haika.addbuttons.showAddButtons(haika.state);
 });
 
 //# sourceMappingURL=haika-addbuttons.js.map
-;var bind, count, hex, hexColor, html, i, j, k, l;
-
-html = '';
-
-hex = new Array("f", "c", "9", "6", "3", "0");
-
-count = 2;
-
-j = 0;
-
-while (j < 6) {
-  k = 0;
-  while (k < 6) {
-    l = 0;
-    while (l < 6) {
-      hexColor = hex[j] + hex[j] + hex[k] + hex[k] + hex[l] + hex[l];
-      html += "<option data-color=\"#" + hexColor + "\" value=\"" + count + "\"></option>";
-      l++;
-      count++;
+;$.extend(haika, {
+  colorpicker: {
+    init: function() {
+      var bind, count, hex, hexColor, html, i, j, k, l;
+      html = '';
+      hex = new Array("f", "c", "9", "6", "3", "0");
+      count = 2;
+      j = 0;
+      while (j < 6) {
+        k = 0;
+        while (k < 6) {
+          l = 0;
+          while (l < 6) {
+            hexColor = hex[j] + hex[j] + hex[k] + hex[k] + hex[l] + hex[l];
+            html += "<option data-color=\"#" + hexColor + "\" value=\"" + count + "\"></option>";
+            l++;
+            count++;
+          }
+          k++;
+        }
+        j++;
+      }
+      i = 0;
+      while (i < 6) {
+        hexColor = hex[i] + hex[i] + hex[i] + hex[i] + hex[i] + hex[i];
+        html += "<option data-color=\"#" + hexColor + "\" value=\"" + count + "\"></option>";
+        i++;
+      }
+      $('#fill-color').append(html);
+      $('#stroke-color').append(html);
+      bind = function(func, do_active) {
+        var group, object, _i, _len, _ref, _results;
+        if (do_active == null) {
+          do_active = true;
+        }
+        object = haika.canvas.getActiveObject();
+        if (object) {
+          func(object);
+        }
+        group = haika.canvas.getActiveGroup();
+        if (group) {
+          _ref = group.getObjects();
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            object = _ref[_i];
+            _results.push(func(object));
+          }
+          return _results;
+        }
+      };
+      $('#fill-color').colorselector({
+        callback: function(value, color, title) {
+          haika.fillColor = color;
+          bind(function(object) {
+            return object.fill = color;
+          });
+          return haika.canvas.renderAll();
+        }
+      });
+      return $('#stroke-color').colorselector({
+        callback: function(value, color, title) {
+          haika.strokeColor = color;
+          bind(function(object) {
+            return object.stroke = color;
+          });
+          return haika.canvas.renderAll();
+        }
+      });
     }
-    k++;
-  }
-  j++;
-}
-
-i = 0;
-
-while (i < 6) {
-  hexColor = hex[i] + hex[i] + hex[i] + hex[i] + hex[i] + hex[i];
-  html += "<option data-color=\"#" + hexColor + "\" value=\"" + count + "\"></option>";
-  i++;
-}
-
-$('#fill-color').append(html);
-
-$('#stroke-color').append(html);
-
-bind = function(func, do_active) {
-  var group, object, _i, _len, _ref, _results;
-  if (do_active == null) {
-    do_active = true;
-  }
-  object = haika.canvas.getActiveObject();
-  if (object) {
-    func(object);
-  }
-  group = haika.canvas.getActiveGroup();
-  if (group) {
-    _ref = group.getObjects();
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      _results.push(func(object));
-    }
-    return _results;
-  }
-};
-
-$('#fill-color').colorselector({
-  callback: function(value, color, title) {
-    haika.fillColor = color;
-    bind(function(object) {
-      return object.fill = color;
-    });
-    return haika.canvas.renderAll();
   }
 });
 
-$('#stroke-color').colorselector({
-  callback: function(value, color, title) {
-    haika.strokeColor = color;
-    bind(function(object) {
-      return object.stroke = color;
-    });
-    return haika.canvas.renderAll();
-  }
-});
+haika.colorpicker.init();
 
 //# sourceMappingURL=haika-colorpicker.js.map
 ;$('#bgimg').change(function(e) {
@@ -25822,7 +25808,7 @@ $(function() {
     object = haika.canvas.getActiveObject();
     haika.remove();
     if (object) {
-      return undo.remove(object);
+      return haika.undo.remove(object);
     }
   });
   $(".zoomin").click(function() {
@@ -25905,7 +25891,7 @@ $(function() {
     }
   });
   $('.undo').click(function() {
-    return undo.undoManager.undo();
+    return haika.undo.undoManager.undo();
   });
   cancel_default = function(e) {
     if (e.preventDefault) {
@@ -25938,7 +25924,7 @@ $(function() {
   });
   Mousetrap.bind('mod+z', function(e) {
     cancel_default(e);
-    undo.undoManager.undo();
+    haika.undo.undoManager.undo();
     return false;
   });
   Mousetrap.bind(['esc', 'escape'], function(e) {
@@ -25985,120 +25971,120 @@ $(function() {
 });
 
 //# sourceMappingURL=haika-event.js.map
-;var undo;
-
-undo = {
-  undoManager: new UndoManager(),
-  states: [],
-  set_selected: true,
-  add: function(id) {
-    log('add set');
-    return this.undoManager.add({
-      undo: (function(_this) {
-        return function() {
+;$.extend(haika, {
+  undo: {
+    undoManager: new UndoManager(),
+    states: [],
+    set_selected: true,
+    add: function(id) {
+      log('add set');
+      return this.undoManager.add({
+        undo: (function(_this) {
+          return function() {
+            var object;
+            log('undo add ' + id);
+            object = _this.getObject(id);
+            log(object);
+            return haika.__remove(object);
+          };
+        })(this),
+        redo: (function(_this) {
+          return function() {};
+        })(this)
+      });
+    },
+    remove: function(object) {
+      log('remove set');
+      return this.undoManager.add({
+        undo: (function(_this) {
+          return function() {
+            log('undo remove ' + object.id);
+            log(object);
+            haika.add(object);
+            return haika.render();
+          };
+        })(this),
+        redo: (function(_this) {
+          return function() {};
+        })(this)
+      });
+    },
+    init: function() {
+      haika.canvas.on("object:selected", (function(_this) {
+        return function(e) {
+          var object, originalState;
+          object = e.target;
+          if (!_this.set_selected) {
+            _this.set_selected = true;
+            return;
+          }
+          if (_this.states.length === 0 || object.id !== _this.states[_this.states.length - 1].id) {
+            object.saveState();
+            originalState = $.extend(true, {}, object.originalState);
+            originalState.state_type = 'selected';
+            return _this.states.push(originalState);
+          }
+        };
+      })(this));
+      haika.canvas.on("selection:cleared", (function(_this) {
+        return function(e) {
           var object;
-          log('undo add ' + id);
-          object = _this.getObject(id);
-          log(object);
-          return haika.__remove(object);
+          return object = e.target;
         };
-      })(this),
-      redo: (function(_this) {
-        return function() {};
-      })(this)
-    });
-  },
-  remove: function(object) {
-    log('remove set');
-    return this.undoManager.add({
-      undo: (function(_this) {
-        return function() {
-          log('undo remove ' + object.id);
-          log(object);
-          haika.add(object);
-          return haika.render();
-        };
-      })(this),
-      redo: (function(_this) {
-        return function() {};
-      })(this)
-    });
-  },
-  init: function() {
-    haika.canvas.on("object:selected", (function(_this) {
-      return function(e) {
-        var object, originalState;
-        object = e.target;
-        if (!_this.set_selected) {
-          _this.set_selected = true;
-          return;
-        }
-        if (_this.states.length === 0 || object.id !== _this.states[_this.states.length - 1].id) {
+      })(this));
+      return haika.canvas.on("object:modified", (function(_this) {
+        return function(e) {
+          var object, originalState;
+          object = e.target;
           object.saveState();
           originalState = $.extend(true, {}, object.originalState);
-          originalState.state_type = 'selected';
-          return _this.states.push(originalState);
-        }
-      };
-    })(this));
-    haika.canvas.on("selection:cleared", (function(_this) {
-      return function(e) {
-        var object;
-        return object = e.target;
-      };
-    })(this));
-    return haika.canvas.on("object:modified", (function(_this) {
-      return function(e) {
-        var object, originalState;
-        object = e.target;
-        object.saveState();
-        originalState = $.extend(true, {}, object.originalState);
-        originalState.state_type = 'modified';
-        _this.states.push(originalState);
-        _this.undoManager.add({
-          undo: function() {
-            var state;
-            if (_this.states.length > 0) {
-              haika.canvas.deactivateAll();
-              state = _this.states[_this.states.length - 2];
-              object = _this.getObject(state.id);
-              if (object) {
-                _this.setState(object, state);
-                _this.states.pop();
-                if (_this.states[_this.states.length - 1].state_type === 'selected') {
+          originalState.state_type = 'modified';
+          _this.states.push(originalState);
+          _this.undoManager.add({
+            undo: function() {
+              var state;
+              if (_this.states.length > 0) {
+                haika.canvas.deactivateAll();
+                state = _this.states[_this.states.length - 2];
+                object = _this.getObject(state.id);
+                if (object) {
+                  _this.setState(object, state);
                   _this.states.pop();
+                  if (_this.states[_this.states.length - 1].state_type === 'selected') {
+                    _this.states.pop();
+                  }
+                  _this.set_selected = false;
+                  haika.canvas.setActiveObject(object);
                 }
-                _this.set_selected = false;
-                haika.canvas.setActiveObject(object);
+                return log(_this.states);
               }
-              return log(_this.states);
-            }
-          },
-          redo: function() {}
-        });
-      };
-    })(this));
-  },
-  getObject: function(id) {
-    var o, object, _i, _len, _ref;
-    object = null;
-    _ref = haika.canvas.getObjects();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      o = _ref[_i];
-      if (o.id === id) {
-        object = o;
-        break;
+            },
+            redo: function() {}
+          });
+        };
+      })(this));
+    },
+    getObject: function(id) {
+      var o, object, _i, _len, _ref;
+      object = null;
+      _ref = haika.canvas.getObjects();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        o = _ref[_i];
+        if (o.id === id) {
+          object = o;
+          break;
+        }
       }
+      return object;
+    },
+    setState: function(object, state) {
+      object.setOptions(state);
+      return object.setCoords();
     }
-    return object;
-  },
-  setState: function(object, state) {
-    object.setOptions(state);
-    return object.setCoords();
   }
-};
+});
 
-undo.init();
+haika.undo.init();
 
 //# sourceMappingURL=haika-undo.js.map
 ;var addPixel, loadComplete, loadImg;
@@ -26148,7 +26134,7 @@ loadComplete = function(data) {
     w: w,
     h: h
   };
-  worker = new Worker("js/worker.js");
+  worker = new Worker("js/haika-image-worker.js");
   worker.onmessage = function(e) {
     var result, results, _i, _len;
     log(e.data);
@@ -26186,91 +26172,89 @@ addPixel = function(x, y, color) {
 };
 
 //# sourceMappingURL=haika-image.js.map
-;var editor, editor_change;
-
-editor = new JSONEditor(document.getElementById("editor"), {
-  theme: "bootstrap3",
-  iconlib: "fontawesome4",
-  disable_edit_json: true,
-  disable_properties: true,
-  schema: {
-    title: "基本情報",
-    type: "object",
-    properties: {
-      label: {
-        title: "ラベル",
-        type: "string"
-      },
-      count: {
-        title: "連数",
-        type: "integer",
-        "default": 3,
-        minimum: 1,
-        maximum: 10
-      },
-      side: {
-        title: "面数",
-        type: "integer",
-        "default": 1,
-        minimum: 1,
-        maximum: 2
-      },
-      angle: {
-        title: "角度",
-        type: "integer",
-        "default": 0,
-        minimum: 0,
-        maximum: 360
-      },
-      eachWidth: {
-        type: "integer",
-        "default": 90,
-        minimum: 1
-      },
-      eachHeight: {
-        type: "integer",
-        "default": 25,
-        minimum: 1
-      },
-      minor: {
-        type: "integer"
-      }
-    }
-  }
-});
-
-editor.on("change", function() {
-  log('onchange');
-  return editor_change();
-});
-
-editor_change = function() {
-  var changed, data, errors, key, object;
-  errors = editor.validate();
-  if (errors.length) {
-    log(errors);
-  } else {
-    data = editor.getValue();
-    log(data);
-    object = haika.canvas.getActiveObject();
-    log(object);
-    if (object) {
-      changed = false;
-      for (key in editor.schema.properties) {
-        log(key);
-        log(data[key]);
-        if (object[key] !== data[key]) {
-          object[key] = data[key];
-          changed = true;
+;$.extend(haika, {
+  editor: new JSONEditor(document.getElementById("editor"), {
+    theme: "bootstrap3",
+    iconlib: "fontawesome4",
+    disable_edit_json: true,
+    disable_properties: true,
+    schema: {
+      title: "基本情報",
+      type: "object",
+      properties: {
+        label: {
+          title: "ラベル",
+          type: "string"
+        },
+        count: {
+          title: "連数",
+          type: "integer",
+          "default": 3,
+          minimum: 1,
+          maximum: 10
+        },
+        side: {
+          title: "面数",
+          type: "integer",
+          "default": 1,
+          minimum: 1,
+          maximum: 2
+        },
+        angle: {
+          title: "角度",
+          type: "integer",
+          "default": 0,
+          minimum: 0,
+          maximum: 360
+        },
+        eachWidth: {
+          type: "integer",
+          "default": 90,
+          minimum: 1
+        },
+        eachHeight: {
+          type: "integer",
+          "default": 25,
+          minimum: 1
+        },
+        minor: {
+          type: "integer"
         }
       }
-      if (changed) {
-        log('change');
-        haika.save();
+    }
+  }),
+  editor_change: function() {
+    var changed, data, errors, key, object;
+    errors = haika.editor.validate();
+    if (errors.length) {
+      log(errors);
+    } else {
+      data = haika.editor.getValue();
+      log(data);
+      object = haika.canvas.getActiveObject();
+      log(object);
+      if (object) {
+        changed = false;
+        for (key in haika.editor.schema.properties) {
+          log(key);
+          log(data[key]);
+          if (object[key] !== data[key]) {
+            object[key] = data[key];
+            changed = true;
+          }
+        }
+        if (changed) {
+          log('change');
+          haika.save();
+        }
       }
     }
   }
-};
+});
+
+haika.editor.on("change", function() {
+  return log('onchange');
+});
 
 //# sourceMappingURL=haika-editor.js.map
 ;// OpenLayers 3. see http://ol3js.org/

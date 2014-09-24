@@ -1,5 +1,6 @@
 # スクロールバーの設定
-setScrollbar = ->
+# haikaの初期設定完了時に実行する  
+$(haika).on 'haika:initialized', ->
   scroll_weight = 5000
   bgimg_width = if haika.bgimg then haika.bgimg_width else 2500
   bgimg_height = if haika.bgimg then haika.bgimg_height else 2500
@@ -33,6 +34,3 @@ setScrollbar = ->
         centerY = -maxY + haika.canvas.getHeight() / 2
       haika.centerY = -centerY.toFixed(0)
       haika.render()
-
-$(haika).on 'haika:initialized', ->
-  setScrollbar()

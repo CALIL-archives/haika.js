@@ -1,6 +1,4 @@
-var setScrollbar;
-
-setScrollbar = function() {
+$(haika).on('haika:initialized', function() {
   var bgimg_height, bgimg_width, defaultX, defaultY, maxX, maxY, scroll_weight;
   scroll_weight = 5000;
   bgimg_width = haika.bgimg ? haika.bgimg_width : 2500;
@@ -43,10 +41,6 @@ setScrollbar = function() {
       return haika.render();
     }
   });
-};
-
-$(haika).on('haika:initialized', function() {
-  return setScrollbar();
 });
 
 //# sourceMappingURL=haika-scrollbar.js.map

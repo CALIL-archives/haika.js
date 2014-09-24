@@ -45,7 +45,7 @@ loadComplete = function(data) {
     w: w,
     h: h
   };
-  worker = new Worker("js/worker.js");
+  worker = new Worker("js/haika-image-worker.js");
   worker.onmessage = function(e) {
     var result, results, _i, _len;
     log(e.data);

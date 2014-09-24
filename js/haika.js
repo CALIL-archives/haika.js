@@ -122,7 +122,7 @@ haika = {
         object = e.target;
         _this.canvas.deactivateAll().renderAll();
         _this.save();
-        editor_change();
+        _this.editor_change();
         return _this.setPropetyPanel();
       };
     })(this));
@@ -813,17 +813,17 @@ haika = {
     $('.canvas_panel, .object_panel, .group_panel').hide();
     object = this.canvas.getActiveObject();
     if (object && (object.getJsonSchema != null)) {
-      editor.schema = object.getJsonSchema();
+      this.editor.schema = object.getJsonSchema();
       properties = {};
-      for (key in editor.schema.properties) {
-        if (editor.schema.properties[key].type === 'integer') {
+      for (key in this.editor.schema.properties) {
+        if (this.editor.schema.properties[key].type === 'integer') {
           value = parseInt(object[key]).toFixed(0);
         } else {
           value = object[key];
         }
         properties[key] = value;
       }
-      editor.setValue(properties);
+      this.editor.setValue(properties);
       if (object.toGeoJSON != null) {
         $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4));
       }

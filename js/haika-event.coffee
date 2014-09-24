@@ -35,7 +35,7 @@ $ ->
     object = haika.canvas.getActiveObject()
     haika.remove()
     if object
-      undo.remove(object)
+      haika.undo.remove(object)
   $(".zoomin").click ->
     haika.zoomIn()
   $(".zoomout").click ->
@@ -153,7 +153,7 @@ $ ->
 
   
   $('.undo').click ->
-    undo.undoManager.undo()
+    haika.undo.undoManager.undo()
 
   # ショートカットキー
   cancel_default = (e)->
@@ -181,7 +181,7 @@ $ ->
     return false
   Mousetrap.bind 'mod+z', (e)->
     cancel_default(e)
-    undo.undoManager.undo()
+    haika.undo.undoManager.undo()
     return false
   Mousetrap.bind ['esc', 'escape'], (e)->
     cancel_default(e)

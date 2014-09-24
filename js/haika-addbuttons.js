@@ -1,55 +1,65 @@
-var add, addmany, showAddButtons;
-
-add = function(val) {
-  var id, klass, object;
-  log(val);
-  klass = haika.getClass(val.type);
-  object = new klass({
-    top: haika.transformTopY_cm2px(haika.centerY),
-    left: haika.transformLeftX_cm2px(haika.centerX),
-    fill: haika.fillColor,
-    stroke: haika.strokeColor,
-    angle: val.angle != null ? val.angle : 0
-  });
-  if (val.count != null) {
-    object.count = val.count;
-  }
-  if (val.side != null) {
-    object.side = val.side;
-  }
-  if (val.type.match(/shelf$/)) {
-    object.eachWidth = val.eachWidth;
-    object.eachHeight = val.eachHeight;
-  }
-  id = haika.add(object);
-  haika.setState(object);
-  haika.render();
-  undo.add(id);
-  return $(haika.canvas.getObjects()).each((function(_this) {
-    return function(i, obj) {
-      if (obj.id === object.id) {
-        return setTimeout(function() {
-          haika.canvas.setActiveObject(haika.canvas.item(i));
-          return $('.add').blur();
-        }, 10);
+$.extend(haika, {
+  addbuttons: {
+    add: function(val) {
+      var id, klass, object;
+      log(val);
+      klass = haika.getClass(val.type);
+      object = new klass({
+        top: haika.transformTopY_cm2px(haika.centerY),
+        left: haika.transformLeftX_cm2px(haika.centerX),
+        fill: haika.fillColor,
+        stroke: haika.strokeColor,
+        angle: val.angle != null ? val.angle : 0
+      });
+      if (val.count != null) {
+        object.count = val.count;
       }
-    };
-  })(this));
-};
-
-addmany = function() {
-  var x, y;
-  y = 0;
-  while (y < 8) {
-    x = 0;
-    while (x < 22) {
-      add(200 + 400 * y, 100 + 50 * x, 90);
-      x++;
+      if (val.side != null) {
+        object.side = val.side;
+      }
+      if (val.type.match(/shelf$/)) {
+        object.eachWidth = val.eachWidth;
+        object.eachHeight = val.eachHeight;
+      }
+      id = haika.add(object);
+      haika.setState(object);
+      haika.render();
+      undo.add(id);
+      return $(haika.canvas.getObjects()).each((function(_this) {
+        return function(i, obj) {
+          if (obj.id === object.id) {
+            return setTimeout(function() {
+              haika.canvas.setActiveObject(haika.canvas.item(i));
+              return $('.add').blur();
+            }, 10);
+          }
+        };
+      })(this));
+    },
+    addmany: function() {
+      var x, y;
+      y = 0;
+      while (y < 8) {
+        x = 0;
+        while (x < 22) {
+          this.add(200 + 400 * y, 100 + 50 * x, 90);
+          x++;
+        }
+        y++;
+      }
+      haika.render();
+    },
+    showAddButtons: function(state) {
+      return $('.toolbar_container ul:first>li').each(function(i, button) {
+        if ($(button).attr('state') === state) {
+          return $(button).show();
+        } else {
+          return $(button).hide();
+        }
+      });
     }
-    y++;
   }
-  haika.render();
-};
+});
 
 $(function() {
   var addButtons, html, key, val, _results;
@@ -128,31 +138,21 @@ $(function() {
     val = addButtons[key];
     html = "<li id=\"add_" + key + "\" key=\"" + key + "\" state=\"" + val.state + "\"><i class=\"fa fa-" + val.icon + "\"></i> " + val.title + "</li>";
     $('.toolbar_container ul:first').append(html);
-    showAddButtons('shelf');
+    haika.addbuttons.showAddButtons('shelf');
     _results.push($('#add_' + key).click(function(e) {
       var object;
       key = $(e.target).attr('key');
       object = addButtons[key];
       object.type = key;
-      add(object);
+      haika.addbuttons.add(object);
       return haika.render();
     }));
   }
   return _results;
 });
 
-showAddButtons = function(state) {
-  return $('.toolbar_container ul:first>li').each(function(i, button) {
-    if ($(button).attr('state') === state) {
-      return $(button).show();
-    } else {
-      return $(button).hide();
-    }
-  });
-};
-
 $(haika).on('haika:initialized', function() {
-  return showAddButtons(haika.state);
+  return haika.addbuttons.showAddButtons(haika.state);
 });
 
 //# sourceMappingURL=haika-addbuttons.js.map

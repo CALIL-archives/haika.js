@@ -42,7 +42,7 @@ loadComplete = (data)->
     image : data
     w     : w
     h     : h
-  worker = new Worker("js/worker.js")
+  worker = new Worker("js/haika-image-worker.js")
   worker.onmessage = (e) ->
     log e.data
     switch e.data.status

@@ -1,50 +1,55 @@
 # オブジェクト追加ボタン
 
-# オブジェクトの追加
-add = (val)->
-  log val
-  klass = haika.getClass(val.type)
-  object = new klass(
-    top: haika.transformTopY_cm2px(haika.centerY)
-    left: haika.transformLeftX_cm2px(haika.centerX)
-    fill: haika.fillColor
-    stroke: haika.strokeColor
-    angle: if val.angle? then val.angle else 0
-    #lockScalingY: true
-  )
-  if val.count?
-    object.count = val.count
-  if val.side?
-    object.side = val.side
-  if val.type.match(/shelf$/)
-    object.eachWidth = val.eachWidth
-    object.eachHeight = val.eachHeight
-  id = haika.add(object)
-  haika.setState(object)
-  haika.render()
-  undo.add(id)
-  $(haika.canvas.getObjects()).each (i, obj)=>
-    if obj.id==object.id
-      setTimeout ->
-        haika.canvas.setActiveObject(haika.canvas.item(i))
-        $('.add').blur()
-      , 10
-#setTimeout(->
-  #addmany()
-  #add(250, 250)
-#, 500)
+$.extend haika, 
+  addbuttons:
+    # オブジェクトの追加
+    add : (val)->
+      log val
+      klass = haika.getClass(val.type)
+      object = new klass(
+        top: haika.transformTopY_cm2px(haika.centerY)
+        left: haika.transformLeftX_cm2px(haika.centerX)
+        fill: haika.fillColor
+        stroke: haika.strokeColor
+        angle: if val.angle? then val.angle else 0
+        #lockScalingY: true
+      )
+      if val.count?
+        object.count = val.count
+      if val.side?
+        object.side = val.side
+      if val.type.match(/shelf$/)
+        object.eachWidth = val.eachWidth
+        object.eachHeight = val.eachHeight
+      id = haika.add(object)
+      haika.setState(object)
+      haika.render()
+      undo.add(id)
+      $(haika.canvas.getObjects()).each (i, obj)=>
+        if obj.id==object.id
+          setTimeout ->
+            haika.canvas.setActiveObject(haika.canvas.item(i))
+            $('.add').blur()
+          , 10
 
-# テスト用
-addmany = ->
-  y = 0
-  while y < 8
-    x = 0
-    while x < 22
-      add 200 + 400 * y, 100 + 50 * x, 90
-      x++
-    y++
-  haika.render()
-  return
+    # テスト用
+    addmany : ->
+      y = 0
+      while y < 8
+        x = 0
+        while x < 22
+          @add 200 + 400 * y, 100 + 50 * x, 90
+          x++
+        y++
+      haika.render()
+      return
+
+    showAddButtons : (state)->
+      $('.toolbar_container ul:first>li').each (i,button)->
+        if $(button).attr('state')==state
+          $(button).show()
+        else
+          $(button).hide()
 
 $ ->
   addButtons = 
@@ -110,23 +115,21 @@ $ ->
   for key, val of addButtons
     html = """<li id="add_#{key}" key="#{key}" state="#{val.state}"><i class="fa fa-#{val.icon}"></i> #{val.title}</li>"""
     $('.toolbar_container ul:first').append(html)
-    showAddButtons('shelf')
+    haika.addbuttons.showAddButtons('shelf')
     $('#add_'+key).click (e)->
       key =  $(e.target).attr('key')
       object = addButtons[key]
       object.type = key
-      add(object)
+      haika.addbuttons.add(object)
       haika.render()
 
-showAddButtons = (state)->
-  $('.toolbar_container ul:first>li').each (i,button)->
-    if $(button).attr('state')==state
-      $(button).show()
-    else
-      $(button).hide()
 
       
-      
+# haikaの初期設定完了時に実行する      
 $(haika).on 'haika:initialized', ->
-  showAddButtons(haika.state)
+  haika.addbuttons.showAddButtons(haika.state)
 
+#setTimeout(->
+  #haika.addbuttons.addmany()
+  #haika.addbuttons.add(250, 250)
+#, 500)
