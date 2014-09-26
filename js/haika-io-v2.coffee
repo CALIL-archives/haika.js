@@ -1,9 +1,6 @@
 # haikaのsave, load関連の関数
 # haikaを拡張
 $.extend haika, 
-  # 実行環境 ローカルか？
-  isLocal : ->
-    return location.protocol=='file:' or location.port!=''
   # ハッシュの変更イベント
   setHashChange : ()->
     # ハッシュ変更時に再読み込み
@@ -14,15 +11,6 @@ $.extend haika,
     if location.hash!='' and location.hash.length!=7
       location.hash = sprintf('%06d',location.hash.split('#')[1])
       location.reload()
-      return
-    # ローカルか？
-    if @isLocal()
-      data =
-        canvas : JSON.parse(localStorage.getItem('canvas'))
-        geojson : JSON.parse(localStorage.getItem('geojson'))
-      log data
-      @loadRender(data)
-      $(@).trigger('haika:load')
       return
     # location.hashにIDはあるか？
     if location.hash!=''
@@ -52,11 +40,8 @@ $.extend haika,
       @options.angle = canvas.angle
       if canvas.geojson_scale?
         @options.geojson_scale = canvas.geojson_scale
-      if @isLocal()
-        @setBg()
-      else
-        if canvas.bgurl?
-          @loadBgFromUrl(canvas.bgurl)
+      if canvas.bgurl?
+        @loadBgFromUrl(canvas.bgurl)
       if canvas.lon?
         @options.lon = parseFloat(canvas.lon)
         @options.lat = parseFloat(canvas.lat)
@@ -131,12 +116,6 @@ $.extend haika,
       angle: @options.angle
       geojson_scale: @options.geojson_scale
     }
-  # ローカルストレージに保存
-  saveLocal : ->
-    canvas = @getCanvasProperty()
-    localStorage.setItem('canvas', JSON.stringify(canvas))
-#    localStorage.setItem('app_data', JSON.stringify(@objects))
-    localStorage.setItem('geojson', JSON.stringify(@toGeoJSON(), null, 4))
   # サーバーに保存
   saveServer : ->
     param = 
@@ -183,9 +162,7 @@ $.extend haika,
     log 'save'
     for object in @canvas.getObjects()
       @saveProperty(object)
-    @saveLocal()
-    if not @isLocal()
-      @saveServer()
+    @saveServer()
     $(@).trigger('haika:save')
   # オブジェクトのプロパティの保存
   saveProperty : (object, group=false)->

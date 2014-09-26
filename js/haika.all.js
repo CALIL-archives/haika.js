@@ -25138,7 +25138,7 @@ haika = {
   },
   getHaikaId: function() {
     var url;
-    url = '/haika_store/index.php';
+    url = 'http://lab.calil.jp/haika_store/index.php';
     return $.ajax({
       url: url,
       type: "GET",
@@ -25156,7 +25156,7 @@ haika = {
   },
   load_server: function() {
     var url;
-    url = "/haika_store/data/" + this.id + ".json";
+    url = "http://lab.calil.jp/haika_store/data/" + this.id + ".json";
     return $.ajax({
       url: url,
       type: "GET",
@@ -25175,7 +25175,7 @@ haika = {
           } catch (_error) {
             alert('parse error');
             $(window).off('beforeunload');
-            location.href = "/haika_store/data/" + _this.id + ".json";
+            location.href = "http://lab.calil.jp/haika_store/data/" + _this.id + ".json";
           }
           _this.loadRender(data);
           return _this.setHashChange();

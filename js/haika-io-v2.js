@@ -1,27 +1,13 @@
 $.extend(haika, {
-  isLocal: function() {
-    return location.protocol === 'file:' || location.port !== '';
-  },
   setHashChange: function() {
     return $(window).bind("hashchange", function() {
       return location.reload();
     });
   },
   load: function() {
-    var data;
     if (location.hash !== '' && location.hash.length !== 7) {
       location.hash = sprintf('%06d', location.hash.split('#')[1]);
       location.reload();
-      return;
-    }
-    if (this.isLocal()) {
-      data = {
-        canvas: JSON.parse(localStorage.getItem('canvas')),
-        geojson: JSON.parse(localStorage.getItem('geojson'))
-      };
-      log(data);
-      this.loadRender(data);
-      $(this).trigger('haika:load');
       return;
     }
     if (location.hash !== '') {
@@ -52,12 +38,8 @@ $.extend(haika, {
       if (canvas.geojson_scale != null) {
         this.options.geojson_scale = canvas.geojson_scale;
       }
-      if (this.isLocal()) {
-        this.setBg();
-      } else {
-        if (canvas.bgurl != null) {
-          this.loadBgFromUrl(canvas.bgurl);
-        }
+      if (canvas.bgurl != null) {
+        this.loadBgFromUrl(canvas.bgurl);
       }
       if (canvas.lon != null) {
         this.options.lon = parseFloat(canvas.lon);
@@ -154,12 +136,6 @@ $.extend(haika, {
       geojson_scale: this.options.geojson_scale
     };
   },
-  saveLocal: function() {
-    var canvas;
-    canvas = this.getCanvasProperty();
-    localStorage.setItem('canvas', JSON.stringify(canvas));
-    return localStorage.setItem('geojson', JSON.stringify(this.toGeoJSON(), null, 4));
-  },
   saveServer: function() {
     var data, param, url;
     param = {
@@ -215,10 +191,7 @@ $.extend(haika, {
       object = _ref[_i];
       this.saveProperty(object);
     }
-    this.saveLocal();
-    if (!this.isLocal()) {
-      this.saveServer();
-    }
+    this.saveServer();
     return $(this).trigger('haika:save');
   },
   saveProperty: function(object, group) {
@@ -389,4 +362,4 @@ $.extend(haika, {
   }
 });
 
-//# sourceMappingURL=haika-io-v1.js.map
+//# sourceMappingURL=haika-io-v2.js.map

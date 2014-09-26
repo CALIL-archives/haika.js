@@ -60,7 +60,7 @@ module.exports = (grunt) ->
           "js/fabric_obiect/floor.js"
           "js/fabric_obiect/grid.js"
           "js/haika.js"
-          "js/haika-io-v1.js"
+          "js/haika-io-v2.js"
           "js/haika-scrollbar.js"
           "js/haika-init.js"
           "js/haika-addbuttons.js"
