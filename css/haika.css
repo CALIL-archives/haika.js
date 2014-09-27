@@ -1,0 +1,156 @@
+body {
+  overflow: hidden; 
+}
+
+.header {
+  height: 42px;
+  border-bottom: 1px solid #CCCCCC;
+}
+.nav {
+  float: left;
+  width: 300px;
+}
+
+.main_container {
+  float: left;
+}
+
+
+/* toolbar */
+.toolbar_container {
+  width: 156px;
+  position: absolute;
+  left: 0;
+  top:  42px;
+  z-index: 10000000;
+  padding: 10px;
+  border-right: 1px solid #CCCCCC;
+  background-color: #FFFFFF;
+}
+.toolbar_container ul {
+  margin-left: 0;
+  padding-left: 0;
+}
+.toolbar_container ul.toolbar_menu>li {
+  display: block;
+  list-style: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #CCCCCC;
+  background-color: #FFFFFF;
+}
+.toolbar_container ul.toolbar_menu>li:hover {
+  background-color: lightpink;
+}
+.dropdown-colorselector>.dropdown-menu {
+  min-width: 730px; 
+  max-width: 730px; 
+  width: 730px;
+}
+
+
+/* scrollbar */
+
+#vertical-scroller {
+  float: left;
+  z-index: 10001;
+}
+#vertical-scroller.dragdealer {
+  border-left: 1px solid #CCCCCC; 
+/*  border-top: 1px solid #CCCCCC; */
+  border-bottom: 1px solid #CCCCCC; 
+}
+#vertical-scroller .dragdealer {
+  width: 30px;
+}
+#vertical-scroller .dragdealer .handle {
+  width: 30px;
+  height: 60px;
+  text-align: center;
+}
+#vertical-scroller .dragdealer .handle i {
+  line-height: 60px;
+}
+
+#horizontal-scroller {
+  z-index: 10000;
+  border-top: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+  border-left: 1px solid #CCCCCC;
+}
+
+.gray-bar {
+  width: 100px;
+  height: 30px;
+  background: #666666;
+  color: #FFF;
+  font-size: 14px;
+  line-height: 30px;
+  text-align: center;
+}
+
+/* zoom */
+.zoom {
+  display: inline-block;
+  width: 3em;
+  text-align: center;
+}
+
+/* editor */
+
+#editor {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+/* property_panel */
+.side_container {
+  float: right;
+  width: 270px;
+}
+.property_panel {
+  float: right;
+  width: 240px;
+  color: #ffffff;
+  padding: 10px;
+  background-color: #000000;
+}
+.property_panel h3 {
+  font-size: 16px;
+}
+.canvas_panel {
+}
+.object_panel {
+  display: none;
+}
+.group_panel {
+  display: none;
+}
+
+#geojson {
+  width: 300px;
+  height: 500px;
+  color: #000000;
+}
+
+
+/* map */
+.map_container {
+  width: 900px;
+  margin: 30px auto;
+}
+div.fill {
+  width: 100%;
+  height: 100%;
+}
+#map {
+  margin: 0;
+  margin-top: 10px;
+  padding: 0;
+  width: 900px;
+  height: 600px;
+}
+#map_search {
+  width: 900px
+}
+

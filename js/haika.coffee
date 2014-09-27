@@ -19,6 +19,18 @@ haika =
   fillColor: "#CFE2F3"
   strokeColor: "#000000"
   options: {}
+  # left,x値のcm->px変換
+  transformLeftX_cm2px : (cm)->
+    return @canvas.getWidth()/2+(@centerX-cm)*@scale
+  # top,y値のcm->px変換
+  transformTopY_cm2px : (cm)->
+    return @canvas.getHeight()/2+(@centerY-cm)*@scale
+  # left,x値のpx->px変換
+  transformLeftX_px2cm : (px)->
+    return @centerX - (px - @canvas.getWidth() / 2) / @scale
+  # top,y値のcm->px変換
+  transformTopY_px2cm : (px)->
+    return @centerY - (px - @canvas.getHeight() / 2) / @scale
   init : (options)->
     default_options =
       canvas   : 'canvas'
@@ -33,7 +45,8 @@ haika =
       lon      : 0
       lat      : 0
       angle    : 0
-      
+      geojson_scale: 1.5
+    # オプションの上書き
     @options = $.extend(default_options, options)
     canvas = new fabric.Canvas(@options.canvas, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
@@ -71,14 +84,14 @@ haika =
     #initCenteringGuidelines(canvas)
     @canvas = canvas
     #@canvas.centeredRotation = true
-    @scale = options.scale
+    if options.scale?
+      @scale = options.scale
     if @options.bgurl
       @loadBgFromUrl(@options.bgurl)
     @render()
     setTimeout =>
       @load()
-      if @options.callback?
-        @options.callback()
+      $(@).trigger('haika:initialized')
     , 500
     @bindEvent()
   # Fabricのイベント追加
@@ -102,7 +115,7 @@ haika =
       object = e.target
       @canvas.deactivateAll().renderAll()
       @save()
-      editor_change()
+      @editor_change()
       @setPropetyPanel()
     @canvas.on 'object:scaling', (e) =>
       object = e.target
@@ -149,6 +162,10 @@ haika =
     @render()
     if @options.callback?
       @options.callback()
+  resetBg: ->
+    @bgimg_data=null
+    @save()
+    location.reload()
   # オブジェクトにつけるid 通し番号
   lastId : 0
   # idを取得
@@ -158,16 +175,16 @@ haika =
     @lastId += 1
     return @lastId
   # idからオブジェクトの配列番号を取得
-  findById : (id)->
+  getCountFindById : (id)->
     count = null
     $(@objects).each (i, obj)->
       if obj.id==id
         count = i
     return count
-  # オブジェクトの追加
+  # haikaオブジェクトの追加
   add : (object)->
     # new object
-    if object.id==''
+    if object.id=='' or not object.id
       object.id = @getId()
     o =
       id : object.id
@@ -195,6 +212,7 @@ haika =
         continue
       o[prop] = object[prop]
     @objects.push(o)
+    $(@).trigger('haika:add')
     return o.id
   # レイヤーの状態をセット
   setState : (object)->
@@ -210,7 +228,7 @@ haika =
     @state = state
     $('.nav a.'+@state).tab('show')
   # fabric上のオブジェクトの取得 共通関数
-  bind : (func, do_active=true)->
+  getObjects : (func, do_active=true)->
     object = @canvas.getActiveObject()
     if object
       new_id = func(object)
@@ -246,70 +264,101 @@ haika =
     @canvas.setActiveGroup(group.setCoords()).renderAll()
   # 削除
   remove : ->
-    @bind((object)=>
+    @getObjects((object)=>
       @__remove(object)
     , false)
+    $(@).trigger('haika:remove')
   __remove : (object)->
     @canvas.remove(object)
-    count = @findById(object.id)
+    count = @getCountFindById(object.id)
     @objects.splice(count, 1)
     return object
   # 最前面に移動
   bringToFront : ->
-    @bind (object)=>
-      count = @findById(object.id)
+    @getObjects((object)=>
+      count = @getCountFindById(object.id)
       object.bringToFront()
       obj = @objects[count]
       @objects.splice(count, 1)
       @objects.push(obj)
       return obj.id
-  # 追加して描画
-  addRender : (object, top, left)->
-    @save()
-    object.id = @getId()
-    object.top  = top
-    object.left = left
-    new_id = @add(object)
-    @render()
-    return new_id
+    )
   # 複製
   duplicate : ->
-    @bind (object)=>
-      @canvas.discardActiveGroup()
+    object = @canvas.getActiveObject()
+    if object
       o = fabric.util.object.clone(object)
-      new_id = @addRender(o, o.top+10,o.left+10)
-      return new_id
-  clipboard : []
-  clipboardCount : 1
-  # コピー
-  copy  : ->
-    @clipboard = []
-    @clipboardCount = 1
-    @bind (object)=>
-      @clipboard.push(object)
-    , false
-  # ペースト
-  paste : ->
-    if @clipboard.length<=0
-      return
-    if @clipboard.length==1
-      new_id = @__paste(@clipboard[0])
+      o.id   = @getId()
+      o.top  = @transformTopY_cm2px(@centerY)
+      o.left = @transformLeftX_cm2px(@centerX)
+      new_id = @add(o)
+    group = @canvas.getActiveGroup()
+    if group
+      new_ids = []
+      for object in group.getObjects()
+        o = fabric.util.object.clone(object)
+        o.id   = @getId()
+        o.top  = @transformTopY_cm2px(@centerY)+object.top
+        o.left = @transformLeftX_cm2px(@centerX)+object.left
+        new_id = @add(o)
+        new_ids.push(new_id)
+    @save()
+    @render()
+    if object
       $(@canvas.getObjects()).each (i, obj)=>
         if obj.id==new_id
           @canvas.setActiveObject(obj)
+    if group
+      @activeGroup(new_ids)
+    $(@).trigger('haika:duplicate')
+  clipboard : []
+  clipboard_scale : 0
+  # コピー
+  copy  : ->
+    @clipboard = []
+    object = @canvas.getActiveObject()
+    if object
+      @clipboard.push(fabric.util.object.clone(object))
+    group = @canvas.getActiveGroup()
+    if group
+      for object in group.getObjects()
+        @clipboard.push(fabric.util.object.clone(object))
+    @clipboard_scale = @scale
+    $(@).trigger('haika:copy')
+  # ペースト
+  paste : ->
+    # クリップボードになにもない
+    if @clipboard.length<=0
+      return
+    # クリップボードに１つ
+    if @clipboard.length==1
+      object = @clipboard[0]
+      o = fabric.util.object.clone(object)
+      o.id   = @getId()
+      o.top  = @transformTopY_cm2px(@centerY)
+      o.left = @transformLeftX_cm2px(@centerX)
+      new_id = @add(o)
+      @save()
+      @render()
+      $(@canvas.getObjects()).each (i, obj)=>
+        if obj.id==new_id
+          @canvas.setActiveObject(obj)
+    # クリップボードに複数
     else
       new_ids = []
       for object in @clipboard
-        new_id = @__paste(object)
+        o = fabric.util.object.clone(object)
+        o.id   = @getId()
+        o.top  = @transformTopY_cm2px(@centerY)+object.top*@scale/@clipboard_scale
+        o.left = @transformLeftX_cm2px(@centerX)+object.left*@scale/@clipboard_scale
+        new_id = @add(o)
         new_ids.push(new_id)
+      @save()
+      log 'pre render' + @clipboard[0].top
+      @render()
+      log 'after render' + @clipboard[0].top
       @activeGroup(new_ids)
-    @clipboardCount += 1
-  __paste : (object)->
-    o = fabric.util.object.clone(object)
-    top = o.top+@clipboardCount*o.height/2
-    left = o.left+@clipboardCount*o.width/10
-    new_id = @addRender(o, top, left)
-    return new_id
+      $(@).trigger('haika:paste')
   # すべてを選択(全レイヤー)
   selectAll : ()->
     @canvas.discardActiveGroup()
@@ -325,23 +374,11 @@ haika =
   # すべての選択解除
   unselectAll : ()->
     @canvas.deactivateAll().renderAll()
-  # left,x値のcm->px変換
-  transformLeftX_cm2px : (cm)->
-    return @canvas.getWidth()/2+(@centerX-cm)*@scale
-  # top,y値のcm->px変換
-  transformTopY_cm2px : (cm)->
-    return @canvas.getHeight()/2+(@centerY-cm)*@scale
-  # left,x値のpx->px変換
-  transformLeftX_px2cm : (px)->
-    return @centerX - (px - @canvas.getWidth() / 2) / @scale
-  # top,y値のcm->px変換
-  transformTopY_px2cm : (px)->
-    return @centerY - (px - @canvas.getHeight() / 2) / @scale
   # 選択解除
   unselect : ->
-    object = haika.canvas.getActiveObject()
+    object = @canvas.getActiveObject()
     if not object
-      object = haika.canvas.getActiveGroup()
+      object = @canvas.getActiveGroup()
     if object
       @canvas.fire('before:selection:cleared', { target: object })
       @canvas.fire('selection:cleared', { target: object })
@@ -380,12 +417,12 @@ haika =
         floors.push(o)
       if o.type.match(/shelf$/)
         shelfs.push(o)
-    if haika.state!='floor'
+    if @state!='floor'
       for o in floors
         @addObjectToCanvas(o)
     for o in walls
       @addObjectToCanvas(o)
-    if haika.state=='floor'
+    if @state=='floor'
       for o in floors
         @addObjectToCanvas(o)
     for o in shelfs
@@ -396,6 +433,7 @@ haika =
     @canvas.renderAll()
     @canvas.renderOnAddRemove=true
     @setCanvasProperty()
+    $(@).trigger('haika:render')
   # canvasにオブジェクトを追加
   addObjectToCanvas : (o)->
     klass = @getClass(o.type)
@@ -458,15 +496,16 @@ haika =
       @canvas.setBackgroundImage @bgimg
   # キャンバスのプロパティを設定
   setCanvasProperty : ->
-    $('#canvas_width').val(@canvas.getWidth())
-    $('#canvas_height').val(@canvas.getHeight())
-    $('#canvas_centerX').val(@centerX)
-    $('#canvas_centerY').val(@centerY)
+    $('#canvas_width').html(@canvas.getWidth())
+    $('#canvas_height').html(@canvas.getHeight())
+    $('#canvas_centerX').html(@centerX)
+    $('#canvas_centerY').html(@centerY)
     $('#canvas_bgscale').val(@options.bgscale)
     $('#canvas_bgopacity').val(@options.bgopacity)
     $('#canvas_lon').val(@options.lon)
     $('#canvas_lat').val(@options.lat)
-    $('#canvas_angle').val(@options.angle)
+    $('#canvas_angle').val(canvas.angle)
+    $('#geojson_scale').val(canvas.geojson_scale)
   # 移動ピクセル数を取得
   getMovePixel : (event)->
     return if event.shiftKey then 10 else 1
@@ -589,325 +628,11 @@ haika =
     @scale = 1
     @render()
     $('.zoom').html('100%')
-  # 実行環境 ローカルか？
-  isLocal : ->
-    return location.protocol=='file:' or location.port!=''
-  # ハッシュの変更イベント
-  setHashChange : ()->
-    # ハッシュ変更時に再読み込み
-    $(window).bind "hashchange", ->
-      location.reload()
-  # データのロード
-  load : ()->
-    if location.hash!='' and location.hash.length!=7
-      location.hash = sprintf('%06d',location.hash.split('#')[1])
-      return
-    # ローカルか？
-    if @isLocal()
-      data =
-        canvas : JSON.parse(localStorage.getItem('canvas'))
-        geojson : JSON.parse(localStorage.getItem('geojson'))
-      log data
-      @loadRender(data)
-      return
-    # location.hashにIDはあるか？
-    if location.hash!=''
-      @id = location.hash.split('#')[1]
-      # サーバーからロード
-      @load_server()
-    else
-      # 新規IDの取得, ハッシュに設定
-      @getHaikaId()
-  # ロードして描画
-  loadRender : (data)->
-    log data
-    canvas = data.canvas
-    geojson = data.geojson
-    if canvas
-      log canvas
-      @state   = canvas.state
-      $('.nav a.'+@state).tab('show')
-      @scale   = canvas.scale
-      $('.zoom').html((@scale*100).toFixed(0)+'%')
-      @centerX = canvas.centerX
-      @centerY = canvas.centerY
-      @bgimg_data = canvas.bgimg_data
-      @options.bgscale = if canvas.bgscale then canvas.bgscale else 4.425
-      @options.bgopacity = canvas.bgopacity
-      if @isLocal()
-        @setBg()
-      else
-        if canvas.bgurl?
-          @loadBgFromUrl(canvas.bgurl)
-      if canvas.lon?
-        @options.lon = parseFloat(canvas.lon)
-        @options.lat = parseFloat(canvas.lat)
-        @options.angle = parseInt(canvas.angle)
-    if geojson and geojson.features.length>0
-      for object in geojson.features
-        if object.properties.id>@lastId
-          @lastId = object.properties.id
-        klass = @getClass(object.properties.type)
-        shape = new klass(
-          id: object.properties.id
-          top: @transformTopY_cm2px(object.properties.top_cm)
-          left: @transformLeftX_cm2px(object.properties.left_cm)
-          top_cm: object.properties.top_cm
-          left_cm: object.properties.left_cm
-          fill: object.properties.fill
-          stroke: object.properties.stroke
-          angle: object.properties.angle
-        )
-        schema = shape.constructor.prototype.getJsonSchema()
-        for key of schema.properties
-#          log key
-#          log object.properties[key]
-          shape[key] = object.properties[key]
-        @add(shape)
-    @render()
-  # 新規配架図idを取得
-  getHaikaId : ->
-    url = '/haika_store/index.php'
-    $.ajax
-      url: url
-      type: "GET"
-      cache : false
-      dataType: "json"
-      error: ()->
-      success: (data)=>
-        location.hash = data.id
-        @id = data.id
-        @setHashChange()
-  # サーバーからデータをロード
-  load_server : ->
-    url = """/haika_store/data/#{@id}.json"""
-    $.ajax
-      url: url
-      type: "GET"
-      cache : false
-      dataType: "text"
-      error: ()=>
-        alert 'load error'
-      success: (data)=>
-        log data
-        try
-          data = JSON.parse(data)
-        catch
-          alert 'parse error'
-          $(window).off 'beforeunload'
-          location.href = """/haika_store/data/#{@id}.json"""
-        @loadRender(data)
-        @setHashChange()
-  # キャンバスのプロパティを取得
-  getCanvasProperty : ->
-    return {
-      state : @state
-      scale : @scale
-      centerX : @centerX
-      centerY : @centerY
-      bgimg_data: @bgimg_data
-      bgurl: @options.bgurl
-      bgscale : @options.bgscale
-      bgopacity : @options.bgopacity
-      lon : @options.lon
-      lat : @options.lat
-      angle: @options.angle
-    }
-  # ローカルストレージに保存
-  saveLocal : ->
-    canvas = @getCanvasProperty()
-    localStorage.setItem('canvas', JSON.stringify(canvas))
-#    localStorage.setItem('app_data', JSON.stringify(@objects))
-    localStorage.setItem('geojson', JSON.stringify(@toGeoJSON(), null, 4))
-  # サーバーに保存
-  saveServer : ->
-    param = 
-      canvas : @getCanvasProperty()
-      geojson: @toGeoJSON()
-    param = JSON.stringify(param)
-    log param
-    data =
-      ext: 'json'
-      id  : @id
-      data: param
-#    log data
-    url = '/haika_store/index.php'
-    $.ajax
-      url: url
-      type: "POST"
-      data: data
-      dataType: "json"
-      error: ()->
-      success: (data)=>
-        log data
-    @saveGeoJson()
-  # geojsonの保存
-  saveGeoJson : ->
-    geojson = @createGeoJson()
-    param = JSON.stringify(geojson)
-    data =
-      ext: 'geojson'
-      id  : @id
-      data: param
-#    log data
-    url = '/haika_store/index.php'
-    $.ajax
-      url: url
-      type: "POST"
-      data: data
-      dataType: "json"
-      error: ()->
-      success: (data) >
-        log data
-        log 'geojson save'
-  # 保存
-  save : ->
-    log 'save'
-    for object in @canvas.getObjects()
-      @saveProperty(object)
-    @saveLocal()
-    if not @isLocal()
-      @saveServer()
-  # オブジェクトのプロパティの保存
-  saveProperty : (object, group=false)->
-#    log object.__proto__.getJsonSchema()
-#    log object.constructor.prototype.getJsonSchema()
-    count = @findById(object.id)
-    @objects[count].id      = object.id
-    @objects[count].type    = object.type
-    @objects[count].top_cm  = @transformTopY_px2cm(object.top)
-    object.top_cm           = @objects[count].top_cm
-    @objects[count].left_cm = @transformLeftX_px2cm(object.left)
-    object.left_cm          = @objects[count].left_cm
-    @objects[count].scaleX  = object.scaleX / @scale
-    @objects[count].scaleY  = object.scaleY / @scale
-    @objects[count].angle   = object.angle
-    @objects[count].fill    = object.fill
-    @objects[count].stroke  = object.stroke
-    schema = object.constructor.prototype.getJsonSchema()
-    for key of schema.properties
-#      log key
-#        log object[key]
-      @objects[count][key] = object[key]
-#      @objects[count].count = object.count
-#      @objects[count].side  = object.side
-#      @objects[count].eachWidth  = object.eachWidth
-#      @objects[count].eachHeight = object.eachHeight
-  # オブジェクトをgeojsonに変換
-  toGeoJSON : ->
-    features = []
-    for object in @canvas.getObjects()
-      geojson = object.toGeoJSON()
-      features.push(geojson)
-    data = 
-      "type": "FeatureCollection"
-      "features": features
-    return data
-#  getGeoJSON : ->
-#    @unselect()
-#    @render()
-#    geojson = @translateGeoJSON()
-#    localStorage.setItem('geojson', JSON.stringify(geojson))
-#    log geojson
-#    $(window).off 'beforeunload'
-#    location.href = 'map2.html'
-  # geojsonの作成 座標変換
-  createGeoJson : ->
-    geojson = @translateGeoJSON()
-    features = []
-    if geojson and geojson.features.length>0
-      for object in geojson.features
-        # 結合前の床は省く
-        if object.properties.type!='floor'
-          coordinates = []
-          for geometry in object.geometry.coordinates[0]
-            x = geometry[0]
-            y = geometry[1]
-            coordinate = ol.proj.transform([x,y], "EPSG:3857", "EPSG:4326")
-            coordinates.push(coordinate)
-          # 結合した床面をfloorに戻す
-          if object.properties.type=='merge_floor'
-            log object.properties
-            object.properties.type='floor'
-          data =
-            "type": "Feature"
-            "geometry":
-              "type": "Polygon",
-              "coordinates": [
-                coordinates
-              ]
-            "properties": object.properties
-          features.push(data)
-    EPSG3857_geojson =
-      "type": "FeatureCollection"
-      "features": features
-    return EPSG3857_geojson
-  # geojsonの回転
-  translateGeoJSON : ->
-    geojson = @toGeoJSON()
-    geojson = @mergeGeoJson(geojson)
-    features = []
-    for object in geojson.features
-      mapCenter = proj4("EPSG:4326", "EPSG:3857", [@options.lon, @options.lat])
-      if mapCenter
-        coordinates = []
-        for geometry in object.geometry.coordinates[0]
-          x = geometry[0]
-          y = geometry[1]
-          # 回転の反映
-          new_coordinate =  fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-@options.angle))
-          coordinate = [mapCenter[0]+new_coordinate.x, mapCenter[1]+new_coordinate.y]
-          coordinates.push(coordinate)
-        object.geometry.coordinates = [coordinates]
-      features.push(object)
-    geojson.features = features
-    return geojson
-  # geojson床オブジェクトのマージ
-  mergeGeoJson : (geojson) ->
-    paths = []
-    if geojson and geojson.features.length>0
-      for object in geojson.features
-        if object.properties.type=='floor'
-          path = []
-          log object.geometry.coordinates[0]
-          for geometry in object.geometry.coordinates[0]
-            p = {
-              X: geometry[0]
-              Y: geometry[1]
-            }
-            path.push(p)
-          paths.push([path])
-      log paths
-
-      cpr = new ClipperLib.Clipper()
-      for path in paths
-        cpr.AddPaths path, ClipperLib.PolyType.ptSubject, true # true means closed path
-      solution_paths = new ClipperLib.Paths()
-      succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero)
-
-      log solution_paths
-      for path in solution_paths
-        coordinates = []
-        first = true
-        for p in path
-          if first
-            first_coordinates = [p.X, p.Y]
-            first = false
-          coordinates.push [p.X, p.Y]
-        coordinates.push first_coordinates
-
-        geojson.features.push(
-          "type": "Feature"
-          "geometry":
-            "type": "Polygon",
-            "coordinates": [coordinates]
-          "properties":
-            "type": "merge_floor",
-            "fill"  :"#FFFFFF",
-            "stroke":"#FFFFFF"
-        )
-
-    return geojson
+  reset : ->
+    @objects = []
+    localStorage.clear()
+    $(window).off('beforeunload')
+    location.reload()
 #  getSVG : ->
 #    @unselect()
 #    canvas = document.createElement('canvas')
@@ -935,16 +660,16 @@ haika =
     $('.canvas_panel, .object_panel, .group_panel').hide()
     object = @canvas.getActiveObject()
     if object and object.getJsonSchema?
-      editor.schema = object.getJsonSchema()
+      @editor.schema = object.getJsonSchema()
       # Set the value
       properties = {}
-      for key of editor.schema.properties
-        if editor.schema.properties[key].type=='integer'
+      for key of @editor.schema.properties
+        if @editor.schema.properties[key].type=='integer'
           value = parseInt(object[key]).toFixed(0)
         else
           value = object[key]
         properties[key] = value
-      editor.setValue properties
+      @editor.setValue properties
       if object.toGeoJSON?
         $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4))
       $('.object_panel').show()
