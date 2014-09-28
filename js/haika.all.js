@@ -23935,7 +23935,20 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
       return data;
     },
     toSVG: function(reviver) {
-      return "";
+      var markup, x, y;
+      markup = this._createBaseSVGMarkup();
+      x = this.left;
+      y = this.top;
+      if (!(this.group && this.group.type === "path-group")) {
+        x = -this.width / 2;
+        y = -this.height / 2;
+      }
+      markup.push("<rect ", "x=\"", x, "\" y=\"", y, "\" rx=\"", this.get("rx"), "\" ry=\"", this.get("ry"), "\" width=\"", this.width, "\" height=\"", this.height, "\" style=\"", this.getSvgStyles(), "\" transform=\"", this.getSvgTransform(), "\"/>\n");
+      if (reviver) {
+        return reviver(markup.join(""));
+      } else {
+        return markup.join("");
+      }
     },
     getJsonSchema: function() {
       var schema;
@@ -24209,17 +24222,12 @@ log = function(obj) {
 haika = {
   id: null,
   state: 'shelf',
-  width: 800,
-  height: 800,
   centerX: 0,
   centerY: 0,
   scale: 1,
   objects: [],
   canvas: false,
   bgimg: null,
-  bgimg_data: null,
-  bgimg_width: null,
-  bgimg_height: null,
   fillColor: "#CFE2F3",
   strokeColor: "#000000",
   options: {},
@@ -24238,11 +24246,9 @@ haika = {
   init: function(options) {
     var canvas, default_options;
     default_options = {
-      canvas: 'canvas',
+      canvas_id: 'canvas_area',
       canvas_width: 800,
       canvas_height: 600,
-      max_width: 10000,
-      max_height: 10000,
       scale: 1,
       bgurl: null,
       bgopacity: 1,
@@ -24253,7 +24259,7 @@ haika = {
       geojson_scale: 1.5
     };
     this.options = $.extend(default_options, options);
-    canvas = new fabric.Canvas(this.options.canvas, {
+    canvas = new fabric.Canvas(this.options.canvas_id, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     });
     canvas.setWidth(this.options.canvas_width);
@@ -24275,10 +24281,6 @@ haika = {
       return action;
     };
     canvas._renderBackground = function(ctx) {
-      if (this.backgroundColor) {
-        ctx.fillStyle = (this.backgroundColor.toLive ? this.backgroundColor.toLive(ctx) : this.backgroundColor);
-        ctx.fillRect(this.backgroundColor.offsetX || 0, this.backgroundColor.offsetY || 0, this.width, this.height);
-      }
       ctx.mozImageSmoothingEnabled = false;
       if (this.backgroundImage) {
         this.backgroundImage.render(ctx);
@@ -24290,9 +24292,6 @@ haika = {
     this.canvas = canvas;
     if (options.scale != null) {
       this.scale = options.scale;
-    }
-    if (this.options.bgurl) {
-      this.loadBgFromUrl(this.options.bgurl);
     }
     this.render();
     setTimeout((function(_this) {
@@ -24312,8 +24311,13 @@ haika = {
           object.lockScalingX = true;
           object.lockScalingY = true;
         }
-        _this.save();
+        _this.saveDelay();
         return _this.setPropetyPanel();
+      };
+    })(this));
+    this.canvas.on('after:render', (function(_this) {
+      return function(e) {
+        return _this.prepareData();
       };
     })(this));
     this.canvas.on('before:selection:cleared', (function(_this) {
@@ -24321,7 +24325,7 @@ haika = {
         var object;
         object = e.target;
         _this.canvas.deactivateAll().renderAll();
-        _this.save();
+        _this.saveDelay();
         _this.editor_change();
         return _this.setPropetyPanel();
       };
@@ -24358,42 +24362,22 @@ haika = {
       return function(img) {
         log(img);
         _this.bgimg = img;
-        _this.bgimg_width = img.width;
-        _this.bgimg_height = img.height;
         return _this.render();
       };
     })(this));
   },
-  loadBgFromFile: function(file) {
-    var reader;
-    reader = new FileReader();
-    reader.onload = (function(_this) {
-      return function(e) {
-        _this.bgimg_data = e.currentTarget.result;
-        _this.setBg();
-        return _this.save();
-      };
-    })(this);
-    return reader.readAsDataURL(file);
-  },
   setBg: function() {
-    var img;
-    if (!this.bgimg_data) {
+    if (!this.bgimg) {
       return;
     }
-    img = new Image();
-    img.src = this.bgimg_data;
-    this.bgimg = new fabric.Image(img);
-    this.bgimg_width = img.width;
-    this.bgimg_height = img.width;
     this.render();
     if (this.options.callback != null) {
       return this.options.callback();
     }
   },
   resetBg: function() {
-    this.bgimg_data = null;
-    this.save();
+    this.bgimg = null;
+    this.saveDelay();
     return location.reload();
   },
   lastId: 0,
@@ -24566,7 +24550,7 @@ haika = {
         new_ids.push(new_id);
       }
     }
-    this.save();
+    this.saveDelay();
     this.render();
     if (object) {
       $(this.canvas.getObjects()).each((function(_this) {
@@ -24614,7 +24598,7 @@ haika = {
       o.top = this.transformTopY_cm2px(this.centerY);
       o.left = this.transformLeftX_cm2px(this.centerX);
       new_id = this.add(o);
-      this.save();
+      this.saveDelay();
       this.render();
       return $(this.canvas.getObjects()).each((function(_this) {
         return function(i, obj) {
@@ -24635,7 +24619,7 @@ haika = {
         new_id = this.add(o);
         new_ids.push(new_id);
       }
-      this.save();
+      this.saveDelay();
       log('pre render' + this.clipboard[0].top);
       this.render();
       log('after render' + this.clipboard[0].top);
@@ -24802,10 +24786,10 @@ haika = {
   },
   renderBg: function() {
     if (this.bgimg) {
-      this.bgimg.left = Math.floor(this.canvas.getWidth() / 2 + (-this.bgimg_width * this.options.bgscale / 2 + this.centerX) * this.scale);
-      this.bgimg.top = Math.floor(this.canvas.getHeight() / 2 + (-this.bgimg_height * this.options.bgscale / 2 + this.centerY) * this.scale);
-      this.bgimg.width = Math.floor(this.bgimg_width * this.options.bgscale * this.scale);
-      this.bgimg.height = Math.floor(this.bgimg_height * this.options.bgscale * this.scale);
+      this.bgimg.left = Math.floor(this.canvas.getWidth() / 2 + (-this.bgimg.width * this.options.bgscale / 2 + this.centerX) * this.scale);
+      this.bgimg.top = Math.floor(this.canvas.getHeight() / 2 + (-this.bgimg.height * this.options.bgscale / 2 + this.centerY) * this.scale);
+      this.bgimg.width = Math.floor(this.bgimg.width * this.options.bgscale * this.scale);
+      this.bgimg.height = Math.floor(this.bgimg.height * this.options.bgscale * this.scale);
       this.bgimg.opacity = this.options.bgopacity;
       return this.canvas.setBackgroundImage(this.bgimg);
     }
@@ -24819,8 +24803,8 @@ haika = {
     $('#canvas_bgopacity').val(this.options.bgopacity);
     $('#canvas_lon').val(this.options.lon);
     $('#canvas_lat').val(this.options.lat);
-    $('#canvas_angle').val(canvas.angle);
-    return $('#geojson_scale').val(canvas.geojson_scale);
+    $('#canvas_angle').val(this.canvas.angle);
+    return $('#geojson_scale').val(this.canvas.geojson_scale);
   },
   getMovePixel: function(event) {
     if (event.shiftKey) {
@@ -24878,7 +24862,7 @@ haika = {
         bound = object.getBoundingRect();
         object.left = left + bound.width / 2;
       }
-      this.save();
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },
@@ -25044,61 +25028,69 @@ haika = {
 
 //# sourceMappingURL=haika.js.map
 ;$.extend(haika, {
-  isLocal: function() {
-    return location.protocol === 'file:' || location.port !== '';
-  },
-  setHashChange: function() {
-    return $(window).bind("hashchange", function() {
-      return location.reload();
-    });
-  },
+  revision: null,
   load: function() {
-    var data;
-    if (location.hash !== '' && location.hash.length !== 7) {
-      location.hash = sprintf('%06d', location.hash.split('#')[1]);
-      location.reload();
-      return;
-    }
-    if (this.isLocal()) {
-      data = {
-        canvas: JSON.parse(localStorage.getItem('canvas')),
-        geojson: JSON.parse(localStorage.getItem('geojson'))
-      };
-      log(data);
-      this.loadRender(data);
-      $(this).trigger('haika:load');
-      return;
-    }
-    if (location.hash !== '') {
-      this.id = location.hash.split('#')[1];
-      this.load_server();
-    } else {
-      this.getHaikaId();
-    }
+    this.id = 2;
+    this.loadServer();
     return $(this).trigger('haika:load');
+  },
+  loadServer: function() {
+    var data, url;
+    url = '/api/floor/load';
+    data = {
+      id: this.id,
+      revision: this.revision
+    };
+    return $.ajax({
+      url: url,
+      type: 'POST',
+      cache: false,
+      dataType: 'text',
+      data: data,
+      success: (function(_this) {
+        return function(data) {
+          var json;
+          json = JSON.parse(data);
+          if (json.locked) {
+            if (confirm('ロックされています。リロードしますか？')) {
+              location.reload();
+            }
+          } else {
+
+          }
+          _this.revision = json.revision;
+          _this.collision = json.collision;
+          return _this.loadRender(json.data);
+        };
+      })(this),
+      error: (function(_this) {
+        return function() {
+          return alert('エラーが発生しました');
+        };
+      })(this)
+    });
   },
   loadRender: function(data) {
     var canvas, geojson, key, klass, object, schema, shape, _i, _len, _ref;
-    log(data);
-    canvas = data.canvas;
-    geojson = data.geojson;
+    canvas = data.haika;
+    geojson = data;
     if (canvas) {
-      log(canvas);
       this.state = canvas.state;
       $('.nav a.' + this.state).tab('show');
-      this.scale = canvas.scale;
+      if (canvas.scale) {
+        this.scale = canvas.scale;
+      }
+      if (!canvas.scale) {
+        this.scale = 1;
+      }
       $('.zoom').html((this.scale * 100).toFixed(0) + '%');
       this.centerX = canvas.centerX;
       this.centerY = canvas.centerY;
-      this.bgimg_data = canvas.bgimg_data;
       this.options.bgscale = canvas.bgscale ? canvas.bgscale : 4.425;
       this.options.bgopacity = canvas.bgopacity;
       this.options.angle = canvas.angle;
       if (canvas.geojson_scale != null) {
         this.options.geojson_scale = canvas.geojson_scale;
-      }
-      if (this.isLocal()) {
-        this.setBg();
       } else {
         if (canvas.bgurl != null) {
           this.loadBgFromUrl(canvas.bgurl);
@@ -25136,60 +25128,12 @@ haika = {
     }
     return this.render();
   },
-  getHaikaId: function() {
-    var url;
-    url = 'http://lab.calil.jp/haika_store/index.php';
-    return $.ajax({
-      url: url,
-      type: "GET",
-      cache: false,
-      dataType: "json",
-      error: function() {},
-      success: (function(_this) {
-        return function(data) {
-          location.hash = data.id;
-          _this.id = data.id;
-          return _this.setHashChange();
-        };
-      })(this)
-    });
-  },
-  load_server: function() {
-    var url;
-    url = "http://lab.calil.jp/haika_store/data/" + this.id + ".json";
-    return $.ajax({
-      url: url,
-      type: "GET",
-      cache: false,
-      dataType: "text",
-      error: (function(_this) {
-        return function() {
-          return alert('load error');
-        };
-      })(this),
-      success: (function(_this) {
-        return function(data) {
-          log(data);
-          try {
-            data = JSON.parse(data);
-          } catch (_error) {
-            alert('parse error');
-            $(window).off('beforeunload');
-            location.href = "http://lab.calil.jp/haika_store/data/" + _this.id + ".json";
-          }
-          _this.loadRender(data);
-          return _this.setHashChange();
-        };
-      })(this)
-    });
-  },
   getCanvasProperty: function() {
     return {
       state: this.state,
       scale: this.scale,
       centerX: this.centerX,
       centerY: this.centerY,
-      bgimg_data: this.bgimg_data,
       bgurl: this.options.bgurl,
       bgscale: this.options.bgscale,
       bgopacity: this.options.bgopacity,
@@ -25199,94 +25143,104 @@ haika = {
       geojson_scale: this.options.geojson_scale
     };
   },
-  saveLocal: function() {
-    var canvas;
-    canvas = this.getCanvasProperty();
-    localStorage.setItem('canvas', JSON.stringify(canvas));
-    return localStorage.setItem('geojson', JSON.stringify(this.toGeoJSON(), null, 4));
-  },
-  saveServer: function() {
+  nowSaving: false,
+  saveTimeout: null,
+  save: function() {
     var data, param, url;
-    param = {
-      canvas: this.getCanvasProperty(),
-      geojson: this.toGeoJSON()
-    };
+    log('save');
+    if (this.nowSaving) {
+      setTimeout((function(_this) {
+        return function() {
+          return _this.save();
+        };
+      })(this), 500);
+      return;
+    }
+    this.nowSaving = true;
+    param = this.toGeoJSON();
+    param['haika'] = this.getCanvasProperty();
+    param['haika']['version'] = 1;
     param = JSON.stringify(param);
-    log(param);
     data = {
-      ext: 'json',
       id: this.id,
+      revision: this.revision,
+      collision: this.collision,
       data: param
     };
-    url = '/haika_store/index.php';
+    url = '/api/floor/save';
     $.ajax({
       url: url,
-      type: "POST",
+      type: 'POST',
       data: data,
-      dataType: "json",
-      error: function() {},
+      dataType: 'text',
       success: (function(_this) {
         return function(data) {
-          return log(data);
+          var json;
+          json = JSON.parse(data);
+          if (json.success === false) {
+            alert(json.message);
+            location.reload();
+          } else {
+            _this.revision = json.revision;
+            _this.collision = json.collision;
+          }
+          _this.nowSaving = false;
+          if (_this.saveTimeout) {
+            clearTimeout(_this.saveTimeout);
+            return _this.saveTimeout = null;
+          }
+        };
+      })(this),
+      error: (function(_this) {
+        return function() {
+          _this.nowSaving = false;
+          if (_this.saveTimeout) {
+            clearTimeout(_this.saveTimeout);
+            _this.saveTimeout = null;
+          }
+          return alert('エラーが発生しました');
         };
       })(this)
     });
-    return this.saveGeoJson();
-  },
-  saveGeoJson: function() {
-    var data, geojson, param, url;
-    geojson = this.createGeoJson();
-    param = JSON.stringify(geojson);
-    data = {
-      ext: 'geojson',
-      id: this.id,
-      data: param
-    };
-    url = '/haika_store/index.php';
-    return $.ajax({
-      url: url,
-      type: "POST",
-      data: data,
-      dataType: "json",
-      error: function() {},
-      success: data > log(data)
-    }, log('geojson save'));
-  },
-  save: function() {
-    var object, _i, _len, _ref;
-    log('save');
-    _ref = this.canvas.getObjects();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      this.saveProperty(object);
-    }
-    this.saveLocal();
-    if (!this.isLocal()) {
-      this.saveServer();
-    }
     return $(this).trigger('haika:save');
   },
-  saveProperty: function(object, group) {
-    var count, key, schema, _results;
-    if (group == null) {
-      group = false;
+  saveDelay: function() {
+    if (!this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
     }
-    count = this.getCountFindById(object.id);
-    this.objects[count].id = object.id;
-    this.objects[count].type = object.type;
-    this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
-    object.top_cm = this.objects[count].top_cm;
-    this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
-    object.left_cm = this.objects[count].left_cm;
-    this.objects[count].scaleX = object.scaleX / this.scale;
-    this.objects[count].scaleY = object.scaleY / this.scale;
-    this.objects[count].angle = object.angle;
-    this.objects[count].fill = object.fill;
-    this.objects[count].stroke = object.stroke;
-    schema = object.constructor.prototype.getJsonSchema();
+    return this.saveTimeout = setTimeout((function(_this) {
+      return function() {
+        return _this.save();
+      };
+    })(this), 2000);
+  },
+  prepareData: function() {
+    var count, key, object, schema, _i, _len, _ref, _results;
+    _ref = this.canvas.getObjects();
     _results = [];
-    for (key in schema.properties) {
-      _results.push(this.objects[count][key] = object[key]);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      count = this.getCountFindById(object.id);
+      this.objects[count].id = object.id;
+      this.objects[count].type = object.type;
+      this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
+      object.top_cm = this.objects[count].top_cm;
+      this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
+      object.left_cm = this.objects[count].left_cm;
+      this.objects[count].scaleX = object.scaleX / this.scale;
+      this.objects[count].scaleY = object.scaleY / this.scale;
+      this.objects[count].angle = object.angle;
+      this.objects[count].fill = object.fill;
+      this.objects[count].stroke = object.stroke;
+      schema = object.constructor.prototype.getJsonSchema();
+      _results.push((function() {
+        var _results1;
+        _results1 = [];
+        for (key in schema.properties) {
+          _results1.push(this.objects[count][key] = object[key]);
+        }
+        return _results1;
+      }).call(this));
     }
     return _results;
   },
@@ -25305,136 +25259,50 @@ haika = {
     };
     return data;
   },
-  createGeoJson: function() {
-    var EPSG3857_geojson, coordinate, coordinates, data, features, geojson, geometry, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
-    geojson = this.translateGeoJSON();
-    features = [];
-    if (geojson && geojson.features.length > 0) {
-      _ref = geojson.features;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        object = _ref[_i];
-        if (object.properties.type !== 'floor') {
-          coordinates = [];
-          _ref1 = object.geometry.coordinates[0];
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            geometry = _ref1[_j];
-            x = geometry[0];
-            y = geometry[1];
-            coordinate = ol.proj.transform([x, y], "EPSG:3857", "EPSG:4326");
-            coordinates.push(coordinate);
-          }
-          if (object.properties.type === 'merge_floor') {
-            log(object.properties);
-            object.properties.type = 'floor';
-          }
-          data = {
-            "type": "Feature",
-            "geometry": {
-              "type": "Polygon",
-              "coordinates": [coordinates]
-            },
-            "properties": object.properties
-          };
-          features.push(data);
-        }
-      }
-    }
-    EPSG3857_geojson = {
-      "type": "FeatureCollection",
-      "features": features
-    };
-    return EPSG3857_geojson;
-  },
-  translateGeoJSON: function() {
-    var coordinate, coordinates, features, geojson, geometry, mapCenter, new_coordinate, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
-    geojson = this.toGeoJSON();
-    geojson = this.mergeGeoJson(geojson);
-    features = [];
-    _ref = geojson.features;
+  toSVG: function() {
+    var data, end, object, start, svg, svgs, _i, _len, _ref;
+    svgs = [];
+    _ref = this.canvas.getObjects();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
-      mapCenter = proj4("EPSG:4326", "EPSG:3857", [this.options.lon, this.options.lat]);
-      if (mapCenter) {
-        coordinates = [];
-        _ref1 = object.geometry.coordinates[0];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          geometry = _ref1[_j];
-          x = geometry[0] * this.options.geojson_scale;
-          y = geometry[1] * this.options.geojson_scale;
-          new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.options.angle));
-          coordinate = [mapCenter[0] + new_coordinate.x, mapCenter[1] + new_coordinate.y];
-          coordinates.push(coordinate);
-        }
-        object.geometry.coordinates = [coordinates];
-      }
-      features.push(object);
+      svg = object.toSVG();
+      svgs.push(svg);
     }
-    geojson.features = features;
-    return geojson;
+    log(svgs);
+    start = '<svg viewBox="0 0 1024 768">';
+    end = '</svg>';
+    data = [start, svgs.join(''), end].join('');
+    log(data);
+    return data;
   },
-  mergeGeoJson: function(geojson) {
-    var coordinates, cpr, first, first_coordinates, geometry, object, p, path, paths, solution_paths, succeeded, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
-    paths = [];
-    if (geojson && geojson.features.length > 0) {
-      _ref = geojson.features;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        object = _ref[_i];
-        if (object.properties.type === 'floor') {
-          path = [];
-          log(object.geometry.coordinates[0]);
-          _ref1 = object.geometry.coordinates[0];
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            geometry = _ref1[_j];
-            p = {
-              X: geometry[0],
-              Y: geometry[1]
-            };
-            path.push(p);
-          }
-          paths.push([path]);
-        }
-      }
-      log(paths);
-      cpr = new ClipperLib.Clipper();
-      for (_k = 0, _len2 = paths.length; _k < _len2; _k++) {
-        path = paths[_k];
-        cpr.AddPaths(path, ClipperLib.PolyType.ptSubject, true);
-      }
-      solution_paths = new ClipperLib.Paths();
-      succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
-      log(solution_paths);
-      for (_l = 0, _len3 = solution_paths.length; _l < _len3; _l++) {
-        path = solution_paths[_l];
-        coordinates = [];
-        first = true;
-        for (_m = 0, _len4 = path.length; _m < _len4; _m++) {
-          p = path[_m];
-          if (first) {
-            first_coordinates = [p.X, p.Y];
-            first = false;
-          }
-          coordinates.push([p.X, p.Y]);
-        }
-        coordinates.push(first_coordinates);
-        geojson.features.push({
-          "type": "Feature",
-          "geometry": {
-            "type": "Polygon",
-            "coordinates": [coordinates]
-          },
-          "properties": {
-            "type": "merge_floor",
-            "fill": "#FFFFFF",
-            "stroke": "#FFFFFF"
-          }
-        });
-      }
-    }
-    return geojson;
+  "import": function() {
+    var id, url;
+    id = window.prompt('idを入力してください', '');
+    url = "http://lab.calil.jp/haika_store/data/" + this.id + ".json";
+    return $.ajax({
+      url: url,
+      type: 'GET',
+      cache: false,
+      dataType: 'text',
+      success: (function(_this) {
+        return function(data) {
+          var canvas, json;
+          json = JSON.parse(data);
+          canvas = json.canvas;
+          json.geojson.haika = json.canvas;
+          return _this.loadRender(json.geojson);
+        };
+      })(this),
+      error: (function(_this) {
+        return function() {
+          return alert('読み込めません');
+        };
+      })(this)
+    });
   }
 });
 
-//# sourceMappingURL=haika-io-v1.js.map
+//# sourceMappingURL=haika-io-v2.js.map
 ;$(haika).on('haika:initialized', function() {
   var bgimg_height, bgimg_width, defaultX, defaultY, maxX, maxY, scroll_weight;
   scroll_weight = 5000;
@@ -25483,15 +25351,29 @@ haika = {
 //# sourceMappingURL=haika-scrollbar.js.map
 ;$.extend(haika, {
   setting: {
+    navbar_height: function() {
+      if ($('#navbar').length > 0) {
+        return $('#navbar').height() + 45;
+      } else {
+        return 0;
+      }
+    },
+    sidebar_width: function() {
+      if ($('.sidebar-collapse').length > 0) {
+        return $('.sidebar-collapse').width() + 45;
+      } else {
+        return 0;
+      }
+    },
     scrollbar_width: $('#vertical-scroller').width(),
     scrollbar_height: $('#horizontal-scroller').height(),
     toolbar_width: $('.toolbar_container').width() + 14,
     property_panel_width: $('.property_panel').width(),
     getWidth: function() {
-      return window.innerWidth - this.toolbar_width - this.scrollbar_width - this.property_panel_width - 20;
+      return window.innerWidth - this.sidebar_width() - this.toolbar_width - this.scrollbar_width - this.property_panel_width - 20;
     },
     getHeight: function() {
-      return window.innerHeight - $('.header').height() - this.scrollbar_height;
+      return window.innerHeight - this.navbar_height() - $('.header').height() - this.scrollbar_height;
     },
     start: function() {
       $('.main_container, .canvas_panel').css('width', this.getWidth());
@@ -25509,11 +25391,9 @@ haika = {
         };
       })(this));
       return haika.init({
-        canvas: 'canvas',
+        canvas_id: 'canvas_area',
         canvas_width: this.getWidth(),
         canvas_height: this.getHeight(),
-        max_width: 10000,
-        max_height: 10000,
         bgopacity: 0.2,
         bgscale: 4
       });
@@ -25526,7 +25406,7 @@ $(function() {
     e.preventDefault();
     haika.state = $(e.target).attr('class');
     haika.render();
-    showAddButtons(haika.state);
+    haika.addbuttons.showAddButtons(haika.state);
     return $(this).tab('show');
   });
 });
@@ -25560,7 +25440,7 @@ haika.setting.start();
       id = haika.add(object);
       haika.setState(object);
       haika.render();
-      undo.add(id);
+      haika.undo.add(id);
       return $(haika.canvas.getObjects()).each((function(_this) {
         return function(i, obj) {
           if (obj.id === object.id) {
@@ -25773,26 +25653,22 @@ haika.colorpicker.init();
   if (files.length === 0) {
     return;
   }
-  if (haika.isLocal()) {
-    return haika.loadBgFromFile(files[0]);
-  } else {
-    data = new FormData();
-    data.append('id', haika.id);
-    data.append('userfile', files[0]);
-    return $.ajax({
-      url: '/haika_store/upload.php',
-      data: data,
-      cache: false,
-      contentType: false,
-      processData: false,
-      type: 'POST',
-      success: function(data) {
-        var url;
-        url = '/haika_store/image/' + haika.id + '_' + files[0].name;
-        return haika.loadBgFromUrl(url);
-      }
-    });
-  }
+  data = new FormData();
+  data.append('id', haika.id);
+  data.append('userfile', files[0]);
+  return $.ajax({
+    url: '/haika_store/upload.php',
+    data: data,
+    cache: false,
+    contentType: false,
+    processData: false,
+    type: 'POST',
+    success: function(data) {
+      var url;
+      url = '/haika_store/image/' + haika.id + '_' + files[0].name;
+      return haika.loadBgFromUrl(url);
+    }
+  });
 });
 
 $(function() {
@@ -26975,7 +26851,7 @@ Bu.prototype.getTileSize=Bu.prototype.ia;t("ol.tilegrid.Zoomify",Sv);Sv.prototyp
           feature = _ref[_i];
           this.map.data.remove(feature);
         }
-        return this.features = this.map.data.addGeoJson(haika.createGeoJson());
+        return this.features = this.map.data.addGeoJson(this.createGeoJson());
       }
     },
     save: function(lat, lon) {
@@ -27000,7 +26876,7 @@ Bu.prototype.getTileSize=Bu.prototype.ia;t("ol.tilegrid.Zoomify",Sv);Sv.prototyp
         strokeWeight: 1
       };
       this.map.data.setStyle(featureStyle);
-      this.features = this.map.data.addGeoJson(haika.createGeoJson());
+      this.features = this.map.data.addGeoJson(haika.map.createGeoJson());
       google.maps.event.addListener(this.map, 'dragend', (function(_this) {
         return function() {
           var lat, lon;
@@ -27073,6 +26949,133 @@ Bu.prototype.getTileSize=Bu.prototype.ia;t("ol.tilegrid.Zoomify",Sv);Sv.prototyp
           };
         })(this)
       });
+    },
+    createGeoJson: function() {
+      var EPSG3857_geojson, coordinate, coordinates, data, features, geojson, geometry, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
+      geojson = this.translateGeoJSON();
+      features = [];
+      if (geojson && geojson.features.length > 0) {
+        _ref = geojson.features;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          object = _ref[_i];
+          if (object.properties.type !== 'floor') {
+            coordinates = [];
+            _ref1 = object.geometry.coordinates[0];
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              geometry = _ref1[_j];
+              x = geometry[0];
+              y = geometry[1];
+              coordinate = ol.proj.transform([x, y], "EPSG:3857", "EPSG:4326");
+              coordinates.push(coordinate);
+            }
+            if (object.properties.type === 'merge_floor') {
+              log(object.properties);
+              object.properties.type = 'floor';
+            }
+            data = {
+              "type": "Feature",
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": [coordinates]
+              },
+              "properties": object.properties
+            };
+            features.push(data);
+          }
+        }
+      }
+      EPSG3857_geojson = {
+        "type": "FeatureCollection",
+        "features": features
+      };
+      return EPSG3857_geojson;
+    },
+    translateGeoJSON: function() {
+      var coordinate, coordinates, features, geojson, geometry, mapCenter, new_coordinate, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
+      geojson = this.toGeoJSON();
+      geojson = this.mergeGeoJson(geojson);
+      features = [];
+      _ref = geojson.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        mapCenter = proj4("EPSG:4326", "EPSG:3857", [this.options.lon, this.options.lat]);
+        if (mapCenter) {
+          coordinates = [];
+          _ref1 = object.geometry.coordinates[0];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            geometry = _ref1[_j];
+            x = geometry[0] * this.options.geojson_scale;
+            y = geometry[1] * this.options.geojson_scale;
+            new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.options.angle));
+            coordinate = [mapCenter[0] + new_coordinate.x, mapCenter[1] + new_coordinate.y];
+            coordinates.push(coordinate);
+          }
+          object.geometry.coordinates = [coordinates];
+        }
+        features.push(object);
+      }
+      geojson.features = features;
+      return geojson;
+    },
+    mergeGeoJson: function(geojson) {
+      var coordinates, cpr, first, first_coordinates, geometry, object, p, path, paths, solution_paths, succeeded, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
+      paths = [];
+      if (geojson && geojson.features.length > 0) {
+        _ref = geojson.features;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          object = _ref[_i];
+          if (object.properties.type === 'floor') {
+            path = [];
+            log(object.geometry.coordinates[0]);
+            _ref1 = object.geometry.coordinates[0];
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              geometry = _ref1[_j];
+              p = {
+                X: geometry[0],
+                Y: geometry[1]
+              };
+              path.push(p);
+            }
+            paths.push([path]);
+          }
+        }
+        log(paths);
+        cpr = new ClipperLib.Clipper();
+        for (_k = 0, _len2 = paths.length; _k < _len2; _k++) {
+          path = paths[_k];
+          cpr.AddPaths(path, ClipperLib.PolyType.ptSubject, true);
+        }
+        solution_paths = new ClipperLib.Paths();
+        succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
+        log(solution_paths);
+        for (_l = 0, _len3 = solution_paths.length; _l < _len3; _l++) {
+          path = solution_paths[_l];
+          coordinates = [];
+          first = true;
+          for (_m = 0, _len4 = path.length; _m < _len4; _m++) {
+            p = path[_m];
+            if (first) {
+              first_coordinates = [p.X, p.Y];
+              first = false;
+            }
+            coordinates.push([p.X, p.Y]);
+          }
+          coordinates.push(first_coordinates);
+          geojson.features.push({
+            "type": "Feature",
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [coordinates]
+            },
+            "properties": {
+              "type": "merge_floor",
+              "fill": "#FFFFFF",
+              "stroke": "#FFFFFF"
+            }
+          });
+        }
+      }
+      return geojson;
     }
   }
 });

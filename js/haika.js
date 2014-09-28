@@ -9,17 +9,12 @@ log = function(obj) {
 haika = {
   id: null,
   state: 'shelf',
-  width: 800,
-  height: 800,
   centerX: 0,
   centerY: 0,
   scale: 1,
   objects: [],
   canvas: false,
   bgimg: null,
-  bgimg_data: null,
-  bgimg_width: null,
-  bgimg_height: null,
   fillColor: "#CFE2F3",
   strokeColor: "#000000",
   options: {},
@@ -38,11 +33,9 @@ haika = {
   init: function(options) {
     var canvas, default_options;
     default_options = {
-      canvas: 'canvas',
+      canvas_id: 'canvas_area',
       canvas_width: 800,
       canvas_height: 600,
-      max_width: 10000,
-      max_height: 10000,
       scale: 1,
       bgurl: null,
       bgopacity: 1,
@@ -53,7 +46,7 @@ haika = {
       geojson_scale: 1.5
     };
     this.options = $.extend(default_options, options);
-    canvas = new fabric.Canvas(this.options.canvas, {
+    canvas = new fabric.Canvas(this.options.canvas_id, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     });
     canvas.setWidth(this.options.canvas_width);
@@ -75,10 +68,6 @@ haika = {
       return action;
     };
     canvas._renderBackground = function(ctx) {
-      if (this.backgroundColor) {
-        ctx.fillStyle = (this.backgroundColor.toLive ? this.backgroundColor.toLive(ctx) : this.backgroundColor);
-        ctx.fillRect(this.backgroundColor.offsetX || 0, this.backgroundColor.offsetY || 0, this.width, this.height);
-      }
       ctx.mozImageSmoothingEnabled = false;
       if (this.backgroundImage) {
         this.backgroundImage.render(ctx);
@@ -90,9 +79,6 @@ haika = {
     this.canvas = canvas;
     if (options.scale != null) {
       this.scale = options.scale;
-    }
-    if (this.options.bgurl) {
-      this.loadBgFromUrl(this.options.bgurl);
     }
     this.render();
     setTimeout((function(_this) {
@@ -112,8 +98,13 @@ haika = {
           object.lockScalingX = true;
           object.lockScalingY = true;
         }
-        _this.save();
+        _this.saveDelay();
         return _this.setPropetyPanel();
+      };
+    })(this));
+    this.canvas.on('after:render', (function(_this) {
+      return function(e) {
+        return _this.prepareData();
       };
     })(this));
     this.canvas.on('before:selection:cleared', (function(_this) {
@@ -121,7 +112,7 @@ haika = {
         var object;
         object = e.target;
         _this.canvas.deactivateAll().renderAll();
-        _this.save();
+        _this.saveDelay();
         _this.editor_change();
         return _this.setPropetyPanel();
       };
@@ -158,42 +149,22 @@ haika = {
       return function(img) {
         log(img);
         _this.bgimg = img;
-        _this.bgimg_width = img.width;
-        _this.bgimg_height = img.height;
         return _this.render();
       };
     })(this));
   },
-  loadBgFromFile: function(file) {
-    var reader;
-    reader = new FileReader();
-    reader.onload = (function(_this) {
-      return function(e) {
-        _this.bgimg_data = e.currentTarget.result;
-        _this.setBg();
-        return _this.save();
-      };
-    })(this);
-    return reader.readAsDataURL(file);
-  },
   setBg: function() {
-    var img;
-    if (!this.bgimg_data) {
+    if (!this.bgimg) {
       return;
     }
-    img = new Image();
-    img.src = this.bgimg_data;
-    this.bgimg = new fabric.Image(img);
-    this.bgimg_width = img.width;
-    this.bgimg_height = img.width;
     this.render();
     if (this.options.callback != null) {
       return this.options.callback();
     }
   },
   resetBg: function() {
-    this.bgimg_data = null;
-    this.save();
+    this.bgimg = null;
+    this.saveDelay();
     return location.reload();
   },
   lastId: 0,
@@ -366,7 +337,7 @@ haika = {
         new_ids.push(new_id);
       }
     }
-    this.save();
+    this.saveDelay();
     this.render();
     if (object) {
       $(this.canvas.getObjects()).each((function(_this) {
@@ -414,7 +385,7 @@ haika = {
       o.top = this.transformTopY_cm2px(this.centerY);
       o.left = this.transformLeftX_cm2px(this.centerX);
       new_id = this.add(o);
-      this.save();
+      this.saveDelay();
       this.render();
       return $(this.canvas.getObjects()).each((function(_this) {
         return function(i, obj) {
@@ -435,7 +406,7 @@ haika = {
         new_id = this.add(o);
         new_ids.push(new_id);
       }
-      this.save();
+      this.saveDelay();
       log('pre render' + this.clipboard[0].top);
       this.render();
       log('after render' + this.clipboard[0].top);
@@ -602,10 +573,10 @@ haika = {
   },
   renderBg: function() {
     if (this.bgimg) {
-      this.bgimg.left = Math.floor(this.canvas.getWidth() / 2 + (-this.bgimg_width * this.options.bgscale / 2 + this.centerX) * this.scale);
-      this.bgimg.top = Math.floor(this.canvas.getHeight() / 2 + (-this.bgimg_height * this.options.bgscale / 2 + this.centerY) * this.scale);
-      this.bgimg.width = Math.floor(this.bgimg_width * this.options.bgscale * this.scale);
-      this.bgimg.height = Math.floor(this.bgimg_height * this.options.bgscale * this.scale);
+      this.bgimg.left = Math.floor(this.canvas.getWidth() / 2 + (-this.bgimg.width * this.options.bgscale / 2 + this.centerX) * this.scale);
+      this.bgimg.top = Math.floor(this.canvas.getHeight() / 2 + (-this.bgimg.height * this.options.bgscale / 2 + this.centerY) * this.scale);
+      this.bgimg.width = Math.floor(this.bgimg.width * this.options.bgscale * this.scale);
+      this.bgimg.height = Math.floor(this.bgimg.height * this.options.bgscale * this.scale);
       this.bgimg.opacity = this.options.bgopacity;
       return this.canvas.setBackgroundImage(this.bgimg);
     }
@@ -619,8 +590,8 @@ haika = {
     $('#canvas_bgopacity').val(this.options.bgopacity);
     $('#canvas_lon').val(this.options.lon);
     $('#canvas_lat').val(this.options.lat);
-    $('#canvas_angle').val(canvas.angle);
-    return $('#geojson_scale').val(canvas.geojson_scale);
+    $('#canvas_angle').val(this.canvas.angle);
+    return $('#geojson_scale').val(this.canvas.geojson_scale);
   },
   getMovePixel: function(event) {
     if (event.shiftKey) {
@@ -678,7 +649,7 @@ haika = {
         bound = object.getBoundingRect();
         object.left = left + bound.width / 2;
       }
-      this.save();
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },

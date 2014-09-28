@@ -3,24 +3,21 @@ $('#bgimg').change (e)->
   files = e.target.files
   if files.length==0
     return
-  if haika.isLocal()
-    haika.loadBgFromFile files[0]
-  else
-    # IE10以降のみ対応
-    data = new FormData()
-    data.append 'id', haika.id
-    data.append 'userfile', files[0]
-    $.ajax
-      url: '/haika_store/upload.php'
-      data: data
-      cache: false
-      contentType: false
-      processData: false
-      type: 'POST'
-      success: (data) ->
+  # IE10以降のみ対応
+  data = new FormData()
+  data.append 'id', haika.id
+  data.append 'userfile', files[0]
+  $.ajax
+    url: '/haika_store/upload.php'
+    data: data
+    cache: false
+    contentType: false
+    processData: false
+    type: 'POST'
+    success: (data) ->
 #        log data
-        url = '/haika_store/image/'+haika.id+'_'+files[0].name
-        haika.loadBgFromUrl(url)
+      url = '/haika_store/image/'+haika.id+'_'+files[0].name
+      haika.loadBgFromUrl(url)
 
 
 # メニューのイベントバインド

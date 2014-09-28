@@ -1,16 +1,20 @@
 # haikaの設定、ウィンドウサイズにあわせてサイズ変更
 $.extend haika, 
   setting:
+    navbar_height : ->
+      return if $('#navbar').length>0 then $('#navbar').height()+45 else 0
+    sidebar_width : ->
+      return if $('.sidebar-collapse').length>0 then $('.sidebar-collapse').width()+45 else 0
     scrollbar_width      : $('#vertical-scroller').width()
     scrollbar_height     : $('#horizontal-scroller').height()
     toolbar_width        : $('.toolbar_container').width() + 14
     property_panel_width : $('.property_panel').width()
     # キャンバスの横幅計算
     getWidth : ->
-      return window.innerWidth - @toolbar_width - @scrollbar_width - @property_panel_width - 20
+      return window.innerWidth - @sidebar_width() - @toolbar_width - @scrollbar_width - @property_panel_width - 20
     # キャンバスの縦幅計算
     getHeight : ->
-      return window.innerHeight - $('.header').height() - @scrollbar_height
+      return window.innerHeight - @navbar_height() - $('.header').height() - @scrollbar_height
 
     start : ->
       $('.main_container, .canvas_panel').css('width', @getWidth())
@@ -27,13 +31,9 @@ $.extend haika,
         haika.render()
 
       haika.init(
-        canvas : 'canvas'
+        canvas_id : 'canvas_area'
         canvas_width : @getWidth()
         canvas_height : @getHeight()
-        max_width: 10000
-        max_height: 10000
-        #bgurl  : 'img/meidai2.png'
-        #bgurl  : 'img/sample.png'
         bgopacity: 0.2
         bgscale  : 4
       )
@@ -44,7 +44,7 @@ $ ->
     e.preventDefault()
     haika.state = $(e.target).attr('class')
     haika.render()
-    showAddButtons(haika.state)
+    haika.addbuttons.showAddButtons(haika.state)
     $(this).tab('show')
 
 # 初期設定

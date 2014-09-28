@@ -5,17 +5,12 @@ log = (obj) ->
 haika = 
   id         : null
   state      : 'shelf'
-  width      : 800
-  height     : 800
   centerX    : 0
   centerY    : 0
   scale      : 1
   objects    : []
   canvas     : false
   bgimg: null
-  bgimg_data: null
-  bgimg_width: null
-  bgimg_height: null
   fillColor: "#CFE2F3"
   strokeColor: "#000000"
   options: {}
@@ -33,11 +28,9 @@ haika =
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
   init : (options)->
     default_options =
-      canvas   : 'canvas'
+      canvas_id    : 'canvas_area'
       canvas_width : 800
       canvas_height: 600
-      max_width    : 10000
-      max_height   : 10000
       scale        : 1
       bgurl    : null
       bgopacity: 1
@@ -48,7 +41,7 @@ haika =
       geojson_scale: 1.5
     # オプションの上書き
     @options = $.extend(default_options, options)
-    canvas = new fabric.Canvas(@options.canvas, {
+    canvas = new fabric.Canvas(@options.canvas_id, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
     canvas.setWidth(@options.canvas_width)
@@ -70,9 +63,6 @@ haika =
 
     #背景にグリッドラインを追加するためにオーバーライド
     canvas._renderBackground = (ctx) ->
-      if @backgroundColor
-        ctx.fillStyle = (if @backgroundColor.toLive then @backgroundColor.toLive(ctx) else @backgroundColor)
-        ctx.fillRect @backgroundColor.offsetX or 0, @backgroundColor.offsetY or 0, @width, @height
       ctx.mozImageSmoothingEnabled = false
       if @backgroundImage
         @backgroundImage.render ctx
@@ -86,8 +76,6 @@ haika =
     #@canvas.centeredRotation = true
     if options.scale?
       @scale = options.scale
-    if @options.bgurl
-      @loadBgFromUrl(@options.bgurl)
     @render()
     setTimeout =>
       @load()
@@ -104,9 +92,14 @@ haika =
           object.lockScalingY  = true
         #else
         #  object.lockScalingY  = true
-        @save()
+        @saveDelay()
         @setPropetyPanel()
     )
+
+    # fabricのオブジェクトをhaikaオブジェクトに反映する
+    @canvas.on 'after:render', (e)=>
+#      log 'after:render'
+      @prepareData()
 
 #    @canvas.on 'selection:created', (e)=>
 #      e.target.hasControls = false
@@ -114,7 +107,7 @@ haika =
 #      log 'before:selection:cleared'
       object = e.target
       @canvas.deactivateAll().renderAll()
-      @save()
+      @saveDelay()
       @editor_change()
       @setPropetyPanel()
     @canvas.on 'object:scaling', (e) =>
@@ -138,33 +131,17 @@ haika =
     fabric.Image.fromURL url, (img)=>
       log img
       @bgimg = img
-      @bgimg_width  = img.width
-      @bgimg_height = img.height
       @render()
-  # 背景画像をファイルからロード
-  loadBgFromFile : (file) ->
-    reader = new FileReader()
-    reader.onload = (e) =>
-#      log e.currentTarget.result
-      @bgimg_data = e.currentTarget.result
-      @setBg()
-      @save()
-    reader.readAsDataURL file
   # 背景の設定
   setBg: ->
-    if not @bgimg_data
+    if not @bgimg
       return
-    img = new Image()
-    img.src = @bgimg_data
-    @bgimg = new fabric.Image(img)
-    @bgimg_width = img.width
-    @bgimg_height = img.width
     @render()
     if @options.callback?
       @options.callback()
   resetBg: ->
-    @bgimg_data=null
-    @save()
+    @bgimg=null
+    @saveDelay()
     location.reload()
   # オブジェクトにつけるid 通し番号
   lastId : 0
@@ -302,7 +279,7 @@ haika =
         o.left = @transformLeftX_cm2px(@centerX)+object.left
         new_id = @add(o)
         new_ids.push(new_id)
-    @save()
+    @saveDelay()
     @render()
     if object
       $(@canvas.getObjects()).each (i, obj)=>
@@ -338,7 +315,7 @@ haika =
       o.top  = @transformTopY_cm2px(@centerY)
       o.left = @transformLeftX_cm2px(@centerX)
       new_id = @add(o)
-      @save()
+      @saveDelay()
       @render()
       $(@canvas.getObjects()).each (i, obj)=>
         if obj.id==new_id
@@ -353,7 +330,7 @@ haika =
         o.left = @transformLeftX_cm2px(@centerX)+object.left*@scale/@clipboard_scale
         new_id = @add(o)
         new_ids.push(new_id)
-      @save()
+      @saveDelay()
       log 'pre render' + @clipboard[0].top
       @render()
       log 'after render' + @clipboard[0].top
@@ -488,10 +465,10 @@ haika =
   # 背景を描画
   renderBg : ->
     if @bgimg
-      @bgimg.left    = Math.floor( @canvas.getWidth()/2 + (-@bgimg_width*@options.bgscale/2 + @centerX) * @scale )
-      @bgimg.top     = Math.floor( @canvas.getHeight()/2 + (-@bgimg_height*@options.bgscale/2 + @centerY) * @scale )
-      @bgimg.width   = Math.floor( @bgimg_width*@options.bgscale*@scale  )
-      @bgimg.height  = Math.floor( @bgimg_height*@options.bgscale*@scale )
+      @bgimg.left    = Math.floor( @canvas.getWidth()/2 + (-@bgimg.width*@options.bgscale/2 + @centerX) * @scale )
+      @bgimg.top     = Math.floor( @canvas.getHeight()/2 + (-@bgimg.height*@options.bgscale/2 + @centerY) * @scale )
+      @bgimg.width   = Math.floor( @bgimg.width*@options.bgscale*@scale  )
+      @bgimg.height  = Math.floor( @bgimg.height*@options.bgscale*@scale )
       @bgimg.opacity = @options.bgopacity
       @canvas.setBackgroundImage @bgimg
   # キャンバスのプロパティを設定
@@ -504,8 +481,8 @@ haika =
     $('#canvas_bgopacity').val(@options.bgopacity)
     $('#canvas_lon').val(@options.lon)
     $('#canvas_lat').val(@options.lat)
-    $('#canvas_angle').val(canvas.angle)
-    $('#geojson_scale').val(canvas.geojson_scale)
+    $('#canvas_angle').val(@canvas.angle)
+    $('#geojson_scale').val(@canvas.geojson_scale)
   # 移動ピクセル数を取得
   getMovePixel : (event)->
     return if event.shiftKey then 10 else 1
@@ -544,7 +521,7 @@ haika =
       for object in group._objects
         bound = object.getBoundingRect()
         object.left = left + bound.width/2
-      @save()
+      @saveDelay()
       @canvas.renderAll()
   # 右に整列
   alignRight : ()->

@@ -24,7 +24,7 @@ $.extend(haika, {
       id = haika.add(object);
       haika.setState(object);
       haika.render();
-      undo.add(id);
+      haika.undo.add(id);
       return $(haika.canvas.getObjects()).each((function(_this) {
         return function(i, obj) {
           if (obj.id === object.id) {

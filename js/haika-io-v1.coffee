@@ -16,7 +16,7 @@ $.extend haika,
       location.reload()
       return
     # ローカルか？
-    if @isLocal()
+    if @isLocal() and location.hash==''
       data =
         canvas : JSON.parse(localStorage.getItem('canvas'))
         geojson : JSON.parse(localStorage.getItem('geojson'))
@@ -319,3 +319,15 @@ $.extend haika,
         )
 
     return geojson
+  # オブジェクトをSVGに変換
+  toSVG : ->
+    svgs = []
+    for object in @canvas.getObjects()
+      svg = object.toSVG()
+      svgs.push(svg)
+    log svgs
+    start = '<svg viewBox="0 0 1024 768">'
+    end   = '</svg>'
+    data = [start, svgs.join(''), end].join('')
+    log data
+    return data
