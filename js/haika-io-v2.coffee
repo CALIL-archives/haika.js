@@ -40,33 +40,22 @@ $.extend haika,
         @loadRender(json.data)
       error: ()=>
         alert 'エラーが発生しました'
+
+
   # ロードして描画
-  loadRender : (data)->
-#    log data
-    canvas = data.haika
-    geojson = data
-    if canvas
-#      log canvas
-      @state   = canvas.state
-      $('.nav a.'+@state).tab('show')
-      if canvas.scale
-        @scale = canvas.scale
-      if not canvas.scale
-        @scale = 1
-      $('.zoom').html((@scale*100).toFixed(0)+'%')
-      @centerX = canvas.centerX
-      @centerY = canvas.centerY
-      @options.bgscale = if canvas.bgscale then canvas.bgscale else 4.425
-      @options.bgopacity = canvas.bgopacity
-      @options.angle = canvas.angle
-      if canvas.geojson_scale?
-        @options.geojson_scale = canvas.geojson_scale
-      else
-        if canvas.bgurl?
-          @loadBgFromUrl(canvas.bgurl)
-      if canvas.lon?
-        @options.lon = parseFloat(canvas.lon)
-        @options.lat = parseFloat(canvas.lat)
+  loadRender : (geojson)->
+    if not data or not geojson.haika
+      return
+    @options.bgscale = if geojson.haika.bgscale then geojson.haika.bgscale else 4.425
+    @options.bgopacity = geojson.haika.bgopacity
+    @options.angle = geojson.haika.angle
+    if geojson.haika.geojson_scale?
+      @options.geojson_scale = geojson.haika.geojson_scale
+    if geojson.haika.bgurl?
+      @loadBgFromUrl(geojson.haika.bgurl)
+    if geojson.haika.lon? and geojson.haika.lat?
+      @options.lon = parseFloat(geojson.haika.lon)
+      @options.lat = parseFloat(geojson.haika.lat)
     if geojson and geojson.features.length>0
       for object in geojson.features
         if object.properties.id>@lastId
@@ -84,11 +73,13 @@ $.extend haika,
         )
         schema = shape.constructor.prototype.getJsonSchema()
         for key of schema.properties
-#          log key
-#          log object.properties[key]
           shape[key] = object.properties[key]
         @add(shape)
+    $('.nav a.'+@state).tab('show')
+    $('.zoom').html((@scale*100).toFixed(0)+'%')
     @render()
+
+
   # キャンバスのプロパティを取得
   getCanvasProperty : ->
     return {
