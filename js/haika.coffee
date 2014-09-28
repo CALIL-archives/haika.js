@@ -130,7 +130,7 @@ haika =
     @options.bgurl = url
     @render()
   resetBg: ->
-    loadBgFromUrl('')
+    @loadBgFromUrl('')
 
   # オブジェクトにつけるid 通し番号
   lastId : 0
@@ -364,6 +364,7 @@ haika =
       return fabric.Shelf
   # canvasの描画
   render : ->
+    log @background_image
     #オブジェクトをクリア
     if not @background_image and @options.bgurl
       fabric.Image.fromURL @options.bgurl, (img)=>
@@ -400,10 +401,10 @@ haika =
     for o in beacons
       @addObjectToCanvas(o)
     if @background_image
-      @background_image.left    = Math.floor( @canvas.getWidth()/2 + (-@background_image.width*@options.bgscale/2 + @centerX) * @scale )
-      @background_image.top     = Math.floor( @canvas.getHeight()/2 + (-@background_image.height*@options.bgscale/2 + @centerY) * @scale )
-      @background_image.width   = Math.floor( @background_image.width*@options.bgscale*@scale  )
-      @background_image.height  = Math.floor( @background_image.height*@options.bgscale*@scale )
+      @background_image.left    = Math.floor( @canvas.getWidth()/2 + (-@background_image._originalElement.width*@options.bgscale/2 + @centerX) * @scale )
+      @background_image.top     = Math.floor( @canvas.getHeight()/2 + (-@background_image._originalElement.height*@options.bgscale/2 + @centerY) * @scale )
+      @background_image.width   = Math.floor( @background_image._originalElement.width*@options.bgscale*@scale  )
+      @background_image._originalElement.height  = Math.floor( @background_image.height*@options.bgscale*@scale )
       @background_image.opacity = @options.bgopacity
       @canvas.setBackgroundImage @background_image
     else
