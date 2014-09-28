@@ -36,11 +36,9 @@ haika = {
   init: function(options) {
     var canvas, default_options;
     default_options = {
-      canvas: 'canvas',
+      canvas_id: 'canvas_area',
       canvas_width: 800,
       canvas_height: 600,
-      max_width: 10000,
-      max_height: 10000,
       scale: 1,
       bgurl: null,
       bgopacity: 1,
@@ -51,7 +49,7 @@ haika = {
       geojson_scale: 1.5
     };
     this.options = $.extend(default_options, options);
-    canvas = new fabric.Canvas(this.options.canvas, {
+    canvas = new fabric.Canvas(this.options.canvas_id, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     });
     canvas.setWidth(this.options.canvas_width);
@@ -618,8 +616,8 @@ haika = {
     $('#canvas_bgopacity').val(this.options.bgopacity);
     $('#canvas_lon').val(this.options.lon);
     $('#canvas_lat').val(this.options.lat);
-    $('#canvas_angle').val(canvas.angle);
-    return $('#geojson_scale').val(canvas.geojson_scale);
+    $('#canvas_angle').val(this.canvas.angle);
+    return $('#geojson_scale').val(this.canvas.geojson_scale);
   },
   getMovePixel: function(event) {
     if (event.shiftKey) {

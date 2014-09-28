@@ -31,11 +31,9 @@ haika =
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
   init : (options)->
     default_options =
-      canvas   : 'canvas'
+      canvas_id    : 'canvas_area'
       canvas_width : 800
       canvas_height: 600
-      max_width    : 10000
-      max_height   : 10000
       scale        : 1
       bgurl    : null
       bgopacity: 1
@@ -46,7 +44,7 @@ haika =
       geojson_scale: 1.5
     # オプションの上書き
     @options = $.extend(default_options, options)
-    canvas = new fabric.Canvas(@options.canvas, {
+    canvas = new fabric.Canvas(@options.canvas_id, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
     canvas.setWidth(@options.canvas_width)
@@ -103,6 +101,7 @@ haika =
         @setPropetyPanel()
     )
 
+    # fabricのオブジェクトをhaikaオブジェクトに反映する
     @canvas.on 'after:render', (e)=>
 #      log 'after:render'
       @prepareData()
@@ -503,8 +502,8 @@ haika =
     $('#canvas_bgopacity').val(@options.bgopacity)
     $('#canvas_lon').val(@options.lon)
     $('#canvas_lat').val(@options.lat)
-    $('#canvas_angle').val(canvas.angle)
-    $('#geojson_scale').val(canvas.geojson_scale)
+    $('#canvas_angle').val(@canvas.angle)
+    $('#geojson_scale').val(@canvas.geojson_scale)
   # 移動ピクセル数を取得
   getMovePixel : (event)->
     return if event.shiftKey then 10 else 1
