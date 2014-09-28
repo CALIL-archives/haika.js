@@ -24220,14 +24220,13 @@ log = function(obj) {
 };
 
 haika = {
-  id: null,
   state: 'shelf',
   centerX: 0,
   centerY: 0,
   scale: 1,
   objects: [],
   canvas: false,
-  bgimg: null,
+  background_image: null,
   fillColor: "#CFE2F3",
   strokeColor: "#000000",
   options: {},
@@ -24296,7 +24295,7 @@ haika = {
     this.render();
     setTimeout((function(_this) {
       return function() {
-        _this.load();
+        _this.loadFromApi(2);
         return $(_this).trigger('haika:initialized');
       };
     })(this), 500);
@@ -24358,18 +24357,10 @@ haika = {
   },
   loadBgFromUrl: function(url) {
     this.options.bgurl = url;
-    return fabric.Image.fromURL(url, (function(_this) {
-      return function(img) {
-        log(img);
-        _this.bgimg = img;
-        return _this.render();
-      };
-    })(this));
+    return this.render();
   },
   resetBg: function() {
-    this.bgimg = null;
-    this.save();
-    return location.reload();
+    return loadBgFromUrl('');
   },
   lastId: 0,
   getId: function() {
@@ -24666,6 +24657,14 @@ haika = {
   },
   render: function() {
     var beacons, floors, o, shelfs, walls, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref;
+    if (!this.background_image && this.options.bgurl) {
+      fabric.Image.fromURL(this.options.bgurl, (function(_this) {
+        return function(img) {
+          _this.background_image = img;
+          _this.render();
+        };
+      })(this));
+    }
     this.canvas.renderOnAddRemove = false;
     this.unselect();
     this.canvas._objects.length = 0;
@@ -24713,7 +24712,16 @@ haika = {
       o = beacons[_n];
       this.addObjectToCanvas(o);
     }
-    this.renderBg();
+    if (this.background_image) {
+      this.background_image.left = Math.floor(this.canvas.getWidth() / 2 + (-this.background_image._originalElement.width * this.options.bgscale / 2 + this.centerX) * this.scale);
+      this.background_image.top = Math.floor(this.canvas.getHeight() / 2 + (-this.background_image._originalElement.height * this.options.bgscale / 2 + this.centerY) * this.scale);
+      this.background_image.width = Math.floor(this.background_image._originalElement.width * this.options.bgscale * this.scale);
+      this.background_image.height = Math.floor(this.background_image._originalElement.height * this.options.bgscale * this.scale);
+      this.background_image.opacity = this.options.bgopacity;
+      this.canvas.setBackgroundImage(this.background_image);
+    } else {
+      this.canvas.setBackgroundImage(null);
+    }
     this.canvas.renderAll();
     this.canvas.renderOnAddRemove = true;
     this.setCanvasProperty();
@@ -24774,16 +24782,6 @@ haika = {
       object[key] = o[key];
     }
     return this.canvas.add(object);
-  },
-  renderBg: function() {
-    if (this.bgimg) {
-      this.bgimg.left = Math.floor(this.canvas.getWidth() / 2 + (-this.bgimg.width * this.options.bgscale / 2 + this.centerX) * this.scale);
-      this.bgimg.top = Math.floor(this.canvas.getHeight() / 2 + (-this.bgimg.height * this.options.bgscale / 2 + this.centerY) * this.scale);
-      this.bgimg.width = Math.floor(this.bgimg.width * this.options.bgscale * this.scale);
-      this.bgimg.height = Math.floor(this.bgimg.height * this.options.bgscale * this.scale);
-      this.bgimg.opacity = this.options.bgopacity;
-      return this.canvas.setBackgroundImage(this.bgimg);
-    }
   },
   setCanvasProperty: function() {
     $('#canvas_width').html(this.canvas.getWidth());
@@ -25019,58 +25017,62 @@ haika = {
 
 //# sourceMappingURL=haika.js.map
 ;$.extend(haika, {
-  revision: null,
-  load: function() {
-    this.id = 2;
-    this.loadServer();
-    return $(this).trigger('haika:load');
+  _dataId: null,
+  _revision: null,
+  _collision: null,
+  _api_load_endpoint: '/api/floor/load',
+  _api_save_endpoint: '/api/floor/save',
+  clear: function() {
+    this._dataId = null;
+    this._revision = null;
+    this._collision = null;
+    return this.objects.length = 0;
   },
-  loadServer: function() {
-    var data, url;
-    url = '/api/floor/load';
-    data = {
-      id: this.id,
-      revision: this.revision
-    };
+  loadFromApi: function(newid) {
+    this.clear();
     return $.ajax({
-      url: url,
+      url: this._api_load_endpoint,
       type: 'POST',
       cache: false,
-      dataType: 'text',
-      data: data,
-      success: (function(_this) {
-        return function(data) {
-          var json;
-          json = JSON.parse(data);
-          if (json.locked) {
-            if (confirm('ロックされています。リロードしますか？')) {
-              location.reload();
-            }
-          } else {
-
-          }
-          _this.revision = json.revision;
-          _this.collision = json.collision;
-          return _this.loadRender(json.data);
-        };
-      })(this),
+      dataType: 'json',
+      data: {
+        id: newid,
+        revision: this._revision
+      },
       error: (function(_this) {
         return function() {
           return alert('エラーが発生しました');
         };
+      })(this),
+      success: (function(_this) {
+        return function(json) {
+          if (json.locked) {
+            if (confirm('ロックされています。リロードしますか？')) {
+              location.reload();
+            }
+            return;
+          }
+          _this._dataId = json.id;
+          _this._revision = json.revision;
+          _this._collision = json.collision;
+          _this.loadFromGeoJson(json.data);
+          return $(_this).trigger('haika:load');
+        };
       })(this)
     });
   },
-  loadRender: function(geojson) {
+  loadFromGeoJson: function(geojson) {
     var key, klass, object, schema, shape, _i, _len, _ref;
     this.options.bgscale = geojson.haika.bgscale ? geojson.haika.bgscale : 4.425;
     this.options.bgopacity = geojson.haika.bgopacity;
+    if (geojson.haika.bgurl != null) {
+      this.options.bgurl = geojson.haika.bgurl;
+    } else {
+      this.options.bgurl = '';
+    }
     this.options.angle = geojson.haika.angle;
     if (geojson.haika.geojson_scale != null) {
       this.options.geojson_scale = geojson.haika.geojson_scale;
-    }
-    if (geojson.haika.bgurl != null) {
-      this.loadBgFromUrl(geojson.haika.bgurl);
     }
     if ((geojson.haika.lon != null) && (geojson.haika.lat != null)) {
       this.options.lon = parseFloat(geojson.haika.lon);
@@ -25101,8 +25103,6 @@ haika = {
         this.add(shape);
       }
     }
-    $('.nav a.' + this.state).tab('show');
-    $('.zoom').html((this.scale * 100).toFixed(0) + '%');
     return this.render();
   },
   getCanvasProperty: function() {
@@ -25123,7 +25123,7 @@ haika = {
   nowSaving: false,
   saveTimeout: null,
   save: function() {
-    var data, param, url;
+    var data, param;
     log('save');
     if (this.nowSaving) {
       setTimeout((function(_this) {
@@ -25139,14 +25139,13 @@ haika = {
     param['haika']['version'] = 1;
     param = JSON.stringify(param);
     data = {
-      id: this.id,
-      revision: this.revision,
-      collision: this.collision,
+      id: this._dataId,
+      revision: this._revision,
+      collision: this._collision,
       data: param
     };
-    url = '/api/floor/save';
     $.ajax({
-      url: url,
+      url: this._api_save_endpoint,
       type: 'POST',
       data: data,
       dataType: 'text',
@@ -25158,8 +25157,8 @@ haika = {
             alert(json.message);
             location.reload();
           } else {
-            _this.revision = json.revision;
-            _this.collision = json.collision;
+            _this._revision = json.revision;
+            _this._collision = json.collision;
           }
           _this.nowSaving = false;
           if (_this.saveTimeout) {

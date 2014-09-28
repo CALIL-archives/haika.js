@@ -3,7 +3,6 @@ log = (obj) ->
     console.log obj
 
 haika = 
-  id         : null
   state      : 'shelf'
   centerX    : 0
   centerY    : 0
@@ -78,7 +77,7 @@ haika =
       @scale = options.scale
     @render()
     setTimeout =>
-      @load()
+      @loadFromApi(2)
       $(@).trigger('haika:initialized')
     , 500
     @bindEvent()
@@ -373,7 +372,6 @@ haika =
     @canvas.renderOnAddRemove=false
     @unselect()
     @canvas._objects.length = 0;
-    #@canvas.clear()
     beacons = []
     shelfs  = []
     walls = []
@@ -400,10 +398,10 @@ haika =
     for o in beacons
       @addObjectToCanvas(o)
     if @background_image
-      @background_image.left    = Math.floor( @canvas.getWidth()/2 + (-@background_image.width*@options.bgscale/2 + @centerX) * @scale )
-      @background_image.top     = Math.floor( @canvas.getHeight()/2 + (-@background_image.height*@options.bgscale/2 + @centerY) * @scale )
-      @background_image.width   = Math.floor( @background_image.width*@options.bgscale*@scale  )
-      @background_image.height  = Math.floor( @background_image.height*@options.bgscale*@scale )
+      @background_image.left    = Math.floor( @canvas.getWidth()/2 + (-@background_image._originalElement.width*@options.bgscale/2 + @centerX) * @scale )
+      @background_image.top     = Math.floor( @canvas.getHeight()/2 + (-@background_image._originalElement.height*@options.bgscale/2 + @centerY) * @scale )
+      @background_image.width   = Math.floor( @background_image._originalElement.width*@options.bgscale*@scale  )
+      @background_image.height  = Math.floor( @background_image._originalElement.height*@options.bgscale*@scale )
       @background_image.opacity = @options.bgopacity
       @canvas.setBackgroundImage @background_image
     else
