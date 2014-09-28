@@ -25028,7 +25028,7 @@ haika = {
     this._collision = null;
     return this.objects.length = 0;
   },
-  loadFromApi: function(newid) {
+  loadFromApi: function(newId) {
     this.clear();
     return $.ajax({
       url: this._api_load_endpoint,
@@ -25036,7 +25036,7 @@ haika = {
       cache: false,
       dataType: 'json',
       data: {
-        id: newid,
+        id: newId,
         revision: this._revision
       },
       error: (function(_this) {
