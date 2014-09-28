@@ -49,11 +49,13 @@ $.extend haika,
 #      log canvas
       @state   = canvas.state
       $('.nav a.'+@state).tab('show')
-      @scale   = canvas.scale
+      if canvas.scale
+        @scale = canvas.scale
+      if not canvas.scale
+        @scale = 1
       $('.zoom').html((@scale*100).toFixed(0)+'%')
       @centerX = canvas.centerX
       @centerY = canvas.centerY
-      @bgimg_data = canvas.bgimg_data
       @options.bgscale = if canvas.bgscale then canvas.bgscale else 4.425
       @options.bgopacity = canvas.bgopacity
       @options.angle = canvas.angle
@@ -94,8 +96,7 @@ $.extend haika,
       scale : @scale
       centerX : @centerX
       centerY : @centerY
-      bgimg_data: @bgimg_data
-      bgurl: @options.bgurl
+      bgurl   : @options.bgurl
       bgscale : @options.bgscale
       bgopacity : @options.bgopacity
       lon : @options.lon

@@ -731,3 +731,28 @@ canvas:
           </label>
           <input type="button" class="add btn btn-default" value="add" />
           </div>
+
+
+if @options.bgurl
+  @loadBgFromUrl(@options.bgurl)
+
+  # 背景画像をファイルからロード
+  loadBgFromFile : (file) ->
+    reader = new FileReader()
+    reader.onload = (e) =>
+#      log e.currentTarget.result
+      img = new Image()
+      img.src = e.currentTarget.result
+      @bgimg = new fabric.Image(img)
+      @setBg()
+      @saveDelay()
+    reader.readAsDataURL file
+
+  if haika.isLocal()
+    haika.loadBgFromFile files[0]
+  else
+  
+        bgimg_data: @bgimg_data
+      @bgimg_data = canvas.bgimg_data
+
+

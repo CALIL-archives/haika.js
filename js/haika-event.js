@@ -4,26 +4,22 @@ $('#bgimg').change(function(e) {
   if (files.length === 0) {
     return;
   }
-  if (haika.isLocal()) {
-    return haika.loadBgFromFile(files[0]);
-  } else {
-    data = new FormData();
-    data.append('id', haika.id);
-    data.append('userfile', files[0]);
-    return $.ajax({
-      url: '/haika_store/upload.php',
-      data: data,
-      cache: false,
-      contentType: false,
-      processData: false,
-      type: 'POST',
-      success: function(data) {
-        var url;
-        url = '/haika_store/image/' + haika.id + '_' + files[0].name;
-        return haika.loadBgFromUrl(url);
-      }
-    });
-  }
+  data = new FormData();
+  data.append('id', haika.id);
+  data.append('userfile', files[0]);
+  return $.ajax({
+    url: '/haika_store/upload.php',
+    data: data,
+    cache: false,
+    contentType: false,
+    processData: false,
+    type: 'POST',
+    success: function(data) {
+      var url;
+      url = '/haika_store/image/' + haika.id + '_' + files[0].name;
+      return haika.loadBgFromUrl(url);
+    }
+  });
 });
 
 $(function() {

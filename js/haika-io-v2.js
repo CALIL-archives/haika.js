@@ -48,11 +48,15 @@ $.extend(haika, {
     if (canvas) {
       this.state = canvas.state;
       $('.nav a.' + this.state).tab('show');
-      this.scale = canvas.scale;
+      if (canvas.scale) {
+        this.scale = canvas.scale;
+      }
+      if (!canvas.scale) {
+        this.scale = 1;
+      }
       $('.zoom').html((this.scale * 100).toFixed(0) + '%');
       this.centerX = canvas.centerX;
       this.centerY = canvas.centerY;
-      this.bgimg_data = canvas.bgimg_data;
       this.options.bgscale = canvas.bgscale ? canvas.bgscale : 4.425;
       this.options.bgopacity = canvas.bgopacity;
       this.options.angle = canvas.angle;
@@ -101,7 +105,6 @@ $.extend(haika, {
       scale: this.scale,
       centerX: this.centerX,
       centerY: this.centerY,
-      bgimg_data: this.bgimg_data,
       bgurl: this.options.bgurl,
       bgscale: this.options.bgscale,
       bgopacity: this.options.bgopacity,

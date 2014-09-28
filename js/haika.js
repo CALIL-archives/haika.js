@@ -15,9 +15,6 @@ haika = {
   objects: [],
   canvas: false,
   bgimg: null,
-  bgimg_data: null,
-  bgimg_width: null,
-  bgimg_height: null,
   fillColor: "#CFE2F3",
   strokeColor: "#000000",
   options: {},
@@ -82,9 +79,6 @@ haika = {
     this.canvas = canvas;
     if (options.scale != null) {
       this.scale = options.scale;
-    }
-    if (this.options.bgurl) {
-      this.loadBgFromUrl(this.options.bgurl);
     }
     this.render();
     setTimeout((function(_this) {
@@ -155,41 +149,21 @@ haika = {
       return function(img) {
         log(img);
         _this.bgimg = img;
-        _this.bgimg_width = img.width;
-        _this.bgimg_height = img.height;
         return _this.render();
       };
     })(this));
   },
-  loadBgFromFile: function(file) {
-    var reader;
-    reader = new FileReader();
-    reader.onload = (function(_this) {
-      return function(e) {
-        _this.bgimg_data = e.currentTarget.result;
-        _this.setBg();
-        return _this.saveDelay();
-      };
-    })(this);
-    return reader.readAsDataURL(file);
-  },
   setBg: function() {
-    var img;
-    if (!this.bgimg_data) {
+    if (!this.bgimg) {
       return;
     }
-    img = new Image();
-    img.src = this.bgimg_data;
-    this.bgimg = new fabric.Image(img);
-    this.bgimg_width = img.width;
-    this.bgimg_height = img.width;
     this.render();
     if (this.options.callback != null) {
       return this.options.callback();
     }
   },
   resetBg: function() {
-    this.bgimg_data = null;
+    this.bgimg = null;
     this.saveDelay();
     return location.reload();
   },
@@ -599,10 +573,10 @@ haika = {
   },
   renderBg: function() {
     if (this.bgimg) {
-      this.bgimg.left = Math.floor(this.canvas.getWidth() / 2 + (-this.bgimg_width * this.options.bgscale / 2 + this.centerX) * this.scale);
-      this.bgimg.top = Math.floor(this.canvas.getHeight() / 2 + (-this.bgimg_height * this.options.bgscale / 2 + this.centerY) * this.scale);
-      this.bgimg.width = Math.floor(this.bgimg_width * this.options.bgscale * this.scale);
-      this.bgimg.height = Math.floor(this.bgimg_height * this.options.bgscale * this.scale);
+      this.bgimg.left = Math.floor(this.canvas.getWidth() / 2 + (-this.bgimg.width * this.options.bgscale / 2 + this.centerX) * this.scale);
+      this.bgimg.top = Math.floor(this.canvas.getHeight() / 2 + (-this.bgimg.height * this.options.bgscale / 2 + this.centerY) * this.scale);
+      this.bgimg.width = Math.floor(this.bgimg.width * this.options.bgscale * this.scale);
+      this.bgimg.height = Math.floor(this.bgimg.height * this.options.bgscale * this.scale);
       this.bgimg.opacity = this.options.bgopacity;
       return this.canvas.setBackgroundImage(this.bgimg);
     }

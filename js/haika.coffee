@@ -11,9 +11,6 @@ haika =
   objects    : []
   canvas     : false
   bgimg: null
-  bgimg_data: null
-  bgimg_width: null
-  bgimg_height: null
   fillColor: "#CFE2F3"
   strokeColor: "#000000"
   options: {}
@@ -79,8 +76,6 @@ haika =
     #@canvas.centeredRotation = true
     if options.scale?
       @scale = options.scale
-    if @options.bgurl
-      @loadBgFromUrl(@options.bgurl)
     @render()
     setTimeout =>
       @load()
@@ -136,32 +131,16 @@ haika =
     fabric.Image.fromURL url, (img)=>
       log img
       @bgimg = img
-      @bgimg_width  = img.width
-      @bgimg_height = img.height
       @render()
-  # 背景画像をファイルからロード
-  loadBgFromFile : (file) ->
-    reader = new FileReader()
-    reader.onload = (e) =>
-#      log e.currentTarget.result
-      @bgimg_data = e.currentTarget.result
-      @setBg()
-      @saveDelay()
-    reader.readAsDataURL file
   # 背景の設定
   setBg: ->
-    if not @bgimg_data
+    if not @bgimg
       return
-    img = new Image()
-    img.src = @bgimg_data
-    @bgimg = new fabric.Image(img)
-    @bgimg_width = img.width
-    @bgimg_height = img.width
     @render()
     if @options.callback?
       @options.callback()
   resetBg: ->
-    @bgimg_data=null
+    @bgimg=null
     @saveDelay()
     location.reload()
   # オブジェクトにつけるid 通し番号
@@ -486,10 +465,10 @@ haika =
   # 背景を描画
   renderBg : ->
     if @bgimg
-      @bgimg.left    = Math.floor( @canvas.getWidth()/2 + (-@bgimg_width*@options.bgscale/2 + @centerX) * @scale )
-      @bgimg.top     = Math.floor( @canvas.getHeight()/2 + (-@bgimg_height*@options.bgscale/2 + @centerY) * @scale )
-      @bgimg.width   = Math.floor( @bgimg_width*@options.bgscale*@scale  )
-      @bgimg.height  = Math.floor( @bgimg_height*@options.bgscale*@scale )
+      @bgimg.left    = Math.floor( @canvas.getWidth()/2 + (-@bgimg.width*@options.bgscale/2 + @centerX) * @scale )
+      @bgimg.top     = Math.floor( @canvas.getHeight()/2 + (-@bgimg.height*@options.bgscale/2 + @centerY) * @scale )
+      @bgimg.width   = Math.floor( @bgimg.width*@options.bgscale*@scale  )
+      @bgimg.height  = Math.floor( @bgimg.height*@options.bgscale*@scale )
       @bgimg.opacity = @options.bgopacity
       @canvas.setBackgroundImage @bgimg
   # キャンバスのプロパティを設定
