@@ -132,16 +132,9 @@ haika =
       log img
       @bgimg = img
       @render()
-  # 背景の設定
-  setBg: ->
-    if not @bgimg
-      return
-    @render()
-    if @options.callback?
-      @options.callback()
   resetBg: ->
     @bgimg=null
-    @saveDelay()
+    @save()
     location.reload()
   # オブジェクトにつけるid 通し番号
   lastId : 0

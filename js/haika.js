@@ -153,18 +153,9 @@ haika = {
       };
     })(this));
   },
-  setBg: function() {
-    if (!this.bgimg) {
-      return;
-    }
-    this.render();
-    if (this.options.callback != null) {
-      return this.options.callback();
-    }
-  },
   resetBg: function() {
     this.bgimg = null;
-    this.saveDelay();
+    this.save();
     return location.reload();
   },
   lastId: 0,

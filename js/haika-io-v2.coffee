@@ -44,8 +44,6 @@ $.extend haika,
 
   # ロードして描画
   loadRender : (geojson)->
-    if not data or not geojson.haika
-      return
     @options.bgscale = if geojson.haika.bgscale then geojson.haika.bgscale else 4.425
     @options.bgopacity = geojson.haika.bgopacity
     @options.angle = geojson.haika.angle

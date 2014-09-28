@@ -24366,18 +24366,9 @@ haika = {
       };
     })(this));
   },
-  setBg: function() {
-    if (!this.bgimg) {
-      return;
-    }
-    this.render();
-    if (this.options.callback != null) {
-      return this.options.callback();
-    }
-  },
   resetBg: function() {
     this.bgimg = null;
-    this.saveDelay();
+    this.save();
     return location.reload();
   },
   lastId: 0,
@@ -25070,36 +25061,20 @@ haika = {
       })(this)
     });
   },
-  loadRender: function(data) {
-    var canvas, geojson, key, klass, object, schema, shape, _i, _len, _ref;
-    canvas = data.haika;
-    geojson = data;
-    if (canvas) {
-      this.state = canvas.state;
-      $('.nav a.' + this.state).tab('show');
-      if (canvas.scale) {
-        this.scale = canvas.scale;
-      }
-      if (!canvas.scale) {
-        this.scale = 1;
-      }
-      $('.zoom').html((this.scale * 100).toFixed(0) + '%');
-      this.centerX = canvas.centerX;
-      this.centerY = canvas.centerY;
-      this.options.bgscale = canvas.bgscale ? canvas.bgscale : 4.425;
-      this.options.bgopacity = canvas.bgopacity;
-      this.options.angle = canvas.angle;
-      if (canvas.geojson_scale != null) {
-        this.options.geojson_scale = canvas.geojson_scale;
-      } else {
-        if (canvas.bgurl != null) {
-          this.loadBgFromUrl(canvas.bgurl);
-        }
-      }
-      if (canvas.lon != null) {
-        this.options.lon = parseFloat(canvas.lon);
-        this.options.lat = parseFloat(canvas.lat);
-      }
+  loadRender: function(geojson) {
+    var key, klass, object, schema, shape, _i, _len, _ref;
+    this.options.bgscale = geojson.haika.bgscale ? geojson.haika.bgscale : 4.425;
+    this.options.bgopacity = geojson.haika.bgopacity;
+    this.options.angle = geojson.haika.angle;
+    if (geojson.haika.geojson_scale != null) {
+      this.options.geojson_scale = geojson.haika.geojson_scale;
+    }
+    if (geojson.haika.bgurl != null) {
+      this.loadBgFromUrl(geojson.haika.bgurl);
+    }
+    if ((geojson.haika.lon != null) && (geojson.haika.lat != null)) {
+      this.options.lon = parseFloat(geojson.haika.lon);
+      this.options.lat = parseFloat(geojson.haika.lat);
     }
     if (geojson && geojson.features.length > 0) {
       _ref = geojson.features;
@@ -25126,6 +25101,8 @@ haika = {
         this.add(shape);
       }
     }
+    $('.nav a.' + this.state).tab('show');
+    $('.zoom').html((this.scale * 100).toFixed(0) + '%');
     return this.render();
   },
   getCanvasProperty: function() {
