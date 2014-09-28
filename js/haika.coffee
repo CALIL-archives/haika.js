@@ -10,7 +10,7 @@ haika =
   scale      : 1
   objects    : []
   canvas     : false
-  bgimg: null
+  background_image : null
   fillColor: "#CFE2F3"
   strokeColor: "#000000"
   options: {}
@@ -128,14 +128,10 @@ haika =
   # 背景画像をURLからロード
   loadBgFromUrl : (url) ->
     @options.bgurl = url
-    fabric.Image.fromURL url, (img)=>
-      log img
-      @bgimg = img
-      @render()
+    @render()
   resetBg: ->
-    @bgimg=null
-    @save()
-    location.reload()
+    loadBgFromUrl('')
+
   # オブジェクトにつけるid 通し番号
   lastId : 0
   # idを取得
@@ -368,8 +364,12 @@ haika =
       return fabric.Shelf
   # canvasの描画
   render : ->
-#    log 'render'
     #オブジェクトをクリア
+    if not @background_image and @options.bgurl
+      fabric.Image.fromURL @options.bgurl, (img)=>
+          @background_image = img
+          @render()
+          return
     @canvas.renderOnAddRemove=false
     @unselect()
     @canvas._objects.length = 0;
@@ -399,7 +399,15 @@ haika =
       @addObjectToCanvas(o)
     for o in beacons
       @addObjectToCanvas(o)
-    @renderBg()
+    if @background_image
+      @background_image.left    = Math.floor( @canvas.getWidth()/2 + (-@background_image.width*@options.bgscale/2 + @centerX) * @scale )
+      @background_image.top     = Math.floor( @canvas.getHeight()/2 + (-@background_image.height*@options.bgscale/2 + @centerY) * @scale )
+      @background_image.width   = Math.floor( @background_image.width*@options.bgscale*@scale  )
+      @background_image.height  = Math.floor( @background_image.height*@options.bgscale*@scale )
+      @background_image.opacity = @options.bgopacity
+      @canvas.setBackgroundImage @background_image
+    else
+      @canvas.setBackgroundImage null
     @canvas.renderAll()
     @canvas.renderOnAddRemove=true
     @setCanvasProperty()
@@ -455,15 +463,7 @@ haika =
     for key of schema.properties
       object[key] = o[key]
     @canvas.add(object)
-  # 背景を描画
-  renderBg : ->
-    if @bgimg
-      @bgimg.left    = Math.floor( @canvas.getWidth()/2 + (-@bgimg.width*@options.bgscale/2 + @centerX) * @scale )
-      @bgimg.top     = Math.floor( @canvas.getHeight()/2 + (-@bgimg.height*@options.bgscale/2 + @centerY) * @scale )
-      @bgimg.width   = Math.floor( @bgimg.width*@options.bgscale*@scale  )
-      @bgimg.height  = Math.floor( @bgimg.height*@options.bgscale*@scale )
-      @bgimg.opacity = @options.bgopacity
-      @canvas.setBackgroundImage @bgimg
+
   # キャンバスのプロパティを設定
   setCanvasProperty : ->
     $('#canvas_width').html(@canvas.getWidth())

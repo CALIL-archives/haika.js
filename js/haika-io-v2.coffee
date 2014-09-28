@@ -50,7 +50,9 @@ $.extend haika,
     if geojson.haika.geojson_scale?
       @options.geojson_scale = geojson.haika.geojson_scale
     if geojson.haika.bgurl?
-      @loadBgFromUrl(geojson.haika.bgurl)
+      @options.bgurl = geojson.haika.bgurl
+    else
+      @options.bgurl = ''
     if geojson.haika.lon? and geojson.haika.lat?
       @options.lon = parseFloat(geojson.haika.lon)
       @options.lat = parseFloat(geojson.haika.lat)
