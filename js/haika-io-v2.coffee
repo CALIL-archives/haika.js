@@ -2,30 +2,14 @@
 # haikaを拡張
 $.extend haika, 
   revision : null
-  setHash : ->
-    $(window).off "hashchange"
-    location.hash = @id + '@' + @revision
-    # ハッシュ変更時に再読み込み
-    $(window).bind "hashchange", ->
-      location.reload()
-
   # データのロード
   load : ()->
-#    if location.hash!='' and location.hash.length!=7
-#      location.hash = sprintf('%06d',location.hash.split('#')[1])
-#      location.reload()
-#      return
-    # ローカルか？
-    # location.hashにfloor_idはあるか？
-    if location.hash!=''
-      hash = location.hash.split('#')[1]
-      @id = hash.split('@')[0]
-      @revision = hash.split('@')[1]
-      # サーバーからロード
-      @loadServer()
-    else
-      # 
-      alert('floor id が指定されていません。')
+    # URLにfloor_idはあるか？
+    @id = 2
+    # サーバーからロード
+    @loadServer()
+#    else
+#      alert('floor id が指定されていません。')
     $(@).trigger('haika:load')
   # サーバーからデータをロード
   loadServer : ->
@@ -40,11 +24,10 @@ $.extend haika,
       dataType: 'text'
       data: data
       success: (data)=>
-        log data
+#        log data
         json = JSON.parse(data)
         if json.locked
           if confirm 'ロックされています。リロードしますか？'
-            location.hash = @id
             location.reload()
         else
 #        try
@@ -55,16 +38,15 @@ $.extend haika,
         @revision = json.revision
         @collision = json.collision
         @loadRender(json.data)
-        @setHash()
       error: ()=>
         alert 'エラーが発生しました'
   # ロードして描画
   loadRender : (data)->
-    log data
-    canvas = data.canvas
-    geojson = data.geojson
+#    log data
+    canvas = data.haika
+    geojson = data
     if canvas
-      log canvas
+#      log canvas
       @state   = canvas.state
       $('.nav a.'+@state).tab('show')
       @scale   = canvas.scale
@@ -122,21 +104,64 @@ $.extend haika,
       geojson_scale: @options.geojson_scale
     }
   # 保存
-  save_flag : true
+  nowSaving : false
+  saveTimeout: null
   save : ->
     log 'save'
     # ajaxが終わるまで保存を防ぐ、衝突回避
-    if not @save_flag
-      setTimeout =>
-        @save
+    if @nowSaving
+      setTimeout ->
+        @save()
       , 500
-    @save_flag = false
+      return
+    @nowSaving = true
     for object in @canvas.getObjects()
-      @saveProperty(object)
-    @saveServer()
+      @prepareData(object)
+    param = @toGeoJSON()
+    param['haika'] = @getCanvasProperty()
+    param['haika']['version'] = 1
+    param = JSON.stringify(param)
+#    log param
+    data =
+      id  : @id
+      revision: @revision
+      collision: @collision
+      data: param
+#    log data
+    url = '/api/floor/save'
+    $.ajax
+      url: url
+      type: 'POST'
+      data: data
+      dataType: 'text'
+      success: (data)=>
+#        log data
+        json = JSON.parse(data)
+        if json.success==false
+          alert json.message
+          location.reload()
+        else
+          @revision = json.revision
+          @collision = json.collision
+        @nowSaving = false
+        if @saveTimeout
+          clearTimeout(@saveTimeout)
+          @saveTimeout = null
+      error: ()=>
+        @nowSaving = false
+        if @saveTimeout
+          clearTimeout(@saveTimeout)
+          @saveTimeout = null
+        alert  'エラーが発生しました'
     $(@).trigger('haika:save')
+  saveDelay : ->
+    if not @saveTimeout
+      clearTimeout(@saveTimeout)
+    @saveTimeout = setTimeout =>
+      @save()
+    , 2000
   # オブジェクトのプロパティの保存
-  saveProperty : (object, group=false)->
+  prepareData : (object, group=false)->
     count = @getCountFindById(object.id)
     @objects[count].id      = object.id
     @objects[count].type    = object.type
@@ -152,40 +177,6 @@ $.extend haika,
     schema = object.constructor.prototype.getJsonSchema()
     for key of schema.properties
       @objects[count][key] = object[key]
-  # haika.ioに保存
-  saveServer : ->
-    param = 
-      canvas : @getCanvasProperty()
-      geojson: @toGeoJSON()
-    param = JSON.stringify(param)
-    log param
-    data =
-      ext: 'json'
-      id  : @id
-      revision: @revision
-      collision: @collision
-      data: param
-#    log data
-    url = '/api/floor/save'
-    $.ajax
-      url: url
-      type: 'POST'
-      data: data
-      dataType: 'text'
-      success: (data)=>
-        log data
-        json = JSON.parse(data)
-        if json.success==false
-          alert json.message
-        else
-          @revision = json.revision
-          @collision = json.collision
-          @setHash()
-        @ave_flag = true
-      error: ()=>
-        @save_flag = true
-        alert  'エラーが発生しました'
-
   # オブジェクトをgeojsonに変換
   toGeoJSON : ->
     features = []
@@ -208,3 +199,18 @@ $.extend haika,
     data = [start, svgs.join(''), end].join('')
     log data
     return data
+  import : ->
+    id = window.prompt('idを入力してください', '')
+    url = """http://lab.calil.jp/haika_store/data/#{@id}.json"""
+    $.ajax
+      url: url
+      type: 'GET'
+      cache : false
+      dataType: 'text'
+      success: (data)=>
+        json = JSON.parse(data)
+        canvas = json.canvas
+        json.geojson.haika = json.canvas
+        @loadRender(json.geojson)
+      error: ()=>
+        alert '読み込めません'

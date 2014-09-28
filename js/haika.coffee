@@ -104,7 +104,7 @@ haika =
           object.lockScalingY  = true
         #else
         #  object.lockScalingY  = true
-        @save()
+        @saveDelay()
         @setPropetyPanel()
     )
 
@@ -114,7 +114,7 @@ haika =
 #      log 'before:selection:cleared'
       object = e.target
       @canvas.deactivateAll().renderAll()
-      @save()
+      @saveDelay()
       @editor_change()
       @setPropetyPanel()
     @canvas.on 'object:scaling', (e) =>
@@ -148,7 +148,7 @@ haika =
 #      log e.currentTarget.result
       @bgimg_data = e.currentTarget.result
       @setBg()
-      @save()
+      @saveDelay()
     reader.readAsDataURL file
   # 背景の設定
   setBg: ->
@@ -164,7 +164,7 @@ haika =
       @options.callback()
   resetBg: ->
     @bgimg_data=null
-    @save()
+    @saveDelay()
     location.reload()
   # オブジェクトにつけるid 通し番号
   lastId : 0
@@ -302,7 +302,7 @@ haika =
         o.left = @transformLeftX_cm2px(@centerX)+object.left
         new_id = @add(o)
         new_ids.push(new_id)
-    @save()
+    @saveDelay()
     @render()
     if object
       $(@canvas.getObjects()).each (i, obj)=>
@@ -338,7 +338,7 @@ haika =
       o.top  = @transformTopY_cm2px(@centerY)
       o.left = @transformLeftX_cm2px(@centerX)
       new_id = @add(o)
-      @save()
+      @saveDelay()
       @render()
       $(@canvas.getObjects()).each (i, obj)=>
         if obj.id==new_id
@@ -353,7 +353,7 @@ haika =
         o.left = @transformLeftX_cm2px(@centerX)+object.left*@scale/@clipboard_scale
         new_id = @add(o)
         new_ids.push(new_id)
-      @save()
+      @saveDelay()
       log 'pre render' + @clipboard[0].top
       @render()
       log 'after render' + @clipboard[0].top
@@ -544,7 +544,7 @@ haika =
       for object in group._objects
         bound = object.getBoundingRect()
         object.left = left + bound.width/2
-      @save()
+      @saveDelay()
       @canvas.renderAll()
   # 右に整列
   alignRight : ()->

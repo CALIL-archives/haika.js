@@ -25058,23 +25058,9 @@ haika = {
 //# sourceMappingURL=haika.js.map
 ;$.extend(haika, {
   revision: null,
-  setHash: function() {
-    $(window).off("hashchange");
-    location.hash = this.id + '@' + this.revision;
-    return $(window).bind("hashchange", function() {
-      return location.reload();
-    });
-  },
   load: function() {
-    var hash;
-    if (location.hash !== '') {
-      hash = location.hash.split('#')[1];
-      this.id = hash.split('@')[0];
-      this.revision = hash.split('@')[1];
-      this.loadServer();
-    } else {
-      alert('floor id が指定されていません。');
-    }
+    this.id = 2;
+    this.loadServer();
     return $(this).trigger('haika:load');
   },
   loadServer: function() {
@@ -25093,11 +25079,9 @@ haika = {
       success: (function(_this) {
         return function(data) {
           var json;
-          log(data);
           json = JSON.parse(data);
           if (json.locked) {
             if (confirm('ロックされています。リロードしますか？')) {
-              location.hash = _this.id;
               location.reload();
             }
           } else {
@@ -25105,8 +25089,7 @@ haika = {
           }
           _this.revision = json.revision;
           _this.collision = json.collision;
-          _this.loadRender(json.data);
-          return _this.setHash();
+          return _this.loadRender(json.data);
         };
       })(this),
       error: (function(_this) {
@@ -25118,11 +25101,9 @@ haika = {
   },
   loadRender: function(data) {
     var canvas, geojson, key, klass, object, schema, shape, _i, _len, _ref;
-    log(data);
-    canvas = data.canvas;
-    geojson = data.geojson;
+    canvas = data.haika;
+    geojson = data;
     if (canvas) {
-      log(canvas);
       this.state = canvas.state;
       $('.nav a.' + this.state).tab('show');
       this.scale = canvas.scale;
@@ -25188,27 +25169,81 @@ haika = {
       geojson_scale: this.options.geojson_scale
     };
   },
-  save_flag: true,
+  nowSaving: false,
+  saveTimeout: null,
   save: function() {
-    var object, _i, _len, _ref;
+    var data, object, param, url, _i, _len, _ref;
     log('save');
-    if (!this.save_flag) {
-      setTimeout((function(_this) {
-        return function() {
-          return _this.save;
-        };
-      })(this), 500);
+    if (this.nowSaving) {
+      setTimeout(function() {
+        return this.save();
+      }, 500);
+      return;
     }
-    this.save_flag = false;
+    this.nowSaving = true;
     _ref = this.canvas.getObjects();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
-      this.saveProperty(object);
+      this.prepareData(object);
     }
-    this.saveServer();
+    param = this.toGeoJSON();
+    param['haika'] = this.getCanvasProperty();
+    param['haika']['version'] = 1;
+    param = JSON.stringify(param);
+    data = {
+      id: this.id,
+      revision: this.revision,
+      collision: this.collision,
+      data: param
+    };
+    url = '/api/floor/save';
+    $.ajax({
+      url: url,
+      type: 'POST',
+      data: data,
+      dataType: 'text',
+      success: (function(_this) {
+        return function(data) {
+          var json;
+          json = JSON.parse(data);
+          if (json.success === false) {
+            alert(json.message);
+            location.reload();
+          } else {
+            _this.revision = json.revision;
+            _this.collision = json.collision;
+          }
+          _this.nowSaving = false;
+          if (_this.saveTimeout) {
+            clearTimeout(_this.saveTimeout);
+            return _this.saveTimeout = null;
+          }
+        };
+      })(this),
+      error: (function(_this) {
+        return function() {
+          _this.nowSaving = false;
+          if (_this.saveTimeout) {
+            clearTimeout(_this.saveTimeout);
+            _this.saveTimeout = null;
+          }
+          return alert('エラーが発生しました');
+        };
+      })(this)
+    });
     return $(this).trigger('haika:save');
   },
-  saveProperty: function(object, group) {
+  saveDelay: function() {
+    if (!this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+    }
+    return this.saveTimeout = setTimeout((function(_this) {
+      return function() {
+        return _this.save();
+      };
+    })(this), 2000);
+  },
+  prepareData: function(object, group) {
     var count, key, schema, _results;
     if (group == null) {
       group = false;
@@ -25231,50 +25266,6 @@ haika = {
       _results.push(this.objects[count][key] = object[key]);
     }
     return _results;
-  },
-  saveServer: function() {
-    var data, param, url;
-    param = {
-      canvas: this.getCanvasProperty(),
-      geojson: this.toGeoJSON()
-    };
-    param = JSON.stringify(param);
-    log(param);
-    data = {
-      ext: 'json',
-      id: this.id,
-      revision: this.revision,
-      collision: this.collision,
-      data: param
-    };
-    url = '/api/floor/save';
-    return $.ajax({
-      url: url,
-      type: 'POST',
-      data: data,
-      dataType: 'text',
-      success: (function(_this) {
-        return function(data) {
-          var json;
-          log(data);
-          json = JSON.parse(data);
-          if (json.success === false) {
-            alert(json.message);
-          } else {
-            _this.revision = json.revision;
-            _this.collision = json.collision;
-            _this.setHash();
-          }
-          return _this.ave_flag = true;
-        };
-      })(this),
-      error: (function(_this) {
-        return function() {
-          _this.save_flag = true;
-          return alert('エラーが発生しました');
-        };
-      })(this)
-    });
   },
   toGeoJSON: function() {
     var data, features, geojson, object, _i, _len, _ref;
@@ -25306,6 +25297,31 @@ haika = {
     data = [start, svgs.join(''), end].join('');
     log(data);
     return data;
+  },
+  "import": function() {
+    var id, url;
+    id = window.prompt('idを入力してください', '');
+    url = "http://lab.calil.jp/haika_store/data/" + this.id + ".json";
+    return $.ajax({
+      url: url,
+      type: 'GET',
+      cache: false,
+      dataType: 'text',
+      success: (function(_this) {
+        return function(data) {
+          var canvas, json;
+          json = JSON.parse(data);
+          canvas = json.canvas;
+          json.geojson.haika = json.canvas;
+          return _this.loadRender(json.geojson);
+        };
+      })(this),
+      error: (function(_this) {
+        return function() {
+          return alert('読み込めません');
+        };
+      })(this)
+    });
   }
 });
 
