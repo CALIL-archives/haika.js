@@ -9,8 +9,6 @@ log = function(obj) {
 haika = {
   id: null,
   state: 'shelf',
-  width: 800,
-  height: 800,
   centerX: 0,
   centerY: 0,
   scale: 1,
@@ -75,10 +73,6 @@ haika = {
       return action;
     };
     canvas._renderBackground = function(ctx) {
-      if (this.backgroundColor) {
-        ctx.fillStyle = (this.backgroundColor.toLive ? this.backgroundColor.toLive(ctx) : this.backgroundColor);
-        ctx.fillRect(this.backgroundColor.offsetX || 0, this.backgroundColor.offsetY || 0, this.width, this.height);
-      }
       ctx.mozImageSmoothingEnabled = false;
       if (this.backgroundImage) {
         this.backgroundImage.render(ctx);
@@ -112,8 +106,13 @@ haika = {
           object.lockScalingX = true;
           object.lockScalingY = true;
         }
-        _this.save();
+        _this.saveDelay();
         return _this.setPropetyPanel();
+      };
+    })(this));
+    this.canvas.on('after:render', (function(_this) {
+      return function(e) {
+        return _this.prepareData();
       };
     })(this));
     this.canvas.on('before:selection:cleared', (function(_this) {
@@ -121,7 +120,7 @@ haika = {
         var object;
         object = e.target;
         _this.canvas.deactivateAll().renderAll();
-        _this.save();
+        _this.saveDelay();
         _this.editor_change();
         return _this.setPropetyPanel();
       };
@@ -171,7 +170,7 @@ haika = {
       return function(e) {
         _this.bgimg_data = e.currentTarget.result;
         _this.setBg();
-        return _this.save();
+        return _this.saveDelay();
       };
     })(this);
     return reader.readAsDataURL(file);
@@ -193,7 +192,7 @@ haika = {
   },
   resetBg: function() {
     this.bgimg_data = null;
-    this.save();
+    this.saveDelay();
     return location.reload();
   },
   lastId: 0,
@@ -366,7 +365,7 @@ haika = {
         new_ids.push(new_id);
       }
     }
-    this.save();
+    this.saveDelay();
     this.render();
     if (object) {
       $(this.canvas.getObjects()).each((function(_this) {
@@ -414,7 +413,7 @@ haika = {
       o.top = this.transformTopY_cm2px(this.centerY);
       o.left = this.transformLeftX_cm2px(this.centerX);
       new_id = this.add(o);
-      this.save();
+      this.saveDelay();
       this.render();
       return $(this.canvas.getObjects()).each((function(_this) {
         return function(i, obj) {
@@ -435,7 +434,7 @@ haika = {
         new_id = this.add(o);
         new_ids.push(new_id);
       }
-      this.save();
+      this.saveDelay();
       log('pre render' + this.clipboard[0].top);
       this.render();
       log('after render' + this.clipboard[0].top);
@@ -678,7 +677,7 @@ haika = {
         bound = object.getBoundingRect();
         object.left = left + bound.width / 2;
       }
-      this.save();
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },

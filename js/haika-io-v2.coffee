@@ -110,13 +110,11 @@ $.extend haika,
     log 'save'
     # ajaxが終わるまで保存を防ぐ、衝突回避
     if @nowSaving
-      setTimeout ->
+      setTimeout =>
         @save()
       , 500
       return
     @nowSaving = true
-    for object in @canvas.getObjects()
-      @prepareData(object)
     param = @toGeoJSON()
     param['haika'] = @getCanvasProperty()
     param['haika']['version'] = 1
@@ -161,22 +159,23 @@ $.extend haika,
       @save()
     , 2000
   # オブジェクトのプロパティの保存
-  prepareData : (object, group=false)->
-    count = @getCountFindById(object.id)
-    @objects[count].id      = object.id
-    @objects[count].type    = object.type
-    @objects[count].top_cm  = @transformTopY_px2cm(object.top)
-    object.top_cm           = @objects[count].top_cm
-    @objects[count].left_cm = @transformLeftX_px2cm(object.left)
-    object.left_cm          = @objects[count].left_cm
-    @objects[count].scaleX  = object.scaleX / @scale
-    @objects[count].scaleY  = object.scaleY / @scale
-    @objects[count].angle   = object.angle
-    @objects[count].fill    = object.fill
-    @objects[count].stroke  = object.stroke
-    schema = object.constructor.prototype.getJsonSchema()
-    for key of schema.properties
-      @objects[count][key] = object[key]
+  prepareData : ()->
+    for object in @canvas.getObjects()
+      count = @getCountFindById(object.id)
+      @objects[count].id      = object.id
+      @objects[count].type    = object.type
+      @objects[count].top_cm  = @transformTopY_px2cm(object.top)
+      object.top_cm           = @objects[count].top_cm
+      @objects[count].left_cm = @transformLeftX_px2cm(object.left)
+      object.left_cm          = @objects[count].left_cm
+      @objects[count].scaleX  = object.scaleX / @scale
+      @objects[count].scaleY  = object.scaleY / @scale
+      @objects[count].angle   = object.angle
+      @objects[count].fill    = object.fill
+      @objects[count].stroke  = object.stroke
+      schema = object.constructor.prototype.getJsonSchema()
+      for key of schema.properties
+        @objects[count][key] = object[key]
   # オブジェクトをgeojsonに変換
   toGeoJSON : ->
     features = []

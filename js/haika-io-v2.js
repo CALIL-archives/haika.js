@@ -114,20 +114,17 @@ $.extend(haika, {
   nowSaving: false,
   saveTimeout: null,
   save: function() {
-    var data, object, param, url, _i, _len, _ref;
+    var data, param, url;
     log('save');
     if (this.nowSaving) {
-      setTimeout(function() {
-        return this.save();
-      }, 500);
+      setTimeout((function(_this) {
+        return function() {
+          return _this.save();
+        };
+      })(this), 500);
       return;
     }
     this.nowSaving = true;
-    _ref = this.canvas.getObjects();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      this.prepareData(object);
-    }
     param = this.toGeoJSON();
     param['haika'] = this.getCanvasProperty();
     param['haika']['version'] = 1;
@@ -185,27 +182,33 @@ $.extend(haika, {
       };
     })(this), 2000);
   },
-  prepareData: function(object, group) {
-    var count, key, schema, _results;
-    if (group == null) {
-      group = false;
-    }
-    count = this.getCountFindById(object.id);
-    this.objects[count].id = object.id;
-    this.objects[count].type = object.type;
-    this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
-    object.top_cm = this.objects[count].top_cm;
-    this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
-    object.left_cm = this.objects[count].left_cm;
-    this.objects[count].scaleX = object.scaleX / this.scale;
-    this.objects[count].scaleY = object.scaleY / this.scale;
-    this.objects[count].angle = object.angle;
-    this.objects[count].fill = object.fill;
-    this.objects[count].stroke = object.stroke;
-    schema = object.constructor.prototype.getJsonSchema();
+  prepareData: function() {
+    var count, key, object, schema, _i, _len, _ref, _results;
+    _ref = this.canvas.getObjects();
     _results = [];
-    for (key in schema.properties) {
-      _results.push(this.objects[count][key] = object[key]);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      count = this.getCountFindById(object.id);
+      this.objects[count].id = object.id;
+      this.objects[count].type = object.type;
+      this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
+      object.top_cm = this.objects[count].top_cm;
+      this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
+      object.left_cm = this.objects[count].left_cm;
+      this.objects[count].scaleX = object.scaleX / this.scale;
+      this.objects[count].scaleY = object.scaleY / this.scale;
+      this.objects[count].angle = object.angle;
+      this.objects[count].fill = object.fill;
+      this.objects[count].stroke = object.stroke;
+      schema = object.constructor.prototype.getJsonSchema();
+      _results.push((function() {
+        var _results1;
+        _results1 = [];
+        for (key in schema.properties) {
+          _results1.push(this.objects[count][key] = object[key]);
+        }
+        return _results1;
+      }).call(this));
     }
     return _results;
   },

@@ -24222,8 +24222,6 @@ log = function(obj) {
 haika = {
   id: null,
   state: 'shelf',
-  width: 800,
-  height: 800,
   centerX: 0,
   centerY: 0,
   scale: 1,
@@ -24288,10 +24286,6 @@ haika = {
       return action;
     };
     canvas._renderBackground = function(ctx) {
-      if (this.backgroundColor) {
-        ctx.fillStyle = (this.backgroundColor.toLive ? this.backgroundColor.toLive(ctx) : this.backgroundColor);
-        ctx.fillRect(this.backgroundColor.offsetX || 0, this.backgroundColor.offsetY || 0, this.width, this.height);
-      }
       ctx.mozImageSmoothingEnabled = false;
       if (this.backgroundImage) {
         this.backgroundImage.render(ctx);
@@ -24325,8 +24319,13 @@ haika = {
           object.lockScalingX = true;
           object.lockScalingY = true;
         }
-        _this.save();
+        _this.saveDelay();
         return _this.setPropetyPanel();
+      };
+    })(this));
+    this.canvas.on('after:render', (function(_this) {
+      return function(e) {
+        return _this.prepareData();
       };
     })(this));
     this.canvas.on('before:selection:cleared', (function(_this) {
@@ -24334,7 +24333,7 @@ haika = {
         var object;
         object = e.target;
         _this.canvas.deactivateAll().renderAll();
-        _this.save();
+        _this.saveDelay();
         _this.editor_change();
         return _this.setPropetyPanel();
       };
@@ -24384,7 +24383,7 @@ haika = {
       return function(e) {
         _this.bgimg_data = e.currentTarget.result;
         _this.setBg();
-        return _this.save();
+        return _this.saveDelay();
       };
     })(this);
     return reader.readAsDataURL(file);
@@ -24406,7 +24405,7 @@ haika = {
   },
   resetBg: function() {
     this.bgimg_data = null;
-    this.save();
+    this.saveDelay();
     return location.reload();
   },
   lastId: 0,
@@ -24579,7 +24578,7 @@ haika = {
         new_ids.push(new_id);
       }
     }
-    this.save();
+    this.saveDelay();
     this.render();
     if (object) {
       $(this.canvas.getObjects()).each((function(_this) {
@@ -24627,7 +24626,7 @@ haika = {
       o.top = this.transformTopY_cm2px(this.centerY);
       o.left = this.transformLeftX_cm2px(this.centerX);
       new_id = this.add(o);
-      this.save();
+      this.saveDelay();
       this.render();
       return $(this.canvas.getObjects()).each((function(_this) {
         return function(i, obj) {
@@ -24648,7 +24647,7 @@ haika = {
         new_id = this.add(o);
         new_ids.push(new_id);
       }
-      this.save();
+      this.saveDelay();
       log('pre render' + this.clipboard[0].top);
       this.render();
       log('after render' + this.clipboard[0].top);
@@ -24891,7 +24890,7 @@ haika = {
         bound = object.getBoundingRect();
         object.left = left + bound.width / 2;
       }
-      this.save();
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },
@@ -25172,20 +25171,17 @@ haika = {
   nowSaving: false,
   saveTimeout: null,
   save: function() {
-    var data, object, param, url, _i, _len, _ref;
+    var data, param, url;
     log('save');
     if (this.nowSaving) {
-      setTimeout(function() {
-        return this.save();
-      }, 500);
+      setTimeout((function(_this) {
+        return function() {
+          return _this.save();
+        };
+      })(this), 500);
       return;
     }
     this.nowSaving = true;
-    _ref = this.canvas.getObjects();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      this.prepareData(object);
-    }
     param = this.toGeoJSON();
     param['haika'] = this.getCanvasProperty();
     param['haika']['version'] = 1;
@@ -25243,27 +25239,33 @@ haika = {
       };
     })(this), 2000);
   },
-  prepareData: function(object, group) {
-    var count, key, schema, _results;
-    if (group == null) {
-      group = false;
-    }
-    count = this.getCountFindById(object.id);
-    this.objects[count].id = object.id;
-    this.objects[count].type = object.type;
-    this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
-    object.top_cm = this.objects[count].top_cm;
-    this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
-    object.left_cm = this.objects[count].left_cm;
-    this.objects[count].scaleX = object.scaleX / this.scale;
-    this.objects[count].scaleY = object.scaleY / this.scale;
-    this.objects[count].angle = object.angle;
-    this.objects[count].fill = object.fill;
-    this.objects[count].stroke = object.stroke;
-    schema = object.constructor.prototype.getJsonSchema();
+  prepareData: function() {
+    var count, key, object, schema, _i, _len, _ref, _results;
+    _ref = this.canvas.getObjects();
     _results = [];
-    for (key in schema.properties) {
-      _results.push(this.objects[count][key] = object[key]);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      count = this.getCountFindById(object.id);
+      this.objects[count].id = object.id;
+      this.objects[count].type = object.type;
+      this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
+      object.top_cm = this.objects[count].top_cm;
+      this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
+      object.left_cm = this.objects[count].left_cm;
+      this.objects[count].scaleX = object.scaleX / this.scale;
+      this.objects[count].scaleY = object.scaleY / this.scale;
+      this.objects[count].angle = object.angle;
+      this.objects[count].fill = object.fill;
+      this.objects[count].stroke = object.stroke;
+      schema = object.constructor.prototype.getJsonSchema();
+      _results.push((function() {
+        var _results1;
+        _results1 = [];
+        for (key in schema.properties) {
+          _results1.push(this.objects[count][key] = object[key]);
+        }
+        return _results1;
+      }).call(this));
     }
     return _results;
   },

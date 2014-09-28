@@ -5,8 +5,6 @@ log = (obj) ->
 haika = 
   id         : null
   state      : 'shelf'
-  width      : 800
-  height     : 800
   centerX    : 0
   centerY    : 0
   scale      : 1
@@ -70,9 +68,6 @@ haika =
 
     #背景にグリッドラインを追加するためにオーバーライド
     canvas._renderBackground = (ctx) ->
-      if @backgroundColor
-        ctx.fillStyle = (if @backgroundColor.toLive then @backgroundColor.toLive(ctx) else @backgroundColor)
-        ctx.fillRect @backgroundColor.offsetX or 0, @backgroundColor.offsetY or 0, @width, @height
       ctx.mozImageSmoothingEnabled = false
       if @backgroundImage
         @backgroundImage.render ctx
@@ -107,6 +102,10 @@ haika =
         @saveDelay()
         @setPropetyPanel()
     )
+
+    @canvas.on 'after:render', (e)=>
+#      log 'after:render'
+      @prepareData()
 
 #    @canvas.on 'selection:created', (e)=>
 #      e.target.hasControls = false
