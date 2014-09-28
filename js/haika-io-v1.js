@@ -14,7 +14,7 @@ $.extend(haika, {
       location.reload();
       return;
     }
-    if (this.isLocal()) {
+    if (this.isLocal() && location.hash === '') {
       data = {
         canvas: JSON.parse(localStorage.getItem('canvas')),
         geojson: JSON.parse(localStorage.getItem('geojson'))
@@ -386,6 +386,22 @@ $.extend(haika, {
       }
     }
     return geojson;
+  },
+  toSVG: function() {
+    var data, end, object, start, svg, svgs, _i, _len, _ref;
+    svgs = [];
+    _ref = this.canvas.getObjects();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      svg = object.toSVG();
+      svgs.push(svg);
+    }
+    log(svgs);
+    start = '<svg viewBox="0 0 1024 768">';
+    end = '</svg>';
+    data = [start, svgs.join(''), end].join('');
+    log(data);
+    return data;
   }
 });
 

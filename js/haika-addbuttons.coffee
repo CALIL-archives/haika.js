@@ -24,7 +24,7 @@ $.extend haika,
       id = haika.add(object)
       haika.setState(object)
       haika.render()
-      undo.add(id)
+      haika.undo.add(id)
       $(haika.canvas.getObjects()).each (i, obj)=>
         if obj.id==object.id
           setTimeout ->

@@ -93,7 +93,20 @@
       return data;
     },
     toSVG: function(reviver) {
-      return "";
+      var markup, x, y;
+      markup = this._createBaseSVGMarkup();
+      x = this.left;
+      y = this.top;
+      if (!(this.group && this.group.type === "path-group")) {
+        x = -this.width / 2;
+        y = -this.height / 2;
+      }
+      markup.push("<rect ", "x=\"", x, "\" y=\"", y, "\" rx=\"", this.get("rx"), "\" ry=\"", this.get("ry"), "\" width=\"", this.width, "\" height=\"", this.height, "\" style=\"", this.getSvgStyles(), "\" transform=\"", this.getSvgTransform(), "\"/>\n");
+      if (reviver) {
+        return reviver(markup.join(""));
+      } else {
+        return markup.join("");
+      }
     },
     getJsonSchema: function() {
       var schema;

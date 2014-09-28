@@ -1,14 +1,28 @@
 $.extend(haika, {
   setting: {
+    navbar_height: function() {
+      if ($('#navbar').length > 0) {
+        return $('#navbar').height() + 45;
+      } else {
+        return 0;
+      }
+    },
+    sidebar_width: function() {
+      if ($('.sidebar-collapse').length > 0) {
+        return $('.sidebar-collapse').width() + 45;
+      } else {
+        return 0;
+      }
+    },
     scrollbar_width: $('#vertical-scroller').width(),
     scrollbar_height: $('#horizontal-scroller').height(),
     toolbar_width: $('.toolbar_container').width() + 14,
     property_panel_width: $('.property_panel').width(),
     getWidth: function() {
-      return window.innerWidth - this.toolbar_width - this.scrollbar_width - this.property_panel_width - 20;
+      return window.innerWidth - this.sidebar_width() - this.toolbar_width - this.scrollbar_width - this.property_panel_width - 20;
     },
     getHeight: function() {
-      return window.innerHeight - $('.header').height() - this.scrollbar_height;
+      return window.innerHeight - this.navbar_height() - $('.header').height() - this.scrollbar_height;
     },
     start: function() {
       $('.main_container, .canvas_panel').css('width', this.getWidth());
@@ -43,7 +57,7 @@ $(function() {
     e.preventDefault();
     haika.state = $(e.target).attr('class');
     haika.render();
-    showAddButtons(haika.state);
+    haika.addbuttons.showAddButtons(haika.state);
     return $(this).tab('show');
   });
 });
