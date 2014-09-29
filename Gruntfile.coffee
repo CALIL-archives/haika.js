@@ -72,7 +72,7 @@ module.exports = (grunt) ->
           "vendor/ol.js"
           "js/haika-map.js"
         ]
-        dest: "js/haika.all.js"
+        dest: "js/build/haika.all.js"
         nonull: true
 
       css:
@@ -99,7 +99,7 @@ module.exports = (grunt) ->
 
       dist:
         files:
-          "js/haika.all.min.js": ["js/haika.all.js"]
+          "js/build/haika.all.min.js": ["js/build/haika.all.js"]
 
 #    watch:
 #      devel:

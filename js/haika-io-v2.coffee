@@ -1,4 +1,5 @@
 # データの保存と読み込みに関する処理
+# GeoJSONフォーマットに関する処理
 
 $.extend haika,
   _dataId: null #編集中のデータのID (外部参照禁止)
@@ -6,48 +7,66 @@ $.extend haika,
   _collision: null #衝突検出キー (外部参照禁止)
   _api_load_endpoint: '/api/floor/load' #データ読み込みAPIのエンドポイント
   _api_save_endpoint: '/api/floor/save' #データ保存APIのエンドポイント
+  _geojson: {} #編集中のデータのGeoJSON (外部参照禁止)
+  nowSaving: false #保存処理中フラグ(true..保存処理中) (外部参照禁止)
 
-  clear: ()-> # 現在のデータを破棄する
+# API経由で開いたデータを閉じる
+#
+  close: ()->
     @_dataId = null
     @_revision = null
     @_collision = null
+    @_geojson = {}
     @objects.length = 0
+    @background_image = null
 
-# API経由でデータを読み込む
-# @param {Number} newId データのID
-  loadFromApi: (newId)->
-    @clear()
+# API経由でデータを開く
+#
+# @param {Number} id データのID
+# @option {Number} id データのリビジョン(省略時は最新)
+# @option {Function} success 成功時のコールバック関数
+# @option {Function} error(message) エラー時のコールバック関数
+#
+  openFromApi: (id, revision = null, success = null, error = null) ->
+    if @_dataId
+      @close() #開いたデータがある場合は閉じる
+    if @nowSaving
+      error and error('保存処理中のため読み込めませんでした')
     $.ajax
       url: @_api_load_endpoint
       type: 'POST'
       cache: false
       dataType: 'json'
       data:
-        id: newId
-        revision: @_revision
+        id: id
+        revision: revision
       error: ()=>
-        alert 'エラーが発生しました'
+        error and error('データが読み込めませんでした')
       success: (json)=>
         if json.locked
-          if confirm 'ロックされています。リロードしますか？'
-            location.reload()
-          return
+          # TODO : Read Onlyモードに切り替える
+          return error and error('データはロックされています')
         @_dataId = json.id
         @_revision = json.revision
         @_collision = json.collision
-        @loadFromGeoJson(json.data)
+        @_geojson = json.data
+        @loadFromGeoJson()
         $(@).trigger('haika:load')
+        success and success()
 
 # GeoJsonからデータを読み込む
+#
 # @param {Object} geojson
-  loadFromGeoJson: (geojson)-> # GeoJsonからデータを読み込む
+#
+  loadFromGeoJson: (geojson=null)-> # GeoJsonからデータを読み込む
+    if not geojson
+      geojson=@_geojson
     @options.bgscale = if geojson.haika.bgscale then geojson.haika.bgscale else 4.425
     @options.bgopacity = geojson.haika.bgopacity
     if geojson.haika.bgurl?
       @options.bgurl = geojson.haika.bgurl
     else
       @options.bgurl = ''
-
     @options.angle = geojson.haika.angle
     if geojson.haika.geojson_scale?
       @options.geojson_scale = geojson.haika.geojson_scale
@@ -92,9 +111,10 @@ $.extend haika,
     geojson_scale: @options.geojson_scale
     }
 # 保存
-  nowSaving: false
   saveTimeout: null
   save: ->
+    @prepareData()
+
     log 'save'
     # ajaxが終わるまで保存を防ぐ、衝突回避
     if @nowSaving
@@ -139,6 +159,7 @@ $.extend haika,
         alert 'エラーが発生しました'
     $(@).trigger('haika:save')
   saveDelay: ->
+    @prepareData()
     if not @saveTimeout
       clearTimeout(@saveTimeout)
     @saveTimeout = setTimeout =>
