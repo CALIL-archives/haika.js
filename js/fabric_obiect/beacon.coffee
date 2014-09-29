@@ -11,9 +11,9 @@
     eachHeight: 10
     minor : 0
     __width: ->
-      @eachWidth * haika.scale
+      @eachWidth * haika.scaleFactor
     __height: ->
-      @eachHeight * haika.scale
+      @eachHeight * haika.scaleFactor
 
     initialize: (options) ->
       options = options or {}

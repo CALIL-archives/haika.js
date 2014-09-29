@@ -59,35 +59,6 @@ $ ->
     haika.alignVcenter()
   $(".align-bottom").click ->
     haika.alignBottom()
-#  $(".toright").click ->
-#    haika.toRight()
-#  $(".toleft").click ->
-#    haika.toLeft()
-#  $(".totop").click ->
-#    haika.toTop()
-#  $(".tobottom").click ->
-#    haika.toBottom()
-#  $(".svg").click ->
-#    haika.getSVG()
-#  $(".loadsvg").click ->
-#    loadSVG 'http://fabreasy.com/demo_front.svg', haika.canvas, ->
-#      alert('done');
-#  $(".reset").click ->
-#    haika.objects = []
-#    localStorage.clear()
-#    $(window).off 'beforeunload'
-#    location.reload()
-#  $(".rotate").slider
-#    min: 0
-#    max: 360
-#    step: 10
-#    value: 0
-#    slide: (event, ui) ->
-#      activeObject = haika.canvas.getActiveObject()
-#      if activeObject
-#        activeObject.angle = ui.value
-#        activeObject.setCoords()
-#        haika.canvas.renderAll()
 
 
 # ボタン類のイベントバインド

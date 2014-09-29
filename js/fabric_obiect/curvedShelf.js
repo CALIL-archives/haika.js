@@ -28,10 +28,10 @@
       return this.__eachHeight() * this.side;
     },
     __eachWidth: function() {
-      return 90 * haika.scale;
+      return 90 * haika.scaleFactor;
     },
     __eachHeight: function() {
-      return 25 * haika.scale;
+      return 25 * haika.scaleFactor;
     },
     count: 1,
     side: 1,

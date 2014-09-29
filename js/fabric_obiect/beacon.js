@@ -13,10 +13,10 @@
     eachHeight: 10,
     minor: 0,
     __width: function() {
-      return this.eachWidth * haika.scale;
+      return this.eachWidth * haika.scaleFactor;
     },
     __height: function() {
-      return this.eachHeight * haika.scale;
+      return this.eachHeight * haika.scaleFactor;
     },
     initialize: function(options) {
       options = options || {};

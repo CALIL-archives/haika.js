@@ -12,9 +12,9 @@
     width_scale : 1
     height_scale : 1
     __width: ->
-      @eachWidth * @width_scale * haika.scale
+      @eachWidth * @width_scale * haika.scaleFactor
     __height: ->
-      @eachHeight * @height_scale* haika.scale
+      @eachHeight * @height_scale* haika.scaleFactor
 
     initialize: (options) ->
       options = options or {}
@@ -47,10 +47,10 @@
 
       if @sacleX!=1
         @width = @width * @scaleX
-        @width_scale = @width / (@eachWidth * haika.scale)
+        @width_scale = @width / (@eachWidth * haika.scaleFactor)
       if @sacleY!=1
         @height = @height * @scaleY
-        @height_scale = @height / (@eachHeight * haika.scale)
+        @height_scale = @height / (@eachHeight * haika.scaleFactor)
       @scaleX = @scaleY = 1
       @setCoords()
 

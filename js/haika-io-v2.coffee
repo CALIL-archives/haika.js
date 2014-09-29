@@ -122,35 +122,21 @@ $.extend haika,
       return
 
     @_nowSaving = true
-    param = @toGeoJSON()
-    param['haika'] = {
-      bgurl: @options.bgurl
-      bgscale: @options.bgscale
-      bgopacity: @options.bgopacity
-      lon: @options.lon
-      lat: @options.lat
-      angle: @options.angle
-      geojson_scale: @options.geojson_scale
-    }
-    param['haika']['version'] = 1
-    param = JSON.stringify(param)
-    #    log param
     data =
       id: @_dataId
       revision: @_revision
       collision: @_collision
-      data: param
+      data: JSON.stringify(@toGeoJSON())
     $.ajax
       url: @_api_save_endpoint
       type: 'POST'
       data: data
-      dataType: 'text'
-      success: (data)=>
+      dataType: 'json'
+      success: (json)=>
         @_nowSaving = false
-        json = JSON.parse(data)
-        if json.success == false
+        if not json.success
           error and error(json.message)
-          # Todo: コンポーネント内からのalertは撤去すること
+          # Todo: コンポーネント内からのalertは撤去する方針
           alert json.message
           location.reload()
           return
@@ -179,25 +165,10 @@ $.extend haika,
     , delay
 
 
-# オブジェクトのプロパティの保存
-  prepareData: ()->
-    for object in @canvas.getObjects()
-      count = @getCountFindById(object.id)
-      @objects[count].id = object.id
-      @objects[count].type = object.type
-      @objects[count].top_cm = @transformTopY_px2cm(object.top)
-      object.top_cm = @objects[count].top_cm
-      @objects[count].left_cm = @transformLeftX_px2cm(object.left)
-      object.left_cm = @objects[count].left_cm
-      @objects[count].scaleX = object.scaleX / @scale
-      @objects[count].scaleY = object.scaleY / @scale
-      @objects[count].angle = object.angle
-      @objects[count].fill = object.fill
-      @objects[count].stroke = object.stroke
-      schema = object.constructor.prototype.getJsonSchema()
-      for key of schema.properties
-        @objects[count][key] = object[key]
-# オブジェクトをgeojsonに変換
+# 現在開いているデータをGeoJSONに変換
+#
+# @return [Object] GeoJSON形式のデータ
+#
   toGeoJSON: ->
     features = []
     for object in @canvas.getObjects()
@@ -206,7 +177,38 @@ $.extend haika,
     data =
       "type": "FeatureCollection"
       "features": features
+      "haika":
+        bgurl: @options.bgurl
+        bgscale: @options.bgscale
+        bgopacity: @options.bgopacity
+        lon: @options.lon
+        lat: @options.lat
+        angle: @options.angle
+        geojson_scale: @options.geojson_scale
+        version: 1
     return data
+
+
+# オブジェクトのプロパティの保存
+  prepareData: ()->
+    for object in @canvas.getObjects()
+      count = @getCountFindById(object.id)
+      @objects[count].id = object.id
+      @objects[count].type = object.type
+      @objects[count].top_cm = @transformTopY_px2cm(object.top)
+      @objects[count].left_cm = @transformLeftX_px2cm(object.left)
+      @objects[count].scaleX = object.scaleX / @scaleFactor
+      @objects[count].scaleY = object.scaleY / @scaleFactor
+      @objects[count].angle = object.angle
+      @objects[count].fill = object.fill
+      @objects[count].stroke = object.stroke
+      object.top_cm = @objects[count].top_cm
+      object.left_cm = @objects[count].left_cm
+      schema = object.constructor.prototype.getJsonSchema()
+      for key of schema.properties
+        @objects[count][key] = object[key]
+
+
 # オブジェクトをSVGに変換
   toSVG: ->
     svgs = []

@@ -6,12 +6,14 @@ haika =
   canvas: null # fabricのCanvasオブジェクト
   centerX: 0 # 表示位置X(画面の中央が0) [エディタステータス系変数]
   centerY: 0 # 表示位置Y(画面の中央が0) [エディタステータス系変数]
+
+  # Todo: fabricオブジェクトからの呼び出しについて検討の必要あり
   scaleFactor: 1 #表示倍率 [エディタステータス系変数] (このファイル外で使用禁止)
 
   backgroundImage: null #背景画像のキャッシュ [エディタ内部利用]
+  objects: []
 
   state: 'shelf'
-  objects: []
   fillColor: "#CFE2F3"
   strokeColor: "#000000"
   options: {}
@@ -487,6 +489,7 @@ haika =
     $('#canvas_lat').val(@options.lat)
     $('#canvas_angle').val(@canvas.angle)
     $('#geojson_scale').val(@canvas.geojson_scale)
+    $('.zoom').html((@scaleFactor * 100).toFixed(0) + '%')
 # 移動ピクセル数を取得
   getMovePixel: (event)->
     return if event.shiftKey then 10 else 1
@@ -588,7 +591,6 @@ haika =
       @scaleFactor = 1
     @scaleFactor = (@scaleFactor * 100).toFixed(0) / 100
     @render()
-    $('.zoom').html((@scaleFactor * 100).toFixed(0) + '%')
 # ズームアウト
   zoomOut: ->
     @unselect()
@@ -600,16 +602,13 @@ haika =
       @scaleFactor = 1
     @scaleFactor = (@scaleFactor * 100).toFixed(0) / 100
     @render()
-    $('.zoom').html((@scaleFactor * 100).toFixed(0) + '%')
 # ズームリセット
   zoomReset: ->
     @unselect()
     @scaleFactor = 1
     @render()
-    $('.zoom').html('100%')
   reset: ->
     @objects = []
-    localStorage.clear()
     $(window).off('beforeunload')
     location.reload()
 

@@ -112,7 +112,7 @@ $.extend(haika, {
     return this.render();
   },
   save: function(success, error) {
-    var data, param;
+    var data;
     if (success == null) {
       success = null;
     }
@@ -134,35 +134,21 @@ $.extend(haika, {
       return;
     }
     this._nowSaving = true;
-    param = this.toGeoJSON();
-    param['haika'] = {
-      bgurl: this.options.bgurl,
-      bgscale: this.options.bgscale,
-      bgopacity: this.options.bgopacity,
-      lon: this.options.lon,
-      lat: this.options.lat,
-      angle: this.options.angle,
-      geojson_scale: this.options.geojson_scale
-    };
-    param['haika']['version'] = 1;
-    param = JSON.stringify(param);
     data = {
       id: this._dataId,
       revision: this._revision,
       collision: this._collision,
-      data: param
+      data: JSON.stringify(this.toGeoJSON())
     };
     return $.ajax({
       url: this._api_save_endpoint,
       type: 'POST',
       data: data,
-      dataType: 'text',
+      dataType: 'json',
       success: (function(_this) {
-        return function(data) {
-          var json;
+        return function(json) {
           _this._nowSaving = false;
-          json = JSON.parse(data);
-          if (json.success === false) {
+          if (!json.success) {
             error && error(json.message);
             alert(json.message);
             location.reload();
@@ -203,36 +189,6 @@ $.extend(haika, {
       };
     })(this), delay);
   },
-  prepareData: function() {
-    var count, key, object, schema, _i, _len, _ref, _results;
-    _ref = this.canvas.getObjects();
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      count = this.getCountFindById(object.id);
-      this.objects[count].id = object.id;
-      this.objects[count].type = object.type;
-      this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
-      object.top_cm = this.objects[count].top_cm;
-      this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
-      object.left_cm = this.objects[count].left_cm;
-      this.objects[count].scaleX = object.scaleX / this.scale;
-      this.objects[count].scaleY = object.scaleY / this.scale;
-      this.objects[count].angle = object.angle;
-      this.objects[count].fill = object.fill;
-      this.objects[count].stroke = object.stroke;
-      schema = object.constructor.prototype.getJsonSchema();
-      _results.push((function() {
-        var _results1;
-        _results1 = [];
-        for (key in schema.properties) {
-          _results1.push(this.objects[count][key] = object[key]);
-        }
-        return _results1;
-      }).call(this));
-    }
-    return _results;
-  },
   toGeoJSON: function() {
     var data, features, geojson, object, _i, _len, _ref;
     features = [];
@@ -244,9 +200,49 @@ $.extend(haika, {
     }
     data = {
       "type": "FeatureCollection",
-      "features": features
+      "features": features,
+      "haika": {
+        bgurl: this.options.bgurl,
+        bgscale: this.options.bgscale,
+        bgopacity: this.options.bgopacity,
+        lon: this.options.lon,
+        lat: this.options.lat,
+        angle: this.options.angle,
+        geojson_scale: this.options.geojson_scale,
+        version: 1
+      }
     };
     return data;
+  },
+  prepareData: function() {
+    var count, key, object, schema, _i, _len, _ref, _results;
+    _ref = this.canvas.getObjects();
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      count = this.getCountFindById(object.id);
+      this.objects[count].id = object.id;
+      this.objects[count].type = object.type;
+      this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
+      this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
+      this.objects[count].scaleX = object.scaleX / this.scaleFactor;
+      this.objects[count].scaleY = object.scaleY / this.scaleFactor;
+      this.objects[count].angle = object.angle;
+      this.objects[count].fill = object.fill;
+      this.objects[count].stroke = object.stroke;
+      object.top_cm = this.objects[count].top_cm;
+      object.left_cm = this.objects[count].left_cm;
+      schema = object.constructor.prototype.getJsonSchema();
+      _results.push((function() {
+        var _results1;
+        _results1 = [];
+        for (key in schema.properties) {
+          _results1.push(this.objects[count][key] = object[key]);
+        }
+        return _results1;
+      }).call(this));
+    }
+    return _results;
   },
   toSVG: function() {
     var data, end, object, start, svg, svgs, _i, _len, _ref;

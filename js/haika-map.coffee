@@ -29,8 +29,8 @@ $.extend haika,
     redraw : ->
       if @features.length>0
         for feature in @features
-            @map.data.remove feature
-          @features = @map.data.addGeoJson(@createGeoJson())
+          @map.data.remove feature
+        @features = @map.data.addGeoJson(@createGeoJson())
     save : (lat, lon)->
       $('#canvas_lon').val(lon)
       $('#canvas_lat').val(lat)

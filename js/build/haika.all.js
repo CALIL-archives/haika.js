@@ -23074,10 +23074,10 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
       return this.__eachHeight() * this.side;
     },
     __eachWidth: function() {
-      return this.eachWidth * haika.scale;
+      return this.eachWidth * haika.scaleFactor;
     },
     __eachHeight: function() {
-      return this.eachHeight * haika.scale;
+      return this.eachHeight * haika.scaleFactor;
     },
     count: 1,
     side: 1,
@@ -23118,7 +23118,7 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
       }
       if (this.side === 1) {
         this.__renderShelf(ctx, x, y, w, h);
-        if (haika.scale > 0.5) {
+        if (haika.scaleFactor > 0.5) {
           this.__renderSide(ctx, x, y, w, h);
         }
       }
@@ -23438,10 +23438,10 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
       return this.__eachHeight() * this.side;
     },
     __eachWidth: function() {
-      return 90 * haika.scale;
+      return 90 * haika.scaleFactor;
     },
     __eachHeight: function() {
-      return 25 * haika.scale;
+      return 25 * haika.scaleFactor;
     },
     count: 1,
     side: 1,
@@ -23689,10 +23689,10 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
     eachHeight: 10,
     minor: 0,
     __width: function() {
-      return this.eachWidth * haika.scale;
+      return this.eachWidth * haika.scaleFactor;
     },
     __height: function() {
-      return this.eachHeight * haika.scale;
+      return this.eachHeight * haika.scaleFactor;
     },
     initialize: function(options) {
       options = options || {};
@@ -23856,10 +23856,10 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
     width_scale: 1,
     height_scale: 1,
     __width: function() {
-      return this.eachWidth * this.width_scale * haika.scale;
+      return this.eachWidth * this.width_scale * haika.scaleFactor;
     },
     __height: function() {
-      return this.eachHeight * this.height_scale * haika.scale;
+      return this.eachHeight * this.height_scale * haika.scaleFactor;
     },
     initialize: function(options) {
       options = options || {};
@@ -23889,11 +23889,11 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
       }
       if (this.sacleX !== 1) {
         this.width = this.width * this.scaleX;
-        this.width_scale = this.width / (this.eachWidth * haika.scale);
+        this.width_scale = this.width / (this.eachWidth * haika.scaleFactor);
       }
       if (this.sacleY !== 1) {
         this.height = this.height * this.scaleY;
-        this.height_scale = this.height / (this.eachHeight * haika.scale);
+        this.height_scale = this.height / (this.eachHeight * haika.scaleFactor);
       }
       this.scaleX = this.scaleY = 1;
       return this.setCoords();
@@ -23997,10 +23997,10 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
     width_scale: 1,
     height_scale: 1,
     __width: function() {
-      return this.eachWidth * this.width_scale * haika.scale;
+      return this.eachWidth * this.width_scale * haika.scaleFactor;
     },
     __height: function() {
-      return this.eachHeight * this.height_scale * haika.scale;
+      return this.eachHeight * this.height_scale * haika.scaleFactor;
     },
     initialize: function(options) {
       options = options || {};
@@ -24030,11 +24030,11 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
       }
       if (this.sacleX !== 1) {
         this.width = this.width * this.scaleX;
-        this.width_scale = this.width / (this.eachWidth * haika.scale);
+        this.width_scale = this.width / (this.eachWidth * haika.scaleFactor);
       }
       if (this.sacleY !== 1) {
         this.height = this.height * this.scaleY;
-        this.height_scale = this.height / (this.eachHeight * haika.scale);
+        this.height_scale = this.height / (this.eachHeight * haika.scaleFactor);
       }
       this.scaleX = this.scaleY = 1;
       return this.setCoords();
@@ -24121,12 +24121,12 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
     var height, i, line, points, size, sx, sy, text, width;
     width = ctx.canvas.width;
     height = ctx.canvas.height;
-    size = 100 * haika.scale;
+    size = 100 * haika.scaleFactor;
     if (size < 50) {
-      size = 500 * haika.scale;
+      size = 500 * haika.scaleFactor;
     }
     if (size < 50) {
-      size = 1000 * haika.scale;
+      size = 1000 * haika.scaleFactor;
     }
     ctx.save();
     ctx.beginPath();
@@ -24225,8 +24225,8 @@ haika = {
   centerY: 0,
   scaleFactor: 1,
   backgroundImage: null,
-  state: 'shelf',
   objects: [],
+  state: 'shelf',
   fillColor: "#CFE2F3",
   strokeColor: "#000000",
   options: {},
@@ -24295,8 +24295,6 @@ haika = {
     initAligningGuidelines(canvas);
     this.canvas = canvas;
     this.render();
-    $('#canvas_width').val(canvas.width);
-    $('#canvas_height').val(canvas.height);
     this.bindEvent();
     return setTimeout((function(_this) {
       return function() {
@@ -24796,7 +24794,8 @@ haika = {
     $('#canvas_lon').val(this.options.lon);
     $('#canvas_lat').val(this.options.lat);
     $('#canvas_angle').val(this.canvas.angle);
-    return $('#geojson_scale').val(this.canvas.geojson_scale);
+    $('#geojson_scale').val(this.canvas.geojson_scale);
+    return $('.zoom').html((this.scaleFactor * 100).toFixed(0) + '%');
   },
   getMovePixel: function(event) {
     if (event.shiftKey) {
@@ -24954,8 +24953,7 @@ haika = {
       this.scaleFactor = 1;
     }
     this.scaleFactor = (this.scaleFactor * 100).toFixed(0) / 100;
-    this.render();
-    return $('.zoom').html((this.scaleFactor * 100).toFixed(0) + '%');
+    return this.render();
   },
   zoomOut: function() {
     var prev_scale;
@@ -24969,18 +24967,15 @@ haika = {
       this.scaleFactor = 1;
     }
     this.scaleFactor = (this.scaleFactor * 100).toFixed(0) / 100;
-    this.render();
-    return $('.zoom').html((this.scaleFactor * 100).toFixed(0) + '%');
+    return this.render();
   },
   zoomReset: function() {
     this.unselect();
     this.scaleFactor = 1;
-    this.render();
-    return $('.zoom').html('100%');
+    return this.render();
   },
   reset: function() {
     this.objects = [];
-    localStorage.clear();
     $(window).off('beforeunload');
     return location.reload();
   },
@@ -25133,7 +25128,7 @@ haika = {
     return this.render();
   },
   save: function(success, error) {
-    var data, param;
+    var data;
     if (success == null) {
       success = null;
     }
@@ -25155,35 +25150,21 @@ haika = {
       return;
     }
     this._nowSaving = true;
-    param = this.toGeoJSON();
-    param['haika'] = {
-      bgurl: this.options.bgurl,
-      bgscale: this.options.bgscale,
-      bgopacity: this.options.bgopacity,
-      lon: this.options.lon,
-      lat: this.options.lat,
-      angle: this.options.angle,
-      geojson_scale: this.options.geojson_scale
-    };
-    param['haika']['version'] = 1;
-    param = JSON.stringify(param);
     data = {
       id: this._dataId,
       revision: this._revision,
       collision: this._collision,
-      data: param
+      data: JSON.stringify(this.toGeoJSON())
     };
     return $.ajax({
       url: this._api_save_endpoint,
       type: 'POST',
       data: data,
-      dataType: 'text',
+      dataType: 'json',
       success: (function(_this) {
-        return function(data) {
-          var json;
+        return function(json) {
           _this._nowSaving = false;
-          json = JSON.parse(data);
-          if (json.success === false) {
+          if (!json.success) {
             error && error(json.message);
             alert(json.message);
             location.reload();
@@ -25224,36 +25205,6 @@ haika = {
       };
     })(this), delay);
   },
-  prepareData: function() {
-    var count, key, object, schema, _i, _len, _ref, _results;
-    _ref = this.canvas.getObjects();
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      count = this.getCountFindById(object.id);
-      this.objects[count].id = object.id;
-      this.objects[count].type = object.type;
-      this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
-      object.top_cm = this.objects[count].top_cm;
-      this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
-      object.left_cm = this.objects[count].left_cm;
-      this.objects[count].scaleX = object.scaleX / this.scale;
-      this.objects[count].scaleY = object.scaleY / this.scale;
-      this.objects[count].angle = object.angle;
-      this.objects[count].fill = object.fill;
-      this.objects[count].stroke = object.stroke;
-      schema = object.constructor.prototype.getJsonSchema();
-      _results.push((function() {
-        var _results1;
-        _results1 = [];
-        for (key in schema.properties) {
-          _results1.push(this.objects[count][key] = object[key]);
-        }
-        return _results1;
-      }).call(this));
-    }
-    return _results;
-  },
   toGeoJSON: function() {
     var data, features, geojson, object, _i, _len, _ref;
     features = [];
@@ -25265,9 +25216,49 @@ haika = {
     }
     data = {
       "type": "FeatureCollection",
-      "features": features
+      "features": features,
+      "haika": {
+        bgurl: this.options.bgurl,
+        bgscale: this.options.bgscale,
+        bgopacity: this.options.bgopacity,
+        lon: this.options.lon,
+        lat: this.options.lat,
+        angle: this.options.angle,
+        geojson_scale: this.options.geojson_scale,
+        version: 1
+      }
     };
     return data;
+  },
+  prepareData: function() {
+    var count, key, object, schema, _i, _len, _ref, _results;
+    _ref = this.canvas.getObjects();
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      count = this.getCountFindById(object.id);
+      this.objects[count].id = object.id;
+      this.objects[count].type = object.type;
+      this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
+      this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
+      this.objects[count].scaleX = object.scaleX / this.scaleFactor;
+      this.objects[count].scaleY = object.scaleY / this.scaleFactor;
+      this.objects[count].angle = object.angle;
+      this.objects[count].fill = object.fill;
+      this.objects[count].stroke = object.stroke;
+      object.top_cm = this.objects[count].top_cm;
+      object.left_cm = this.objects[count].left_cm;
+      schema = object.constructor.prototype.getJsonSchema();
+      _results.push((function() {
+        var _results1;
+        _results1 = [];
+        for (key in schema.properties) {
+          _results1.push(this.objects[count][key] = object[key]);
+        }
+        return _results1;
+      }).call(this));
+    }
+    return _results;
   },
   toSVG: function() {
     var data, end, object, start, svg, svgs, _i, _len, _ref;

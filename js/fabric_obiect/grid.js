@@ -10,12 +10,12 @@
     var height, i, line, points, size, sx, sy, text, width;
     width = ctx.canvas.width;
     height = ctx.canvas.height;
-    size = 100 * haika.scale;
+    size = 100 * haika.scaleFactor;
     if (size < 50) {
-      size = 500 * haika.scale;
+      size = 500 * haika.scaleFactor;
     }
     if (size < 50) {
-      size = 1000 * haika.scale;
+      size = 1000 * haika.scaleFactor;
     }
     ctx.save();
     ctx.beginPath();

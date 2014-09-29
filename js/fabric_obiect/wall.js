@@ -14,10 +14,10 @@
     width_scale: 1,
     height_scale: 1,
     __width: function() {
-      return this.eachWidth * this.width_scale * haika.scale;
+      return this.eachWidth * this.width_scale * haika.scaleFactor;
     },
     __height: function() {
-      return this.eachHeight * this.height_scale * haika.scale;
+      return this.eachHeight * this.height_scale * haika.scaleFactor;
     },
     initialize: function(options) {
       options = options || {};
@@ -47,11 +47,11 @@
       }
       if (this.sacleX !== 1) {
         this.width = this.width * this.scaleX;
-        this.width_scale = this.width / (this.eachWidth * haika.scale);
+        this.width_scale = this.width / (this.eachWidth * haika.scaleFactor);
       }
       if (this.sacleY !== 1) {
         this.height = this.height * this.scaleY;
-        this.height_scale = this.height / (this.eachHeight * haika.scale);
+        this.height_scale = this.height / (this.eachHeight * haika.scaleFactor);
       }
       this.scaleX = this.scaleY = 1;
       return this.setCoords();

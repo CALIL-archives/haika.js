@@ -8,9 +8,9 @@
     width = ctx.canvas.width
     height = ctx.canvas.height
 
-    size = 100 * haika.scale
-    if size < 50 then size=500 * haika.scale
-    if size < 50 then size=1000 * haika.scale
+    size = 100 * haika.scaleFactor
+    if size < 50 then size=500 * haika.scaleFactor
+    if size < 50 then size=1000 * haika.scaleFactor
     ctx.save()
     ctx.beginPath()
     ctx.setLineDash([2,2])

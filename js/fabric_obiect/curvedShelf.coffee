@@ -23,9 +23,9 @@
     __height: ->
       @__eachHeight() * @side
     __eachWidth: ->
-      90 * haika.scale
+      90 * haika.scaleFactor
     __eachHeight: ->
-      25 * haika.scale
+      25 * haika.scaleFactor
     count: 1
     side: 1
     minScaleLimit: 1

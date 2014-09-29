@@ -22,9 +22,9 @@
     __height: ->
       @__eachHeight() * @side
     __eachWidth: ->
-      @eachWidth * haika.scale
+      @eachWidth * haika.scaleFactor
     __eachHeight: ->
-      @eachHeight * haika.scale
+      @eachHeight * haika.scaleFactor
     count: 1
     side: 1
     label: ''
@@ -62,7 +62,7 @@
 
       if @side is 1
         @__renderShelf ctx, x, y, w, h
-        if haika.scale > 0.5
+        if haika.scaleFactor > 0.5
           @__renderSide ctx, x, y, w, h
       if @side is 2
         @__renderShelf ctx, x, y, w, h
