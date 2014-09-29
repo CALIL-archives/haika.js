@@ -41,10 +41,8 @@ $.extend(haika, {
       })(this));
       return haika.init({
         canvasId: 'canvas_area',
-        canvasWidth: this.getWidth(),
-        canvasHeight: this.getHeight(),
-        bgopacity: 0.2,
-        bgscale: 4
+        width: this.getWidth(),
+        height: this.getHeight()
       });
     }
   }

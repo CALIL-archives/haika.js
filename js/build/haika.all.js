@@ -24223,17 +24223,16 @@ haika = {
   canvas: null,
   centerX: 0,
   centerY: 0,
-  scale: 1,
+  scaleFactor: 1,
+  backgroundImage: null,
   state: 'shelf',
   objects: [],
-  background_image: null,
   fillColor: "#CFE2F3",
   strokeColor: "#000000",
   options: {},
   default_options: {
-    canvasWidth: 800,
-    canvasHeight: 600,
-    scale: 1,
+    width: 500,
+    height: 500,
     bgurl: null,
     bgopacity: 1,
     bgscale: 1,
@@ -24243,30 +24242,34 @@ haika = {
     geojson_scale: 1.5
   },
   transformLeftX_cm2px: function(cm) {
-    return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scale;
+    return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scaleFactor;
   },
   transformTopY_cm2px: function(cm) {
-    return this.canvas.getHeight() / 2 + (this.centerY - cm) * this.scale;
+    return this.canvas.getHeight() / 2 + (this.centerY - cm) * this.scaleFactor;
   },
   transformLeftX_px2cm: function(px) {
-    return this.centerX - (px - this.canvas.getWidth() / 2) / this.scale;
+    return this.centerX - (px - this.canvas.getWidth() / 2) / this.scaleFactor;
   },
   transformTopY_px2cm: function(px) {
-    return this.centerY - (px - this.canvas.getHeight() / 2) / this.scale;
+    return this.centerY - (px - this.canvas.getHeight() / 2) / this.scaleFactor;
   },
   init: function(options) {
-    var canvas;
+    var canvas, _options;
     if (options.canvasId == null) {
       throw 'CanvasのIDが未定義です';
     }
-    this.options = $.extend(this.default_options, options);
+    if (canvas) {
+      throw '既に初期化されています';
+    }
+    this.options = _options = $.extend(this.default_options, options);
     canvas = new fabric.Canvas(options.canvasId, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair',
-      width: this.options.canvasWidth,
-      height: this.options.canvasHeight
+      width: _options.width,
+      height: _options.height
     });
-    $('#canvas_width').val(canvas.width);
-    $('#canvas_height').val(canvas.height);
+    if (_options.scaleFactor != null) {
+      this.scaleFactor = _options.scaleFactor;
+    }
     canvas._getActionFromCorner = function(target, corner) {
       var action;
       action = 'drag';
@@ -24291,21 +24294,20 @@ haika = {
     };
     initAligningGuidelines(canvas);
     this.canvas = canvas;
-    if (options.scale != null) {
-      this.scale = options.scale;
-    }
     this.render();
-    setTimeout((function(_this) {
+    $('#canvas_width').val(canvas.width);
+    $('#canvas_height').val(canvas.height);
+    this.bindEvent();
+    return setTimeout((function(_this) {
       return function() {
         var onerror;
         onerror = function(message) {
           return alert(message);
         };
-        _this.openFromApi(2, null, null, onerror);
+        haika.openFromApi(2, null, null, onerror);
         return $(_this).trigger('haika:initialized');
       };
     })(this), 500);
-    return this.bindEvent();
   },
   bindEvent: function() {
     this.canvas.on('object:selected', (function(_this) {
@@ -24566,7 +24568,7 @@ haika = {
         this.clipboard.push(fabric.util.object.clone(object));
       }
     }
-    this.clipboard_scale = this.scale;
+    this.clipboard_scale = this.scaleFactor;
     return $(this).trigger('haika:copy');
   },
   paste: function() {
@@ -24597,8 +24599,8 @@ haika = {
         object = _ref[_i];
         o = fabric.util.object.clone(object);
         o.id = this.getId();
-        o.top = this.transformTopY_cm2px(this.centerY) + object.top * this.scale / this.clipboard_scale;
-        o.left = this.transformLeftX_cm2px(this.centerX) + object.left * this.scale / this.clipboard_scale;
+        o.top = this.transformTopY_cm2px(this.centerY) + object.top * this.scaleFactor / this.clipboard_scale;
+        o.left = this.transformLeftX_cm2px(this.centerX) + object.left * this.scaleFactor / this.clipboard_scale;
         new_id = this.add(o);
         new_ids.push(new_id);
       }
@@ -24658,10 +24660,10 @@ haika = {
   },
   render: function() {
     var beacons, floors, o, shelfs, walls, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref;
-    if (!this.background_image && this.options.bgurl) {
+    if (!this.backgroundImage && this.options.bgurl) {
       fabric.Image.fromURL(this.options.bgurl, (function(_this) {
         return function(img) {
-          _this.background_image = img;
+          _this.backgroundImage = img;
           _this.render();
         };
       })(this));
@@ -24713,13 +24715,13 @@ haika = {
       o = beacons[_n];
       this.addObjectToCanvas(o);
     }
-    if (this.background_image) {
-      this.canvas.setBackgroundImage(this.background_image);
-      this.background_image.left = Math.floor(this.transformLeftX_cm2px(this.background_image._originalElement.width / 2 * this.options.bgscale));
-      this.background_image.top = Math.floor(this.transformTopY_cm2px(this.background_image._originalElement.height / 2 * this.options.bgscale));
-      this.background_image.width = Math.floor(this.background_image._originalElement.width * this.options.bgscale * this.scale);
-      this.background_image.height = Math.floor(this.background_image._originalElement.height * this.options.bgscale * this.scale);
-      this.background_image.opacity = this.options.bgopacity;
+    if (this.backgroundImage) {
+      this.canvas.setBackgroundImage(this.backgroundImage);
+      this.backgroundImage.left = Math.floor(this.transformLeftX_cm2px(this.backgroundImage._originalElement.width / 2 * this.options.bgscale));
+      this.backgroundImage.top = Math.floor(this.transformTopY_cm2px(this.backgroundImage._originalElement.height / 2 * this.options.bgscale));
+      this.backgroundImage.width = Math.floor(this.backgroundImage._originalElement.width * this.options.bgscale * this.scaleFactor);
+      this.backgroundImage.height = Math.floor(this.backgroundImage._originalElement.height * this.options.bgscale * this.scaleFactor);
+      this.backgroundImage.opacity = this.options.bgopacity;
     } else {
       this.canvas.setBackgroundImage(null);
     }
@@ -24943,36 +24945,36 @@ haika = {
   zoomIn: function() {
     var prev_scale;
     this.unselect();
-    prev_scale = this.scale;
-    this.scale = this.scale + Math.pow(this.scale + 1, 2) / 20;
-    if (this.scale >= 4) {
-      this.scale = 4;
+    prev_scale = this.scaleFactor;
+    this.scaleFactor = this.scaleFactor + Math.pow(this.scaleFactor + 1, 2) / 20;
+    if (this.scaleFactor >= 4) {
+      this.scaleFactor = 4;
     }
-    if (prev_scale < 1 && this.scale > 1) {
-      this.scale = 1;
+    if (prev_scale < 1 && this.scaleFactor > 1) {
+      this.scaleFactor = 1;
     }
-    this.scale = (this.scale * 100).toFixed(0) / 100;
+    this.scaleFactor = (this.scaleFactor * 100).toFixed(0) / 100;
     this.render();
-    return $('.zoom').html((this.scale * 100).toFixed(0) + '%');
+    return $('.zoom').html((this.scaleFactor * 100).toFixed(0) + '%');
   },
   zoomOut: function() {
     var prev_scale;
     this.unselect();
-    prev_scale = this.scale;
-    this.scale = this.scale - Math.pow(this.scale + 1, 2) / 20;
-    if (this.scale <= 0.05) {
-      this.scale = 0.05;
+    prev_scale = this.scaleFactor;
+    this.scaleFactor = this.scaleFactor - Math.pow(this.scaleFactor + 1, 2) / 20;
+    if (this.scaleFactor <= 0.05) {
+      this.scaleFactor = 0.05;
     }
-    if (prev_scale > 1 && this.scale < 1) {
-      this.scale = 1;
+    if (prev_scale > 1 && this.scaleFactor < 1) {
+      this.scaleFactor = 1;
     }
-    this.scale = (this.scale * 100).toFixed(0) / 100;
+    this.scaleFactor = (this.scaleFactor * 100).toFixed(0) / 100;
     this.render();
-    return $('.zoom').html((this.scale * 100).toFixed(0) + '%');
+    return $('.zoom').html((this.scaleFactor * 100).toFixed(0) + '%');
   },
   zoomReset: function() {
     this.unselect();
-    this.scale = 1;
+    this.scaleFactor = 1;
     this.render();
     return $('.zoom').html('100%');
   },
@@ -25400,10 +25402,8 @@ haika = {
       })(this));
       return haika.init({
         canvasId: 'canvas_area',
-        canvasWidth: this.getWidth(),
-        canvasHeight: this.getHeight(),
-        bgopacity: 0.2,
-        bgscale: 4
+        width: this.getWidth(),
+        height: this.getHeight()
       });
     }
   }

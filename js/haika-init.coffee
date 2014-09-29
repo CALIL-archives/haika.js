@@ -30,13 +30,11 @@ $.extend haika,
         $('.toolbar_container,.property_panel').css('height', @getHeight()+@scrollbar_height)
         haika.render()
 
-      haika.init(
+      haika.init
         canvasId : 'canvas_area'
-        canvasWidth : @getWidth()
-        canvasHeight : @getHeight()
-        bgopacity: 0.2
-        bgscale  : 4
-      )
+        width : @getWidth()
+        height : @getHeight()
+
 
 $ ->
   # レイヤータブ
@@ -49,8 +47,4 @@ $ ->
 
 # 初期設定
 haika.setting.start()
-    
-#  $('.add').click ->
-#    add()
-#    haika.render()
 

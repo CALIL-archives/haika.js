@@ -6,17 +6,18 @@ haika =
   canvas: null # fabricのCanvasオブジェクト
   centerX: 0 # 表示位置X(画面の中央が0) [エディタステータス系変数]
   centerY: 0 # 表示位置Y(画面の中央が0) [エディタステータス系変数]
-  scale: 1
+  scaleFactor: 1 #表示倍率 [エディタステータス系変数] (このファイル外で使用禁止)
+
+  backgroundImage: null #背景画像のキャッシュ [エディタ内部利用]
+
   state: 'shelf'
   objects: []
-  background_image: null
   fillColor: "#CFE2F3"
   strokeColor: "#000000"
   options: {}
   default_options:
-    canvasWidth: 800
-    canvasHeight: 600
-    scale: 1
+    width: 500
+    height: 500
     bgurl: null
     bgopacity: 1
     bgscale: 1
@@ -27,34 +28,38 @@ haika =
 
 # left,x値のcm->px変換
   transformLeftX_cm2px: (cm)->
-    return @canvas.getWidth() / 2 + (@centerX - cm) * @scale
+    return @canvas.getWidth() / 2 + (@centerX - cm) * @scaleFactor
 # top,y値のcm->px変換
   transformTopY_cm2px: (cm)->
-    return @canvas.getHeight() / 2 + (@centerY - cm) * @scale
+    return @canvas.getHeight() / 2 + (@centerY - cm) * @scaleFactor
 # left,x値のpx->px変換
   transformLeftX_px2cm: (px)->
-    return @centerX - (px - @canvas.getWidth() / 2) / @scale
+    return @centerX - (px - @canvas.getWidth() / 2) / @scaleFactor
 # top,y値のcm->px変換
   transformTopY_px2cm: (px)->
-    return @centerY - (px - @canvas.getHeight() / 2) / @scale
+    return @centerY - (px - @canvas.getHeight() / 2) / @scaleFactor
 
 
-  #初期化
-  #
-  #
+#初期化
+#
+# @param [Object] options 初期化オプション
+# @param options [String] canvasId HTML上のCanvasのID
+# @option options [Number] width Canvasの幅
+# @option options [Number] height Canvasの高さ
+# @option options [Number] scaleFactor 表示倍率
   init: (options)->
     if not options.canvasId?
       throw 'CanvasのIDが未定義です'
-
-    # オプションの上書き
-    @options = $.extend(@default_options, options)
+    if canvas
+      throw '既に初期化されています'
+    @options = _options = $.extend(@default_options, options)
     canvas = new fabric.Canvas(options.canvasId, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
-      width : @options.canvasWidth
-      height : @options.canvasHeight
+      width: _options.width
+      height: _options.height
     })
-    $('#canvas_width').val(canvas.width)
-    $('#canvas_height').val(canvas.height)
+    if _options.scaleFactor?
+      @scaleFactor = _options.scaleFactor
 
     canvas._getActionFromCorner = (target, corner) ->
       action = 'drag'
@@ -72,24 +77,21 @@ haika =
       ctx.mozImageSmoothingEnabled = false
       if @backgroundImage
         @backgroundImage.render ctx
-      #ctx.drawImage(@backgroundImage._element,0,0,@width,@height)
       ctx.mozImageSmoothingEnabled = true
       fabric.drawGridLines(ctx)
 
     initAligningGuidelines(canvas)
-    #initCenteringGuidelines(canvas)
     @canvas = canvas
-    #@canvas.centeredRotation = true
-    if options.scale?
-      @scale = options.scale
     @render()
-    setTimeout =>
-      onerror = (message)->
-        alert(message)
-      @openFromApi(2, null, null, onerror)
-      $(@).trigger('haika:initialized')
-    , 500
     @bindEvent()
+
+    # Todo:なぜここで遅延処理が必要なのだろう
+    setTimeout =>
+        onerror = (message)->
+          alert(message)
+        haika.openFromApi(2, null, null, onerror)
+        $(@).trigger('haika:initialized')
+      , 500
 
 
 # Fabricのイベント追加
@@ -299,7 +301,7 @@ haika =
     if group
       for object in group.getObjects()
         @clipboard.push(fabric.util.object.clone(object))
-    @clipboard_scale = @scale
+    @clipboard_scale = @scaleFactor
     $(@).trigger('haika:copy')
 # ペースト
   paste: ->
@@ -325,8 +327,8 @@ haika =
       for object in @clipboard
         o = fabric.util.object.clone(object)
         o.id = @getId()
-        o.top = @transformTopY_cm2px(@centerY) + object.top * @scale / @clipboard_scale
-        o.left = @transformLeftX_cm2px(@centerX) + object.left * @scale / @clipboard_scale
+        o.top = @transformTopY_cm2px(@centerY) + object.top * @scaleFactor / @clipboard_scale
+        o.left = @transformLeftX_cm2px(@centerX) + object.left * @scaleFactor / @clipboard_scale
         new_id = @add(o)
         new_ids.push(new_id)
       @saveDelay()
@@ -375,9 +377,9 @@ haika =
 # canvasの描画
   render: ->
     #オブジェクトをクリア
-    if not @background_image and @options.bgurl
+    if not @backgroundImage and @options.bgurl
       fabric.Image.fromURL @options.bgurl, (img)=>
-        @background_image = img
+        @backgroundImage = img
         @render()
         return
     @canvas.renderOnAddRemove = false
@@ -408,13 +410,13 @@ haika =
       @addObjectToCanvas(o)
     for o in beacons
       @addObjectToCanvas(o)
-    if @background_image
-      @canvas.setBackgroundImage @background_image
-      @background_image.left = Math.floor(@transformLeftX_cm2px(@background_image._originalElement.width / 2 * @options.bgscale))
-      @background_image.top = Math.floor(@transformTopY_cm2px(@background_image._originalElement.height / 2 * @options.bgscale))
-      @background_image.width = Math.floor(@background_image._originalElement.width * @options.bgscale * @scale)
-      @background_image.height = Math.floor(@background_image._originalElement.height * @options.bgscale * @scale)
-      @background_image.opacity = @options.bgopacity
+    if @backgroundImage
+      @canvas.setBackgroundImage @backgroundImage
+      @backgroundImage.left = Math.floor(@transformLeftX_cm2px(@backgroundImage._originalElement.width / 2 * @options.bgscale))
+      @backgroundImage.top = Math.floor(@transformTopY_cm2px(@backgroundImage._originalElement.height / 2 * @options.bgscale))
+      @backgroundImage.width = Math.floor(@backgroundImage._originalElement.width * @options.bgscale * @scaleFactor)
+      @backgroundImage.height = Math.floor(@backgroundImage._originalElement.height * @options.bgscale * @scaleFactor)
+      @backgroundImage.opacity = @options.bgopacity
     else
       @canvas.setBackgroundImage null
     @canvas.renderAll()
@@ -578,33 +580,31 @@ haika =
 # ズームイン
   zoomIn: ->
     @unselect()
-    #    @scale += 0.1
-    prev_scale = @scale
-    @scale = @scale + Math.pow(@scale + 1, 2) / 20
-    if @scale >= 4
-      @scale = 4
-    if prev_scale < 1 and @scale > 1
-      @scale = 1
-    @scale = (@scale * 100).toFixed(0) / 100
+    prev_scale = @scaleFactor
+    @scaleFactor = @scaleFactor + Math.pow(@scaleFactor + 1, 2) / 20
+    if @scaleFactor >= 4
+      @scaleFactor = 4
+    if prev_scale < 1 and @scaleFactor > 1
+      @scaleFactor = 1
+    @scaleFactor = (@scaleFactor * 100).toFixed(0) / 100
     @render()
-    $('.zoom').html((@scale * 100).toFixed(0) + '%')
+    $('.zoom').html((@scaleFactor * 100).toFixed(0) + '%')
 # ズームアウト
   zoomOut: ->
     @unselect()
-    #    @scale -= 0.1
-    prev_scale = @scale
-    @scale = @scale - Math.pow(@scale + 1, 2) / 20
-    if @scale <= 0.05
-      @scale = 0.05
-    if prev_scale > 1 and @scale < 1
-      @scale = 1
-    @scale = (@scale * 100).toFixed(0) / 100
+    prev_scale = @scaleFactor
+    @scaleFactor = @scaleFactor - Math.pow(@scaleFactor + 1, 2) / 20
+    if @scaleFactor <= 0.05
+      @scaleFactor = 0.05
+    if prev_scale > 1 and @scaleFactor < 1
+      @scaleFactor = 1
+    @scaleFactor = (@scaleFactor * 100).toFixed(0) / 100
     @render()
-    $('.zoom').html((@scale * 100).toFixed(0) + '%')
+    $('.zoom').html((@scaleFactor * 100).toFixed(0) + '%')
 # ズームリセット
   zoomReset: ->
     @unselect()
-    @scale = 1
+    @scaleFactor = 1
     @render()
     $('.zoom').html('100%')
   reset: ->
@@ -612,26 +612,6 @@ haika =
     localStorage.clear()
     $(window).off('beforeunload')
     location.reload()
-#  getSVG : ->
-#    @unselect()
-#    canvas = document.createElement('canvas')
-#    canvas = new fabric.Canvas(canvas);
-#    canvas.setWidth @options.max_width
-#    canvas.setHeight @options.max_height
-#    tmp_canvas = @canvas
-#    tmp_scale = @scale
-#    @canvas = canvas
-#    @scale = 1
-#    @render()
-#    svg = @canvas.toSVG()
-#    @canvas = tmp_canvas
-#    @scale = tmp_scale
-#    a = document.createElement('a')
-#    a.download = 'sample.svg'
-#    a.type = 'image/svg+xml'
-#    blob = new Blob([svg], {"type": "image/svg+xml"})
-#    a.href = (window.URL || webkitURL).createObjectURL(blob)
-#    a.click()
 
 # プロパティパネルの設定
   setPropetyPanel: (object)->
