@@ -2,13 +2,16 @@
 # GeoJSONフォーマットに関する処理
 
 $.extend haika,
+  _api_load_endpoint: '/api/floor/load' #データ読み込みAPIのエンドポイント (定数)
+  _api_save_endpoint: '/api/floor/save' #データ保存APIのエンドポイント (定数)
+
   _dataId: null #編集中のデータのID (外部参照禁止)
   _revision: null #編集中のデータのリビジョン (外部参照禁止)
   _collision: null #衝突検出キー (外部参照禁止)
-  _api_load_endpoint: '/api/floor/load' #データ読み込みAPIのエンドポイント
-  _api_save_endpoint: '/api/floor/save' #データ保存APIのエンドポイント
   _geojson: {} #編集中のデータのGeoJSON (外部参照禁止)
-  nowSaving: false #保存処理中フラグ(true..保存処理中) (外部参照禁止)
+  _nowSaving: false #保存処理中フラグ(true..保存処理中) (外部参照禁止)
+  _autoSaveTimerId: null #自動保存用のタイマーID (外部参照禁止)
+
 
 # API経由で開いたデータを閉じる
 #
@@ -20,6 +23,7 @@ $.extend haika,
     @objects.length = 0
     @background_image = null
 
+
 # API経由でデータを開く
 #
 # @param {Number} id データのID
@@ -30,7 +34,7 @@ $.extend haika,
   openFromApi: (id, revision = null, success = null, error = null) ->
     if @_dataId
       @close() #開いたデータがある場合は閉じる
-    if @nowSaving
+    if @_nowSaving
       error and error('保存処理中のため読み込めませんでした')
     $.ajax
       url: @_api_load_endpoint
@@ -54,14 +58,15 @@ $.extend haika,
         $(@).trigger('haika:load')
         success and success()
 
+
 # GeoJsonからデータを読み込む
 #
-# @param {Object} geojson
+# @param {Object} geojson 省略時は保持しているデータを読み込む
 #
-  loadFromGeoJson: (geojson=null)-> # GeoJsonからデータを読み込む
+  loadFromGeoJson: (geojson = null)-> # GeoJsonからデータを読み込む
     if not geojson
-      geojson=@_geojson
-    @options.bgscale = if geojson.haika.bgscale then geojson.haika.bgscale else 4.425
+      geojson = @_geojson
+    @options.bgscale = if geojson.haika.bgscale then geojson.haika.bgscale else 1
     @options.bgopacity = geojson.haika.bgopacity
     if geojson.haika.bgurl?
       @options.bgurl = geojson.haika.bgurl
@@ -95,36 +100,42 @@ $.extend haika,
     @render()
 
 
-# キャンバスのプロパティを取得
-  getCanvasProperty: ->
-    return {
-    state: @state
-    scale: @scale
-    centerX: @centerX
-    centerY: @centerY
-    bgurl: @options.bgurl
-    bgscale: @options.bgscale
-    bgopacity: @options.bgopacity
-    lon: @options.lon
-    lat: @options.lat
-    angle: @options.angle
-    geojson_scale: @options.geojson_scale
-    }
-# 保存
-  saveTimeout: null
-  save: ->
+# API経由で開いたデータを保存
+#
+# @option {Function} success 成功時のコールバック関数
+# @option {Function} error(message) エラー時のコールバック関数
+#
+  save: (success = null, error = null) ->
     @prepareData()
 
     log 'save'
-    # ajaxが終わるまで保存を防ぐ、衝突回避
-    if @nowSaving
+    # 遅延タイマーより先に明示的な保存があった場合はタイマーを解除
+    if @_autoSaveTimerId
+      clearTimeout(@_autoSaveTimerId)
+      @_autoSaveTimerId = null
+
+    # 保存処理中の場合は500ms後に再実行
+    if @_nowSaving
       setTimeout =>
-        @save()
+        @save(success, error)
       , 500
       return
-    @nowSaving = true
+
+    @_nowSaving = true
     param = @toGeoJSON()
-    param['haika'] = @getCanvasProperty()
+    param['haika'] = {
+      state: @state
+      scale: @scale
+      centerX: @centerX
+      centerY: @centerY
+      bgurl: @options.bgurl
+      bgscale: @options.bgscale
+      bgopacity: @options.bgopacity
+      lon: @options.lon
+      lat: @options.lat
+      angle: @options.angle
+      geojson_scale: @options.geojson_scale
+    }
     param['haika']['version'] = 1
     param = JSON.stringify(param)
     #    log param
@@ -139,32 +150,39 @@ $.extend haika,
       data: data
       dataType: 'text'
       success: (data)=>
-#        log data
+        @_nowSaving = false
         json = JSON.parse(data)
         if json.success == false
+          error and error(json.message)
+          # Todo: コンポーネント内からのalertは撤去すること
           alert json.message
           location.reload()
-        else
-          @_revision = json.revision
-          @_collision = json.collision
-        @nowSaving = false
-        if @saveTimeout
-          clearTimeout(@saveTimeout)
-          @saveTimeout = null
+          return
+        @_revision = json.revision
+        @_collision = json.collision
+        success and success()
+        $(@).trigger('haika:save')
       error: ()=>
-        @nowSaving = false
-        if @saveTimeout
-          clearTimeout(@saveTimeout)
-          @saveTimeout = null
-        alert 'エラーが発生しました'
-    $(@).trigger('haika:save')
-  saveDelay: ->
+        @_nowSaving = false
+        error and error('データが保存できませんでした')
+
+
+# API経由で開いたデータを遅延して保存
+#
+# @option {Number} delay 遅延時間(ミリ秒)
+# @option {Function} success 成功時のコールバック関数
+# @option {Function} error(message) エラー時のコールバック関数
+#
+  saveDelay: (delay = 2000, success = null, error = null) ->
     @prepareData()
-    if not @saveTimeout
-      clearTimeout(@saveTimeout)
-    @saveTimeout = setTimeout =>
-      @save()
-    , 2000
+    if not @_autoSaveTimerId
+      clearTimeout(@_autoSaveTimerId)
+    @_autoSaveTimerId = setTimeout =>
+      @_autoSaveTimerId = null
+      @save(success, error)
+    , delay
+
+
 # オブジェクトのプロパティの保存
   prepareData: ()->
     for object in @canvas.getObjects()

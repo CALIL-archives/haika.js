@@ -3,6 +3,8 @@ log = (obj) ->
     console.log obj
 
 haika =
+  canvas_id: null #HTML上のCanvasのID (必須)
+
   state: 'shelf'
   centerX: 0
   centerY: 0
@@ -14,7 +16,6 @@ haika =
   strokeColor: "#000000"
   options: {}
   default_options:
-    canvas_id: 'canvas_area'
     canvas_width: 800
     canvas_height: 600
     scale: 1
@@ -39,9 +40,13 @@ haika =
   transformTopY_px2cm: (px)->
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
   init: (options)->
+    if not options.canvas_id?
+      alert('CanvasのIDが未定義です') #開発段階でのみ発生するエラーはalertしてよい
+      return
+
     # オプションの上書き
     @options = $.extend(@default_options, options)
-    canvas = new fabric.Canvas(@options.canvas_id, {
+    canvas = new fabric.Canvas(options.canvas_id, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
     canvas.setWidth(@options.canvas_width)
@@ -84,6 +89,8 @@ haika =
       $(@).trigger('haika:initialized')
     , 500
     @bindEvent()
+
+
 # Fabricのイベント追加
   bindEvent: ->
     @canvas.on('object:selected', (e)=>
@@ -100,7 +107,7 @@ haika =
 
     # fabricのオブジェクトをhaikaオブジェクトに反映する
     #@canvas.on 'after:render', (e)=>
-#      log 'after:render'
+    #      log 'after:render'
     #  @prepareData() ズーム率が変更されたら壊れる　単純にここで処理してはいけない
 
     #    @canvas.on 'selection:created', (e)=>
@@ -402,8 +409,8 @@ haika =
       @addObjectToCanvas(o)
     if @background_image
       @canvas.setBackgroundImage @background_image
-      @background_image.left = Math.floor(@transformLeftX_cm2px(@background_image._originalElement.width/2 * @options.bgscale))
-      @background_image.top = Math.floor(@transformTopY_cm2px(@background_image._originalElement.height/2 * @options.bgscale))
+      @background_image.left = Math.floor(@transformLeftX_cm2px(@background_image._originalElement.width / 2 * @options.bgscale))
+      @background_image.top = Math.floor(@transformTopY_cm2px(@background_image._originalElement.height / 2 * @options.bgscale))
       @background_image.width = Math.floor(@background_image._originalElement.width * @options.bgscale * @scale)
       @background_image.height = Math.floor(@background_image._originalElement.height * @options.bgscale * @scale)
       @background_image.opacity = @options.bgopacity
