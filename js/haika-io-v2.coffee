@@ -124,10 +124,6 @@ $.extend haika,
     @_nowSaving = true
     param = @toGeoJSON()
     param['haika'] = {
-      state: @state
-      scale: @scale
-      centerX: @centerX
-      centerY: @centerY
       bgurl: @options.bgurl
       bgscale: @options.bgscale
       bgopacity: @options.bgopacity

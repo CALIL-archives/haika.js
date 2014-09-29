@@ -40,9 +40,9 @@ $.extend(haika, {
         };
       })(this));
       return haika.init({
-        canvas_id: 'canvas_area',
-        canvas_width: this.getWidth(),
-        canvas_height: this.getHeight(),
+        canvasId: 'canvas_area',
+        canvasWidth: this.getWidth(),
+        canvasHeight: this.getHeight(),
         bgopacity: 0.2,
         bgscale: 4
       });

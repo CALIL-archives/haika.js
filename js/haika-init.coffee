@@ -31,9 +31,9 @@ $.extend haika,
         haika.render()
 
       haika.init(
-        canvas_id : 'canvas_area'
-        canvas_width : @getWidth()
-        canvas_height : @getHeight()
+        canvasId : 'canvas_area'
+        canvasWidth : @getWidth()
+        canvasHeight : @getHeight()
         bgopacity: 0.2
         bgscale  : 4
       )

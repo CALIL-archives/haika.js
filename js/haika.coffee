@@ -3,21 +3,19 @@ log = (obj) ->
     console.log obj
 
 haika =
-  canvas_id: null #HTML上のCanvasのID (必須)
-
-  state: 'shelf'
-  centerX: 0
-  centerY: 0
+  canvas: null # fabricのCanvasオブジェクト
+  centerX: 0 # 表示位置X(画面の中央が0) [エディタステータス系変数]
+  centerY: 0 # 表示位置Y(画面の中央が0) [エディタステータス系変数]
   scale: 1
+  state: 'shelf'
   objects: []
-  canvas: false
   background_image: null
   fillColor: "#CFE2F3"
   strokeColor: "#000000"
   options: {}
   default_options:
-    canvas_width: 800
-    canvas_height: 600
+    canvasWidth: 800
+    canvasHeight: 600
     scale: 1
     bgurl: null
     bgopacity: 1
@@ -39,21 +37,24 @@ haika =
 # top,y値のcm->px変換
   transformTopY_px2cm: (px)->
     return @centerY - (px - @canvas.getHeight() / 2) / @scale
+
+
+  #初期化
+  #
+  #
   init: (options)->
-    if not options.canvas_id?
-      alert('CanvasのIDが未定義です') #開発段階でのみ発生するエラーはalertしてよい
-      return
+    if not options.canvasId?
+      throw 'CanvasのIDが未定義です'
 
     # オプションの上書き
     @options = $.extend(@default_options, options)
-    canvas = new fabric.Canvas(options.canvas_id, {
+    canvas = new fabric.Canvas(options.canvasId, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
+      width : @options.canvasWidth
+      height : @options.canvasHeight
     })
-    canvas.setWidth(@options.canvas_width)
-    $('#canvas_width').val(@options.canvas_width)
-    canvas.setHeight(@options.canvas_height)
-    $('#canvas_height').val(@options.canvas_height)
-
+    $('#canvas_width').val(canvas.width)
+    $('#canvas_height').val(canvas.height)
 
     canvas._getActionFromCorner = (target, corner) ->
       action = 'drag'

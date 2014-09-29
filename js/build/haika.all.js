@@ -24220,20 +24220,19 @@ log = function(obj) {
 };
 
 haika = {
-  state: 'shelf',
+  canvas: null,
   centerX: 0,
   centerY: 0,
   scale: 1,
+  state: 'shelf',
   objects: [],
-  canvas: false,
   background_image: null,
   fillColor: "#CFE2F3",
   strokeColor: "#000000",
   options: {},
   default_options: {
-    canvas_id: 'canvas_area',
-    canvas_width: 800,
-    canvas_height: 600,
+    canvasWidth: 800,
+    canvasHeight: 600,
     scale: 1,
     bgurl: null,
     bgopacity: 1,
@@ -24257,14 +24256,17 @@ haika = {
   },
   init: function(options) {
     var canvas;
+    if (options.canvasId == null) {
+      throw 'CanvasのIDが未定義です';
+    }
     this.options = $.extend(this.default_options, options);
-    canvas = new fabric.Canvas(this.options.canvas_id, {
-      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
+    canvas = new fabric.Canvas(options.canvasId, {
+      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair',
+      width: this.options.canvasWidth,
+      height: this.options.canvasHeight
     });
-    canvas.setWidth(this.options.canvas_width);
-    $('#canvas_width').val(this.options.canvas_width);
-    canvas.setHeight(this.options.canvas_height);
-    $('#canvas_height').val(this.options.canvas_height);
+    $('#canvas_width').val(canvas.width);
+    $('#canvas_height').val(canvas.height);
     canvas._getActionFromCorner = function(target, corner) {
       var action;
       action = 'drag';
@@ -25016,11 +25018,11 @@ haika = {
 
 //# sourceMappingURL=haika.js.map
 ;$.extend(haika, {
+  _api_load_endpoint: '/api/floor/load',
+  _api_save_endpoint: '/api/floor/save',
   _dataId: null,
   _revision: null,
   _collision: null,
-  _api_load_endpoint: '/api/floor/load',
-  _api_save_endpoint: '/api/floor/save',
   _geojson: {},
   _nowSaving: false,
   _autoSaveTimerId: null,
@@ -25086,7 +25088,7 @@ haika = {
     if (!geojson) {
       geojson = this._geojson;
     }
-    this.options.bgscale = geojson.haika.bgscale ? geojson.haika.bgscale : 4.425;
+    this.options.bgscale = geojson.haika.bgscale ? geojson.haika.bgscale : 1;
     this.options.bgopacity = geojson.haika.bgopacity;
     if (geojson.haika.bgurl != null) {
       this.options.bgurl = geojson.haika.bgurl;
@@ -25153,10 +25155,6 @@ haika = {
     this._nowSaving = true;
     param = this.toGeoJSON();
     param['haika'] = {
-      state: this.state,
-      scale: this.scale,
-      centerX: this.centerX,
-      centerY: this.centerY,
       bgurl: this.options.bgurl,
       bgscale: this.options.bgscale,
       bgopacity: this.options.bgopacity,
@@ -25401,9 +25399,9 @@ haika = {
         };
       })(this));
       return haika.init({
-        canvas_id: 'canvas_area',
-        canvas_width: this.getWidth(),
-        canvas_height: this.getHeight(),
+        canvasId: 'canvas_area',
+        canvasWidth: this.getWidth(),
+        canvasHeight: this.getHeight(),
         bgopacity: 0.2,
         bgscale: 4
       });
