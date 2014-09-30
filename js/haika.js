@@ -30,6 +30,8 @@ haika = {
   xyLatitude: null,
   xyAngle: 0,
   xyScaleFactor: 1.5,
+  clipboard: [],
+  clipboard_scale: 0,
   transformLeftX_cm2px: function(cm) {
     return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scaleFactor;
   },
@@ -89,20 +91,6 @@ haika = {
     initAligningGuidelines(canvas);
     this.layer = this.CONST_LAYERS.SHELF;
     this.canvas = canvas;
-    this.bindEvent();
-    haika.openFromApi(2, {
-      succcess: function(message) {
-        return alert(message);
-      },
-      error: (function(_this) {
-        return function() {
-          return _this.render();
-        };
-      })(this)
-    });
-    return $(this).trigger('haika:initialized');
-  },
-  bindEvent: function() {
     this.canvas.on('object:selected', (function(_this) {
       return function(e) {
         var object;
@@ -141,12 +129,49 @@ haika = {
         return _this.setPropetyPanel();
       };
     })(this));
-    return $(window).on('beforeunload', (function(_this) {
-      return function(event) {
-        _this.render();
-        _this.save();
-      };
-    })(this));
+    haika.openFromApi(2, {
+      succcess: function(message) {
+        return alert(message);
+      },
+      error: (function(_this) {
+        return function() {
+          return _this.render();
+        };
+      })(this)
+    });
+    return $(this).trigger('haika:initialized');
+  },
+  setScale: function(newScale) {
+    this.canvas.deactivateAll();
+    this.scaleFactor = (newScale * 100).toFixed(0) / 100;
+    return this.render();
+  },
+  zoomIn: function() {
+    var newScale, prevScale;
+    prevScale = this.scaleFactor;
+    newScale = prevScale + Math.pow(prevScale + 1, 2) / 20;
+    if (newScale >= 4) {
+      newScale = 4;
+    }
+    if (newScale < 1 && prevScale > 1) {
+      newScale = 1;
+    }
+    return this.setScale(newScale);
+  },
+  zoomOut: function() {
+    var newScale, prevScale;
+    prevScale = this.scaleFactor;
+    newScale = prevScale - Math.pow(prevScale + 1, 2) / 20;
+    if (newScale <= 0.05) {
+      newScale = 0.05;
+    }
+    if (prevScale > 1 && newScale < 1) {
+      newScale = 1;
+    }
+    return this.setScale(newScale);
+  },
+  zoomReset: function() {
+    return this.setScale(1);
   },
   loadBgFromUrl: function(url) {
     this.backgroundImage = null;
@@ -336,8 +361,6 @@ haika = {
     }
     return $(this).trigger('haika:duplicate');
   },
-  clipboard: [],
-  clipboard_scale: 0,
   copy: function() {
     var group, object, _i, _len, _ref;
     this.clipboard = [];
@@ -727,38 +750,6 @@ haika = {
       }
       return this.canvas.renderAll();
     }
-  },
-  zoomIn: function() {
-    var prev_scale;
-    this.canvas.deactivateAll();
-    prev_scale = this.scaleFactor;
-    this.scaleFactor = this.scaleFactor + Math.pow(this.scaleFactor + 1, 2) / 20;
-    if (this.scaleFactor >= 4) {
-      this.scaleFactor = 4;
-    }
-    if (prev_scale < 1 && this.scaleFactor > 1) {
-      this.scaleFactor = 1;
-    }
-    this.scaleFactor = (this.scaleFactor * 100).toFixed(0) / 100;
-    return this.render();
-  },
-  zoomOut: function() {
-    var prev_scale;
-    this.canvas.deactivateAll();
-    prev_scale = this.scaleFactor;
-    this.scaleFactor = this.scaleFactor - Math.pow(this.scaleFactor + 1, 2) / 20;
-    if (this.scaleFactor <= 0.05) {
-      this.scaleFactor = 0.05;
-    }
-    if (prev_scale > 1 && this.scaleFactor < 1) {
-      this.scaleFactor = 1;
-    }
-    this.scaleFactor = (this.scaleFactor * 100).toFixed(0) / 100;
-    return this.render();
-  },
-  zoomReset: function() {
-    this.scaleFactor = 1;
-    return this.render();
   },
   setPropetyPanel: function(object) {
     var group, key, objects, properties, value;

@@ -1,3 +1,10 @@
+$(window).on('beforeunload', (function(_this) {
+  return function(event) {
+    haika.render();
+    haika.save();
+  };
+})(this));
+
 $('#bgimg').change(function(e) {
   var data, files;
   files = e.target.files;

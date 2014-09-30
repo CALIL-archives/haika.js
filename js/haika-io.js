@@ -126,4 +126,4 @@ $.extend(haika, {
   }
 });
 
-//# sourceMappingURL=haika-io-v2.js.map
+//# sourceMappingURL=haika-io.js.map

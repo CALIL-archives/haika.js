@@ -22809,510 +22809,7 @@ THE SOFTWARE.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ========================================================= */
-!function(a){!function(a){"use strict";function b(){}function c(a){function c(b){b.prototype.option||(b.prototype.option=function(b){a.isPlainObject(b)&&(this.options=a.extend(!0,this.options,b))})}function e(b,c){a.fn[b]=function(e){if("string"==typeof e){for(var g=d.call(arguments,1),h=0,i=this.length;i>h;h++){var j=this[h],k=a.data(j,b);if(k)if(a.isFunction(k[e])&&"_"!==e.charAt(0)){var l=k[e].apply(k,g);if(void 0!==l&&l!==k)return l}else f("no such method '"+e+"' for "+b+" instance");else f("cannot call methods on "+b+" prior to initialization; attempted to call '"+e+"'")}return this}var m=this.map(function(){var d=a.data(this,b);return d?(d.option(e),d._init()):(d=new c(this,e),a.data(this,b,d)),a(this)});return!m||m.length>1?m:m[0]}}if(a){var f="undefined"==typeof console?b:function(a){console.error(a)};return a.bridget=function(a,b){c(b),e(a,b)},a.bridget}}var d=Array.prototype.slice;c(a)}(a),function(a){function b(b,c){function d(a,b){var c="data-slider-"+b,d=a.getAttribute(c);try{return JSON.parse(d)}catch(e){return d}}"string"==typeof b?this.element=document.querySelector(b):b instanceof HTMLElement&&(this.element=b);var e,f,g,h=this.element.style.width,i=!1,j=this.element.parentNode;if(this.sliderElem)i=!0;else{this.sliderElem=document.createElement("div"),this.sliderElem.className="slider";var k=document.createElement("div");k.className="slider-track",e=document.createElement("div"),e.className="slider-selection",f=document.createElement("div"),f.className="slider-handle min-slider-handle",g=document.createElement("div"),g.className="slider-handle max-slider-handle",k.appendChild(e),k.appendChild(f),k.appendChild(g);var l=function(a){var b=document.createElement("div");b.className="tooltip-arrow";var c=document.createElement("div");c.className="tooltip-inner",a.appendChild(b),a.appendChild(c)},m=document.createElement("div");m.className="tooltip tooltip-main",l(m);var n=document.createElement("div");n.className="tooltip tooltip-min",l(n);var o=document.createElement("div");o.className="tooltip tooltip-max",l(o),this.sliderElem.appendChild(k),this.sliderElem.appendChild(m),this.sliderElem.appendChild(n),this.sliderElem.appendChild(o),j.insertBefore(this.sliderElem,this.element),this.element.style.display="none"}a&&(this.$element=a(this.element),this.$sliderElem=a(this.sliderElem)),c=c?c:{};for(var p=Object.keys(this.defaultOptions),q=0;q<p.length;q++){var r=p[q],s=c[r];s="undefined"!=typeof s?s:d(this.element,r),s=null!==s?s:this.defaultOptions[r],this.options||(this.options={}),this.options[r]=s}this.eventToCallbackMap={},this.sliderElem.id=this.options.id,this.touchCapable="ontouchstart"in window||window.DocumentTouch&&document instanceof window.DocumentTouch,this.tooltip=this.sliderElem.querySelector(".tooltip-main"),this.tooltipInner=this.tooltip.querySelector(".tooltip-inner"),this.tooltip_min=this.sliderElem.querySelector(".tooltip-min"),this.tooltipInner_min=this.tooltip_min.querySelector(".tooltip-inner"),this.tooltip_max=this.sliderElem.querySelector(".tooltip-max"),this.tooltipInner_max=this.tooltip_max.querySelector(".tooltip-inner"),i===!0&&(this._removeClass(this.sliderElem,"slider-horizontal"),this._removeClass(this.sliderElem,"slider-vertical"),this._removeClass(this.tooltip,"hide"),this._removeClass(this.tooltip_min,"hide"),this._removeClass(this.tooltip_max,"hide"),["left","top","width","height"].forEach(function(a){this._removeProperty(this.trackSelection,a)},this),[this.handle1,this.handle2].forEach(function(a){this._removeProperty(a,"left"),this._removeProperty(a,"top")},this),[this.tooltip,this.tooltip_min,this.tooltip_max].forEach(function(a){this._removeProperty(a,"left"),this._removeProperty(a,"top"),this._removeProperty(a,"margin-left"),this._removeProperty(a,"margin-top"),this._removeClass(a,"right"),this._removeClass(a,"top")},this)),"vertical"===this.options.orientation?(this._addClass(this.sliderElem,"slider-vertical"),this.stylePos="top",this.mousePos="pageY",this.sizePos="offsetHeight",this._addClass(this.tooltip,"right"),this.tooltip.style.left="100%",this._addClass(this.tooltip_min,"right"),this.tooltip_min.style.left="100%",this._addClass(this.tooltip_max,"right"),this.tooltip_max.style.left="100%"):(this._addClass(this.sliderElem,"slider-horizontal"),this.sliderElem.style.width=h,this.options.orientation="horizontal",this.stylePos="left",this.mousePos="pageX",this.sizePos="offsetWidth",this._addClass(this.tooltip,"top"),this.tooltip.style.top=-this.tooltip.outerHeight-14+"px",this._addClass(this.tooltip_min,"top"),this.tooltip_min.style.top=-this.tooltip_min.outerHeight-14+"px",this._addClass(this.tooltip_max,"top"),this.tooltip_max.style.top=-this.tooltip_max.outerHeight-14+"px"),this.options.value instanceof Array?this.options.range=!0:this.options.range&&(this.options.value=[this.options.value,this.options.max]),this.trackSelection=e||this.trackSelection,"none"===this.options.selection&&this._addClass(this.trackSelection,"hide"),this.handle1=f||this.handle1,this.handle2=g||this.handle2,i===!0&&(this._removeClass(this.handle1,"round triangle"),this._removeClass(this.handle2,"round triangle hide"));var t=["round","triangle","custom"],u=-1!==t.indexOf(this.options.handle);u&&(this._addClass(this.handle1,this.options.handle),this._addClass(this.handle2,this.options.handle)),this.offset=this._offset(this.sliderElem),this.size=this.sliderElem[this.sizePos],this.setValue(this.options.value),this.handle1Keydown=this._keydown.bind(this,0),this.handle1.addEventListener("keydown",this.handle1Keydown,!1),this.handle2Keydown=this._keydown.bind(this,0),this.handle2.addEventListener("keydown",this.handle2Keydown,!1),this.touchCapable?(this.mousedown=this._mousedown.bind(this),this.sliderElem.addEventListener("touchstart",this.mousedown,!1)):(this.mousedown=this._mousedown.bind(this),this.sliderElem.addEventListener("mousedown",this.mousedown,!1)),"hide"===this.options.tooltip?(this._addClass(this.tooltip,"hide"),this._addClass(this.tooltip_min,"hide"),this._addClass(this.tooltip_max,"hide")):"always"===this.options.tooltip?(this._showTooltip(),this._alwaysShowTooltip=!0):(this.showTooltip=this._showTooltip.bind(this),this.hideTooltip=this._hideTooltip.bind(this),this.sliderElem.addEventListener("mouseenter",this.showTooltip,!1),this.sliderElem.addEventListener("mouseleave",this.hideTooltip,!1),this.handle1.addEventListener("focus",this.showTooltip,!1),this.handle1.addEventListener("blur",this.hideTooltip,!1),this.handle2.addEventListener("focus",this.showTooltip,!1),this.handle2.addEventListener("blur",this.hideTooltip,!1)),this.options.enabled?this.enable():this.disable()}var c={formatInvalidInputErrorMsg:function(a){return"Invalid input value '"+a+"' passed in"},callingContextNotSliderInstance:"Calling context element does not have instance of Slider bound to it. Check your code to make sure the JQuery object returned from the call to the slider() initializer is calling the method"},d=function(a,c){return b.call(this,a,c),this};if(d.prototype={_init:function(){},constructor:d,defaultOptions:{id:"",min:0,max:10,step:1,precision:0,orientation:"horizontal",value:5,range:!1,selection:"before",tooltip:"show",tooltip_split:!1,handle:"round",reversed:!1,enabled:!0,formatter:function(a){return a instanceof Array?a[0]+" : "+a[1]:a},natural_arrow_keys:!1},over:!1,inDrag:!1,getValue:function(){return this.options.range?this.options.value:this.options.value[0]},setValue:function(a,b){a||(a=0),this.options.value=this._validateInputValue(a);var c=this._applyPrecision.bind(this);if(this.options.range?(this.options.value[0]=c(this.options.value[0]),this.options.value[1]=c(this.options.value[1]),this.options.value[0]=Math.max(this.options.min,Math.min(this.options.max,this.options.value[0])),this.options.value[1]=Math.max(this.options.min,Math.min(this.options.max,this.options.value[1]))):(this.options.value=c(this.options.value),this.options.value=[Math.max(this.options.min,Math.min(this.options.max,this.options.value))],this._addClass(this.handle2,"hide"),this.options.value[1]="after"===this.selection?this.options.max:this.options.min),this.diff=this.options.max-this.options.min,this.percentage=this.diff>0?[100*(this.options.value[0]-this.options.min)/this.diff,100*(this.options.value[1]-this.options.min)/this.diff,100*this.options.step/this.diff]:[0,0,100],this._layout(),b===!0){var d=this.options.range?this.options.value:this.options.value[0];this._trigger("slide",d),this._setDataVal(d)}return this},destroy:function(){this._removeSliderEventHandlers(),this.sliderElem.parentNode.removeChild(this.sliderElem),this.element.style.display="",this._cleanUpEventCallbacksMap(),this.element.removeAttribute("data"),a&&(this._unbindJQueryEventHandlers(),this.$element.removeData("slider"))},disable:function(){return this.options.enabled=!1,this.handle1.removeAttribute("tabindex"),this.handle2.removeAttribute("tabindex"),this._addClass(this.sliderElem,"slider-disabled"),this._trigger("slideDisabled"),this},enable:function(){return this.options.enabled=!0,this.handle1.setAttribute("tabindex",0),this.handle2.setAttribute("tabindex",0),this._removeClass(this.sliderElem,"slider-disabled"),this._trigger("slideEnabled"),this},toggle:function(){return this.options.enabled?this.disable():this.enable(),this},isEnabled:function(){return this.options.enabled},on:function(b,c){return a?(this.$element.on(b,c),this.$sliderElem.on(b,c)):this._bindNonQueryEventHandler(b,c),this},getAttribute:function(a){return a?this.options[a]:this.options},setAttribute:function(a,b){return this.options[a]=b,this},refresh:function(){return this._removeSliderEventHandlers(),b.call(this,this.element,this.options),a&&a.data(this.element,"slider",this),this},_removeSliderEventHandlers:function(){this.handle1.removeEventListener("keydown",this.handle1Keydown,!1),this.handle1.removeEventListener("focus",this.showTooltip,!1),this.handle1.removeEventListener("blur",this.hideTooltip,!1),this.handle2.removeEventListener("keydown",this.handle2Keydown,!1),this.handle2.removeEventListener("focus",this.handle2Keydown,!1),this.handle2.removeEventListener("blur",this.handle2Keydown,!1),this.sliderElem.removeEventListener("mouseenter",this.showTooltip,!1),this.sliderElem.removeEventListener("mouseleave",this.hideTooltip,!1),this.sliderElem.removeEventListener("touchstart",this.mousedown,!1),this.sliderElem.removeEventListener("mousedown",this.mousedown,!1)},_bindNonQueryEventHandler:function(a,b){var c=this.eventToCallbackMap[a];c?c.push(b):this.eventToCallbackMap[a]=[]},_cleanUpEventCallbacksMap:function(){for(var a=Object.keys(this.eventToCallbackMap),b=0;b<a.length;b++){var c=a[b];this.eventToCallbackMap[c]=null}},_showTooltip:function(){this.options.tooltip_split===!1?this._addClass(this.tooltip,"in"):(this._addClass(this.tooltip_min,"in"),this._addClass(this.tooltip_max,"in")),this.over=!0},_hideTooltip:function(){this.inDrag===!1&&this.alwaysShowTooltip!==!0&&(this._removeClass(this.tooltip,"in"),this._removeClass(this.tooltip_min,"in"),this._removeClass(this.tooltip_max,"in")),this.over=!1},_layout:function(){var a;if(a=this.options.reversed?[100-this.percentage[0],this.percentage[1]]:[this.percentage[0],this.percentage[1]],this.handle1.style[this.stylePos]=a[0]+"%",this.handle2.style[this.stylePos]=a[1]+"%","vertical"===this.options.orientation)this.trackSelection.style.top=Math.min(a[0],a[1])+"%",this.trackSelection.style.height=Math.abs(a[0]-a[1])+"%";else{this.trackSelection.style.left=Math.min(a[0],a[1])+"%",this.trackSelection.style.width=Math.abs(a[0]-a[1])+"%";var b=this.tooltip_min.getBoundingClientRect(),c=this.tooltip_max.getBoundingClientRect();b.right>c.left?(this._removeClass(this.tooltip_max,"top"),this._addClass(this.tooltip_max,"bottom"),this.tooltip_max.style.top="18px"):(this._removeClass(this.tooltip_max,"bottom"),this._addClass(this.tooltip_max,"top"),this.tooltip_max.style.top="-30px")}var d;if(this.options.range){d=this.options.formatter(this.options.value),this._setText(this.tooltipInner,d),this.tooltip.style[this.stylePos]=(a[1]+a[0])/2+"%","vertical"===this.options.orientation?this._css(this.tooltip,"margin-top",-this.tooltip.offsetHeight/2+"px"):this._css(this.tooltip,"margin-left",-this.tooltip.offsetWidth/2+"px"),"vertical"===this.options.orientation?this._css(this.tooltip,"margin-top",-this.tooltip.offsetHeight/2+"px"):this._css(this.tooltip,"margin-left",-this.tooltip.offsetWidth/2+"px");var e=this.options.formatter(this.options.value[0]);this._setText(this.tooltipInner_min,e);var f=this.options.formatter(this.options.value[1]);this._setText(this.tooltipInner_max,f),this.tooltip_min.style[this.stylePos]=a[0]+"%","vertical"===this.options.orientation?this._css(this.tooltip_min,"margin-top",-this.tooltip_min.offsetHeight/2+"px"):this._css(this.tooltip_min,"margin-left",-this.tooltip_min.offsetWidth/2+"px"),this.tooltip_max.style[this.stylePos]=a[1]+"%","vertical"===this.options.orientation?this._css(this.tooltip_max,"margin-top",-this.tooltip_max.offsetHeight/2+"px"):this._css(this.tooltip_max,"margin-left",-this.tooltip_max.offsetWidth/2+"px")}else d=this.options.formatter(this.options.value[0]),this._setText(this.tooltipInner,d),this.tooltip.style[this.stylePos]=a[0]+"%","vertical"===this.options.orientation?this._css(this.tooltip,"margin-top",-this.tooltip.offsetHeight/2+"px"):this._css(this.tooltip,"margin-left",-this.tooltip.offsetWidth/2+"px")},_removeProperty:function(a,b){a.style.removeProperty?a.style.removeProperty(b):a.style.removeAttribute(b)},_mousedown:function(a){if(!this.options.enabled)return!1;this.touchCapable&&"touchstart"===a.type&&(a=a.originalEvent),this._triggerFocusOnHandle(),this.offset=this._offset(this.sliderElem),this.size=this.sliderElem[this.sizePos];var b=this._getPercentage(a);if(this.options.range){var c=Math.abs(this.percentage[0]-b),d=Math.abs(this.percentage[1]-b);this.dragged=d>c?0:1}else this.dragged=0;this.percentage[this.dragged]=this.options.reversed?100-b:b,this._layout(),this.mousemove=this._mousemove.bind(this),this.mouseup=this._mouseup.bind(this),this.touchCapable?(document.addEventListener("touchmove",this.mousemove,!1),document.addEventListener("touchend",this.mouseup,!1)):(document.addEventListener("mousemove",this.mousemove,!1),document.addEventListener("mouseup",this.mouseup,!1)),this.inDrag=!0;var e=this._calculateValue();return this._trigger("slideStart",e),this._setDataVal(e),this.setValue(e),this._pauseEvent(a),!0},_triggerFocusOnHandle:function(a){0===a&&this.handle1.focus(),1===a&&this.handle2.focus()},_keydown:function(a,b){if(!this.options.enabled)return!1;var c;switch(b.keyCode){case 37:case 40:c=-1;break;case 39:case 38:c=1}if(c){if(this.options.natural_arrow_keys){var d="vertical"===this.options.orientation&&!this.options.reversed,e="horizontal"===this.options.orientation&&this.options.reversed;(d||e)&&(c=-1*c)}var f=c*this.percentage[2],g=this.percentage[a]+f;g>100?g=100:0>g&&(g=0),this.dragged=a,this._adjustPercentageForRangeSliders(g),this.percentage[this.dragged]=g,this._layout();var h=this._calculateValue();return this._trigger("slideStart",h),this._setDataVal(h),this.setValue(h,!0),this._trigger("slideStop",h),this._setDataVal(h),this._pauseEvent(b),!1}},_pauseEvent:function(a){a.stopPropagation&&a.stopPropagation(),a.preventDefault&&a.preventDefault(),a.cancelBubble=!0,a.returnValue=!1},_mousemove:function(a){if(!this.options.enabled)return!1;this.touchCapable&&"touchmove"===a.type&&(a=a.originalEvent);var b=this._getPercentage(a);this._adjustPercentageForRangeSliders(b),this.percentage[this.dragged]=this.options.reversed?100-b:b,this._layout();var c=this._calculateValue();return this.setValue(c,!0),!1},_adjustPercentageForRangeSliders:function(a){this.options.range&&(0===this.dragged&&this.percentage[1]<a?(this.percentage[0]=this.percentage[1],this.dragged=1):1===this.dragged&&this.percentage[0]>a&&(this.percentage[1]=this.percentage[0],this.dragged=0))},_mouseup:function(){if(!this.options.enabled)return!1;this.touchCapable?(document.removeEventListener("touchmove",this.mousemove,!1),document.removeEventListener("touchend",this.mouseup,!1)):(document.removeEventListener("mousemove",this.mousemove,!1),document.removeEventListener("mouseup",this.mouseup,!1)),this.inDrag=!1,this.over===!1&&this._hideTooltip();var a=this._calculateValue();return this._layout(),this._setDataVal(a),this._trigger("slideStop",a),!1},_calculateValue:function(){var a;return this.options.range?(a=[this.options.min,this.options.max],0!==this.percentage[0]&&(a[0]=Math.max(this.options.min,this.options.min+Math.round(this.diff*this.percentage[0]/100/this.options.step)*this.options.step),a[0]=this._applyPrecision(a[0])),100!==this.percentage[1]&&(a[1]=Math.min(this.options.max,this.options.min+Math.round(this.diff*this.percentage[1]/100/this.options.step)*this.options.step),a[1]=this._applyPrecision(a[1])),this.options.value=a):(a=this.options.min+Math.round(this.diff*this.percentage[0]/100/this.options.step)*this.options.step,a<this.options.min?a=this.options.min:a>this.options.max&&(a=this.options.max),a=parseFloat(a),a=this._applyPrecision(a),this.options.value=[a,this.options.value[1]]),a},_applyPrecision:function(a){var b=this.options.precision||this._getNumDigitsAfterDecimalPlace(this.step);return this._applyToFixedAndParseFloat(a,b)},_getNumDigitsAfterDecimalPlace:function(a){var b=(""+a).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);return b?Math.max(0,(b[1]?b[1].length:0)-(b[2]?+b[2]:0)):0},_applyToFixedAndParseFloat:function(a,b){var c=a.toFixed(b);return parseFloat(c)},_getPercentage:function(a){!this.touchCapable||"touchstart"!==a.type&&"touchmove"!==a.type||(a=a.touches[0]);var b=100*(a[this.mousePos]-this.offset[this.stylePos])/this.size;return b=Math.round(b/this.percentage[2])*this.percentage[2],Math.max(0,Math.min(100,b))},_validateInputValue:function(a){if("number"==typeof a)return a;if(a instanceof Array)return this._validateArray(a),a;throw new Error(c.formatInvalidInputErrorMsg(a))},_validateArray:function(a){for(var b=0;b<a.length;b++){var d=a[b];if("number"!=typeof d)throw new Error(c.formatInvalidInputErrorMsg(d))}},_setDataVal:function(a){var b="value: '"+a+"'";this.element.setAttribute("data",b)},_trigger:function(b,c){c=c||void 0;var d=this.eventToCallbackMap[b];if(d&&d.length)for(var e=0;e<d.length;e++){var f=d[e];f(c)}a&&this._triggerJQueryEvent(b,c)},_triggerJQueryEvent:function(a,b){var c={type:a,value:b};this.$element.trigger(c),this.$sliderElem.trigger(c)},_unbindJQueryEventHandlers:function(){this.$element.off(),this.$sliderElem.off()},_setText:function(a,b){"undefined"!=typeof a.innerText?a.innerText=b:"undefined"!=typeof a.textContent&&(a.textContent=b)},_removeClass:function(a,b){for(var c=b.split(" "),d=a.className,e=0;e<c.length;e++){var f=c[e],g=new RegExp("(?:\\s|^)"+f+"(?:\\s|$)");d=d.replace(g," ")}a.className=d.trim()},_addClass:function(a,b){for(var c=b.split(" "),d=a.className,e=0;e<c.length;e++){var f=c[e],g=new RegExp("(?:\\s|^)"+f+"(?:\\s|$)"),h=g.test(d);h||(d+=" "+f)}a.className=d.trim()},_offset:function(a){var b=0,c=0;if(a.offsetParent)do b+=a.offsetLeft,c+=a.offsetTop;while(a=a.offsetParent);return{left:b,top:c}},_css:function(a,b,c){a.style[b]=c}},a){var e=a.fn.slider?"bootstrapSlider":"slider";a.bridget(e,d)}else window.Slider=d}(a)}(window.jQuery);;//  Copyright (c) 2002 M.Inamori,All rights reserved.
-//  Coded 2/26/02
-//
-//	sprintf()
-
-function sprintf() {
-	var argv = sprintf.arguments;
-	var argc = argv.length;
-	if(argc == 0)
-		return "";
-	var result = "";
-	var format = argv[0];
-	var format_length = format.length;
-	
-	var flag, width, precision;
-	flag = 0;
-	
-	var index = 1;
-	var mode = 0;
-	var tmpresult;
-	var buff;
-	for(var i = 0; i < format_length; i++) {
-		var c = format.charAt(i);
-		switch(mode) {
-		case 0:		//normal
-			if(c == '%') {
-				tmpresult = c;
-				mode = 1;
-				buff = "";
-			}
-			else
-				result += c;
-			break;
-		case 1:		//after '%'
-			if(c == '%') {
-				result += c;
-				mode = 0;
-				break;
-			}
-			if(index >= argc)
-				argv[argc++] = "";
-			width = 0;
-			precision = -1;
-			switch(c) {
-			case '-':
-				flag |= 1;
-				mode = 1;
-				break;
-			case '+':
-				flag |= 2;
-				mode = 1;
-				break;
-			case '0':
-				flag |= 4;
-				mode = 2;
-				break;
-			case ' ':
-				flag |= 8;
-				mode = 1;
-				break;
-			case '#':
-				flag |= 16;
-				mode = 1;
-				break;
-			case '1': case '2': case '3': case '4': case '5':
-			case '6': case '7': case '8': case '9':
-				width = parseInt(c);
-				mode = 2;
-				break;
-			case '-':
-				flag = 1;
-				mode = 2;
-				break;
-			case '.':
-				width = "";
-				precision = 0;
-				mode = 3;
-				break;
-			case 'd':
-				result += toInteger(argv[index], flag, width, precision);
-				index++;
-				mode = 0;
-				break;
-			case 'f':
-				result += toFloatingPoint(argv[index], flag, width, 6);
-				index++;
-				mode = 0;
-				break;
-			case 'e':
-				result += toExponential(argv[index], flag, width, 6, 'e');
-				index++;
-				mode = 0;
-				break;
-			case 'E':
-				result += toExponential(argv[index], flag, width, 6, 'E');
-				index++;
-				mode = 0;
-				break;
-			case 's':
-				result += argv[index];
-				index++;
-				mode = 0;
-				break;
-			default:
-				result += buff + c;
-				mode = 0;
-				break;
-			}
-			break;
-		case 2:		//while defining width
-			switch(c) {
-			case '.':
-				precision = 0;
-				mode = 3;
-				break;
-			case '0': case '1': case '2': case '3': case '4':
-			case '5': case '6': case '7': case '8': case '9':
-				width = width * 10 + parseInt(c);
-				mode = 2;
-				break;
-			case 'd':
-				result += toInteger(argv[index], flag, width, precision);
-				index++;
-				mode = 0;
-				break;
-			case 'f':
-				result += toFloatingPoint(argv[index], flag, width, 6);
-				index++;
-				mode = 0;
-				break;
-			case 'e':
-				result += toExponential(argv[index], flag, width, 6, 'e');
-				index++;
-				mode = 0;
-				break;
-			case 'E':
-				result += toExponential(argv[index], flag, width, 6, 'E');
-				index++;
-				mode = 0;
-				break;
-			case 's':
-				result += toFormatString(argv[index], width, precision);
-				index++;
-				mode = 0;
-				break;
-			default:
-				result += buff + c;
-				mode = 0;
-				break;
-			}
-			break;
-		case 3:		//while defining precision
-			switch(c) {
-			case '0': case '1': case '2': case '3': case '4':
-			case '5': case '6': case '7': case '8': case '9':
-				precision = precision * 10 + parseInt(c);
-				break;
-			case 'd':
-				result += toInteger(argv[index], flag, width, precision);
-				index++;
-				mode = 0;
-				break;
-			case 'f':
-				result += toFloatingPoint(argv[index], flag, width, precision);
-				index++;
-				mode = 0;
-				break;
-			case 'e':
-				result += toExponential(argv[index], flag, width, precision, 'e');
-				index++;
-				mode = 0;
-				break;
-			case 'E':
-				result += toExponential(argv[index], flag, width, precision, 'E');
-				index++;
-				mode = 0;
-				break;
-			case 's':
-				result += toFormatString(argv[index], width, precision);
-				index++;
-				mode = 0;
-				break;
-			default:
-				result += buff + c;
-				mode = 0;
-				break;
-			}
-			break;
-		default:
-			return "error";
-		}
-		
-		if(mode)
-			buff += c;
-	}
-	
-	return result;
-}
-
-function toInteger(n, f, w, p) {
-	if(typeof n != "number") {
-		if(typeof n == "string") {
-			n = parseFloat(n);
-			if(isNaN(n))
-				n = 0;
-		}
-		else
-			n = 0;
-	}
-	
-	var str = n.toString();
-	
-	//to integer if decimal
-	if(-1 < n && n < 1)
-		str = "0";
-	else {
-		if(n < 0)
-			str = str.substring(1);
-		var pos_e = str.indexOf('e');
-		if(pos_e != -1) {		//�w��
-			var exp = parseInt(str.substring(pos_e + 2));
-			var pos_dot = str.indexOf('.');
-			if(pos_dot == -1) {
-				str = str.substring(0, pos_e) + "000000000000000000000";
-				exp -= 21;
-			}
-			else {
-				str = str.substring(0, pos_dot)
-							+ str.substring(pos_dot + 1, pos_e) + "00000";
-				exp -= str.length - pos_dot;
-			}
-			for( ; exp; exp--)
-				str += "0";
-		}
-		else {
-			var pos_dot = str.indexOf('.');
-			if(pos_dot != -1)
-				str = str.substring(0, pos_dot);
-		}
-	}
-	
-	//���x
-	var len = str.length;
-	if(len < p) {
-		var c = "0";
-		for(var i = p - len; i; i--)
-			str = c + str;
-		len = p;
-	}
-	
-	//�t���O�̏���
-	return ProcFlag(str, f, w - len, n >= 0);
-}
-
-function toFloatingPoint(n, f, w, p) {
-	if(typeof n != "number") {
-		if(typeof n == "string") {
-			n = parseFloat(n);
-			if(isNaN(n))
-				n = 0;
-		}
-		else
-			n = 0;
-	}
-	
-	var bpositive = (n >= 0);
-	if(!bpositive)
-		n = -n;
-	
-	str = toFloatingPoint2(n, f, p);
-	
-	//�t���O�̏���
-	return ProcFlag(str, f, w - str.length, bpositive);
-}
-
-function toFloatingPoint2(n, f, p) {
-	var str = n.toString();
-	
-	//to decimal if exponential
-	var pos_e = str.indexOf('e');
-	if(pos_e != -1) {
-		var exp = parseInt(str.substring(pos_e + 1));
-		if(exp > 0) {			//�w���𐮐���
-			var pos_dot = str.indexOf('.');
-			if(pos_dot == -1) {
-				str = str.substring(0, pos_e) + "000000000000000000000";
-				exp -= 21;
-			}
-			else {
-				str = str.charAt(0) + str.substring(2, pos_e) + "00000";
-				exp -= str.length - 1;
-			}
-			for( ; exp; exp--)
-				str += "0";
-		}
-		else {					//�w����������
-			var equive_p = exp + p;
-			if(equive_p < -1)	//���x����
-				str = "0";
-			else if(equive_p >= 0) {	//���x�L��
-				str = str.substring(0, pos_e);
-				var pos_dot = str.indexOf(".");
-				if(pos_dot != -1)
-					str = str.charAt(0) + str.substring(2, pos_e);
-				str = "000000" + str;
-				for(exp += 7; exp; exp++)
-					str = "0" + str;
-				str = "0." + str;
-			}
-			else {				//����
-				var tmp = parseFloat(str.substring(0, pos_e));
-				if(tmp > 5) {	//�؂��グ
-					str = "0.00000";
-					for(var i = exp + 7; i; i++)
-						str += "0";
-					str += "1";
-				}
-				else			//�؎̂�
-					str = "0";
-			}
-		}
-	}
-	
-	//���x�Ő��`
-	var len = str.length;
-	var pos_dot = str.indexOf(".");
-	if(pos_dot != -1) {
-		var dec = len - pos_dot - 1;
-		if(dec > p) {		//�؂�
-			var tmp = parseFloat(str.charAt(pos_dot + p + 1)
-									+ "." + str.substring(pos_dot + p + 2));
-			if(tmp > 5) {	//�؂��グ
-				var i;
-				if(n < 1) {
-					i = 2;
-					while(str.charAt(i) == "0")
-						i++;
-					tmp = (parseInt(str.substring(i, p + 2)) + 1).toString();
-					if(tmp.length > p + 2 - i) {		//����
-						if(i == 2)
-							str = "1." + tmp.substring(1);
-						else
-							str = str.substring(0, i - 1) + tmp;
-					}
-					else
-						str = str.substring(0, i) + tmp;
-				}
-				else {
-					tmp = (parseInt(str.substring(0, pos_dot) + str.substring(
-								pos_dot + 1, pos_dot + p + 1)) + 1).toString();
-					if(tmp.length > pos_dot + p)				//����
-						str = tmp.substring(0, pos_dot + 1)
-									+ "." +  tmp.substring(pos_dot + 1);
-					else
-						str = tmp.substring(0, pos_dot)
-									+ "." + tmp.substring(pos_dot);
-				}
-			}
-			else {		//�؎̂�
-				str = str.substring(0, p ? pos_dot + p + 1 : pos_dot);
-			}
-		}
-		else if(dec < p) {	//"0"���[�U
-			for(var i = p - dec; i; i--)
-				str += "0";
-		}
-	}
-	else {
-		if(p) {
-			str += ".0";
-			for(var i = p - 1; i; i--)
-				str += "0";
-		}
-	}
-	
-	return str;
-}
-
-function toExponential(n, f, w, p, e) {
-	if(typeof n != "number") {
-		if(typeof n == "string") {
-			n = parseFloat(n);
-			if(isNaN(n))
-				n = 0;
-		}
-		else
-			n = 0;
-	}
-	
-	var bpositive = n >= 0;
-	if(!bpositive)
-		n = -n;
-	
-	var str = n.toString();
-	var pos_dot = str.indexOf(".");
-	var pos_e = str.indexOf("e");
-	var type = ((pos_e != -1) << 1) + (pos_dot != -1);
-	var exp;
-	
-	//�������Ǝw�����ɕ�����
-	if(type == 0) {			//����
-		if(exp = str.length - 1)
-			str = str.charAt(0) + "." + str.substring(pos_dot = 1);
-	}
-	else if(type == 1) {	//����
-		if(n > 10) {
-			exp = pos_dot - 1;
-			str = str.substring(0, 1) + "."
-					+ str.substring(1, pos_dot) + str.substring(pos_dot + 1);
-			pos_dot = 1;
-		}
-		else if(n > 1)
-			exp = 0;
-		else {
-			for(var i = 2; ; i++) {
-				if(str.charAt(i) != "0") {
-					exp = 1 - i;
-					str = str.charAt(i) + "." + str.substring(i + 1);
-					break;
-				}
-			}
-			pos_dot = 1;
-		}
-	}
-	else {	//�w��
-		exp = parseInt(str.substring(pos_e + 1));
-		str = str.substring(0, pos_e);
-	}
-	
-	//�������̐��`
-	str = toFloatingPoint2(parseFloat(str), f, p);
-	
-	//�w�����̐��`
-	if(exp >= 0)
-		str += e + (exp < 10 ? "+0" : "+") + exp;
-	else
-		str += e + (exp > -10 ? "-0" + (-exp) : exp);
-	
-	//�t���O�̏���
-	str = ProcFlag(str, f, w - str.length, bpositive);
-	
-	return str;
-}
-
-function toFormatString(s, w, p) {
-	if(typeof s != "string")
-		s = s.toString();
-	
-	var len = s.length;
-	if(p >= 0) {
-		if(p < len) {
-			s = s.substring(0, p);
-			len = p;
-		}
-	}
-	if(len < w) {
-		var c = " ";
-		for(var i = w - len; i; i--)
-			s = c + s;
-	}
-	
-	return s;
-}
-
-function ProcFlag(str, f, extra, b) {
-	var minus = f & 1;
-	var plus = f & 2;
-	var space = f & 8;
-	if(space)			//with ' '
-		extra--;
-	extra -= !b + plus > 0;
-	if((f & 4) > 0 && !minus) {	//with 0 and not -
-		if(extra > 0) {
-			var c = "0";
-			for(var i = extra; i; i--)
-				str = c + str;
-		}
-		if(!b)
-			str = "-" + str;
-		else if(plus)
-			str = "+" + str;
-	}
-	else {					//without 0 or with -
-		if(!b)
-			str = "-" + str;
-		else if(plus)
-			str = "+" + str;
-		var c = " ";
-		if(extra > 0) {
-			var c = " ";
-			if(minus)
-				for(var i = extra; i; i--)
-					str += c;
-			else
-				for(var i = extra; i; i--)
-					str = c + str;
-		}
-	}
-	if(space)
-		str = " " + str;
-	
-	return str;
-}
-;(function(J,r,f){function s(a,b,d){a.addEventListener?a.addEventListener(b,d,!1):a.attachEvent("on"+b,d)}function A(a){if("keypress"==a.type){var b=String.fromCharCode(a.which);a.shiftKey||(b=b.toLowerCase());return b}return h[a.which]?h[a.which]:B[a.which]?B[a.which]:String.fromCharCode(a.which).toLowerCase()}function t(a){a=a||{};var b=!1,d;for(d in n)a[d]?b=!0:n[d]=0;b||(u=!1)}function C(a,b,d,c,e,v){var g,k,f=[],h=d.type;if(!l[a])return[];"keyup"==h&&w(a)&&(b=[a]);for(g=0;g<l[a].length;++g)if(k=
+!function(a){!function(a){"use strict";function b(){}function c(a){function c(b){b.prototype.option||(b.prototype.option=function(b){a.isPlainObject(b)&&(this.options=a.extend(!0,this.options,b))})}function e(b,c){a.fn[b]=function(e){if("string"==typeof e){for(var g=d.call(arguments,1),h=0,i=this.length;i>h;h++){var j=this[h],k=a.data(j,b);if(k)if(a.isFunction(k[e])&&"_"!==e.charAt(0)){var l=k[e].apply(k,g);if(void 0!==l&&l!==k)return l}else f("no such method '"+e+"' for "+b+" instance");else f("cannot call methods on "+b+" prior to initialization; attempted to call '"+e+"'")}return this}var m=this.map(function(){var d=a.data(this,b);return d?(d.option(e),d._init()):(d=new c(this,e),a.data(this,b,d)),a(this)});return!m||m.length>1?m:m[0]}}if(a){var f="undefined"==typeof console?b:function(a){console.error(a)};return a.bridget=function(a,b){c(b),e(a,b)},a.bridget}}var d=Array.prototype.slice;c(a)}(a),function(a){function b(b,c){function d(a,b){var c="data-slider-"+b,d=a.getAttribute(c);try{return JSON.parse(d)}catch(e){return d}}"string"==typeof b?this.element=document.querySelector(b):b instanceof HTMLElement&&(this.element=b);var e,f,g,h=this.element.style.width,i=!1,j=this.element.parentNode;if(this.sliderElem)i=!0;else{this.sliderElem=document.createElement("div"),this.sliderElem.className="slider";var k=document.createElement("div");k.className="slider-track",e=document.createElement("div"),e.className="slider-selection",f=document.createElement("div"),f.className="slider-handle min-slider-handle",g=document.createElement("div"),g.className="slider-handle max-slider-handle",k.appendChild(e),k.appendChild(f),k.appendChild(g);var l=function(a){var b=document.createElement("div");b.className="tooltip-arrow";var c=document.createElement("div");c.className="tooltip-inner",a.appendChild(b),a.appendChild(c)},m=document.createElement("div");m.className="tooltip tooltip-main",l(m);var n=document.createElement("div");n.className="tooltip tooltip-min",l(n);var o=document.createElement("div");o.className="tooltip tooltip-max",l(o),this.sliderElem.appendChild(k),this.sliderElem.appendChild(m),this.sliderElem.appendChild(n),this.sliderElem.appendChild(o),j.insertBefore(this.sliderElem,this.element),this.element.style.display="none"}a&&(this.$element=a(this.element),this.$sliderElem=a(this.sliderElem)),c=c?c:{};for(var p=Object.keys(this.defaultOptions),q=0;q<p.length;q++){var r=p[q],s=c[r];s="undefined"!=typeof s?s:d(this.element,r),s=null!==s?s:this.defaultOptions[r],this.options||(this.options={}),this.options[r]=s}this.eventToCallbackMap={},this.sliderElem.id=this.options.id,this.touchCapable="ontouchstart"in window||window.DocumentTouch&&document instanceof window.DocumentTouch,this.tooltip=this.sliderElem.querySelector(".tooltip-main"),this.tooltipInner=this.tooltip.querySelector(".tooltip-inner"),this.tooltip_min=this.sliderElem.querySelector(".tooltip-min"),this.tooltipInner_min=this.tooltip_min.querySelector(".tooltip-inner"),this.tooltip_max=this.sliderElem.querySelector(".tooltip-max"),this.tooltipInner_max=this.tooltip_max.querySelector(".tooltip-inner"),i===!0&&(this._removeClass(this.sliderElem,"slider-horizontal"),this._removeClass(this.sliderElem,"slider-vertical"),this._removeClass(this.tooltip,"hide"),this._removeClass(this.tooltip_min,"hide"),this._removeClass(this.tooltip_max,"hide"),["left","top","width","height"].forEach(function(a){this._removeProperty(this.trackSelection,a)},this),[this.handle1,this.handle2].forEach(function(a){this._removeProperty(a,"left"),this._removeProperty(a,"top")},this),[this.tooltip,this.tooltip_min,this.tooltip_max].forEach(function(a){this._removeProperty(a,"left"),this._removeProperty(a,"top"),this._removeProperty(a,"margin-left"),this._removeProperty(a,"margin-top"),this._removeClass(a,"right"),this._removeClass(a,"top")},this)),"vertical"===this.options.orientation?(this._addClass(this.sliderElem,"slider-vertical"),this.stylePos="top",this.mousePos="pageY",this.sizePos="offsetHeight",this._addClass(this.tooltip,"right"),this.tooltip.style.left="100%",this._addClass(this.tooltip_min,"right"),this.tooltip_min.style.left="100%",this._addClass(this.tooltip_max,"right"),this.tooltip_max.style.left="100%"):(this._addClass(this.sliderElem,"slider-horizontal"),this.sliderElem.style.width=h,this.options.orientation="horizontal",this.stylePos="left",this.mousePos="pageX",this.sizePos="offsetWidth",this._addClass(this.tooltip,"top"),this.tooltip.style.top=-this.tooltip.outerHeight-14+"px",this._addClass(this.tooltip_min,"top"),this.tooltip_min.style.top=-this.tooltip_min.outerHeight-14+"px",this._addClass(this.tooltip_max,"top"),this.tooltip_max.style.top=-this.tooltip_max.outerHeight-14+"px"),this.options.value instanceof Array?this.options.range=!0:this.options.range&&(this.options.value=[this.options.value,this.options.max]),this.trackSelection=e||this.trackSelection,"none"===this.options.selection&&this._addClass(this.trackSelection,"hide"),this.handle1=f||this.handle1,this.handle2=g||this.handle2,i===!0&&(this._removeClass(this.handle1,"round triangle"),this._removeClass(this.handle2,"round triangle hide"));var t=["round","triangle","custom"],u=-1!==t.indexOf(this.options.handle);u&&(this._addClass(this.handle1,this.options.handle),this._addClass(this.handle2,this.options.handle)),this.offset=this._offset(this.sliderElem),this.size=this.sliderElem[this.sizePos],this.setValue(this.options.value),this.handle1Keydown=this._keydown.bind(this,0),this.handle1.addEventListener("keydown",this.handle1Keydown,!1),this.handle2Keydown=this._keydown.bind(this,0),this.handle2.addEventListener("keydown",this.handle2Keydown,!1),this.touchCapable?(this.mousedown=this._mousedown.bind(this),this.sliderElem.addEventListener("touchstart",this.mousedown,!1)):(this.mousedown=this._mousedown.bind(this),this.sliderElem.addEventListener("mousedown",this.mousedown,!1)),"hide"===this.options.tooltip?(this._addClass(this.tooltip,"hide"),this._addClass(this.tooltip_min,"hide"),this._addClass(this.tooltip_max,"hide")):"always"===this.options.tooltip?(this._showTooltip(),this._alwaysShowTooltip=!0):(this.showTooltip=this._showTooltip.bind(this),this.hideTooltip=this._hideTooltip.bind(this),this.sliderElem.addEventListener("mouseenter",this.showTooltip,!1),this.sliderElem.addEventListener("mouseleave",this.hideTooltip,!1),this.handle1.addEventListener("focus",this.showTooltip,!1),this.handle1.addEventListener("blur",this.hideTooltip,!1),this.handle2.addEventListener("focus",this.showTooltip,!1),this.handle2.addEventListener("blur",this.hideTooltip,!1)),this.options.enabled?this.enable():this.disable()}var c={formatInvalidInputErrorMsg:function(a){return"Invalid input value '"+a+"' passed in"},callingContextNotSliderInstance:"Calling context element does not have instance of Slider bound to it. Check your code to make sure the JQuery object returned from the call to the slider() initializer is calling the method"},d=function(a,c){return b.call(this,a,c),this};if(d.prototype={_init:function(){},constructor:d,defaultOptions:{id:"",min:0,max:10,step:1,precision:0,orientation:"horizontal",value:5,range:!1,selection:"before",tooltip:"show",tooltip_split:!1,handle:"round",reversed:!1,enabled:!0,formatter:function(a){return a instanceof Array?a[0]+" : "+a[1]:a},natural_arrow_keys:!1},over:!1,inDrag:!1,getValue:function(){return this.options.range?this.options.value:this.options.value[0]},setValue:function(a,b){a||(a=0),this.options.value=this._validateInputValue(a);var c=this._applyPrecision.bind(this);if(this.options.range?(this.options.value[0]=c(this.options.value[0]),this.options.value[1]=c(this.options.value[1]),this.options.value[0]=Math.max(this.options.min,Math.min(this.options.max,this.options.value[0])),this.options.value[1]=Math.max(this.options.min,Math.min(this.options.max,this.options.value[1]))):(this.options.value=c(this.options.value),this.options.value=[Math.max(this.options.min,Math.min(this.options.max,this.options.value))],this._addClass(this.handle2,"hide"),this.options.value[1]="after"===this.selection?this.options.max:this.options.min),this.diff=this.options.max-this.options.min,this.percentage=this.diff>0?[100*(this.options.value[0]-this.options.min)/this.diff,100*(this.options.value[1]-this.options.min)/this.diff,100*this.options.step/this.diff]:[0,0,100],this._layout(),b===!0){var d=this.options.range?this.options.value:this.options.value[0];this._trigger("slide",d),this._setDataVal(d)}return this},destroy:function(){this._removeSliderEventHandlers(),this.sliderElem.parentNode.removeChild(this.sliderElem),this.element.style.display="",this._cleanUpEventCallbacksMap(),this.element.removeAttribute("data"),a&&(this._unbindJQueryEventHandlers(),this.$element.removeData("slider"))},disable:function(){return this.options.enabled=!1,this.handle1.removeAttribute("tabindex"),this.handle2.removeAttribute("tabindex"),this._addClass(this.sliderElem,"slider-disabled"),this._trigger("slideDisabled"),this},enable:function(){return this.options.enabled=!0,this.handle1.setAttribute("tabindex",0),this.handle2.setAttribute("tabindex",0),this._removeClass(this.sliderElem,"slider-disabled"),this._trigger("slideEnabled"),this},toggle:function(){return this.options.enabled?this.disable():this.enable(),this},isEnabled:function(){return this.options.enabled},on:function(b,c){return a?(this.$element.on(b,c),this.$sliderElem.on(b,c)):this._bindNonQueryEventHandler(b,c),this},getAttribute:function(a){return a?this.options[a]:this.options},setAttribute:function(a,b){return this.options[a]=b,this},refresh:function(){return this._removeSliderEventHandlers(),b.call(this,this.element,this.options),a&&a.data(this.element,"slider",this),this},_removeSliderEventHandlers:function(){this.handle1.removeEventListener("keydown",this.handle1Keydown,!1),this.handle1.removeEventListener("focus",this.showTooltip,!1),this.handle1.removeEventListener("blur",this.hideTooltip,!1),this.handle2.removeEventListener("keydown",this.handle2Keydown,!1),this.handle2.removeEventListener("focus",this.handle2Keydown,!1),this.handle2.removeEventListener("blur",this.handle2Keydown,!1),this.sliderElem.removeEventListener("mouseenter",this.showTooltip,!1),this.sliderElem.removeEventListener("mouseleave",this.hideTooltip,!1),this.sliderElem.removeEventListener("touchstart",this.mousedown,!1),this.sliderElem.removeEventListener("mousedown",this.mousedown,!1)},_bindNonQueryEventHandler:function(a,b){var c=this.eventToCallbackMap[a];c?c.push(b):this.eventToCallbackMap[a]=[]},_cleanUpEventCallbacksMap:function(){for(var a=Object.keys(this.eventToCallbackMap),b=0;b<a.length;b++){var c=a[b];this.eventToCallbackMap[c]=null}},_showTooltip:function(){this.options.tooltip_split===!1?this._addClass(this.tooltip,"in"):(this._addClass(this.tooltip_min,"in"),this._addClass(this.tooltip_max,"in")),this.over=!0},_hideTooltip:function(){this.inDrag===!1&&this.alwaysShowTooltip!==!0&&(this._removeClass(this.tooltip,"in"),this._removeClass(this.tooltip_min,"in"),this._removeClass(this.tooltip_max,"in")),this.over=!1},_layout:function(){var a;if(a=this.options.reversed?[100-this.percentage[0],this.percentage[1]]:[this.percentage[0],this.percentage[1]],this.handle1.style[this.stylePos]=a[0]+"%",this.handle2.style[this.stylePos]=a[1]+"%","vertical"===this.options.orientation)this.trackSelection.style.top=Math.min(a[0],a[1])+"%",this.trackSelection.style.height=Math.abs(a[0]-a[1])+"%";else{this.trackSelection.style.left=Math.min(a[0],a[1])+"%",this.trackSelection.style.width=Math.abs(a[0]-a[1])+"%";var b=this.tooltip_min.getBoundingClientRect(),c=this.tooltip_max.getBoundingClientRect();b.right>c.left?(this._removeClass(this.tooltip_max,"top"),this._addClass(this.tooltip_max,"bottom"),this.tooltip_max.style.top="18px"):(this._removeClass(this.tooltip_max,"bottom"),this._addClass(this.tooltip_max,"top"),this.tooltip_max.style.top="-30px")}var d;if(this.options.range){d=this.options.formatter(this.options.value),this._setText(this.tooltipInner,d),this.tooltip.style[this.stylePos]=(a[1]+a[0])/2+"%","vertical"===this.options.orientation?this._css(this.tooltip,"margin-top",-this.tooltip.offsetHeight/2+"px"):this._css(this.tooltip,"margin-left",-this.tooltip.offsetWidth/2+"px"),"vertical"===this.options.orientation?this._css(this.tooltip,"margin-top",-this.tooltip.offsetHeight/2+"px"):this._css(this.tooltip,"margin-left",-this.tooltip.offsetWidth/2+"px");var e=this.options.formatter(this.options.value[0]);this._setText(this.tooltipInner_min,e);var f=this.options.formatter(this.options.value[1]);this._setText(this.tooltipInner_max,f),this.tooltip_min.style[this.stylePos]=a[0]+"%","vertical"===this.options.orientation?this._css(this.tooltip_min,"margin-top",-this.tooltip_min.offsetHeight/2+"px"):this._css(this.tooltip_min,"margin-left",-this.tooltip_min.offsetWidth/2+"px"),this.tooltip_max.style[this.stylePos]=a[1]+"%","vertical"===this.options.orientation?this._css(this.tooltip_max,"margin-top",-this.tooltip_max.offsetHeight/2+"px"):this._css(this.tooltip_max,"margin-left",-this.tooltip_max.offsetWidth/2+"px")}else d=this.options.formatter(this.options.value[0]),this._setText(this.tooltipInner,d),this.tooltip.style[this.stylePos]=a[0]+"%","vertical"===this.options.orientation?this._css(this.tooltip,"margin-top",-this.tooltip.offsetHeight/2+"px"):this._css(this.tooltip,"margin-left",-this.tooltip.offsetWidth/2+"px")},_removeProperty:function(a,b){a.style.removeProperty?a.style.removeProperty(b):a.style.removeAttribute(b)},_mousedown:function(a){if(!this.options.enabled)return!1;this.touchCapable&&"touchstart"===a.type&&(a=a.originalEvent),this._triggerFocusOnHandle(),this.offset=this._offset(this.sliderElem),this.size=this.sliderElem[this.sizePos];var b=this._getPercentage(a);if(this.options.range){var c=Math.abs(this.percentage[0]-b),d=Math.abs(this.percentage[1]-b);this.dragged=d>c?0:1}else this.dragged=0;this.percentage[this.dragged]=this.options.reversed?100-b:b,this._layout(),this.mousemove=this._mousemove.bind(this),this.mouseup=this._mouseup.bind(this),this.touchCapable?(document.addEventListener("touchmove",this.mousemove,!1),document.addEventListener("touchend",this.mouseup,!1)):(document.addEventListener("mousemove",this.mousemove,!1),document.addEventListener("mouseup",this.mouseup,!1)),this.inDrag=!0;var e=this._calculateValue();return this._trigger("slideStart",e),this._setDataVal(e),this.setValue(e),this._pauseEvent(a),!0},_triggerFocusOnHandle:function(a){0===a&&this.handle1.focus(),1===a&&this.handle2.focus()},_keydown:function(a,b){if(!this.options.enabled)return!1;var c;switch(b.keyCode){case 37:case 40:c=-1;break;case 39:case 38:c=1}if(c){if(this.options.natural_arrow_keys){var d="vertical"===this.options.orientation&&!this.options.reversed,e="horizontal"===this.options.orientation&&this.options.reversed;(d||e)&&(c=-1*c)}var f=c*this.percentage[2],g=this.percentage[a]+f;g>100?g=100:0>g&&(g=0),this.dragged=a,this._adjustPercentageForRangeSliders(g),this.percentage[this.dragged]=g,this._layout();var h=this._calculateValue();return this._trigger("slideStart",h),this._setDataVal(h),this.setValue(h,!0),this._trigger("slideStop",h),this._setDataVal(h),this._pauseEvent(b),!1}},_pauseEvent:function(a){a.stopPropagation&&a.stopPropagation(),a.preventDefault&&a.preventDefault(),a.cancelBubble=!0,a.returnValue=!1},_mousemove:function(a){if(!this.options.enabled)return!1;this.touchCapable&&"touchmove"===a.type&&(a=a.originalEvent);var b=this._getPercentage(a);this._adjustPercentageForRangeSliders(b),this.percentage[this.dragged]=this.options.reversed?100-b:b,this._layout();var c=this._calculateValue();return this.setValue(c,!0),!1},_adjustPercentageForRangeSliders:function(a){this.options.range&&(0===this.dragged&&this.percentage[1]<a?(this.percentage[0]=this.percentage[1],this.dragged=1):1===this.dragged&&this.percentage[0]>a&&(this.percentage[1]=this.percentage[0],this.dragged=0))},_mouseup:function(){if(!this.options.enabled)return!1;this.touchCapable?(document.removeEventListener("touchmove",this.mousemove,!1),document.removeEventListener("touchend",this.mouseup,!1)):(document.removeEventListener("mousemove",this.mousemove,!1),document.removeEventListener("mouseup",this.mouseup,!1)),this.inDrag=!1,this.over===!1&&this._hideTooltip();var a=this._calculateValue();return this._layout(),this._setDataVal(a),this._trigger("slideStop",a),!1},_calculateValue:function(){var a;return this.options.range?(a=[this.options.min,this.options.max],0!==this.percentage[0]&&(a[0]=Math.max(this.options.min,this.options.min+Math.round(this.diff*this.percentage[0]/100/this.options.step)*this.options.step),a[0]=this._applyPrecision(a[0])),100!==this.percentage[1]&&(a[1]=Math.min(this.options.max,this.options.min+Math.round(this.diff*this.percentage[1]/100/this.options.step)*this.options.step),a[1]=this._applyPrecision(a[1])),this.options.value=a):(a=this.options.min+Math.round(this.diff*this.percentage[0]/100/this.options.step)*this.options.step,a<this.options.min?a=this.options.min:a>this.options.max&&(a=this.options.max),a=parseFloat(a),a=this._applyPrecision(a),this.options.value=[a,this.options.value[1]]),a},_applyPrecision:function(a){var b=this.options.precision||this._getNumDigitsAfterDecimalPlace(this.step);return this._applyToFixedAndParseFloat(a,b)},_getNumDigitsAfterDecimalPlace:function(a){var b=(""+a).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);return b?Math.max(0,(b[1]?b[1].length:0)-(b[2]?+b[2]:0)):0},_applyToFixedAndParseFloat:function(a,b){var c=a.toFixed(b);return parseFloat(c)},_getPercentage:function(a){!this.touchCapable||"touchstart"!==a.type&&"touchmove"!==a.type||(a=a.touches[0]);var b=100*(a[this.mousePos]-this.offset[this.stylePos])/this.size;return b=Math.round(b/this.percentage[2])*this.percentage[2],Math.max(0,Math.min(100,b))},_validateInputValue:function(a){if("number"==typeof a)return a;if(a instanceof Array)return this._validateArray(a),a;throw new Error(c.formatInvalidInputErrorMsg(a))},_validateArray:function(a){for(var b=0;b<a.length;b++){var d=a[b];if("number"!=typeof d)throw new Error(c.formatInvalidInputErrorMsg(d))}},_setDataVal:function(a){var b="value: '"+a+"'";this.element.setAttribute("data",b)},_trigger:function(b,c){c=c||void 0;var d=this.eventToCallbackMap[b];if(d&&d.length)for(var e=0;e<d.length;e++){var f=d[e];f(c)}a&&this._triggerJQueryEvent(b,c)},_triggerJQueryEvent:function(a,b){var c={type:a,value:b};this.$element.trigger(c),this.$sliderElem.trigger(c)},_unbindJQueryEventHandlers:function(){this.$element.off(),this.$sliderElem.off()},_setText:function(a,b){"undefined"!=typeof a.innerText?a.innerText=b:"undefined"!=typeof a.textContent&&(a.textContent=b)},_removeClass:function(a,b){for(var c=b.split(" "),d=a.className,e=0;e<c.length;e++){var f=c[e],g=new RegExp("(?:\\s|^)"+f+"(?:\\s|$)");d=d.replace(g," ")}a.className=d.trim()},_addClass:function(a,b){for(var c=b.split(" "),d=a.className,e=0;e<c.length;e++){var f=c[e],g=new RegExp("(?:\\s|^)"+f+"(?:\\s|$)"),h=g.test(d);h||(d+=" "+f)}a.className=d.trim()},_offset:function(a){var b=0,c=0;if(a.offsetParent)do b+=a.offsetLeft,c+=a.offsetTop;while(a=a.offsetParent);return{left:b,top:c}},_css:function(a,b,c){a.style[b]=c}},a){var e=a.fn.slider?"bootstrapSlider":"slider";a.bridget(e,d)}else window.Slider=d}(a)}(window.jQuery);;(function(J,r,f){function s(a,b,d){a.addEventListener?a.addEventListener(b,d,!1):a.attachEvent("on"+b,d)}function A(a){if("keypress"==a.type){var b=String.fromCharCode(a.which);a.shiftKey||(b=b.toLowerCase());return b}return h[a.which]?h[a.which]:B[a.which]?B[a.which]:String.fromCharCode(a.which).toLowerCase()}function t(a){a=a||{};var b=!1,d;for(d in n)a[d]?b=!0:n[d]=0;b||(u=!1)}function C(a,b,d,c,e,v){var g,k,f=[],h=d.type;if(!l[a])return[];"keyup"==h&&w(a)&&(b=[a]);for(g=0;g<l[a].length;++g)if(k=
 l[a][g],!(!c&&k.seq&&n[k.seq]!=k.level||h!=k.action||("keypress"!=h||d.metaKey||d.ctrlKey)&&b.sort().join(",")!==k.modifiers.sort().join(","))){var m=c&&k.seq==c&&k.level==v;(!c&&k.combo==e||m)&&l[a].splice(g,1);f.push(k)}return f}function K(a){var b=[];a.shiftKey&&b.push("shift");a.altKey&&b.push("alt");a.ctrlKey&&b.push("ctrl");a.metaKey&&b.push("meta");return b}function x(a,b,d,c){m.stopCallback(b,b.target||b.srcElement,d,c)||!1!==a(b,d)||(b.preventDefault?b.preventDefault():b.returnValue=!1,b.stopPropagation?
 b.stopPropagation():b.cancelBubble=!0)}function y(a){"number"!==typeof a.which&&(a.which=a.keyCode);var b=A(a);b&&("keyup"==a.type&&z===b?z=!1:m.handleKey(b,K(a),a))}function w(a){return"shift"==a||"ctrl"==a||"alt"==a||"meta"==a}function L(a,b,d,c){function e(b){return function(){u=b;++n[a];clearTimeout(D);D=setTimeout(t,1E3)}}function v(b){x(d,b,a);"keyup"!==c&&(z=A(b));setTimeout(t,10)}for(var g=n[a]=0;g<b.length;++g){var f=g+1===b.length?v:e(c||E(b[g+1]).action);F(b[g],f,c,a,g)}}function E(a,b){var d,
 c,e,f=[];d="+"===a?["+"]:a.split("+");for(e=0;e<d.length;++e)c=d[e],G[c]&&(c=G[c]),b&&"keypress"!=b&&H[c]&&(c=H[c],f.push("shift")),w(c)&&f.push(c);d=c;e=b;if(!e){if(!p){p={};for(var g in h)95<g&&112>g||h.hasOwnProperty(g)&&(p[h[g]]=g)}e=p[d]?"keydown":"keypress"}"keypress"==e&&f.length&&(e="keydown");return{key:c,modifiers:f,action:e}}function F(a,b,d,c,e){q[a+":"+d]=b;a=a.replace(/\s+/g," ");var f=a.split(" ");1<f.length?L(a,f,b,d):(d=E(a,d),l[d.key]=l[d.key]||[],C(d.key,d.modifiers,{type:d.action},
@@ -25112,6 +24609,8 @@ haika = {
   xyLatitude: null,
   xyAngle: 0,
   xyScaleFactor: 1.5,
+  clipboard: [],
+  clipboard_scale: 0,
   transformLeftX_cm2px: function(cm) {
     return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scaleFactor;
   },
@@ -25171,20 +24670,6 @@ haika = {
     initAligningGuidelines(canvas);
     this.layer = this.CONST_LAYERS.SHELF;
     this.canvas = canvas;
-    this.bindEvent();
-    haika.openFromApi(2, {
-      succcess: function(message) {
-        return alert(message);
-      },
-      error: (function(_this) {
-        return function() {
-          return _this.render();
-        };
-      })(this)
-    });
-    return $(this).trigger('haika:initialized');
-  },
-  bindEvent: function() {
     this.canvas.on('object:selected', (function(_this) {
       return function(e) {
         var object;
@@ -25223,12 +24708,49 @@ haika = {
         return _this.setPropetyPanel();
       };
     })(this));
-    return $(window).on('beforeunload', (function(_this) {
-      return function(event) {
-        _this.render();
-        _this.save();
-      };
-    })(this));
+    haika.openFromApi(2, {
+      succcess: function(message) {
+        return alert(message);
+      },
+      error: (function(_this) {
+        return function() {
+          return _this.render();
+        };
+      })(this)
+    });
+    return $(this).trigger('haika:initialized');
+  },
+  setScale: function(newScale) {
+    this.canvas.deactivateAll();
+    this.scaleFactor = (newScale * 100).toFixed(0) / 100;
+    return this.render();
+  },
+  zoomIn: function() {
+    var newScale, prevScale;
+    prevScale = this.scaleFactor;
+    newScale = prevScale + Math.pow(prevScale + 1, 2) / 20;
+    if (newScale >= 4) {
+      newScale = 4;
+    }
+    if (newScale < 1 && prevScale > 1) {
+      newScale = 1;
+    }
+    return this.setScale(newScale);
+  },
+  zoomOut: function() {
+    var newScale, prevScale;
+    prevScale = this.scaleFactor;
+    newScale = prevScale - Math.pow(prevScale + 1, 2) / 20;
+    if (newScale <= 0.05) {
+      newScale = 0.05;
+    }
+    if (prevScale > 1 && newScale < 1) {
+      newScale = 1;
+    }
+    return this.setScale(newScale);
+  },
+  zoomReset: function() {
+    return this.setScale(1);
   },
   loadBgFromUrl: function(url) {
     this.backgroundImage = null;
@@ -25418,8 +24940,6 @@ haika = {
     }
     return $(this).trigger('haika:duplicate');
   },
-  clipboard: [],
-  clipboard_scale: 0,
   copy: function() {
     var group, object, _i, _len, _ref;
     this.clipboard = [];
@@ -25810,38 +25330,6 @@ haika = {
       return this.canvas.renderAll();
     }
   },
-  zoomIn: function() {
-    var prev_scale;
-    this.canvas.deactivateAll();
-    prev_scale = this.scaleFactor;
-    this.scaleFactor = this.scaleFactor + Math.pow(this.scaleFactor + 1, 2) / 20;
-    if (this.scaleFactor >= 4) {
-      this.scaleFactor = 4;
-    }
-    if (prev_scale < 1 && this.scaleFactor > 1) {
-      this.scaleFactor = 1;
-    }
-    this.scaleFactor = (this.scaleFactor * 100).toFixed(0) / 100;
-    return this.render();
-  },
-  zoomOut: function() {
-    var prev_scale;
-    this.canvas.deactivateAll();
-    prev_scale = this.scaleFactor;
-    this.scaleFactor = this.scaleFactor - Math.pow(this.scaleFactor + 1, 2) / 20;
-    if (this.scaleFactor <= 0.05) {
-      this.scaleFactor = 0.05;
-    }
-    if (prev_scale > 1 && this.scaleFactor < 1) {
-      this.scaleFactor = 1;
-    }
-    this.scaleFactor = (this.scaleFactor * 100).toFixed(0) / 100;
-    return this.render();
-  },
-  zoomReset: function() {
-    this.scaleFactor = 1;
-    return this.render();
-  },
   setPropetyPanel: function(object) {
     var group, key, objects, properties, value;
     $('.canvas_panel, .object_panel, .group_panel').hide();
@@ -26005,7 +25493,7 @@ haika = {
   }
 });
 
-//# sourceMappingURL=haika-io-v2.js.map
+//# sourceMappingURL=haika-io.js.map
 ;$.extend(haika, {
   loadFromGeoJson: function(geojson) {
     var key, klass, object, schema, shape, _i, _len, _ref, _results;
@@ -26646,7 +26134,14 @@ $(haika).on('haika:initialized', function() {
 haika.colorpicker.init();
 
 //# sourceMappingURL=haika-colorpicker.js.map
-;$('#bgimg').change(function(e) {
+;$(window).on('beforeunload', (function(_this) {
+  return function(event) {
+    haika.render();
+    haika.save();
+  };
+})(this));
+
+$('#bgimg').change(function(e) {
   var data, files;
   files = e.target.files;
   if (files.length === 0) {
@@ -26963,91 +26458,6 @@ $(haika).on('haika:load', function() {
 haika.undo.init();
 
 //# sourceMappingURL=haika-undo.js.map
-;var addPixel, loadComplete, loadImg;
-
-loadImg = function(file) {
-  var reader;
-  if (!file.type.match(/image\/.+/)) {
-    return;
-  }
-  if (file.type === "image/svg+xml") {
-    return;
-  }
-  reader = new FileReader();
-  reader.onload = function() {
-    return loadComplete(this.result);
-  };
-  return reader.readAsDataURL(file);
-};
-
-$('#file').change(function(e) {
-  var files;
-  files = e.target.files;
-  if (files.length === 0) {
-    return;
-  }
-  return loadImg(files[0]);
-});
-
-loadComplete = function(data) {
-  var canvas, ctx, h, img, params, w, worker;
-  img = new Image();
-  img.src = data;
-  canvas = document.createElement('canvas');
-  ctx = canvas.getContext('2d');
-  canvas.width = img.width;
-  canvas.height = img.height;
-  ctx.translate(0, img.height);
-  ctx.scale(1, -1);
-  ctx.translate(img.width, 0);
-  ctx.scale(-1, 1);
-  ctx.drawImage(img, 0, 0);
-  w = canvas.width;
-  h = canvas.height;
-  data = ctx.getImageData(0, 0, w, h).data;
-  params = {
-    image: data,
-    w: w,
-    h: h
-  };
-  worker = new Worker("js/haika-image-worker.js");
-  worker.onmessage = function(e) {
-    var result, results, _i, _len;
-    log(e.data);
-    switch (e.data.status) {
-      case "working":
-        return log(e.data.count);
-      case "end":
-        results = e.data.result;
-        for (_i = 0, _len = results.length; _i < _len; _i++) {
-          result = results[_i];
-          addPixel(result.x, result.y, result.color);
-        }
-        return haika.render();
-    }
-  };
-  return worker.postMessage(params);
-};
-
-addPixel = function(x, y, color) {
-  var dot, klass, object;
-  dot = 10;
-  klass = haika.getClass('shelf');
-  object = new klass({
-    top: haika.transformTopY_cm2px(y * dot),
-    left: haika.transformLeftX_cm2px(x * dot),
-    fill: color,
-    stroke: color,
-    angle: 0,
-    count: 1,
-    side: 1,
-    eachWidth: dot,
-    eachHeight: dot
-  });
-  return haika.add(object);
-};
-
-//# sourceMappingURL=haika-image.js.map
 ;$.extend(haika, {
   editor: new JSONEditor(document.getElementById("editor"), {
     theme: "bootstrap3",

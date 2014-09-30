@@ -115,10 +115,3 @@ $.extend haika,
 
 # 初期設定
 haika.map.initMap()
-
-
-#  if haika.isLocal()
-#    map.data.addGeoJson(haika.map.createGeoJson())
-#  else
-#    map.data.loadGeoJson('/haika_store/data/'+sprintf('%06d',haika.id)+'.geojson')
-  

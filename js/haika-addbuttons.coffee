@@ -123,12 +123,6 @@ $ ->
       haika.render()
 
 
-      
 # haikaの初期設定完了時に実行する      
 $(haika).on 'haika:initialized', ->
   haika.addbuttons.showAddButtons(haika.state)
-
-#setTimeout(->
-  #haika.addbuttons.addmany()
-  #haika.addbuttons.add(250, 250)
-#, 500)

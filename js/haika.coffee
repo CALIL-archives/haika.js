@@ -32,16 +32,16 @@ haika =
   xyAngle: 0
   xyScaleFactor: 1.5
 
-# left,x値のcm->px変換
+  clipboard: []
+  clipboard_scale: 0
+
+# 座標変換関数
   transformLeftX_cm2px: (cm)->
     return @canvas.getWidth() / 2 + (@centerX - cm) * @scaleFactor
-# top,y値のcm->px変換
   transformTopY_cm2px: (cm)->
     return @canvas.getHeight() / 2 + (@centerY - cm) * @scaleFactor
-# left,x値のpx->px変換
   transformLeftX_px2cm: (px)->
     return @centerX - (px - @canvas.getWidth() / 2) / @scaleFactor
-# top,y値のcm->px変換
   transformTopY_px2cm: (px)->
     return @centerY - (px - @canvas.getHeight() / 2) / @scaleFactor
 
@@ -53,6 +53,7 @@ haika =
 # @option options [Number] width Canvasの幅
 # @option options [Number] height Canvasの高さ
 # @option options [Number] scaleFactor 表示倍率
+#
   init: (options)->
     if not options.canvasId?
       throw 'CanvasのIDが未定義です'
@@ -92,30 +93,14 @@ haika =
     initAligningGuidelines(canvas)
     @layer = @CONST_LAYERS.SHELF
     @canvas = canvas
-    @bindEvent()
-    haika.openFromApi(2,
-      {
-        succcess: (message)->
-          alert(message)
-        error: =>
-          @render()
-      }
-    )
-    $(@).trigger('haika:initialized')
 
-
-# Fabricのイベント追加
-  bindEvent: ->
     @canvas.on('object:selected', (e)=>
-#        log 'selected'
       object = e.target
       if object._objects?
         object.lockScalingX = true
         object.lockScalingY = true
-      #@prepareData()
       @setPropetyPanel()
     )
-
     @canvas.on 'before:selection:cleared', (e)=>
       @canvas.deactivateAll()
       @editor_change()
@@ -130,16 +115,58 @@ haika =
         object.__modifiedShelf()
       @saveDelay()
       @setPropetyPanel()
-    # 画面遷移時に保存
-    $(window).on 'beforeunload', (event)=>
-      @render()
-      @save()
-      return
+    haika.openFromApi(2,
+      {
+        succcess: (message)->
+          alert(message)
+        error: =>
+          @render()
+      }
+    )
+    $(@).trigger('haika:initialized')
+
+# 表示時の拡大率の変更
+#
+# @param [Number] newScale 新しい拡大率(1=100%)
+#
+  setScale: (newScale) ->
+    @canvas.deactivateAll()
+    @scaleFactor = (newScale * 100).toFixed(0) / 100
+    @render()
+
+# 表示時の拡大率を1ステップ拡大する
+#
+  zoomIn: ->
+    prevScale = @scaleFactor
+    newScale = prevScale + Math.pow(prevScale + 1, 2) / 20
+    if newScale >= 4
+      newScale = 4
+    if newScale < 1 and prevScale > 1
+      newScale = 1
+    @setScale newScale
+
+# 表示時の拡大率を1ステップ縮小する
+#
+  zoomOut: ->
+    prevScale = @scaleFactor
+    newScale = prevScale - Math.pow(prevScale + 1, 2) / 20
+    if newScale <= 0.05
+      newScale = 0.05
+    if prevScale > 1 and newScale < 1
+      newScale = 1
+    @setScale newScale
+
+# 表示時の拡大率を等倍にする
+#
+  zoomReset: ->
+    @setScale 1
+
 # 背景画像をURLからロード
   loadBgFromUrl: (url) ->
     @backgroundImage = null
     @backgroundUrl = url
     @render()
+
   resetBg: ->
     loadBgFromUrl('')
 
@@ -147,10 +174,10 @@ haika =
   getId: ->
     if @objects.length == 0
       return 0
-    lastId=0
+    lastId = 0
     for object in @objects
       if object.id > lastId
-        lastId=object.id
+        lastId = object.id
     lastId += 1
     return lastId
 
@@ -279,8 +306,6 @@ haika =
     if group
       @activeGroup(new_ids)
     $(@).trigger('haika:duplicate')
-  clipboard: []
-  clipboard_scale: 0
 # コピー
   copy: ->
     @clipboard = []
@@ -573,32 +598,6 @@ haika =
       for object in group._objects
         object.top = 0
       @canvas.renderAll()
-# ズームイン
-  zoomIn: ->
-    @canvas.deactivateAll()
-    prev_scale = @scaleFactor
-    @scaleFactor = @scaleFactor + Math.pow(@scaleFactor + 1, 2) / 20
-    if @scaleFactor >= 4
-      @scaleFactor = 4
-    if prev_scale < 1 and @scaleFactor > 1
-      @scaleFactor = 1
-    @scaleFactor = (@scaleFactor * 100).toFixed(0) / 100
-    @render()
-# ズームアウト
-  zoomOut: ->
-    @canvas.deactivateAll()
-    prev_scale = @scaleFactor
-    @scaleFactor = @scaleFactor - Math.pow(@scaleFactor + 1, 2) / 20
-    if @scaleFactor <= 0.05
-      @scaleFactor = 0.05
-    if prev_scale > 1 and @scaleFactor < 1
-      @scaleFactor = 1
-    @scaleFactor = (@scaleFactor * 100).toFixed(0) / 100
-    @render()
-# ズームリセット
-  zoomReset: ->
-    @scaleFactor = 1
-    @render()
 
 # プロパティパネルの設定
   setPropetyPanel: (object)->

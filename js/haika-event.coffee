@@ -1,3 +1,10 @@
+
+# 画面遷移時に保存
+$(window).on 'beforeunload', (event)=>
+  haika.render()
+  haika.save()
+  return
+
 #背景画像ボタンクリック時
 $('#bgimg').change (e)->
   files = e.target.files
@@ -15,10 +22,8 @@ $('#bgimg').change (e)->
     processData: false
     type: 'POST'
     success: (data) ->
-#        log data
       url = '/haika_store/image/'+haika.id+'_'+files[0].name
       haika.loadBgFromUrl(url)
-
 
 # メニューのイベントバインド
 # haikaのデータロード完了時に実行する
@@ -68,10 +73,6 @@ $(haika).on 'haika:load', ->
   # マウスホイール
   timeout = false
   $('canvas').on 'mousewheel', (event)=>
-    #console.log(event.deltaX, event.deltaY, event.deltaFactor);
-  #    log 'event.deltaX:'+event.deltaX
-  #    log 'event.deltaY:'+event.deltaY
-  #    log 'event.deltaFactor'+event.deltaFactor
     if timeout
       return
     else
@@ -83,24 +84,6 @@ $(haika).on 'haika:load', ->
     if event.deltaY<0
       haika.zoomOut()
 
-#  @shiftKey = false
-#  $(document.body).keydown (e)=>
-#    @shiftKey = e.shiftKey
-
-#  $('#canvas').on 'doubletap', (e)=>
-#    if @shiftKey
-#      @zoomOut()
-#    else
-#      @zoomIn()
-  # キャンバスパネル
-#  $('#canvas_width').change ->
-#    haika.canvas.setWidth($(this).val())
-#  $('#canvas_height').change ->
-#    haika.canvas.setHeight($(this).val())
-#  $('#canvas_centerX').change ->
-#    haika.centerX = parseInt($(this).val())
-#  $('#canvas_centerY').change ->
-#    haika.centerY = parseInt($(this).val())
   $('#canvas_bgscale').change ->
     haika.backgroundScaleFactor = parseFloat($(this).val())
     haika.render()
