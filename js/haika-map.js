@@ -39,8 +39,8 @@ $.extend(haika, {
     save: function(lat, lon) {
       $('#canvas_lon').val(lon);
       $('#canvas_lat').val(lat);
-      haika.options.lon = lon;
-      haika.options.lat = lat;
+      haika.options.xyLongitude = lon;
+      haika.options.xyLatitude = lat;
       return haika.save();
     },
     set: function() {
@@ -49,8 +49,8 @@ $.extend(haika, {
         zoom: 20,
         maxZoom: 28,
         center: {
-          lat: haika.options.lat,
-          lng: haika.options.lon
+          lat: haika.options.xyLatitude,
+          lng: haika.options.xyLongitude
         }
       });
       featureStyle = {
@@ -89,11 +89,11 @@ $.extend(haika, {
         };
       })(this));
       $('#canvas_lat').change(function() {
-        haika.options.lat = parseFloat($(this).val());
+        haika.options.xyLatitude = parseFloat($(this).val());
         return haika.save();
       });
       $('#canvas_lon').change(function() {
-        haika.options.lon = parseFloat($(this).val());
+        haika.options.xyLongitude = parseFloat($(this).val());
         return haika.save();
       });
       $('#canvas_angle').change((function(_this) {
@@ -106,10 +106,10 @@ $.extend(haika, {
         step: 1,
         min: 0,
         max: 360,
-        value: haika.options.angle,
+        value: haika.options.xyAngle,
         formatter: (function(_this) {
           return function(value) {
-            haika.options.angle = parseFloat(value);
+            haika.options.xyAngle = parseFloat(value);
             haika.save();
             _this.redraw();
             return value + '度';
@@ -121,10 +121,10 @@ $.extend(haika, {
         step: 1,
         min: 0,
         max: 400,
-        value: haika.options.geojson_scale * 100,
+        value: haika.options.xyScaleFactor * 100,
         formatter: (function(_this) {
           return function(value) {
-            haika.options.geojson_scale = parseFloat(value) / 100;
+            haika.options.xyScaleFactor = parseFloat(value) / 100;
             haika.save();
             _this.redraw();
             return value + '%';
@@ -181,15 +181,15 @@ $.extend(haika, {
     _ref = geojson.features;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
-      mapCenter = proj4("EPSG:4326", "EPSG:3857", [this.options.lon, this.options.lat]);
+      mapCenter = proj4("EPSG:4326", "EPSG:3857", [this.options.xyLongitude, this.options.xyLatitude]);
       if (mapCenter) {
         coordinates = [];
         _ref1 = object.geometry.coordinates[0];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           geometry = _ref1[_j];
-          x = geometry[0] * this.options.geojson_scale;
-          y = geometry[1] * this.options.geojson_scale;
-          new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.options.angle));
+          x = geometry[0] * this.options.xyScaleFactor;
+          y = geometry[1] * this.options.xyScaleFactor;
+          new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.options.xyAngle));
           coordinate = [mapCenter[0] + new_coordinate.x, mapCenter[1] + new_coordinate.y];
           coordinates.push(coordinate);
         }

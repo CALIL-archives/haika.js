@@ -20,13 +20,13 @@ haika =
   default_options:
     width: 500
     height: 500
-    bgurl: null  #backgroundUrl
-    bgopacity: 1 #backgroundOpacity
-    bgscale: 1   #backgroundScaleFactor
-    lon: 0       #xyLongitude
-    lat: 0       #xyLatitude
-    angle: 0     #xyAngle
-    geojson_scale: 1.5 #xyScaleFactor
+    backgroundUrl: null
+    backgroundOpacity: 1
+    backgroundScaleFactor: 1
+    xyLongitude: 0
+    xyLatitude: 0
+    xyAngle: 0
+    xyScaleFactor: 1.5
 
 # left,x値のcm->px変換
   transformLeftX_cm2px: (cm)->
@@ -130,7 +130,7 @@ haika =
       return
 # 背景画像をURLからロード
   loadBgFromUrl: (url) ->
-    @options.bgurl = url
+    @options.backgroundUrl = url
     @render()
   resetBg: ->
     loadBgFromUrl('')
@@ -368,8 +368,8 @@ haika =
 # canvasの描画
   render: ->
     #オブジェクトをクリア
-    if not @backgroundImage and @options.bgurl
-      fabric.Image.fromURL @options.bgurl, (img)=>
+    if not @backgroundImage and @options.backgroundUrl
+      fabric.Image.fromURL @options.backgroundUrl, (img)=>
         @backgroundImage = img
         @render()
         return
@@ -403,11 +403,11 @@ haika =
       @addObjectToCanvas(o)
     if @backgroundImage
       @canvas.setBackgroundImage @backgroundImage
-      @backgroundImage.left = Math.floor(@transformLeftX_cm2px(@backgroundImage._originalElement.width / 2 * @options.bgscale))
-      @backgroundImage.top = Math.floor(@transformTopY_cm2px(@backgroundImage._originalElement.height / 2 * @options.bgscale))
-      @backgroundImage.width = Math.floor(@backgroundImage._originalElement.width * @options.bgscale * @scaleFactor)
-      @backgroundImage.height = Math.floor(@backgroundImage._originalElement.height * @options.bgscale * @scaleFactor)
-      @backgroundImage.opacity = @options.bgopacity
+      @backgroundImage.left = Math.floor(@transformLeftX_cm2px(@backgroundImage._originalElement.width / 2 * @options.backgroundScaleFactor))
+      @backgroundImage.top = Math.floor(@transformTopY_cm2px(@backgroundImage._originalElement.height / 2 * @options.backgroundScaleFactor))
+      @backgroundImage.width = Math.floor(@backgroundImage._originalElement.width * @options.backgroundScaleFactor * @scaleFactor)
+      @backgroundImage.height = Math.floor(@backgroundImage._originalElement.height * @options.backgroundScaleFactor * @scaleFactor)
+      @backgroundImage.opacity = @options.backgroundOpacity
     else
       @canvas.setBackgroundImage null
     @canvas.renderAll()
@@ -474,10 +474,10 @@ haika =
     $('#canvas_height').html(@canvas.getHeight())
     $('#canvas_centerX').html(@centerX)
     $('#canvas_centerY').html(@centerY)
-    $('#canvas_bgscale').val(@options.bgscale)
-    $('#canvas_bgopacity').val(@options.bgopacity)
-    $('#canvas_lon').val(@options.lon)
-    $('#canvas_lat').val(@options.lat)
+    $('#canvas_bgscale').val(@options.backgroundScaleFactor)
+    $('#canvas_bgopacity').val(@options.backgroundOpacity)
+    $('#canvas_lon').val(@options.xyLongitude)
+    $('#canvas_lat').val(@options.xyLatitude)
     $('#canvas_angle').val(@canvas.angle)
     $('#geojson_scale').val(@canvas.geojson_scale)
     $('.zoom').html((@scaleFactor * 100).toFixed(0) + '%')

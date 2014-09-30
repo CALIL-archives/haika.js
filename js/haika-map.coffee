@@ -34,16 +34,16 @@ $.extend haika,
     save : (lat, lon)->
       $('#canvas_lon').val(lon)
       $('#canvas_lat').val(lat)
-      haika.options.lon = lon
-      haika.options.lat = lat
+      haika.options.xyLongitude = lon
+      haika.options.xyLatitude = lat
       haika.save()
     set : ->
       @map = new google.maps.Map(document.getElementById('map'),
         zoom: 20
         maxZoom: 28
         center:
-          lat: haika.options.lat
-          lng: haika.options.lon
+          lat: haika.options.xyLatitude
+          lng: haika.options.xyLongitude
       )
       # Set the stroke width, and fill color for each polygon
       featureStyle = {
@@ -80,10 +80,10 @@ $.extend haika,
         return false
 
       $('#canvas_lat').change ->
-        haika.options.lat = parseFloat($(this).val())
+        haika.options.xyLatitude = parseFloat($(this).val())
         haika.save()
       $('#canvas_lon').change ->
-        haika.options.lon = parseFloat($(this).val())
+        haika.options.xyLongitude = parseFloat($(this).val())
         haika.save()
 
       $('#canvas_angle').change =>
@@ -94,9 +94,9 @@ $.extend haika,
         step: 1
         min: 0
         max: 360
-        value: haika.options.angle
+        value: haika.options.xyAngle
         formatter: (value) =>
-          haika.options.angle = parseFloat(value)
+          haika.options.xyAngle = parseFloat(value)
           haika.save()
           @redraw()
           return value+'度'
@@ -106,12 +106,14 @@ $.extend haika,
           step: 1
           min: 0
           max: 400
-          value: haika.options.geojson_scale * 100
+          value: haika.options.xyScaleFactor * 100
           formatter: (value) =>
-            haika.options.geojson_scale = parseFloat(value) / 100
+            haika.options.xyScaleFactor = parseFloat(value) / 100
             haika.save()
             @redraw()
             return value+'%'
+  # Todo:Mapでのみ使う関数だけど、現状haika直下
+  # Todo:この部分をnodeモジュールにしてサーバーサイド使えるようにしたい
   # geojsonの作成 座標変換
   createGeoJson : ->
     geojson = @translateGeoJSON()
@@ -124,8 +126,6 @@ $.extend haika,
           for geometry in object.geometry.coordinates[0]
             x = geometry[0]
             y = geometry[1]
-#            log [x,y]
-#            coordinate = ol.proj.transform([x,y], "EPSG:3857", "EPSG:4326")
             coordinate = proj4('EPSG:3857', 'EPSG:4326', [x,y]);
             coordinates.push(coordinate)
           # 結合した床面をfloorに戻す
@@ -151,14 +151,14 @@ $.extend haika,
     geojson = @mergeGeoJson(geojson)
     features = []
     for object in geojson.features
-      mapCenter = proj4("EPSG:4326", "EPSG:3857", [@options.lon, @options.lat])
+      mapCenter = proj4("EPSG:4326", "EPSG:3857", [@options.xyLongitude, @options.xyLatitude])
       if mapCenter
         coordinates = []
         for geometry in object.geometry.coordinates[0]
-          x = geometry[0] * @options.geojson_scale
-          y = geometry[1] * @options.geojson_scale
+          x = geometry[0] * @options.xyScaleFactor
+          y = geometry[1] * @options.xyScaleFactor
           # 回転の反映
-          new_coordinate =  fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-@options.angle))
+          new_coordinate =  fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-@options.xyAngle))
           coordinate = [mapCenter[0]+new_coordinate.x, mapCenter[1]+new_coordinate.y]
           coordinates.push(coordinate)
         object.geometry.coordinates = [coordinates]

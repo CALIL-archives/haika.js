@@ -756,3 +756,9 @@ if @options.bgurl
       @bgimg_data = canvas.bgimg_data
 
 
+
+
+
+#            log [x,y]
+#            coordinate = ol.proj.transform([x,y], "EPSG:3857", "EPSG:4326")
+

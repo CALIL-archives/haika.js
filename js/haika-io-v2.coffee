@@ -66,18 +66,18 @@ $.extend haika,
   loadFromGeoJson: (geojson = null)-> # GeoJsonからデータを読み込む
     if not geojson
       geojson = @_geojson
-    @options.bgscale = if geojson.haika.bgscale then geojson.haika.bgscale else 1
-    @options.bgopacity = geojson.haika.bgopacity
-    if geojson.haika.bgurl?
-      @options.bgurl = geojson.haika.bgurl
+    @options.backgroundScaleFactor = if geojson.haika.backgroundScaleFactor then geojson.haika.backgroundScaleFactor else 1
+    @options.backgroundOpacity = geojson.haika.backgroundOpacity
+    if geojson.haika.backgroundUrl?
+      @options.backgroundUrl = geojson.haika.backgroundUrl
     else
-      @options.bgurl = ''
-    @options.angle = geojson.haika.angle
+      @options.backgroundUrl = ''
+    @options.xyAngle = geojson.haika.xyAngle
     if geojson.haika.geojson_scale?
-      @options.geojson_scale = geojson.haika.geojson_scale
+      @options.xyScaleFactor = geojson.haika.xyScaleFactor
     if geojson.haika.lon? and geojson.haika.lat?
-      @options.lon = parseFloat(geojson.haika.lon)
-      @options.lat = parseFloat(geojson.haika.lat)
+      @options.xyLongitude = parseFloat(geojson.haika.xyLongitude)
+      @options.xyLatitude = parseFloat(geojson.haika.xyLatitude)
     if geojson and geojson.features.length > 0
       for object in geojson.features
         if object.properties.id > @lastId
@@ -180,13 +180,13 @@ $.extend haika,
       "type": "FeatureCollection"
       "features": features
       "haika":
-        bgurl: @options.bgurl
-        bgscale: @options.bgscale
-        bgopacity: @options.bgopacity
-        lon: @options.lon
-        lat: @options.lat
-        angle: @options.angle
-        geojson_scale: @options.geojson_scale
+        backgroundUrl: @options.backgroundUrl
+        backgroundScaleFactor: @options.backgroundScaleFactor
+        backgroundOpacity: @options.backgroundOpacity
+        xyLongitude: @options.xyLongitude
+        xyLatitude: @options.xyLatitude
+        xyAngle: @options.xyAngle
+        xyScaleFactor: @options.xyScaleFactor
         version: 1
     return data
 

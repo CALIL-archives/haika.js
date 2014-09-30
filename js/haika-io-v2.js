@@ -70,20 +70,20 @@ $.extend(haika, {
     if (!geojson) {
       geojson = this._geojson;
     }
-    this.options.bgscale = geojson.haika.bgscale ? geojson.haika.bgscale : 1;
-    this.options.bgopacity = geojson.haika.bgopacity;
-    if (geojson.haika.bgurl != null) {
-      this.options.bgurl = geojson.haika.bgurl;
+    this.options.backgroundScaleFactor = geojson.haika.backgroundScaleFactor ? geojson.haika.backgroundScaleFactor : 1;
+    this.options.backgroundOpacity = geojson.haika.backgroundOpacity;
+    if (geojson.haika.backgroundUrl != null) {
+      this.options.backgroundUrl = geojson.haika.backgroundUrl;
     } else {
-      this.options.bgurl = '';
+      this.options.backgroundUrl = '';
     }
-    this.options.angle = geojson.haika.angle;
+    this.options.xyAngle = geojson.haika.xyAngle;
     if (geojson.haika.geojson_scale != null) {
-      this.options.geojson_scale = geojson.haika.geojson_scale;
+      this.options.xyScaleFactor = geojson.haika.xyScaleFactor;
     }
     if ((geojson.haika.lon != null) && (geojson.haika.lat != null)) {
-      this.options.lon = parseFloat(geojson.haika.lon);
-      this.options.lat = parseFloat(geojson.haika.lat);
+      this.options.xyLongitude = parseFloat(geojson.haika.xyLongitude);
+      this.options.xyLatitude = parseFloat(geojson.haika.xyLatitude);
     }
     if (geojson && geojson.features.length > 0) {
       _ref = geojson.features;
@@ -205,13 +205,13 @@ $.extend(haika, {
       "type": "FeatureCollection",
       "features": features,
       "haika": {
-        bgurl: this.options.bgurl,
-        bgscale: this.options.bgscale,
-        bgopacity: this.options.bgopacity,
-        lon: this.options.lon,
-        lat: this.options.lat,
-        angle: this.options.angle,
-        geojson_scale: this.options.geojson_scale,
+        backgroundUrl: this.options.backgroundUrl,
+        backgroundScaleFactor: this.options.backgroundScaleFactor,
+        backgroundOpacity: this.options.backgroundOpacity,
+        xyLongitude: this.options.xyLongitude,
+        xyLatitude: this.options.xyLatitude,
+        xyAngle: this.options.xyAngle,
+        xyScaleFactor: this.options.xyScaleFactor,
         version: 1
       }
     };
