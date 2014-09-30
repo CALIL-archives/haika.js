@@ -72,10 +72,11 @@ $.extend haika,
       @options.backgroundUrl = geojson.haika.backgroundUrl
     else
       @options.backgroundUrl = ''
-    @options.xyAngle = geojson.haika.xyAngle
-    if geojson.haika.geojson_scale?
+    if geojson.haika.xyAngle?
+      @options.xyAngle = geojson.haika.xyAngle
+    if geojson.haika.xyScaleFactor?
       @options.xyScaleFactor = geojson.haika.xyScaleFactor
-    if geojson.haika.lon? and geojson.haika.lat?
+    if geojson.haika.xyLongitude? and geojson.haika.xyLatitude?
       @options.xyLongitude = parseFloat(geojson.haika.xyLongitude)
       @options.xyLatitude = parseFloat(geojson.haika.xyLatitude)
     if geojson and geojson.features.length > 0
@@ -167,74 +168,3 @@ $.extend haika,
     , delay
 
 
-# 現在開いているデータをGeoJSONに変換
-#
-# @return [Object] GeoJSON形式のデータ
-#
-  toGeoJSON: ->
-    features = []
-    for object in @canvas.getObjects()
-      geojson = object.toGeoJSON()
-      features.push(geojson)
-    data =
-      "type": "FeatureCollection"
-      "features": features
-      "haika":
-        backgroundUrl: @options.backgroundUrl
-        backgroundScaleFactor: @options.backgroundScaleFactor
-        backgroundOpacity: @options.backgroundOpacity
-        xyLongitude: @options.xyLongitude
-        xyLatitude: @options.xyLatitude
-        xyAngle: @options.xyAngle
-        xyScaleFactor: @options.xyScaleFactor
-        version: 1
-    return data
-
-
-# オブジェクトのプロパティの保存
-  prepareData: ()->
-    for object in @canvas.getObjects()
-      count = @getCountFindById(object.id)
-      @objects[count].id = object.id
-      @objects[count].type = object.type
-      @objects[count].top_cm = @transformTopY_px2cm(object.top)
-      @objects[count].left_cm = @transformLeftX_px2cm(object.left)
-      @objects[count].scaleX = object.scaleX / @scaleFactor
-      @objects[count].scaleY = object.scaleY / @scaleFactor
-      @objects[count].angle = object.angle
-      @objects[count].fill = object.fill
-      @objects[count].stroke = object.stroke
-      object.top_cm = @objects[count].top_cm
-      object.left_cm = @objects[count].left_cm
-      schema = object.constructor.prototype.getJsonSchema()
-      for key of schema.properties
-        @objects[count][key] = object[key]
-
-
-# オブジェクトをSVGに変換
-  toSVG: ->
-    svgs = []
-    for object in @canvas.getObjects()
-      svg = object.toSVG()
-      svgs.push(svg)
-    log svgs
-    start = '<svg viewBox="0 0 1024 768">'
-    end = '</svg>'
-    data = [start, svgs.join(''), end].join('')
-    log data
-    return data
-  import: ->
-    id = window.prompt('idを入力してください', '')
-    url = """http://lab.calil.jp/haika_store/data/#{@id}.json"""
-    $.ajax
-      url: url
-      type: 'GET'
-      cache: false
-      dataType: 'text'
-      success: (data)=>
-        json = JSON.parse(data)
-        canvas = json.canvas
-        json.geojson.haika = json.canvas
-        @loadRender(json.geojson)
-      error: ()=>
-        alert '読み込めません'

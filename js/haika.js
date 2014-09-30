@@ -581,7 +581,6 @@ haika = {
     $('#canvas_lon').val(this.options.xyLongitude);
     $('#canvas_lat').val(this.options.xyLatitude);
     $('#canvas_angle').val(this.canvas.angle);
-    $('#geojson_scale').val(this.canvas.geojson_scale);
     return $('.zoom').html((this.scaleFactor * 100).toFixed(0) + '%');
   },
   getMovePixel: function(event) {

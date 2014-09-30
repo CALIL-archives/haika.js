@@ -479,7 +479,6 @@ haika =
     $('#canvas_lon').val(@options.xyLongitude)
     $('#canvas_lat').val(@options.xyLatitude)
     $('#canvas_angle').val(@canvas.angle)
-    $('#geojson_scale').val(@canvas.geojson_scale)
     $('.zoom').html((@scaleFactor * 100).toFixed(0) + '%')
 # 移動ピクセル数を取得
   getMovePixel: (event)->

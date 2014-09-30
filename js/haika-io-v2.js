@@ -77,11 +77,13 @@ $.extend(haika, {
     } else {
       this.options.backgroundUrl = '';
     }
-    this.options.xyAngle = geojson.haika.xyAngle;
-    if (geojson.haika.geojson_scale != null) {
+    if (geojson.haika.xyAngle != null) {
+      this.options.xyAngle = geojson.haika.xyAngle;
+    }
+    if (geojson.haika.xyScaleFactor != null) {
       this.options.xyScaleFactor = geojson.haika.xyScaleFactor;
     }
-    if ((geojson.haika.lon != null) && (geojson.haika.lat != null)) {
+    if ((geojson.haika.xyLongitude != null) && (geojson.haika.xyLatitude != null)) {
       this.options.xyLongitude = parseFloat(geojson.haika.xyLongitude);
       this.options.xyLatitude = parseFloat(geojson.haika.xyLatitude);
     }
@@ -191,102 +193,6 @@ $.extend(haika, {
         return _this.save(success, error);
       };
     })(this), delay);
-  },
-  toGeoJSON: function() {
-    var data, features, geojson, object, _i, _len, _ref;
-    features = [];
-    _ref = this.canvas.getObjects();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      geojson = object.toGeoJSON();
-      features.push(geojson);
-    }
-    data = {
-      "type": "FeatureCollection",
-      "features": features,
-      "haika": {
-        backgroundUrl: this.options.backgroundUrl,
-        backgroundScaleFactor: this.options.backgroundScaleFactor,
-        backgroundOpacity: this.options.backgroundOpacity,
-        xyLongitude: this.options.xyLongitude,
-        xyLatitude: this.options.xyLatitude,
-        xyAngle: this.options.xyAngle,
-        xyScaleFactor: this.options.xyScaleFactor,
-        version: 1
-      }
-    };
-    return data;
-  },
-  prepareData: function() {
-    var count, key, object, schema, _i, _len, _ref, _results;
-    _ref = this.canvas.getObjects();
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      count = this.getCountFindById(object.id);
-      this.objects[count].id = object.id;
-      this.objects[count].type = object.type;
-      this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
-      this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
-      this.objects[count].scaleX = object.scaleX / this.scaleFactor;
-      this.objects[count].scaleY = object.scaleY / this.scaleFactor;
-      this.objects[count].angle = object.angle;
-      this.objects[count].fill = object.fill;
-      this.objects[count].stroke = object.stroke;
-      object.top_cm = this.objects[count].top_cm;
-      object.left_cm = this.objects[count].left_cm;
-      schema = object.constructor.prototype.getJsonSchema();
-      _results.push((function() {
-        var _results1;
-        _results1 = [];
-        for (key in schema.properties) {
-          _results1.push(this.objects[count][key] = object[key]);
-        }
-        return _results1;
-      }).call(this));
-    }
-    return _results;
-  },
-  toSVG: function() {
-    var data, end, object, start, svg, svgs, _i, _len, _ref;
-    svgs = [];
-    _ref = this.canvas.getObjects();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      svg = object.toSVG();
-      svgs.push(svg);
-    }
-    log(svgs);
-    start = '<svg viewBox="0 0 1024 768">';
-    end = '</svg>';
-    data = [start, svgs.join(''), end].join('');
-    log(data);
-    return data;
-  },
-  "import": function() {
-    var id, url;
-    id = window.prompt('idを入力してください', '');
-    url = "http://lab.calil.jp/haika_store/data/" + this.id + ".json";
-    return $.ajax({
-      url: url,
-      type: 'GET',
-      cache: false,
-      dataType: 'text',
-      success: (function(_this) {
-        return function(data) {
-          var canvas, json;
-          json = JSON.parse(data);
-          canvas = json.canvas;
-          json.geojson.haika = json.canvas;
-          return _this.loadRender(json.geojson);
-        };
-      })(this),
-      error: (function(_this) {
-        return function() {
-          return alert('読み込めません');
-        };
-      })(this)
-    });
   }
 });
 
