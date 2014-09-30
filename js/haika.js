@@ -111,7 +111,6 @@ haika = {
     this.canvas.on('before:selection:cleared', (function(_this) {
       return function(e) {
         _this.canvas.deactivateAll().renderAll();
-        _this.saveDelay();
         _this.editor_change();
         return _this.setPropetyPanel();
       };
@@ -454,7 +453,6 @@ haika = {
       })(this));
     }
     this.canvas.renderOnAddRemove = false;
-    this.unselect();
     this.canvas._objects.length = 0;
     beacons = [];
     shelfs = [];
@@ -729,7 +727,6 @@ haika = {
   },
   zoomIn: function() {
     var prev_scale;
-    this.unselect();
     prev_scale = this.scaleFactor;
     this.scaleFactor = this.scaleFactor + Math.pow(this.scaleFactor + 1, 2) / 20;
     if (this.scaleFactor >= 4) {
@@ -743,7 +740,6 @@ haika = {
   },
   zoomOut: function() {
     var prev_scale;
-    this.unselect();
     prev_scale = this.scaleFactor;
     this.scaleFactor = this.scaleFactor - Math.pow(this.scaleFactor + 1, 2) / 20;
     if (this.scaleFactor <= 0.05) {
@@ -756,7 +752,6 @@ haika = {
     return this.render();
   },
   zoomReset: function() {
-    this.unselect();
     this.scaleFactor = 1;
     return this.render();
   },

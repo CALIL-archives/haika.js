@@ -107,7 +107,7 @@ haika =
 
     @canvas.on 'before:selection:cleared', (e)=>
       @canvas.deactivateAll().renderAll()
-      @saveDelay()
+#      @saveDelay()
       @editor_change()
       @setPropetyPanel()
     @canvas.on 'object:scaling', (e) =>
@@ -371,7 +371,6 @@ haika =
         @render()
         return
     @canvas.renderOnAddRemove = false
-    @unselect()
     @canvas._objects.length = 0;
     beacons = []
     shelfs = []
@@ -569,7 +568,6 @@ haika =
       @canvas.renderAll()
 # ズームイン
   zoomIn: ->
-    @unselect()
     prev_scale = @scaleFactor
     @scaleFactor = @scaleFactor + Math.pow(@scaleFactor + 1, 2) / 20
     if @scaleFactor >= 4
@@ -580,7 +578,6 @@ haika =
     @render()
 # ズームアウト
   zoomOut: ->
-    @unselect()
     prev_scale = @scaleFactor
     @scaleFactor = @scaleFactor - Math.pow(@scaleFactor + 1, 2) / 20
     if @scaleFactor <= 0.05
@@ -591,7 +588,6 @@ haika =
     @render()
 # ズームリセット
   zoomReset: ->
-    @unselect()
     @scaleFactor = 1
     @render()
 

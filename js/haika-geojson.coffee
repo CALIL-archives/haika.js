@@ -75,6 +75,7 @@ $.extend haika,
 
 # オブジェクトのプロパティの保存
   prepareData: ()->
+    log 'prepareData'
     for object in @canvas.getObjects()
       count = @getCountFindById(object.id)
       @objects[count].id = object.id
