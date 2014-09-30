@@ -156,9 +156,11 @@ $.extend haika,
 # @option {Function} error(message) エラー時のコールバック関数
 #
   saveDelay: (delay = 2000, success = null, error = null) ->
+    log 'save-delay'
     @prepareData()
-    if not @_autoSaveTimerId
+    if @_autoSaveTimerId
       clearTimeout(@_autoSaveTimerId)
+      @_autoSaveTimerId = null
     @_autoSaveTimerId = setTimeout =>
       @_autoSaveTimerId = null
       @save(success, error)

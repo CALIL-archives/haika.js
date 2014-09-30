@@ -171,19 +171,6 @@ $ ->
     cancel_default(e)
     haika.right(e)
     return false
-#  Mousetrap.bind '=', (e)->
-#    cancel_default(e)
-#    haika.zoomIn()
-#    return false
-#  Mousetrap.bind '-', (e)->
-#    cancel_default(e)
-#    haika.zoomOut()
-#    return false
-#  Mousetrap.bind '0', (e)->
-#    cancel_default(e)
-#    haika.zoomReset()
-#    return false
-  # Prevent the backspace key from navigating back.
   $(document).unbind("keydown").bind "keydown", (event) ->
     doPrevent = false
     if event.keyCode is 8 or event.keyCode is 46

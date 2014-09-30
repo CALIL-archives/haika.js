@@ -24316,14 +24316,12 @@ haika = {
           object.lockScalingX = true;
           object.lockScalingY = true;
         }
-        _this.saveDelay();
+        _this.prepareData();
         return _this.setPropetyPanel();
       };
     })(this));
     this.canvas.on('before:selection:cleared', (function(_this) {
       return function(e) {
-        var object;
-        object = e.target;
         _this.canvas.deactivateAll().renderAll();
         _this.saveDelay();
         _this.editor_change();
@@ -24346,6 +24344,7 @@ haika = {
         if (object.__modifiedShelf != null) {
           object.__modifiedShelf();
         }
+        _this.saveDelay();
         return _this.setPropetyPanel();
       };
     })(this));
@@ -24974,11 +24973,6 @@ haika = {
     this.scaleFactor = 1;
     return this.render();
   },
-  reset: function() {
-    this.objects = [];
-    $(window).off('beforeunload');
-    return location.reload();
-  },
   setPropetyPanel: function(object) {
     var group, key, objects, properties, value;
     $('.canvas_panel, .object_panel, .group_panel').hide();
@@ -25194,9 +25188,11 @@ haika = {
     if (error == null) {
       error = null;
     }
+    log('save-delay');
     this.prepareData();
-    if (!this._autoSaveTimerId) {
+    if (this._autoSaveTimerId) {
       clearTimeout(this._autoSaveTimerId);
+      this._autoSaveTimerId = null;
     }
     return this._autoSaveTimerId = setTimeout((function(_this) {
       return function() {

@@ -104,22 +104,11 @@ haika =
       if object._objects?
         object.lockScalingX = true
         object.lockScalingY = true
-      #else
-      #  object.lockScalingY  = true
-      @saveDelay()
+      @prepareData()
       @setPropetyPanel()
     )
 
-    # fabricのオブジェクトをhaikaオブジェクトに反映する
-    #@canvas.on 'after:render', (e)=>
-    #      log 'after:render'
-    #  @prepareData() ズーム率が変更されたら壊れる　単純にここで処理してはいけない
-
-    #    @canvas.on 'selection:created', (e)=>
-    #      e.target.hasControls = false
     @canvas.on 'before:selection:cleared', (e)=>
-#      log 'before:selection:cleared'
-      object = e.target
       @canvas.deactivateAll().renderAll()
       @saveDelay()
       @editor_change()
@@ -129,10 +118,10 @@ haika =
       if object.__resizeShelf?
         object.__resizeShelf()
     @canvas.on 'object:modified', (e)=>
-#        log 'modified'
       object = e.target
       if object.__modifiedShelf?
         object.__modifiedShelf()
+      @saveDelay()
       @setPropetyPanel()
     # 画面遷移時に保存
     $(window).on 'beforeunload', (event)=>
@@ -425,6 +414,8 @@ haika =
     @canvas.renderOnAddRemove = true
     @setCanvasProperty()
     $(@).trigger('haika:render')
+
+
 # canvasにオブジェクトを追加
   addObjectToCanvas: (o)->
     klass = @getClass(o.type)
@@ -607,10 +598,6 @@ haika =
     @unselect()
     @scaleFactor = 1
     @render()
-  reset: ->
-    @objects = []
-    $(window).off('beforeunload')
-    location.reload()
 
 # プロパティパネルの設定
   setPropetyPanel: (object)->

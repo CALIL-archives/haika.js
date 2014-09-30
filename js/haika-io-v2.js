@@ -178,9 +178,11 @@ $.extend(haika, {
     if (error == null) {
       error = null;
     }
+    log('save-delay');
     this.prepareData();
-    if (!this._autoSaveTimerId) {
+    if (this._autoSaveTimerId) {
       clearTimeout(this._autoSaveTimerId);
+      this._autoSaveTimerId = null;
     }
     return this._autoSaveTimerId = setTimeout((function(_this) {
       return function() {
