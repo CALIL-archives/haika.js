@@ -47,7 +47,6 @@ $.extend haika,
         for key of schema.properties
           shape[key] = object.properties[key]
         @add(shape)
-    @render()
 
 
 # 現在開いているデータをGeoJSONに変換

@@ -83,12 +83,12 @@ haika =
 
     initAligningGuidelines(canvas)
     @canvas = canvas
-    @render()
     @bindEvent()
-
     onerror = (message)->
       alert(message)
-    haika.openFromApi(2, null, null, onerror)
+    onsuccess = ()->
+      @render()
+    haika.openFromApi(2, null, onsuccess, onerror)
     $(@).trigger('haika:initialized')
 
 
