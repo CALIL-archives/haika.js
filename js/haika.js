@@ -17,18 +17,15 @@ haika = {
   state: 'shelf',
   fillColor: "#CFE2F3",
   strokeColor: "#000000",
-  options: {},
-  default_options: {
-    width: 500,
-    height: 500,
-    backgroundUrl: null,
-    backgroundOpacity: 1,
-    backgroundScaleFactor: 1,
-    xyLongitude: 0,
-    xyLatitude: 0,
-    xyAngle: 0,
-    xyScaleFactor: 1.5
-  },
+  width: 500,
+  height: 500,
+  backgroundUrl: null,
+  backgroundOpacity: 1,
+  backgroundScaleFactor: 1,
+  xyLongitude: null,
+  xyLatitude: null,
+  xyAngle: 0,
+  xyScaleFactor: 1.5,
   transformLeftX_cm2px: function(cm) {
     return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scaleFactor;
   },
@@ -42,14 +39,18 @@ haika = {
     return this.centerY - (px - this.canvas.getHeight() / 2) / this.scaleFactor;
   },
   init: function(options) {
-    var canvas, _options;
+    var canvas, key, val, _options;
     if (options.canvasId == null) {
       throw 'CanvasのIDが未定義です';
     }
     if (canvas) {
       throw '既に初期化されています';
     }
-    this.options = _options = $.extend(this.default_options, options);
+    _options = $.extend(this, options);
+    for (key in options) {
+      val = options[key];
+      this[key] = val;
+    }
     canvas = new fabric.Canvas(options.canvasId, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair',
       width: _options.width,
@@ -144,7 +145,7 @@ haika = {
     })(this));
   },
   loadBgFromUrl: function(url) {
-    this.options.backgroundUrl = url;
+    this.backgroundUrl = url;
     return this.render();
   },
   resetBg: function() {
@@ -445,8 +446,8 @@ haika = {
   },
   render: function() {
     var beacons, floors, o, shelfs, walls, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref;
-    if (!this.backgroundImage && this.options.backgroundUrl) {
-      fabric.Image.fromURL(this.options.backgroundUrl, (function(_this) {
+    if (!this.backgroundImage && this.backgroundUrl) {
+      fabric.Image.fromURL(this.backgroundUrl, (function(_this) {
         return function(img) {
           _this.backgroundImage = img;
           _this.render();
@@ -502,11 +503,11 @@ haika = {
     }
     if (this.backgroundImage) {
       this.canvas.setBackgroundImage(this.backgroundImage);
-      this.backgroundImage.left = Math.floor(this.transformLeftX_cm2px(this.backgroundImage._originalElement.width / 2 * this.options.backgroundScaleFactor));
-      this.backgroundImage.top = Math.floor(this.transformTopY_cm2px(this.backgroundImage._originalElement.height / 2 * this.options.backgroundScaleFactor));
-      this.backgroundImage.width = Math.floor(this.backgroundImage._originalElement.width * this.options.backgroundScaleFactor * this.scaleFactor);
-      this.backgroundImage.height = Math.floor(this.backgroundImage._originalElement.height * this.options.backgroundScaleFactor * this.scaleFactor);
-      this.backgroundImage.opacity = this.options.backgroundOpacity;
+      this.backgroundImage.left = Math.floor(this.transformLeftX_cm2px(this.backgroundImage._originalElement.width / 2 * this.backgroundScaleFactor));
+      this.backgroundImage.top = Math.floor(this.transformTopY_cm2px(this.backgroundImage._originalElement.height / 2 * this.backgroundScaleFactor));
+      this.backgroundImage.width = Math.floor(this.backgroundImage._originalElement.width * this.backgroundScaleFactor * this.scaleFactor);
+      this.backgroundImage.height = Math.floor(this.backgroundImage._originalElement.height * this.backgroundScaleFactor * this.scaleFactor);
+      this.backgroundImage.opacity = this.backgroundOpacity;
     } else {
       this.canvas.setBackgroundImage(null);
     }
@@ -576,10 +577,10 @@ haika = {
     $('#canvas_height').html(this.canvas.getHeight());
     $('#canvas_centerX').html(this.centerX);
     $('#canvas_centerY').html(this.centerY);
-    $('#canvas_bgscale').val(this.options.backgroundScaleFactor);
-    $('#canvas_bgopacity').val(this.options.backgroundOpacity);
-    $('#canvas_lon').val(this.options.xyLongitude);
-    $('#canvas_lat').val(this.options.xyLatitude);
+    $('#canvas_bgscale').val(this.backgroundScaleFactor);
+    $('#canvas_bgopacity').val(this.backgroundOpacity);
+    $('#canvas_lon').val(this.xyLongitude);
+    $('#canvas_lat').val(this.xyLatitude);
     $('#canvas_angle').val(this.canvas.angle);
     return $('.zoom').html((this.scaleFactor * 100).toFixed(0) + '%');
   },

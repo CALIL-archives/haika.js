@@ -7,20 +7,27 @@ $.extend haika,
 #
   loadFromGeoJson: (geojson = null)-> # GeoJsonからデータを読み込む
     if not geojson
+      # TODO:haika-io の @_geojson
       geojson = @_geojson
-    @options.backgroundScaleFactor = if geojson.haika.backgroundScaleFactor then geojson.haika.backgroundScaleFactor else 1
-    @options.backgroundOpacity = geojson.haika.backgroundOpacity
+    if geojson.haika.backgroundScaleFactor?
+      @backgroundScaleFactor = geojson.haika.backgroundScaleFactor
+    if not @backgroundScaleFactor
+      @backgroundScaleFactor = 1
+    if geojson.haika.backgroundOpacity?
+      @backgroundOpacity = geojson.haika.backgroundOpacity
+    if not @backgroundOpacity
+      @backgroundOpacity = 1
     if geojson.haika.backgroundUrl?
-      @options.backgroundUrl = geojson.haika.backgroundUrl
+      @backgroundUrl = geojson.haika.backgroundUrl
     else
-      @options.backgroundUrl = ''
+      @backgroundUrl = ''
     if geojson.haika.xyAngle?
-      @options.xyAngle = geojson.haika.xyAngle
+      @xyAngle = geojson.haika.xyAngle
     if geojson.haika.xyScaleFactor?
-      @options.xyScaleFactor = geojson.haika.xyScaleFactor
+      @xyScaleFactor = geojson.haika.xyScaleFactor
     if geojson.haika.xyLongitude? and geojson.haika.xyLatitude?
-      @options.xyLongitude = geojson.haika.xyLongitude
-      @options.xyLatitude = geojson.haika.xyLatitude
+      @xyLongitude = geojson.haika.xyLongitude
+      @xyLatitude = geojson.haika.xyLatitude
     if geojson and geojson.features.length > 0
       for object in geojson.features
         if object.properties.id > @lastId
@@ -56,13 +63,13 @@ $.extend haika,
       "type": "FeatureCollection"
       "features": features
       "haika":
-        backgroundUrl: @options.backgroundUrl
-        backgroundScaleFactor: @options.backgroundScaleFactor
-        backgroundOpacity: @options.backgroundOpacity
-        xyLongitude: @options.xyLongitude
-        xyLatitude: @options.xyLatitude
-        xyAngle: @options.xyAngle
-        xyScaleFactor: @options.xyScaleFactor
+        backgroundUrl: @backgroundUrl
+        backgroundScaleFactor: @backgroundScaleFactor
+        backgroundOpacity: @backgroundOpacity
+        xyLongitude: @xyLongitude
+        xyLatitude: @xyLatitude
+        xyAngle: @xyAngle
+        xyScaleFactor: @xyScaleFactor
         version: 1
     return data
 
@@ -126,14 +133,14 @@ $.extend haika,
     geojson = @mergeGeoJson(geojson)
     features = []
     for object in geojson.features
-      mapCenter = proj4("EPSG:4326", "EPSG:3857", [@options.xyLongitude, @options.xyLatitude])
+      mapCenter = proj4("EPSG:4326", "EPSG:3857", [@xyLongitude, @xyLatitude])
       if mapCenter
         coordinates = []
         for geometry in object.geometry.coordinates[0]
-          x = geometry[0] * @options.xyScaleFactor
-          y = geometry[1] * @options.xyScaleFactor
+          x = geometry[0] * @xyScaleFactor
+          y = geometry[1] * @xyScaleFactor
           # 回転の反映
-          new_coordinate =  fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-@options.xyAngle))
+          new_coordinate =  fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-@xyAngle))
           coordinate = [mapCenter[0]+new_coordinate.x, mapCenter[1]+new_coordinate.y]
           coordinates.push(coordinate)
         object.geometry.coordinates = [coordinates]

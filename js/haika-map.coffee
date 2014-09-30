@@ -34,16 +34,16 @@ $.extend haika,
     save : (lat, lon)->
       $('#canvas_lon').val(lon)
       $('#canvas_lat').val(lat)
-      haika.options.xyLongitude = lon
-      haika.options.xyLatitude = lat
+      haika.xyLongitude = lon
+      haika.xyLatitude = lat
       haika.save()
     set : ->
       @map = new google.maps.Map(document.getElementById('map'),
         zoom: 20
         maxZoom: 28
         center:
-          lat: haika.options.xyLatitude
-          lng: haika.options.xyLongitude
+          lat: haika.xyLatitude
+          lng: haika.xyLongitude
       )
       # Set the stroke width, and fill color for each polygon
       featureStyle = {
@@ -80,10 +80,10 @@ $.extend haika,
         return false
 
       $('#canvas_lat').change ->
-        haika.options.xyLatitude = parseFloat($(this).val())
+        haika.xyLatitude = parseFloat($(this).val())
         haika.save()
       $('#canvas_lon').change ->
-        haika.options.xyLongitude = parseFloat($(this).val())
+        haika.xyLongitude = parseFloat($(this).val())
         haika.save()
 
       $('#canvas_angle').change =>
@@ -94,9 +94,9 @@ $.extend haika,
         step: 1
         min: 0
         max: 360
-        value: haika.options.xyAngle
+        value: haika.xyAngle
         formatter: (value) =>
-          haika.options.xyAngle = parseFloat(value)
+          haika.xyAngle = parseFloat(value)
           haika.saveDelay()
           @redraw()
           return value+'度'
@@ -106,9 +106,9 @@ $.extend haika,
           step: 1
           min: 0
           max: 400
-          value: haika.options.xyScaleFactor * 100
+          value: haika.xyScaleFactor * 100
           formatter: (value) =>
-            haika.options.xyScaleFactor = parseFloat(value) / 100
+            haika.xyScaleFactor = parseFloat(value) / 100
             haika.saveDelay()
             @redraw()
             return value+'%'

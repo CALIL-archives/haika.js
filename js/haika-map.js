@@ -39,8 +39,8 @@ $.extend(haika, {
     save: function(lat, lon) {
       $('#canvas_lon').val(lon);
       $('#canvas_lat').val(lat);
-      haika.options.xyLongitude = lon;
-      haika.options.xyLatitude = lat;
+      haika.xyLongitude = lon;
+      haika.xyLatitude = lat;
       return haika.save();
     },
     set: function() {
@@ -49,8 +49,8 @@ $.extend(haika, {
         zoom: 20,
         maxZoom: 28,
         center: {
-          lat: haika.options.xyLatitude,
-          lng: haika.options.xyLongitude
+          lat: haika.xyLatitude,
+          lng: haika.xyLongitude
         }
       });
       featureStyle = {
@@ -89,11 +89,11 @@ $.extend(haika, {
         };
       })(this));
       $('#canvas_lat').change(function() {
-        haika.options.xyLatitude = parseFloat($(this).val());
+        haika.xyLatitude = parseFloat($(this).val());
         return haika.save();
       });
       $('#canvas_lon').change(function() {
-        haika.options.xyLongitude = parseFloat($(this).val());
+        haika.xyLongitude = parseFloat($(this).val());
         return haika.save();
       });
       $('#canvas_angle').change((function(_this) {
@@ -106,10 +106,10 @@ $.extend(haika, {
         step: 1,
         min: 0,
         max: 360,
-        value: haika.options.xyAngle,
+        value: haika.xyAngle,
         formatter: (function(_this) {
           return function(value) {
-            haika.options.xyAngle = parseFloat(value);
+            haika.xyAngle = parseFloat(value);
             haika.saveDelay();
             _this.redraw();
             return value + '度';
@@ -121,10 +121,10 @@ $.extend(haika, {
         step: 1,
         min: 0,
         max: 400,
-        value: haika.options.xyScaleFactor * 100,
+        value: haika.xyScaleFactor * 100,
         formatter: (function(_this) {
           return function(value) {
-            haika.options.xyScaleFactor = parseFloat(value) / 100;
+            haika.xyScaleFactor = parseFloat(value) / 100;
             haika.saveDelay();
             _this.redraw();
             return value + '%';

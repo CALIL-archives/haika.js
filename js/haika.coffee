@@ -16,17 +16,15 @@ haika =
   state: 'shelf'
   fillColor: "#CFE2F3"
   strokeColor: "#000000"
-  options: {}
-  default_options:
-    width: 500
-    height: 500
-    backgroundUrl: null
-    backgroundOpacity: 1
-    backgroundScaleFactor: 1
-    xyLongitude: 0
-    xyLatitude: 0
-    xyAngle: 0
-    xyScaleFactor: 1.5
+  width: 500
+  height: 500
+  backgroundUrl: null
+  backgroundOpacity: 1
+  backgroundScaleFactor: 1
+  xyLongitude: null
+  xyLatitude: null
+  xyAngle: 0
+  xyScaleFactor: 1.5
 
 # left,x値のcm->px変換
   transformLeftX_cm2px: (cm)->
@@ -54,7 +52,9 @@ haika =
       throw 'CanvasのIDが未定義です'
     if canvas
       throw '既に初期化されています'
-    @options = _options = $.extend(@default_options, options)
+    _options = $.extend(@, options)
+    for key,val of options
+      @[key] = val
     canvas = new fabric.Canvas(options.canvasId, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
       width: _options.width
@@ -130,7 +130,7 @@ haika =
       return
 # 背景画像をURLからロード
   loadBgFromUrl: (url) ->
-    @options.backgroundUrl = url
+    @backgroundUrl = url
     @render()
   resetBg: ->
     loadBgFromUrl('')
@@ -368,8 +368,8 @@ haika =
 # canvasの描画
   render: ->
     #オブジェクトをクリア
-    if not @backgroundImage and @options.backgroundUrl
-      fabric.Image.fromURL @options.backgroundUrl, (img)=>
+    if not @backgroundImage and @backgroundUrl
+      fabric.Image.fromURL @backgroundUrl, (img)=>
         @backgroundImage = img
         @render()
         return
@@ -403,11 +403,11 @@ haika =
       @addObjectToCanvas(o)
     if @backgroundImage
       @canvas.setBackgroundImage @backgroundImage
-      @backgroundImage.left = Math.floor(@transformLeftX_cm2px(@backgroundImage._originalElement.width / 2 * @options.backgroundScaleFactor))
-      @backgroundImage.top = Math.floor(@transformTopY_cm2px(@backgroundImage._originalElement.height / 2 * @options.backgroundScaleFactor))
-      @backgroundImage.width = Math.floor(@backgroundImage._originalElement.width * @options.backgroundScaleFactor * @scaleFactor)
-      @backgroundImage.height = Math.floor(@backgroundImage._originalElement.height * @options.backgroundScaleFactor * @scaleFactor)
-      @backgroundImage.opacity = @options.backgroundOpacity
+      @backgroundImage.left = Math.floor(@transformLeftX_cm2px(@backgroundImage._originalElement.width / 2 * @backgroundScaleFactor))
+      @backgroundImage.top = Math.floor(@transformTopY_cm2px(@backgroundImage._originalElement.height / 2 * @backgroundScaleFactor))
+      @backgroundImage.width = Math.floor(@backgroundImage._originalElement.width * @backgroundScaleFactor * @scaleFactor)
+      @backgroundImage.height = Math.floor(@backgroundImage._originalElement.height * @backgroundScaleFactor * @scaleFactor)
+      @backgroundImage.opacity = @backgroundOpacity
     else
       @canvas.setBackgroundImage null
     @canvas.renderAll()
@@ -474,10 +474,10 @@ haika =
     $('#canvas_height').html(@canvas.getHeight())
     $('#canvas_centerX').html(@centerX)
     $('#canvas_centerY').html(@centerY)
-    $('#canvas_bgscale').val(@options.backgroundScaleFactor)
-    $('#canvas_bgopacity').val(@options.backgroundOpacity)
-    $('#canvas_lon').val(@options.xyLongitude)
-    $('#canvas_lat').val(@options.xyLatitude)
+    $('#canvas_bgscale').val(@backgroundScaleFactor)
+    $('#canvas_bgopacity').val(@backgroundOpacity)
+    $('#canvas_lon').val(@xyLongitude)
+    $('#canvas_lat').val(@xyLatitude)
     $('#canvas_angle').val(@canvas.angle)
     $('.zoom').html((@scaleFactor * 100).toFixed(0) + '%')
 # 移動ピクセル数を取得

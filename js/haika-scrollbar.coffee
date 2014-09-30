@@ -4,8 +4,8 @@ $(haika).on 'haika:initialized', ->
   scroll_weight = 5000
   bgimg_width = if haika.backgroundImage then haika.backgroundImage.width else 2500
   bgimg_height = if haika.backgroundImage then haika.backgroundImage.height else 2500
-  maxX = bgimg_width * haika.options.backgroundScaleFactor / 2
-  maxY = bgimg_height * haika.options.backgroundScaleFactor / 2
+  maxX = bgimg_width * haika.backgroundScaleFactor / 2
+  maxY = bgimg_height * haika.backgroundScaleFactor / 2
   defaultX =  -((haika.centerX - scroll_weight) / 10000)
   defaultY =  -((haika.centerY - scroll_weight) / 10000)
   new Dragdealer 'horizontal-scroller',

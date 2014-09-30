@@ -102,7 +102,7 @@ $(haika).on 'haika:load', ->
 #  $('#canvas_centerY').change ->
 #    haika.centerY = parseInt($(this).val())
   $('#canvas_bgscale').change ->
-    haika.options.backgroundScaleFactor = parseFloat($(this).val())
+    haika.backgroundScaleFactor = parseFloat($(this).val())
     haika.render()
 #    haika.save()
 
@@ -113,9 +113,9 @@ $(haika).on 'haika:load', ->
     step: 1
     min: 1
     max: 100
-    value: haika.options.backgroundOpacity * 100
+    value: haika.backgroundOpacity * 100
     formatter: (value) ->
-      haika.options.backgroundOpacity = value / 100
+      haika.backgroundOpacity = value / 100
       haika.render()
 #      haika.save()
       return value / 100

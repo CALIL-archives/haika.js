@@ -102,7 +102,7 @@ $(haika).on('haika:load', function() {
     };
   })(this));
   $('#canvas_bgscale').change(function() {
-    haika.options.backgroundScaleFactor = parseFloat($(this).val());
+    haika.backgroundScaleFactor = parseFloat($(this).val());
     return haika.render();
   });
   $('#bgreset').click(function() {
@@ -112,9 +112,9 @@ $(haika).on('haika:load', function() {
     step: 1,
     min: 1,
     max: 100,
-    value: haika.options.backgroundOpacity * 100,
+    value: haika.backgroundOpacity * 100,
     formatter: function(value) {
-      haika.options.backgroundOpacity = value / 100;
+      haika.backgroundOpacity = value / 100;
       haika.render();
       return value / 100;
     }
