@@ -24763,7 +24763,7 @@ haika = {
   resetBg: function() {
     return this.setBackgroundUrl('');
   },
-  getId: function() {
+  _getLatestId: function() {
     var lastId, object, _i, _len, _ref;
     if (this.objects.length === 0) {
       return 0;
@@ -24791,7 +24791,7 @@ haika = {
   },
   add: function(object) {
     var key, o, prop, props, schema, _i, _len;
-    object.id = this.getId();
+    object.id = this._getLatestId();
     o = {
       id: object.id
     };
@@ -25492,65 +25492,46 @@ haika = {
 
 //# sourceMappingURL=haika-io.js.map
 ;$.extend(haika, {
-  loadFromGeoJson: function(geojson) {
-    var key, klass, object, schema, shape, _i, _len, _ref, _results;
-    if (geojson == null) {
-      geojson = null;
-    }
-    if (!geojson) {
-      geojson = this._geojson;
-    }
-    if (geojson.haika.backgroundScaleFactor != null) {
-      this.backgroundScaleFactor = geojson.haika.backgroundScaleFactor;
-    }
-    if (!this.backgroundScaleFactor) {
-      this.backgroundScaleFactor = 1;
-    }
-    if (geojson.haika.backgroundOpacity != null) {
-      this.backgroundOpacity = geojson.haika.backgroundOpacity;
-    }
-    if (!this.backgroundOpacity) {
-      this.backgroundOpacity = 1;
-    }
-    if (geojson.haika.backgroundUrl != null) {
-      this.backgroundUrl = geojson.haika.backgroundUrl;
+  loadFromGeoJson: function() {
+    var header, object, _i, _len, _ref, _results;
+    if (this._geojson.haika != null) {
+      header = this._geojson.haika;
     } else {
-      this.backgroundUrl = '';
+      header = {};
     }
-    if (geojson.haika.xyAngle != null) {
-      this.xyAngle = geojson.haika.xyAngle;
-    }
-    if (geojson.haika.xyScaleFactor != null) {
-      this.xyScaleFactor = geojson.haika.xyScaleFactor;
-    }
-    if ((geojson.haika.xyLongitude != null) && (geojson.haika.xyLatitude != null)) {
-      this.xyLongitude = geojson.haika.xyLongitude;
-      this.xyLatitude = geojson.haika.xyLatitude;
-    }
-    if (geojson && geojson.features.length > 0) {
-      _ref = geojson.features;
+    this.backgroundScaleFactor = header.backgroundScaleFactor != null ? header.backgroundScaleFactor : 1;
+    this.backgroundOpacity = header.backgroundOpacity != null ? header.backgroundOpacity : 1;
+    this.backgroundUrl = header.backgroundUrl != null ? header.backgroundUrl : '';
+    this.xyAngle = header.xyAngle != null ? header.xyAngle : 0;
+    this.xyScaleFactor = header.xyScaleFactor != null ? header.xyScaleFactor : 1;
+    this.xyLongitude = header.xyLongitude != null ? header.xyLongitude : null;
+    this.xyLatitude = header.xyLatitude != null ? header.xyLatitude : null;
+    this.objects = [];
+    if (this._geojson.features != null) {
+      _ref = this._geojson.features;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
-        klass = this.getClass(object.properties.type);
-        shape = new klass({
-          id: object.properties.id,
-          top: this.transformTopY_cm2px(object.properties.top_cm),
-          left: this.transformLeftX_cm2px(object.properties.left_cm),
-          top_cm: object.properties.top_cm,
-          left_cm: object.properties.left_cm,
-          fill: object.properties.fill,
-          stroke: object.properties.stroke,
-          angle: object.properties.angle
-        });
-        schema = shape.constructor.prototype.getJsonSchema();
-        for (key in schema.properties) {
-          shape[key] = object.properties[key];
-        }
-        _results.push(this.add(shape));
+        _results.push(this.objects.push(object.properties));
       }
       return _results;
     }
+  },
+  prepareData: function() {
+    var count, object, _data, _i, _len, _ref, _results;
+    log('prepareData');
+    _ref = this.canvas.getObjects();
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      count = this.getCountFindById(object.id);
+      _data = object.toGeoJSON();
+      this.objects[count] = _data.properties;
+      this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
+      this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
+      _results.push(log(count));
+    }
+    return _results;
   },
   toGeoJSON: function() {
     var data, features, geojson, object, _i, _len, _ref;
@@ -25576,37 +25557,6 @@ haika = {
       }
     };
     return data;
-  },
-  prepareData: function() {
-    var count, key, object, schema, _i, _len, _ref, _results;
-    log('prepareData');
-    _ref = this.canvas.getObjects();
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      count = this.getCountFindById(object.id);
-      this.objects[count].id = object.id;
-      this.objects[count].type = object.type;
-      this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
-      this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
-      this.objects[count].scaleX = object.scaleX / this.scaleFactor;
-      this.objects[count].scaleY = object.scaleY / this.scaleFactor;
-      this.objects[count].angle = object.angle;
-      this.objects[count].fill = object.fill;
-      this.objects[count].stroke = object.stroke;
-      object.top_cm = this.objects[count].top_cm;
-      object.left_cm = this.objects[count].left_cm;
-      schema = object.constructor.prototype.getJsonSchema();
-      _results.push((function() {
-        var _results1;
-        _results1 = [];
-        for (key in schema.properties) {
-          _results1.push(this.objects[count][key] = object[key]);
-        }
-        return _results1;
-      }).call(this));
-    }
-    return _results;
   },
   createGeoJson: function() {
     var EPSG3857_geojson, coordinate, coordinates, data, features, geojson, geometry, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
