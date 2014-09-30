@@ -8,22 +8,32 @@ $.extend(haika, {
     if (!geojson) {
       geojson = this._geojson;
     }
-    this.options.backgroundScaleFactor = geojson.haika.backgroundScaleFactor ? geojson.haika.backgroundScaleFactor : 1;
-    this.options.backgroundOpacity = geojson.haika.backgroundOpacity;
+    if (geojson.haika.backgroundScaleFactor != null) {
+      this.backgroundScaleFactor = geojson.haika.backgroundScaleFactor;
+    }
+    if (!this.backgroundScaleFactor) {
+      this.backgroundScaleFactor = 1;
+    }
+    if (geojson.haika.backgroundOpacity != null) {
+      this.backgroundOpacity = geojson.haika.backgroundOpacity;
+    }
+    if (!this.backgroundOpacity) {
+      this.backgroundOpacity = 1;
+    }
     if (geojson.haika.backgroundUrl != null) {
-      this.options.backgroundUrl = geojson.haika.backgroundUrl;
+      this.backgroundUrl = geojson.haika.backgroundUrl;
     } else {
-      this.options.backgroundUrl = '';
+      this.backgroundUrl = '';
     }
     if (geojson.haika.xyAngle != null) {
-      this.options.xyAngle = geojson.haika.xyAngle;
+      this.xyAngle = geojson.haika.xyAngle;
     }
     if (geojson.haika.xyScaleFactor != null) {
-      this.options.xyScaleFactor = geojson.haika.xyScaleFactor;
+      this.xyScaleFactor = geojson.haika.xyScaleFactor;
     }
     if ((geojson.haika.xyLongitude != null) && (geojson.haika.xyLatitude != null)) {
-      this.options.xyLongitude = geojson.haika.xyLongitude;
-      this.options.xyLatitude = geojson.haika.xyLatitude;
+      this.xyLongitude = geojson.haika.xyLongitude;
+      this.xyLatitude = geojson.haika.xyLatitude;
     }
     if (geojson && geojson.features.length > 0) {
       _ref = geojson.features;
@@ -65,13 +75,13 @@ $.extend(haika, {
       "type": "FeatureCollection",
       "features": features,
       "haika": {
-        backgroundUrl: this.options.backgroundUrl,
-        backgroundScaleFactor: this.options.backgroundScaleFactor,
-        backgroundOpacity: this.options.backgroundOpacity,
-        xyLongitude: this.options.xyLongitude,
-        xyLatitude: this.options.xyLatitude,
-        xyAngle: this.options.xyAngle,
-        xyScaleFactor: this.options.xyScaleFactor,
+        backgroundUrl: this.backgroundUrl,
+        backgroundScaleFactor: this.backgroundScaleFactor,
+        backgroundOpacity: this.backgroundOpacity,
+        xyLongitude: this.xyLongitude,
+        xyLatitude: this.xyLatitude,
+        xyAngle: this.xyAngle,
+        xyScaleFactor: this.xyScaleFactor,
         version: 1
       }
     };
@@ -155,15 +165,15 @@ $.extend(haika, {
     _ref = geojson.features;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
-      mapCenter = proj4("EPSG:4326", "EPSG:3857", [this.options.xyLongitude, this.options.xyLatitude]);
+      mapCenter = proj4("EPSG:4326", "EPSG:3857", [this.xyLongitude, this.xyLatitude]);
       if (mapCenter) {
         coordinates = [];
         _ref1 = object.geometry.coordinates[0];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           geometry = _ref1[_j];
-          x = geometry[0] * this.options.xyScaleFactor;
-          y = geometry[1] * this.options.xyScaleFactor;
-          new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.options.xyAngle));
+          x = geometry[0] * this.xyScaleFactor;
+          y = geometry[1] * this.xyScaleFactor;
+          new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.xyAngle));
           coordinate = [mapCenter[0] + new_coordinate.x, mapCenter[1] + new_coordinate.y];
           coordinates.push(coordinate);
         }
