@@ -37,7 +37,7 @@ haika = {
     return this.centerY - (px - this.canvas.getHeight() / 2) / this.scaleFactor;
   },
   init: function(options) {
-    var canvas, onerror, onsuccess;
+    var canvas;
     if (options.canvasId == null) {
       throw 'CanvasのIDが未定義です';
     }
@@ -83,15 +83,16 @@ haika = {
     initAligningGuidelines(canvas);
     this.canvas = canvas;
     this.bindEvent();
-    onerror = function(message) {
-      return alert(message);
-    };
-    onsuccess = (function(_this) {
-      return function() {
-        return _this.render();
-      };
-    })(this);
-    haika.openFromApi(2, null, onsuccess, onerror);
+    haika.openFromApi(2, {
+      succcess: function(message) {
+        return alert(message);
+      },
+      error: (function(_this) {
+        return function() {
+          return _this.render();
+        };
+      })(this)
+    });
     return $(this).trigger('haika:initialized');
   },
   bindEvent: function() {

@@ -12,7 +12,6 @@ $(haika).on 'haika:initialized', ->
     x: defaultX
     animationCallback: (x, y)->
 #      log x
-      haika.unselect()
       centerX = x * 10000 - scroll_weight
       if centerX > maxX - haika.canvas.getWidth() / 2
         centerX = maxX - haika.canvas.getWidth() / 2
@@ -26,7 +25,6 @@ $(haika).on 'haika:initialized', ->
     vertical: true,
 #    yPrecision: 500,
     animationCallback: (x, y)->
-      haika.unselect()
       centerY = y * 10000 - scroll_weight
       if centerY > maxY - haika.canvas.getHeight() / 2
         centerY = maxY - haika.canvas.getHeight() / 2

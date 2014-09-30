@@ -27,15 +27,15 @@ $.extend haika,
 # API経由でデータを開く
 #
 # @param {Number} id データのID
-# @option {Number} id データのリビジョン(省略時は最新)
+# @option {Number} revision データのリビジョン(省略時は最新)
 # @option {Function} success 成功時のコールバック関数
 # @option {Function} error(message) エラー時のコールバック関数
 #
-  openFromApi: (id, revision = null, success = null, error = null) ->
+  openFromApi: (id, option) ->
     if @_dataId
       @close() #開いたデータがある場合は閉じる
     if @_nowSaving
-      error and error('保存処理中のため読み込めませんでした')
+      option.error and option.error('保存処理中のため読み込めませんでした')
     $.ajax
       url: @_api_load_endpoint
       type: 'POST'
@@ -43,20 +43,20 @@ $.extend haika,
       dataType: 'json'
       data:
         id: id
-        revision: revision
+        revision: option.revision
       error: ()=>
         error and error('データが読み込めませんでした')
       success: (json)=>
         if json.locked
           # TODO : Read Onlyモードに切り替える
-          return error and error('データはロックされています')
+          return option.error and option.error('データはロックされています')
         @_dataId = json.id
         @_revision = json.revision
         @_collision = json.collision
         @_geojson = json.data
         @loadFromGeoJson()
         $(@).trigger('haika:load')
-        success and success()
+        option.success and option.success()
 
 
 

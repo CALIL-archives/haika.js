@@ -11,33 +11,33 @@ $.extend haika,
     map : null
     created : false
     features : []
-    init : ->
+    initMap : ->
       $('.map_setting').click =>
         if $('.haika_container').css('display')=='block'
           if not @created
-            @set()
+            @setMap()
             @created = true
           $('.haika_container').hide()
           $(document.body).css('background', '#333333')
-          @redraw()
+          @redrawMap()
           $('.map_container').show()
           $('#map_query').focus()
         else
           $(document.body).css('background', '#FFFFFF')
           $('.haika_container').show()
           $('.map_container').hide()
-    redraw : ->
+    redrawMap : ->
       if @features.length>0
         for feature in @features
           @map.data.remove feature
         @features = @map.data.addGeoJson(haika.createGeoJson())
-    save : (lat, lon)->
+    saveMap : (lat, lon)->
       $('#canvas_lon').val(lon)
       $('#canvas_lat').val(lat)
       haika.xyLongitude = lon
       haika.xyLatitude = lat
       haika.save()
-    set : ->
+    setMap : ->
       @map = new google.maps.Map(document.getElementById('map'),
         zoom: 20
         maxZoom: 28
@@ -57,8 +57,8 @@ $.extend haika,
         log @map.getCenter()
         lon = @map.getCenter().lng()
         lat = @map.getCenter().lat()
-        @save(lat, lon)
-        @redraw()
+        @saveMap(lat, lon)
+        @redrawMap()
 
       $('#map_search').submit =>
     #    alert $('#map_query').val()
@@ -73,8 +73,8 @@ $.extend haika,
       #          map: @map.map
       #          position: results[0].geometry.location
       #        )
-            @save(results[0].geometry.location.lat(), results[0].geometry.location.lng())
-            @redraw()
+            @saveMap(results[0].geometry.location.lat(), results[0].geometry.location.lng())
+            @redrawMap()
           else
             alert "ジオコーディングがうまくいきませんでした。: " + status
         return false
@@ -87,7 +87,7 @@ $.extend haika,
         haika.save()
 
       $('#canvas_angle').change =>
-        @redraw()
+        @redrawMap()
 
       $('#canvas_angle').slider
         tooltip: 'always'
@@ -98,7 +98,7 @@ $.extend haika,
         formatter: (value) =>
           haika.xyAngle = parseFloat(value)
           haika.saveDelay()
-          @redraw()
+          @redrawMap()
           return value+'度'
 
       $('#geojson_scale').slider
@@ -110,11 +110,11 @@ $.extend haika,
           formatter: (value) =>
             haika.xyScaleFactor = parseFloat(value) / 100
             haika.saveDelay()
-            @redraw()
+            @redrawMap()
             return value+'%'
 
 # 初期設定
-haika.map.init()
+haika.map.initMap()
 
 
 #  if haika.isLocal()
