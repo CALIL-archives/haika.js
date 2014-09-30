@@ -9,6 +9,13 @@ haika =
     FLOOR: 2
     BEACON: 3
 
+  INSTALLED_OBJECTS: # インストールされたオブジェクト
+    'shelf': fabric.Shelf
+    'curved_shelf': fabric.curvedShelf
+    'beacon': fabric.Beacon
+    'wall': fabric.Wall
+    'floor': fabric.Floor
+
   canvas: null # fabricのCanvasオブジェクト
 
   centerX: 0 # 表示位置X(画面の中央が0) [エディタステータス系変数]
@@ -30,7 +37,7 @@ haika =
   xyLongitude: null
   xyLatitude: null
   xyAngle: 0
-  xyScaleFactor: 1.5
+  xyScaleFactor: 1
 
   clipboard: []
   clipboard_scale: 0
@@ -113,6 +120,8 @@ haika =
       object = e.target
       if object.__modifiedShelf?
         object.__modifiedShelf()
+      object.top_cm = @transformTopY_px2cm(object.top)
+      object.left_cm = @transformLeftX_px2cm(object.left)
       @saveDelay()
       @setPropetyPanel()
     haika.openFromApi(2,
@@ -124,6 +133,7 @@ haika =
       }
     )
     $(@).trigger('haika:initialized')
+
 
 # 拡大率の新しい値に設定する
 #
@@ -378,28 +388,30 @@ haika =
       @canvas.fire('before:selection:cleared', { target: object })
       @canvas.fire('selection:cleared', { target: object })
 # クラス名の取得
-  getClass: (classname)->
-    if classname == 'shelf'
-      return fabric.Shelf
-    else if classname == 'curved_shelf'
-      return fabric.curvedShelf
-    else if classname == 'beacon'
-      return fabric.Beacon
-    else if classname == 'wall'
-      return fabric.Wall
-    else if classname == 'floor'
-      return fabric.Floor
+  getClass: (type)->
+    if @INSTALLED_OBJECTS[type]?
+      return @INSTALLED_OBJECTS[type]
     else
-      return fabric.Shelf
+      throw '認識できないオブジェクトが含まれています'
+
 # canvasの描画
   render: ->
-    #オブジェクトをクリア
     if not @backgroundImage and @backgroundUrl
       fabric.Image.fromURL @backgroundUrl, (img)=>
         @backgroundImage = img
         @render()
         return
     @canvas.renderOnAddRemove = false
+    if @backgroundImage
+      @canvas.setBackgroundImage @backgroundImage
+      @backgroundImage.left = Math.floor(@transformLeftX_cm2px(@backgroundImage._originalElement.width / 2 * @backgroundScaleFactor))
+      @backgroundImage.top = Math.floor(@transformTopY_cm2px(@backgroundImage._originalElement.height / 2 * @backgroundScaleFactor))
+      @backgroundImage.width = Math.floor(@backgroundImage._originalElement.width * @backgroundScaleFactor * @scaleFactor)
+      @backgroundImage.height = Math.floor(@backgroundImage._originalElement.height * @backgroundScaleFactor * @scaleFactor)
+      @backgroundImage.opacity = @backgroundOpacity
+    else
+      @canvas.setBackgroundImage null
+
     @canvas._objects.length = 0;
     beacons = []
     shelfs = []
@@ -412,7 +424,7 @@ haika =
         walls.push(o)
       if o.type == 'floor'
         floors.push(o)
-      if o.type.match(/shelf$/)
+      if o.type == 'shelf' or o.type=='curvedShelf'
         shelfs.push(o)
     if @layer != @CONST_LAYERS.FLOOR
       for o in floors
@@ -426,15 +438,6 @@ haika =
       @addObjectToCanvas(o)
     for o in beacons
       @addObjectToCanvas(o)
-    if @backgroundImage
-      @canvas.setBackgroundImage @backgroundImage
-      @backgroundImage.left = Math.floor(@transformLeftX_cm2px(@backgroundImage._originalElement.width / 2 * @backgroundScaleFactor))
-      @backgroundImage.top = Math.floor(@transformTopY_cm2px(@backgroundImage._originalElement.height / 2 * @backgroundScaleFactor))
-      @backgroundImage.width = Math.floor(@backgroundImage._originalElement.width * @backgroundScaleFactor * @scaleFactor)
-      @backgroundImage.height = Math.floor(@backgroundImage._originalElement.height * @backgroundScaleFactor * @scaleFactor)
-      @backgroundImage.opacity = @backgroundOpacity
-    else
-      @canvas.setBackgroundImage null
     @canvas.renderAll()
     @canvas.renderOnAddRemove = true
     @setCanvasProperty()

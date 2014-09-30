@@ -24592,6 +24592,13 @@ haika = {
     FLOOR: 2,
     BEACON: 3
   },
+  INSTALLED_OBJECTS: {
+    'shelf': fabric.Shelf,
+    'curved_shelf': fabric.curvedShelf,
+    'beacon': fabric.Beacon,
+    'wall': fabric.Wall,
+    'floor': fabric.Floor
+  },
   canvas: null,
   centerX: 0,
   centerY: 0,
@@ -24608,7 +24615,7 @@ haika = {
   xyLongitude: null,
   xyLatitude: null,
   xyAngle: 0,
-  xyScaleFactor: 1.5,
+  xyScaleFactor: 1,
   clipboard: [],
   clipboard_scale: 0,
   transformLeftX_cm2px: function(cm) {
@@ -24704,6 +24711,8 @@ haika = {
         if (object.__modifiedShelf != null) {
           object.__modifiedShelf();
         }
+        object.top_cm = _this.transformTopY_px2cm(object.top);
+        object.left_cm = _this.transformLeftX_px2cm(object.left);
         _this.saveDelay();
         return _this.setPropetyPanel();
       };
@@ -25027,19 +25036,11 @@ haika = {
       });
     }
   },
-  getClass: function(classname) {
-    if (classname === 'shelf') {
-      return fabric.Shelf;
-    } else if (classname === 'curved_shelf') {
-      return fabric.curvedShelf;
-    } else if (classname === 'beacon') {
-      return fabric.Beacon;
-    } else if (classname === 'wall') {
-      return fabric.Wall;
-    } else if (classname === 'floor') {
-      return fabric.Floor;
+  getClass: function(type) {
+    if (this.INSTALLED_OBJECTS[type] != null) {
+      return this.INSTALLED_OBJECTS[type];
     } else {
-      return fabric.Shelf;
+      throw '認識できないオブジェクトが含まれています';
     }
   },
   render: function() {
@@ -25053,6 +25054,16 @@ haika = {
       })(this));
     }
     this.canvas.renderOnAddRemove = false;
+    if (this.backgroundImage) {
+      this.canvas.setBackgroundImage(this.backgroundImage);
+      this.backgroundImage.left = Math.floor(this.transformLeftX_cm2px(this.backgroundImage._originalElement.width / 2 * this.backgroundScaleFactor));
+      this.backgroundImage.top = Math.floor(this.transformTopY_cm2px(this.backgroundImage._originalElement.height / 2 * this.backgroundScaleFactor));
+      this.backgroundImage.width = Math.floor(this.backgroundImage._originalElement.width * this.backgroundScaleFactor * this.scaleFactor);
+      this.backgroundImage.height = Math.floor(this.backgroundImage._originalElement.height * this.backgroundScaleFactor * this.scaleFactor);
+      this.backgroundImage.opacity = this.backgroundOpacity;
+    } else {
+      this.canvas.setBackgroundImage(null);
+    }
     this.canvas._objects.length = 0;
     beacons = [];
     shelfs = [];
@@ -25070,7 +25081,7 @@ haika = {
       if (o.type === 'floor') {
         floors.push(o);
       }
-      if (o.type.match(/shelf$/)) {
+      if (o.type === 'shelf' || o.type === 'curvedShelf') {
         shelfs.push(o);
       }
     }
@@ -25097,16 +25108,6 @@ haika = {
     for (_n = 0, _len5 = beacons.length; _n < _len5; _n++) {
       o = beacons[_n];
       this.addObjectToCanvas(o);
-    }
-    if (this.backgroundImage) {
-      this.canvas.setBackgroundImage(this.backgroundImage);
-      this.backgroundImage.left = Math.floor(this.transformLeftX_cm2px(this.backgroundImage._originalElement.width / 2 * this.backgroundScaleFactor));
-      this.backgroundImage.top = Math.floor(this.transformTopY_cm2px(this.backgroundImage._originalElement.height / 2 * this.backgroundScaleFactor));
-      this.backgroundImage.width = Math.floor(this.backgroundImage._originalElement.width * this.backgroundScaleFactor * this.scaleFactor);
-      this.backgroundImage.height = Math.floor(this.backgroundImage._originalElement.height * this.backgroundScaleFactor * this.scaleFactor);
-      this.backgroundImage.opacity = this.backgroundOpacity;
-    } else {
-      this.canvas.setBackgroundImage(null);
     }
     this.canvas.renderAll();
     this.canvas.renderOnAddRemove = true;
@@ -25524,12 +25525,11 @@ haika = {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
+      object.top_cm = this.transformTopY_px2cm(object.top);
+      object.left_cm = this.transformLeftX_px2cm(object.left);
       count = this.getCountFindById(object.id);
       _data = object.toGeoJSON();
-      this.objects[count] = _data.properties;
-      this.objects[count].top_cm = this.transformTopY_px2cm(object.top);
-      this.objects[count].left_cm = this.transformLeftX_px2cm(object.left);
-      _results.push(log(count));
+      _results.push(this.objects[count] = _data.properties);
     }
     return _results;
   },
@@ -25854,6 +25854,9 @@ haika.setting.start();
     add: function(val) {
       var id, klass, object;
       log(val);
+      if (val.type.match(/shelf$/)) {
+        val.type = 'shelf';
+      }
       klass = haika.getClass(val.type);
       object = new klass({
         top: haika.transformTopY_cm2px(haika.centerY),
@@ -25868,7 +25871,7 @@ haika.setting.start();
       if (val.side != null) {
         object.side = val.side;
       }
-      if (val.type.match(/shelf$/)) {
+      if (val.type === 'shelf') {
         object.eachWidth = val.eachWidth;
         object.eachHeight = val.eachHeight;
       }

@@ -3,6 +3,9 @@ $.extend(haika, {
     add: function(val) {
       var id, klass, object;
       log(val);
+      if (val.type.match(/shelf$/)) {
+        val.type = 'shelf';
+      }
       klass = haika.getClass(val.type);
       object = new klass({
         top: haika.transformTopY_cm2px(haika.centerY),
@@ -17,7 +20,7 @@ $.extend(haika, {
       if (val.side != null) {
         object.side = val.side;
       }
-      if (val.type.match(/shelf$/)) {
+      if (val.type === 'shelf') {
         object.eachWidth = val.eachWidth;
         object.eachHeight = val.eachHeight;
       }
