@@ -125,53 +125,61 @@ haika =
     )
     $(@).trigger('haika:initialized')
 
-# 表示時の拡大率の変更
+# 拡大率の新しい値に設定する
 #
-# @param [Number] newScale 新しい拡大率(1=100%)
+# @param [Number] newScale 新しい拡大率(0.05~4=5~400%)
 #
   setScale: (newScale) ->
     @canvas.deactivateAll()
+    if newScale >= 4
+      newScale = 4
+    else if newScale <= 0.05
+      newScale = 0.05
     @scaleFactor = (newScale * 100).toFixed(0) / 100
     @render()
+    return newScale
 
-# 表示時の拡大率を1ステップ拡大する
+# 表示時の拡大率を1ステップ拡大する (これはUI側のため将来的に移動)
 #
   zoomIn: ->
     prevScale = @scaleFactor
     newScale = prevScale + Math.pow(prevScale + 1, 2) / 20
-    if newScale >= 4
-      newScale = 4
     if newScale < 1 and prevScale > 1
       newScale = 1
     @setScale newScale
 
-# 表示時の拡大率を1ステップ縮小する
+# 表示時の拡大率を1ステップ縮小する (これはUI側のため将来的に移動)
 #
   zoomOut: ->
     prevScale = @scaleFactor
     newScale = prevScale - Math.pow(prevScale + 1, 2) / 20
-    if newScale <= 0.05
-      newScale = 0.05
     if prevScale > 1 and newScale < 1
       newScale = 1
     @setScale newScale
 
-# 表示時の拡大率を等倍にする
+# 表示時の拡大率を等倍にする (これはUI側のため将来的に移動)
 #
   zoomReset: ->
     @setScale 1
 
-# 背景画像をURLからロード
-  loadBgFromUrl: (url) ->
+  setBackgroundUrl: (url) ->
     @backgroundImage = null
     @backgroundUrl = url
     @render()
 
-  resetBg: ->
-    loadBgFromUrl('')
+#(これはUI側のため将来的に移動)
+  loadBgFromUrl: (url) ->
+    @setBackgroundUrl url
 
-# idを取得
-  getId: ->
+#(これはUI側のため将来的に移動)
+  resetBg: ->
+    @setBackgroundUrl ''
+
+# 新しいオブジェクトのIDを取得
+# [この関数は@objectsからデータを取得する]
+# [この関数はaddから呼ばれる以外は使用しない]
+#
+  _getLatestId: ->
     if @objects.length == 0
       return 0
     lastId = 0
@@ -190,9 +198,7 @@ haika =
     return count
 # haikaオブジェクトの追加
   add: (object)->
-    # new object
-    if object.id == '' or not object.id
-      object.id = @getId()
+    object.id = @_getLatestId()
     o =
       id: object.id
     props = [
@@ -283,7 +289,6 @@ haika =
     object = @canvas.getActiveObject()
     if object
       o = fabric.util.object.clone(object)
-      o.id = @getId()
       o.top = @transformTopY_cm2px(@centerY)
       o.left = @transformLeftX_cm2px(@centerX)
       new_id = @add(o)
@@ -292,7 +297,6 @@ haika =
       new_ids = []
       for object in group.getObjects()
         o = fabric.util.object.clone(object)
-        o.id = @getId()
         o.top = @transformTopY_cm2px(@centerY) + object.top
         o.left = @transformLeftX_cm2px(@centerX) + object.left
         new_id = @add(o)
@@ -327,7 +331,6 @@ haika =
     if @clipboard.length == 1
       object = @clipboard[0]
       o = fabric.util.object.clone(object)
-      o.id = @getId()
       o.top = @transformTopY_cm2px(@centerY)
       o.left = @transformLeftX_cm2px(@centerX)
       new_id = @add(o)
@@ -341,7 +344,6 @@ haika =
       new_ids = []
       for object in @clipboard
         o = fabric.util.object.clone(object)
-        o.id = @getId()
         o.top = @transformTopY_cm2px(@centerY) + object.top * @scaleFactor / @clipboard_scale
         o.left = @transformLeftX_cm2px(@centerX) + object.left * @scaleFactor / @clipboard_scale
         new_id = @add(o)

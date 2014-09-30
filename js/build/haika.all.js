@@ -24722,16 +24722,19 @@ haika = {
   },
   setScale: function(newScale) {
     this.canvas.deactivateAll();
+    if (newScale >= 4) {
+      newScale = 4;
+    } else if (newScale <= 0.05) {
+      newScale = 0.05;
+    }
     this.scaleFactor = (newScale * 100).toFixed(0) / 100;
-    return this.render();
+    this.render();
+    return newScale;
   },
   zoomIn: function() {
     var newScale, prevScale;
     prevScale = this.scaleFactor;
     newScale = prevScale + Math.pow(prevScale + 1, 2) / 20;
-    if (newScale >= 4) {
-      newScale = 4;
-    }
     if (newScale < 1 && prevScale > 1) {
       newScale = 1;
     }
@@ -24741,9 +24744,6 @@ haika = {
     var newScale, prevScale;
     prevScale = this.scaleFactor;
     newScale = prevScale - Math.pow(prevScale + 1, 2) / 20;
-    if (newScale <= 0.05) {
-      newScale = 0.05;
-    }
     if (prevScale > 1 && newScale < 1) {
       newScale = 1;
     }
@@ -24752,13 +24752,16 @@ haika = {
   zoomReset: function() {
     return this.setScale(1);
   },
-  loadBgFromUrl: function(url) {
+  setBackgroundUrl: function(url) {
     this.backgroundImage = null;
     this.backgroundUrl = url;
     return this.render();
   },
+  loadBgFromUrl: function(url) {
+    return this.setBackgroundUrl(url);
+  },
   resetBg: function() {
-    return loadBgFromUrl('');
+    return this.setBackgroundUrl('');
   },
   getId: function() {
     var lastId, object, _i, _len, _ref;
@@ -24788,9 +24791,7 @@ haika = {
   },
   add: function(object) {
     var key, o, prop, props, schema, _i, _len;
-    if (object.id === '' || !object.id) {
-      object.id = this.getId();
-    }
+    object.id = this.getId();
     o = {
       id: object.id
     };
@@ -24905,7 +24906,6 @@ haika = {
     object = this.canvas.getActiveObject();
     if (object) {
       o = fabric.util.object.clone(object);
-      o.id = this.getId();
       o.top = this.transformTopY_cm2px(this.centerY);
       o.left = this.transformLeftX_cm2px(this.centerX);
       new_id = this.add(o);
@@ -24917,7 +24917,6 @@ haika = {
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
         o = fabric.util.object.clone(object);
-        o.id = this.getId();
         o.top = this.transformTopY_cm2px(this.centerY) + object.top;
         o.left = this.transformLeftX_cm2px(this.centerX) + object.left;
         new_id = this.add(o);
@@ -24966,7 +24965,6 @@ haika = {
     if (this.clipboard.length === 1) {
       object = this.clipboard[0];
       o = fabric.util.object.clone(object);
-      o.id = this.getId();
       o.top = this.transformTopY_cm2px(this.centerY);
       o.left = this.transformLeftX_cm2px(this.centerX);
       new_id = this.add(o);
@@ -24985,7 +24983,6 @@ haika = {
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
         o = fabric.util.object.clone(object);
-        o.id = this.getId();
         o.top = this.transformTopY_cm2px(this.centerY) + object.top * this.scaleFactor / this.clipboard_scale;
         o.left = this.transformLeftX_cm2px(this.centerX) + object.left * this.scaleFactor / this.clipboard_scale;
         new_id = this.add(o);
