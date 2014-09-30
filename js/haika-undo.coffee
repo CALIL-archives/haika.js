@@ -40,7 +40,6 @@ $.extend haika,
 
       haika.canvas.on "selection:cleared", (e) =>
         object = e.target
-      #  console.log "selection:cleared"
 
 
       haika.canvas.on "object:modified", (e) =>

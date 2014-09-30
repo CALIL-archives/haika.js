@@ -107,7 +107,6 @@ haika =
 
     @canvas.on 'before:selection:cleared', (e)=>
       @canvas.deactivateAll().renderAll()
-#      @saveDelay()
       @editor_change()
       @setPropetyPanel()
     @canvas.on 'object:scaling', (e) =>
