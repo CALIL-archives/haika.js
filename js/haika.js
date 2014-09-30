@@ -17,8 +17,6 @@ haika = {
   state: 'shelf',
   fillColor: "#CFE2F3",
   strokeColor: "#000000",
-  width: 500,
-  height: 500,
   backgroundUrl: null,
   backgroundOpacity: 1,
   backgroundScaleFactor: 1,
@@ -39,25 +37,26 @@ haika = {
     return this.centerY - (px - this.canvas.getHeight() / 2) / this.scaleFactor;
   },
   init: function(options) {
-    var canvas, key, val, _options;
+    var canvas;
     if (options.canvasId == null) {
       throw 'CanvasのIDが未定義です';
     }
     if (canvas) {
       throw '既に初期化されています';
     }
-    _options = $.extend(this, options);
-    for (key in options) {
-      val = options[key];
-      this[key] = val;
+    if (options.width == null) {
+      options.width = 500;
+    }
+    if (options.height == null) {
+      options.height = 500;
     }
     canvas = new fabric.Canvas(options.canvasId, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair',
-      width: _options.width,
-      height: _options.height
+      width: options.width,
+      height: options.height
     });
-    if (_options.scaleFactor != null) {
-      this.scaleFactor = _options.scaleFactor;
+    if (options.scaleFactor != null) {
+      this.scaleFactor = options.scaleFactor;
     }
     canvas._getActionFromCorner = function(target, corner) {
       var action;

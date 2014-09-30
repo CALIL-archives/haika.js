@@ -16,8 +16,6 @@ haika =
   state: 'shelf'
   fillColor: "#CFE2F3"
   strokeColor: "#000000"
-  width: 500
-  height: 500
   backgroundUrl: null
   backgroundOpacity: 1
   backgroundScaleFactor: 1
@@ -52,16 +50,17 @@ haika =
       throw 'CanvasのIDが未定義です'
     if canvas
       throw '既に初期化されています'
-    _options = $.extend(@, options)
-    for key,val of options
-      @[key] = val
+    if not options.width?
+      options.width=500
+    if not options.height?
+      options.height=500
     canvas = new fabric.Canvas(options.canvasId, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
-      width: _options.width
-      height: _options.height
+      width: options.width
+      height: options.height
     })
-    if _options.scaleFactor?
-      @scaleFactor = _options.scaleFactor
+    if options.scaleFactor?
+      @scaleFactor = options.scaleFactor
 
     canvas._getActionFromCorner = (target, corner) ->
       action = 'drag'
