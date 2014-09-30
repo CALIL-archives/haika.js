@@ -1,6 +1,48 @@
 # GeoJSONデータの出力、変換
 $.extend haika,
 
+# GeoJsonからデータを読み込む
+#
+# @param {Object} geojson 省略時は保持しているデータを読み込む
+#
+  loadFromGeoJson: (geojson = null)-> # GeoJsonからデータを読み込む
+    if not geojson
+      geojson = @_geojson
+    @options.backgroundScaleFactor = if geojson.haika.backgroundScaleFactor then geojson.haika.backgroundScaleFactor else 1
+    @options.backgroundOpacity = geojson.haika.backgroundOpacity
+    if geojson.haika.backgroundUrl?
+      @options.backgroundUrl = geojson.haika.backgroundUrl
+    else
+      @options.backgroundUrl = ''
+    if geojson.haika.xyAngle?
+      @options.xyAngle = geojson.haika.xyAngle
+    if geojson.haika.xyScaleFactor?
+      @options.xyScaleFactor = geojson.haika.xyScaleFactor
+    if geojson.haika.xyLongitude? and geojson.haika.xyLatitude?
+      @options.xyLongitude = geojson.haika.xyLongitude
+      @options.xyLatitude = geojson.haika.xyLatitude
+    if geojson and geojson.features.length > 0
+      for object in geojson.features
+        if object.properties.id > @lastId
+          @lastId = object.properties.id
+        klass = @getClass(object.properties.type)
+        shape = new klass(
+          id: object.properties.id
+          top: @transformTopY_cm2px(object.properties.top_cm)
+          left: @transformLeftX_cm2px(object.properties.left_cm)
+          top_cm: object.properties.top_cm
+          left_cm: object.properties.left_cm
+          fill: object.properties.fill
+          stroke: object.properties.stroke
+          angle: object.properties.angle
+        )
+        schema = shape.constructor.prototype.getJsonSchema()
+        for key of schema.properties
+          shape[key] = object.properties[key]
+        @add(shape)
+    @render()
+
+
 # 現在開いているデータをGeoJSONに変換
 #
 # @return [Object] GeoJSON形式のデータ
@@ -80,9 +122,7 @@ $.extend haika,
     return EPSG3857_geojson
   # geojsonの回転
   translateGeoJSON : ->
-    log @toGeoJSON
     geojson = @toGeoJSON()
-    log geojson
     geojson = @mergeGeoJson(geojson)
     features = []
     for object in geojson.features

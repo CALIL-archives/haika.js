@@ -1,6 +1,6 @@
 # テスト ロード時にマップ表示
-#$ ->
-#  setTimeout ->
+# haikaのデータロード完了時に実行する
+#$(haika).on 'haika:load', ->
 #    $($('.map_setting')[0]).trigger('click')
 #  , 1000
 
@@ -97,7 +97,7 @@ $.extend haika,
         value: haika.options.xyAngle
         formatter: (value) =>
           haika.options.xyAngle = parseFloat(value)
-          haika.save()
+          haika.saveDelay()
           @redraw()
           return value+'度'
 
@@ -109,7 +109,7 @@ $.extend haika,
           value: haika.options.xyScaleFactor * 100
           formatter: (value) =>
             haika.options.xyScaleFactor = parseFloat(value) / 100
-            haika.save()
+            haika.saveDelay()
             @redraw()
             return value+'%'
 

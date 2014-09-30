@@ -21,7 +21,8 @@ $('#bgimg').change (e)->
 
 
 # メニューのイベントバインド
-$ ->
+# haikaのデータロード完了時に実行する
+$(haika).on 'haika:load', ->
   $(".add_custom_shelf").click ->
     add('custom_shelf')
     haika.render()
@@ -62,8 +63,8 @@ $ ->
 
 
 # ボタン類のイベントバインド
-$ ->
-
+# haikaのデータロード完了時に実行する
+$(haika).on 'haika:load', ->
   # マウスホイール
   timeout = false
   $('canvas').on 'mousewheel', (event)=>

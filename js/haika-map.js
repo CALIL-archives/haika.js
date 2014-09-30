@@ -110,7 +110,7 @@ $.extend(haika, {
         formatter: (function(_this) {
           return function(value) {
             haika.options.xyAngle = parseFloat(value);
-            haika.save();
+            haika.saveDelay();
             _this.redraw();
             return value + '度';
           };
@@ -125,7 +125,7 @@ $.extend(haika, {
         formatter: (function(_this) {
           return function(value) {
             haika.options.xyScaleFactor = parseFloat(value) / 100;
-            haika.save();
+            haika.saveDelay();
             _this.redraw();
             return value + '%';
           };

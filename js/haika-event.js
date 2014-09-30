@@ -23,7 +23,7 @@ $('#bgimg').change(function(e) {
   });
 });
 
-$(function() {
+$(haika).on('haika:load', function() {
   $(".add_custom_shelf").click(function() {
     add('custom_shelf');
     return haika.render();
@@ -81,7 +81,7 @@ $(function() {
   });
 });
 
-$(function() {
+$(haika).on('haika:load', function() {
   var cancel_default, timeout;
   timeout = false;
   $('canvas').on('mousewheel', (function(_this) {

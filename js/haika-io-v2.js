@@ -62,58 +62,6 @@ $.extend(haika, {
       })(this)
     });
   },
-  loadFromGeoJson: function(geojson) {
-    var key, klass, object, schema, shape, _i, _len, _ref;
-    if (geojson == null) {
-      geojson = null;
-    }
-    if (!geojson) {
-      geojson = this._geojson;
-    }
-    this.options.backgroundScaleFactor = geojson.haika.backgroundScaleFactor ? geojson.haika.backgroundScaleFactor : 1;
-    this.options.backgroundOpacity = geojson.haika.backgroundOpacity;
-    if (geojson.haika.backgroundUrl != null) {
-      this.options.backgroundUrl = geojson.haika.backgroundUrl;
-    } else {
-      this.options.backgroundUrl = '';
-    }
-    if (geojson.haika.xyAngle != null) {
-      this.options.xyAngle = geojson.haika.xyAngle;
-    }
-    if (geojson.haika.xyScaleFactor != null) {
-      this.options.xyScaleFactor = geojson.haika.xyScaleFactor;
-    }
-    if ((geojson.haika.xyLongitude != null) && (geojson.haika.xyLatitude != null)) {
-      this.options.xyLongitude = parseFloat(geojson.haika.xyLongitude);
-      this.options.xyLatitude = parseFloat(geojson.haika.xyLatitude);
-    }
-    if (geojson && geojson.features.length > 0) {
-      _ref = geojson.features;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        object = _ref[_i];
-        if (object.properties.id > this.lastId) {
-          this.lastId = object.properties.id;
-        }
-        klass = this.getClass(object.properties.type);
-        shape = new klass({
-          id: object.properties.id,
-          top: this.transformTopY_cm2px(object.properties.top_cm),
-          left: this.transformLeftX_cm2px(object.properties.left_cm),
-          top_cm: object.properties.top_cm,
-          left_cm: object.properties.left_cm,
-          fill: object.properties.fill,
-          stroke: object.properties.stroke,
-          angle: object.properties.angle
-        });
-        schema = shape.constructor.prototype.getJsonSchema();
-        for (key in schema.properties) {
-          shape[key] = object.properties[key];
-        }
-        this.add(shape);
-      }
-    }
-    return this.render();
-  },
   save: function(success, error) {
     var data;
     if (success == null) {
