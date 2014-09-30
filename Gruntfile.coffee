@@ -69,7 +69,7 @@ module.exports = (grunt) ->
           "js/haika-undo.js"
           "js/haika-image.js"
           "js/haika-editor.js"
-          "vendor/ol.js"
+#          "vendor/ol.js"
           "js/haika-map.js"
         ]
         dest: "js/build/haika.all.js"
