@@ -5,9 +5,9 @@ $.extend(haika, {
   _dataId: null,
   _revision: null,
   _collision: null,
-  _geojson: {},
   _nowSaving: false,
   _autoSaveTimerId: null,
+  _geojson: {},
   close: function() {
     this._dataId = null;
     this._revision = null;
@@ -70,8 +70,8 @@ $.extend(haika, {
     if (error == null) {
       error = null;
     }
-    this.prepareData();
     log('save');
+    this.prepareData();
     if (this._autoSaveTimerId) {
       clearTimeout(this._autoSaveTimerId);
       this._autoSaveTimerId = null;
@@ -119,15 +119,9 @@ $.extend(haika, {
       })(this)
     });
   },
-  saveDelay: function(delay, success, error) {
+  saveDelay: function(delay) {
     if (delay == null) {
       delay = 2000;
-    }
-    if (success == null) {
-      success = null;
-    }
-    if (error == null) {
-      error = null;
     }
     log('save-delay');
     this.prepareData();
@@ -138,7 +132,7 @@ $.extend(haika, {
     return this._autoSaveTimerId = setTimeout((function(_this) {
       return function() {
         _this._autoSaveTimerId = null;
-        return _this.save(success, error);
+        return _this.save();
       };
     })(this), delay);
   }

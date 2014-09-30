@@ -1,5 +1,4 @@
-# データの保存と読み込みに関する処理
-# GeoJSONフォーマットに関する処理
+# データの保存と読み込み
 
 $.extend haika,
   _api_load_endpoint: '/api/floor/load' #データ読み込みAPIのエンドポイント (定数)
@@ -8,9 +7,10 @@ $.extend haika,
   _dataId: null #編集中のデータのID (外部参照禁止)
   _revision: null #編集中のデータのリビジョン (外部参照禁止)
   _collision: null #衝突検出キー (外部参照禁止)
-  _geojson: {} #編集中のデータのGeoJSON (外部参照禁止)
   _nowSaving: false #保存処理中フラグ(true..保存処理中) (外部参照禁止)
   _autoSaveTimerId: null #自動保存用のタイマーID (外部参照禁止)
+
+  _geojson: {} #編集中のデータのGeoJSON (将来的にhaikaに移動する)
 
 
 # API経由で開いたデータを閉じる
@@ -66,21 +66,18 @@ $.extend haika,
 # @option {Function} error(message) エラー時のコールバック関数
 #
   save: (success = null, error = null) ->
-    @prepareData()
-
     log 'save'
+    @prepareData()
     # 遅延タイマーより先に明示的な保存があった場合はタイマーを解除
     if @_autoSaveTimerId
       clearTimeout(@_autoSaveTimerId)
       @_autoSaveTimerId = null
-
     # 保存処理中の場合は500ms後に再実行
     if @_nowSaving
       setTimeout =>
         @save(success, error)
       , 500
       return
-
     @_nowSaving = true
     data =
       id: @_dataId
@@ -112,10 +109,8 @@ $.extend haika,
 # API経由で開いたデータを遅延して保存
 #
 # @option {Number} delay 遅延時間(ミリ秒)
-# @option {Function} success 成功時のコールバック関数
-# @option {Function} error(message) エラー時のコールバック関数
 #
-  saveDelay: (delay = 2000, success = null, error = null) ->
+  saveDelay: (delay = 2000) ->
     log 'save-delay'
     @prepareData()
     if @_autoSaveTimerId
@@ -123,7 +118,5 @@ $.extend haika,
       @_autoSaveTimerId = null
     @_autoSaveTimerId = setTimeout =>
       @_autoSaveTimerId = null
-      @save(success, error)
+      @save()
     , delay
-
-
