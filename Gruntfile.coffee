@@ -39,6 +39,7 @@ module.exports = (grunt) ->
           separator: ";"
 
         src: [
+          "bower_components/fabric/dist/fabric.js"
           "bower_components/proj4/dist/proj4.js"
           "bower_components/json-editor/dist/jsoneditor.min.js"
           "bower_components/jquery-mousewheel/jquery.mousewheel.min.js"
@@ -52,7 +53,6 @@ module.exports = (grunt) ->
           "vendor/aligning_guidelines.js"
           # "vendor/centering_guidelines.js"
           "vendor/clipper.js"
-          "vendor/fabric.js"
           "js/fabric_obiect/shelf.js"
           "js/fabric_obiect/curvedShelf.js"
           "js/fabric_obiect/beacon.js"
