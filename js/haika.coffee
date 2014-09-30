@@ -86,7 +86,7 @@ haika =
     @bindEvent()
     onerror = (message)->
       alert(message)
-    onsuccess = ()->
+    onsuccess = ()=>
       @render()
     haika.openFromApi(2, null, onsuccess, onerror)
     $(@).trigger('haika:initialized')
