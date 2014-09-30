@@ -20,13 +20,13 @@ haika =
   default_options:
     width: 500
     height: 500
-    bgurl: null
-    bgopacity: 1
-    bgscale: 1
-    lon: 0
-    lat: 0
-    angle: 0
-    geojson_scale: 1.5
+    bgurl: null  #backgroundUrl
+    bgopacity: 1 #backgroundOpacity
+    bgscale: 1   #backgroundScaleFactor
+    lon: 0       #xyLongitude
+    lat: 0       #xyLatitude
+    angle: 0     #xyAngle
+    geojson_scale: 1.5 #xyScaleFactor
 
 # left,x値のcm->px変換
   transformLeftX_cm2px: (cm)->
