@@ -37,7 +37,7 @@ haika = {
     return this.centerY - (px - this.canvas.getHeight() / 2) / this.scaleFactor;
   },
   init: function(options) {
-    var canvas;
+    var canvas, onerror;
     if (options.canvasId == null) {
       throw 'CanvasのIDが未定義です';
     }
@@ -84,16 +84,11 @@ haika = {
     this.canvas = canvas;
     this.render();
     this.bindEvent();
-    return setTimeout((function(_this) {
-      return function() {
-        var onerror;
-        onerror = function(message) {
-          return alert(message);
-        };
-        haika.openFromApi(2, null, null, onerror);
-        return $(_this).trigger('haika:initialized');
-      };
-    })(this), 500);
+    onerror = function(message) {
+      return alert(message);
+    };
+    haika.openFromApi(2, null, null, onerror);
+    return $(this).trigger('haika:initialized');
   },
   bindEvent: function() {
     this.canvas.on('object:selected', (function(_this) {

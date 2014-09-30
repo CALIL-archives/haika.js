@@ -86,13 +86,10 @@ haika =
     @render()
     @bindEvent()
 
-    # Todo:なぜここで遅延処理が必要なのだろう
-    setTimeout =>
-        onerror = (message)->
-          alert(message)
-        haika.openFromApi(2, null, null, onerror)
-        $(@).trigger('haika:initialized')
-      , 500
+    onerror = (message)->
+      alert(message)
+    haika.openFromApi(2, null, null, onerror)
+    $(@).trigger('haika:initialized')
 
 
 # Fabricのイベント追加
