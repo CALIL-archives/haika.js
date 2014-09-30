@@ -24638,20 +24638,13 @@ haika = {
     if (canvas) {
       throw '既に初期化されています';
     }
-    if (options.width == null) {
-      options.width = 500;
-    }
-    if (options.height == null) {
-      options.height = 500;
-    }
+    this.scaleFactor = options.scaleFactor != null ? options.scaleFactor : 1;
+    this.layer = this.CONST_LAYERS.SHELF;
     canvas = new fabric.Canvas(options.canvasId, {
-      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair',
-      width: options.width,
-      height: options.height
+      width: options.width != null ? options.width : 500,
+      height: options.height != null ? options.height : 500,
+      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     });
-    if (options.scaleFactor != null) {
-      this.scaleFactor = options.scaleFactor;
-    }
     canvas._getActionFromCorner = function(target, corner) {
       var action;
       action = 'drag';
@@ -24675,7 +24668,6 @@ haika = {
       return fabric.drawGridLines(ctx);
     };
     initAligningGuidelines(canvas);
-    this.layer = this.CONST_LAYERS.SHELF;
     this.canvas = canvas;
     this.canvas.on('object:selected', (function(_this) {
       return function(e) {
@@ -24717,16 +24709,6 @@ haika = {
         return _this.setPropetyPanel();
       };
     })(this));
-    haika.openFromApi(2, {
-      succcess: function(message) {
-        return alert(message);
-      },
-      error: (function(_this) {
-        return function() {
-          return _this.render();
-        };
-      })(this)
-    });
     return $(this).trigger('haika:initialized');
   },
   setScale: function(newScale) {
@@ -25729,7 +25711,9 @@ haika = {
 });
 
 //# sourceMappingURL=haika-geojson.js.map
-;$(haika).on('haika:initialized', function() {
+;var initScroolBar;
+
+initScroolBar = function() {
   var bgimg_height, bgimg_width, defaultX, defaultY, maxX, maxY, scroll_weight;
   scroll_weight = 5000;
   bgimg_width = haika.backgroundImage ? haika.backgroundImage.width : 2500;
@@ -25770,85 +25754,9 @@ haika = {
       return haika.render();
     }
   });
-});
+};
 
 //# sourceMappingURL=haika-scrollbar.js.map
-;$.extend(haika, {
-  setting: {
-    navbar_height: function() {
-      if ($('#navbar').length > 0) {
-        return $('#navbar').height() + 45;
-      } else {
-        return 0;
-      }
-    },
-    sidebar_width: function() {
-      if ($('.sidebar-collapse').length > 0) {
-        return $('.sidebar-collapse').width() + 45;
-      } else {
-        return 0;
-      }
-    },
-    scrollbar_width: $('#vertical-scroller').width(),
-    scrollbar_height: $('#horizontal-scroller').height(),
-    toolbar_width: $('.toolbar_container').width() + 14,
-    property_panel_width: $('.property_panel').width(),
-    getWidth: function() {
-      return window.innerWidth - this.sidebar_width() - this.toolbar_width - this.scrollbar_width - this.property_panel_width - 20;
-    },
-    getHeight: function() {
-      return window.innerHeight - this.navbar_height() - $('.header').height() - this.scrollbar_height;
-    },
-    start: function() {
-      $('.main_container, .canvas_panel').css('width', this.getWidth());
-      $('.main_container').css('margin-left', this.toolbar_width);
-      $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', this.getHeight());
-      $('.toolbar_container,.property_panel').css('height', this.getHeight() + this.scrollbar_height);
-      $(window).resize((function(_this) {
-        return function() {
-          haika.canvas.setWidth(_this.getWidth());
-          haika.canvas.setHeight(_this.getHeight());
-          $('.main_container, .canvas_panel').css('width', _this.getWidth());
-          $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', _this.getHeight());
-          $('.toolbar_container,.property_panel').css('height', _this.getHeight() + _this.scrollbar_height);
-          return haika.render();
-        };
-      })(this));
-      return haika.init({
-        canvasId: 'canvas_area',
-        width: this.getWidth(),
-        height: this.getHeight()
-      });
-    }
-  }
-});
-
-$(function() {
-  return $('.nav-tabs a').click(function(e) {
-    var tabName;
-    e.preventDefault();
-    tabName = $(e.target).attr('class');
-    haika.addbuttons.showAddButtons(tabName);
-    if (tabName === 'beacon') {
-      haika.layer = haika.CONST_LAYERS.BEACON;
-    }
-    if (tabName === 'wall') {
-      haika.layer = haika.CONST_LAYERS.WALL;
-    }
-    if (tabName === 'floor') {
-      haika.layer = haika.CONST_LAYERS.FLOOR;
-    }
-    if (tabName === 'shelf') {
-      haika.layer = haika.CONST_LAYERS.SHELF;
-    }
-    haika.render();
-    return $(this).tab('show');
-  });
-});
-
-haika.setting.start();
-
-//# sourceMappingURL=haika-init.js.map
 ;$.extend(haika, {
   addbuttons: {
     add: function(val) {
@@ -26004,10 +25912,6 @@ $(function() {
   return _results;
 });
 
-$(haika).on('haika:initialized', function() {
-  return haika.addbuttons.showAddButtons(haika.state);
-});
-
 //# sourceMappingURL=haika-addbuttons.js.map
 ;$.extend(haika, {
   colorpicker: {
@@ -26090,6 +25994,27 @@ haika.colorpicker.init();
     haika.save();
   };
 })(this));
+
+$('.nav-tabs a').click(function(e) {
+  var tabName;
+  e.preventDefault();
+  tabName = $(e.target).attr('class');
+  haika.addbuttons.showAddButtons(tabName);
+  if (tabName === 'beacon') {
+    haika.layer = haika.CONST_LAYERS.BEACON;
+  }
+  if (tabName === 'wall') {
+    haika.layer = haika.CONST_LAYERS.WALL;
+  }
+  if (tabName === 'floor') {
+    haika.layer = haika.CONST_LAYERS.FLOOR;
+  }
+  if (tabName === 'shelf') {
+    haika.layer = haika.CONST_LAYERS.SHELF;
+  }
+  haika.render();
+  return $(this).tab('show');
+});
 
 $('#bgimg').change(function(e) {
   var data, files;
@@ -26405,8 +26330,6 @@ $(haika).on('haika:load', function() {
   }
 });
 
-haika.undo.init();
-
 //# sourceMappingURL=haika-undo.js.map
 ;$.extend(haika, {
   editor: new JSONEditor(document.getElementById("editor"), {
@@ -26632,3 +26555,73 @@ haika.editor.on("change", function() {
 haika.map.initMap();
 
 //# sourceMappingURL=haika-map.js.map
+;$.extend(haika, {
+  setting: {
+    navbar_height: function() {
+      if ($('#navbar').length > 0) {
+        return $('#navbar').height() + 45;
+      } else {
+        return 0;
+      }
+    },
+    sidebar_width: function() {
+      if ($('.sidebar-collapse').length > 0) {
+        return $('.sidebar-collapse').width() + 45;
+      } else {
+        return 0;
+      }
+    },
+    scrollbar_width: $('#vertical-scroller').width(),
+    scrollbar_height: $('#horizontal-scroller').height(),
+    toolbar_width: $('.toolbar_container').width() + 14,
+    property_panel_width: $('.property_panel').width(),
+    getWidth: function() {
+      return window.innerWidth - this.sidebar_width() - this.toolbar_width - this.scrollbar_width - this.property_panel_width - 20;
+    },
+    getHeight: function() {
+      return window.innerHeight - this.navbar_height() - $('.header').height() - this.scrollbar_height;
+    },
+    start: function() {
+      $('.main_container, .canvas_panel').css('width', this.getWidth());
+      $('.main_container').css('margin-left', this.toolbar_width);
+      $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', this.getHeight());
+      $('.toolbar_container,.property_panel').css('height', this.getHeight() + this.scrollbar_height);
+      $(window).resize((function(_this) {
+        return function() {
+          haika.canvas.setWidth(_this.getWidth());
+          haika.canvas.setHeight(_this.getHeight());
+          $('.main_container, .canvas_panel').css('width', _this.getWidth());
+          $('#vertical-scroller, #vertical-scroller .dragdealer').css('height', _this.getHeight());
+          $('.toolbar_container,.property_panel').css('height', _this.getHeight() + _this.scrollbar_height);
+          return haika.render();
+        };
+      })(this));
+      return haika.init({
+        canvasId: 'canvas_area',
+        width: this.getWidth(),
+        height: this.getHeight()
+      });
+    }
+  }
+});
+
+$(haika).on('haika:initialized', function() {
+  initScroolBar();
+  haika.undo.init();
+  haika.addbuttons.showAddButtons(haika.state);
+  haika.openFromApi(2, {
+    succcess: (function(_this) {
+      return function() {
+        return _this.render();
+      };
+    })(this),
+    error: function(message) {
+      return alert(message);
+    }
+  });
+  return log('haika:initialized');
+});
+
+haika.setting.start();
+
+//# sourceMappingURL=haika-init.js.map

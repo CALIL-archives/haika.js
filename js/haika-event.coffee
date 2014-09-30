@@ -5,6 +5,21 @@ $(window).on 'beforeunload', (event)=>
   haika.save()
   return
 
+$('.nav-tabs a').click (e)->
+  e.preventDefault()
+  tabName= $(e.target).attr('class')
+  haika.addbuttons.showAddButtons(tabName)
+  if tabName=='beacon'
+      haika.layer=haika.CONST_LAYERS.BEACON
+  if tabName=='wall'
+      haika.layer=haika.CONST_LAYERS.WALL
+  if tabName=='floor'
+      haika.layer=haika.CONST_LAYERS.FLOOR
+  if tabName=='shelf'
+      haika.layer=haika.CONST_LAYERS.SHELF
+  haika.render()
+  $(this).tab('show')
+
 #背景画像ボタンクリック時
 $('#bgimg').change (e)->
   files = e.target.files

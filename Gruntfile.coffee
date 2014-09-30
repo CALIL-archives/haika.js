@@ -63,15 +63,13 @@ module.exports = (grunt) ->
           "js/haika-io.js"
           "js/haika-geojson.js"
           "js/haika-scrollbar.js"
-          "js/haika-init.js"
           "js/haika-addbuttons.js"
           "js/haika-colorpicker.js"
           "js/haika-event.js"
           "js/haika-undo.js"
-          #"js/haika-image.js"
           "js/haika-editor.js"
-#          "vendor/ol.js"
           "js/haika-map.js"
+          "js/haika-init.js"
         ]
         dest: "js/build/haika.all.js"
         nonull: true

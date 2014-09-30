@@ -113,5 +113,3 @@ $.extend haika,
             @redrawMap()
             return value+'%'
 
-# 初期設定
-haika.map.initMap()

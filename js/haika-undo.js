@@ -111,6 +111,4 @@ $.extend(haika, {
   }
 });
 
-haika.undo.init();
-
 //# sourceMappingURL=haika-undo.js.map

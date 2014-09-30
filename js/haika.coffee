@@ -66,17 +66,13 @@ haika =
       throw 'CanvasのIDが未定義です'
     if canvas
       throw '既に初期化されています'
-    if not options.width?
-      options.width = 500
-    if not options.height?
-      options.height = 500
+    @scaleFactor = if options.scaleFactor? then options.scaleFactor else 1
+    @layer = @CONST_LAYERS.SHELF
     canvas = new fabric.Canvas(options.canvasId, {
+      width: if options.width? then options.width else 500
+      height: if options.height? then options.height else 500
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
-      width: options.width
-      height: options.height
     })
-    if options.scaleFactor?
-      @scaleFactor = options.scaleFactor
 
     canvas._getActionFromCorner = (target, corner) ->
       action = 'drag'
@@ -98,9 +94,7 @@ haika =
       fabric.drawGridLines(ctx)
 
     initAligningGuidelines(canvas)
-    @layer = @CONST_LAYERS.SHELF
     @canvas = canvas
-
     @canvas.on('object:selected', (e)=>
       object = e.target
       if object._objects?
@@ -124,14 +118,6 @@ haika =
       object.left_cm = @transformLeftX_px2cm(object.left)
       @saveDelay()
       @setPropetyPanel()
-    haika.openFromApi(2,
-      {
-        succcess: (message)->
-          alert(message)
-        error: =>
-          @render()
-      }
-    )
     $(@).trigger('haika:initialized')
 
 

@@ -153,8 +153,4 @@ $(function() {
   return _results;
 });
 
-$(haika).on('haika:initialized', function() {
-  return haika.addbuttons.showAddButtons(haika.state);
-});
-
 //# sourceMappingURL=haika-addbuttons.js.map

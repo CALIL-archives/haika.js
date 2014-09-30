@@ -59,20 +59,13 @@ haika = {
     if (canvas) {
       throw '既に初期化されています';
     }
-    if (options.width == null) {
-      options.width = 500;
-    }
-    if (options.height == null) {
-      options.height = 500;
-    }
+    this.scaleFactor = options.scaleFactor != null ? options.scaleFactor : 1;
+    this.layer = this.CONST_LAYERS.SHELF;
     canvas = new fabric.Canvas(options.canvasId, {
-      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair',
-      width: options.width,
-      height: options.height
+      width: options.width != null ? options.width : 500,
+      height: options.height != null ? options.height : 500,
+      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     });
-    if (options.scaleFactor != null) {
-      this.scaleFactor = options.scaleFactor;
-    }
     canvas._getActionFromCorner = function(target, corner) {
       var action;
       action = 'drag';
@@ -96,7 +89,6 @@ haika = {
       return fabric.drawGridLines(ctx);
     };
     initAligningGuidelines(canvas);
-    this.layer = this.CONST_LAYERS.SHELF;
     this.canvas = canvas;
     this.canvas.on('object:selected', (function(_this) {
       return function(e) {
@@ -138,16 +130,6 @@ haika = {
         return _this.setPropetyPanel();
       };
     })(this));
-    haika.openFromApi(2, {
-      succcess: function(message) {
-        return alert(message);
-      },
-      error: (function(_this) {
-        return function() {
-          return _this.render();
-        };
-      })(this)
-    });
     return $(this).trigger('haika:initialized');
   },
   setScale: function(newScale) {

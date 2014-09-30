@@ -48,4 +48,3 @@ $.extend haika,
           haika.canvas.renderAll()
       )
 
-haika.colorpicker.init()

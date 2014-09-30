@@ -95,4 +95,3 @@ $.extend haika,
       object.setOptions state
       object.setCoords()
 
-haika.undo.init()

@@ -35,24 +35,23 @@ $.extend haika,
         width : @getWidth()
         height : @getHeight()
 
+$(haika).on 'haika:initialized', ->
+  initScroolBar()
+  haika.undo.init()
+  haika.addbuttons.showAddButtons(haika.state)
+  haika.openFromApi(2,
+    {
+      succcess: =>
+        @render()
+      error: (message) ->
+        alert(message)
+    }
+  )
+  log 'haika:initialized'
 
-$ ->
-  # レイヤータブ
-  $('.nav-tabs a').click (e)->
-    e.preventDefault()
-    tabName= $(e.target).attr('class')
-    haika.addbuttons.showAddButtons(tabName)
-    if tabName=='beacon'
-        haika.layer=haika.CONST_LAYERS.BEACON
-    if tabName=='wall'
-        haika.layer=haika.CONST_LAYERS.WALL
-    if tabName=='floor'
-        haika.layer=haika.CONST_LAYERS.FLOOR
-    if tabName=='shelf'
-        haika.layer=haika.CONST_LAYERS.SHELF
-    haika.render()
-    $(this).tab('show')
+
 
 # 初期設定
 haika.setting.start()
-
+haika.map.initMap()
+haika.colorpicker.init()
