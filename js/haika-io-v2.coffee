@@ -10,8 +10,6 @@ $.extend haika,
   _nowSaving: false #保存処理中フラグ(true..保存処理中) (外部参照禁止)
   _autoSaveTimerId: null #自動保存用のタイマーID (外部参照禁止)
 
-  _geojson: {} #編集中のデータのGeoJSON (将来的にhaikaに移動する)
-
 
 # API経由で開いたデータを閉じる
 #
@@ -95,7 +93,6 @@ $.extend haika,
           error and error(json.message)
           # Todo: コンポーネント内からのalertは撤去する方針
           alert json.message
-          location.reload()
           return
         @_revision = json.revision
         @_collision = json.collision

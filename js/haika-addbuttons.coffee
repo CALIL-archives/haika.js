@@ -22,7 +22,6 @@ $.extend haika,
         object.eachWidth = val.eachWidth
         object.eachHeight = val.eachHeight
       id = haika.add(object)
-      haika.setState(object)
       haika.render()
       haika.undo.add(id)
       $(haika.canvas.getObjects()).each (i, obj)=>

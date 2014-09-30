@@ -39,9 +39,6 @@ $.extend(haika, {
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
-        if (object.properties.id > this.lastId) {
-          this.lastId = object.properties.id;
-        }
         klass = this.getClass(object.properties.type);
         shape = new klass({
           id: object.properties.id,

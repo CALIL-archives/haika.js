@@ -50,10 +50,23 @@ $.extend(haika, {
 
 $(function() {
   return $('.nav-tabs a').click(function(e) {
+    var tabName;
     e.preventDefault();
-    haika.state = $(e.target).attr('class');
+    tabName = $(e.target).attr('class');
+    haika.addbuttons.showAddButtons(tabName);
+    if (tabName === 'beacon') {
+      haika.layer = haika.CONST_LAYERS.BEACON;
+    }
+    if (tabName === 'wall') {
+      haika.layer = haika.CONST_LAYERS.WALL;
+    }
+    if (tabName === 'floor') {
+      haika.layer = haika.CONST_LAYERS.FLOOR;
+    }
+    if (tabName === 'shelf') {
+      haika.layer = haika.CONST_LAYERS.SHELF;
+    }
     haika.render();
-    haika.addbuttons.showAddButtons(haika.state);
     return $(this).tab('show');
   });
 });

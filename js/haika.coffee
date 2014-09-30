@@ -3,19 +3,27 @@ log = (obj) ->
     console.log obj
 
 haika =
+  CONST_LAYERS: #現在のステータス [オプション定数]
+    SHELF: 0
+    WALL: 1
+    FLOOR: 2
+    BEACON: 3
+
   canvas: null # fabricのCanvasオブジェクト
+
   centerX: 0 # 表示位置X(画面の中央が0) [エディタステータス系変数]
   centerY: 0 # 表示位置Y(画面の中央が0) [エディタステータス系変数]
-
-  # Todo: fabricオブジェクトからの呼び出しについて検討の必要あり
+# Todo: fabricオブジェクトからの呼び出しについて検討の必要あり
   scaleFactor: 1 #表示倍率 [エディタステータス系変数] (このファイル外で使用禁止)
-
+  layer: null #現在のレイヤー(CONST_LAYERS) [エディタステータス系変数]
   backgroundImage: null #背景画像のキャッシュ [エディタ内部利用]
-  objects: []
 
-  state: 'shelf'
+  objects: []
+  _geojson: {} #編集中のデータのGeoJSON
+
   fillColor: "#CFE2F3"
   strokeColor: "#000000"
+
   backgroundUrl: null
   backgroundOpacity: 1
   backgroundScaleFactor: 1
@@ -51,9 +59,9 @@ haika =
     if canvas
       throw '既に初期化されています'
     if not options.width?
-      options.width=500
+      options.width = 500
     if not options.height?
-      options.height=500
+      options.height = 500
     canvas = new fabric.Canvas(options.canvasId, {
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
       width: options.width
@@ -82,13 +90,16 @@ haika =
       fabric.drawGridLines(ctx)
 
     initAligningGuidelines(canvas)
+    @layer = @CONST_LAYERS.SHELF
     @canvas = canvas
     @bindEvent()
     haika.openFromApi(2,
-      succcess : (message)->
-        alert(message)
-      ,error : =>
-        @render()
+      {
+        succcess: (message)->
+          alert(message)
+        error: =>
+          @render()
+      }
     )
     $(@).trigger('haika:initialized')
 
@@ -101,12 +112,12 @@ haika =
       if object._objects?
         object.lockScalingX = true
         object.lockScalingY = true
-      @prepareData()
+      #@prepareData()
       @setPropetyPanel()
     )
 
     @canvas.on 'before:selection:cleared', (e)=>
-      @canvas.deactivateAll().renderAll()
+      @canvas.deactivateAll()
       @editor_change()
       @setPropetyPanel()
     @canvas.on 'object:scaling', (e) =>
@@ -126,19 +137,23 @@ haika =
       return
 # 背景画像をURLからロード
   loadBgFromUrl: (url) ->
+    @backgroundImage = null
     @backgroundUrl = url
     @render()
   resetBg: ->
     loadBgFromUrl('')
 
-# オブジェクトにつけるid 通し番号
-  lastId: 0
 # idを取得
   getId: ->
     if @objects.length == 0
       return 0
-    @lastId += 1
-    return @lastId
+    lastId=0
+    for object in @objects
+      if object.id > lastId
+        lastId=object.id
+    lastId += 1
+    return lastId
+
 # idからオブジェクトの配列番号を取得
   getCountFindById: (id)->
     count = null
@@ -179,19 +194,7 @@ haika =
     @objects.push(o)
     $(@).trigger('haika:add')
     return o.id
-# レイヤーの状態をセット
-  setState: (object)->
-    #layer tab
-    if object.type.match(/shelf$/)
-      state = 'shelf'
-    else if object.type == 'wall'
-      state = 'wall'
-    else if object.type == 'floor'
-      state = 'floor'
-    else
-      state = 'beacon'
-    @state = state
-    $('.nav a.' + @state).tab('show')
+
 # fabric上のオブジェクトの取得 共通関数
   getObjects: (func, do_active = true)->
     object = @canvas.getActiveObject()
@@ -384,12 +387,12 @@ haika =
         floors.push(o)
       if o.type.match(/shelf$/)
         shelfs.push(o)
-    if @state != 'floor'
+    if @layer != @CONST_LAYERS.FLOOR
       for o in floors
         @addObjectToCanvas(o)
     for o in walls
       @addObjectToCanvas(o)
-    if @state == 'floor'
+    if @layer == @CONST_LAYERS.FLOOR
       for o in floors
         @addObjectToCanvas(o)
     for o in shelfs
@@ -420,10 +423,7 @@ haika =
       object.count = o.count
       object.eachWidth = o.eachWidth
       object.eachHeight = o.eachHeight
-    # layer
-    object.selectable = (o.type.match(@state))
-    if not o.type.match(@state)
-      object.opacity = 0.5
+
     object.id = o.id
     object.scaleX = object.scaleY = 1
     if o.type == 'wall' or o.type == 'floor'
@@ -461,6 +461,14 @@ haika =
     schema = object.constructor.prototype.getJsonSchema()
     for key of schema.properties
       object[key] = o[key]
+
+    #現在のレイヤーかどうか
+    if ((o.type == 'shelf' or o.type == 'curvedShelf') and @layer == @CONST_LAYERS.SHELF) or (o.type == 'wall' and @layer == @CONST_LAYERS.WALL) or (o.type == 'beacon' and @layer == @CONST_LAYERS.BEACON) or (o.type == 'floor' and @layer == @CONST_LAYERS.FLOOR)
+      object.selectable = true
+    else
+      object.selectable = false
+      object.opacity = 0.5
+
     @canvas.add(object)
 
 # キャンバスのプロパティを設定
@@ -567,6 +575,7 @@ haika =
       @canvas.renderAll()
 # ズームイン
   zoomIn: ->
+    @canvas.deactivateAll()
     prev_scale = @scaleFactor
     @scaleFactor = @scaleFactor + Math.pow(@scaleFactor + 1, 2) / 20
     if @scaleFactor >= 4
@@ -577,6 +586,7 @@ haika =
     @render()
 # ズームアウト
   zoomOut: ->
+    @canvas.deactivateAll()
     prev_scale = @scaleFactor
     @scaleFactor = @scaleFactor - Math.pow(@scaleFactor + 1, 2) / 20
     if @scaleFactor <= 0.05

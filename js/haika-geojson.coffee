@@ -30,8 +30,6 @@ $.extend haika,
       @xyLatitude = geojson.haika.xyLatitude
     if geojson and geojson.features.length > 0
       for object in geojson.features
-        if object.properties.id > @lastId
-          @lastId = object.properties.id
         klass = @getClass(object.properties.type)
         shape = new klass(
           id: object.properties.id

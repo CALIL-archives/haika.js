@@ -22,7 +22,6 @@ $.extend(haika, {
         object.eachHeight = val.eachHeight;
       }
       id = haika.add(object);
-      haika.setState(object);
       haika.render();
       haika.undo.add(id);
       return $(haika.canvas.getObjects()).each((function(_this) {
