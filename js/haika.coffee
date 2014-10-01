@@ -23,7 +23,6 @@ haika =
 # Todo: fabricオブジェクトからの呼び出しについて検討の必要あり
   scaleFactor: 1 #表示倍率 [エディタステータス系変数] (このファイル外で使用禁止)
   layer: null #現在のレイヤー(CONST_LAYERS) [エディタステータス系変数]
-  backgroundImage: null #背景画像のキャッシュ [エディタ内部利用]
 
   objects: []
   _geojson: {} #編集中のデータのGeoJSON
@@ -89,12 +88,18 @@ haika =
     canvas._renderBackground = (ctx) ->
       ctx.mozImageSmoothingEnabled = false
       if @backgroundImage
+        @backgroundImage.left = Math.floor(@parentHaika.transformLeftX_cm2px(@backgroundImage._originalElement.width / 2 * @parentHaika.backgroundScaleFactor))
+        @backgroundImage.top = Math.floor(@parentHaika.transformTopY_cm2px(@backgroundImage._originalElement.height / 2 * @parentHaika.backgroundScaleFactor))
+        @backgroundImage.width = Math.floor(@backgroundImage._originalElement.width * @parentHaika.backgroundScaleFactor * @parentHaika.scaleFactor)
+        @backgroundImage.height = Math.floor(@backgroundImage._originalElement.height * @parentHaika.backgroundScaleFactor * @parentHaika.scaleFactor)
+        @backgroundImage.opacity = @parentHaika.backgroundOpacity
         @backgroundImage.render ctx
       ctx.mozImageSmoothingEnabled = true
       fabric.drawGridLines(ctx)
 
     initAligningGuidelines(canvas)
     @canvas = canvas
+    @canvas.parentHaika = @
     @canvas.on('object:selected', (e)=>
       object = e.target
       if object._objects?
@@ -159,7 +164,7 @@ haika =
     @setScale 1
 
   setBackgroundUrl: (url) ->
-    @backgroundImage = null
+    @canvas.backgroundImage = null
     @backgroundUrl = url
     @render()
 
@@ -382,22 +387,12 @@ haika =
 
 # canvasの描画
   render: ->
-    if not @backgroundImage and @backgroundUrl
+    if not @canvas.backgroundImage and @backgroundUrl
       fabric.Image.fromURL @backgroundUrl, (img)=>
-        @backgroundImage = img
+        @canvas.backgroundImage = img
         @render()
         return
     @canvas.renderOnAddRemove = false
-    if @backgroundImage
-      @canvas.setBackgroundImage @backgroundImage
-      @backgroundImage.left = Math.floor(@transformLeftX_cm2px(@backgroundImage._originalElement.width / 2 * @backgroundScaleFactor))
-      @backgroundImage.top = Math.floor(@transformTopY_cm2px(@backgroundImage._originalElement.height / 2 * @backgroundScaleFactor))
-      @backgroundImage.width = Math.floor(@backgroundImage._originalElement.width * @backgroundScaleFactor * @scaleFactor)
-      @backgroundImage.height = Math.floor(@backgroundImage._originalElement.height * @backgroundScaleFactor * @scaleFactor)
-      @backgroundImage.opacity = @backgroundOpacity
-    else
-      @canvas.setBackgroundImage null
-
     @canvas._objects.length = 0;
     beacons = []
     shelfs = []

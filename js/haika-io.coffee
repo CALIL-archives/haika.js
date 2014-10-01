@@ -19,7 +19,7 @@ $.extend haika,
     @_collision = null
     @_geojson = {}
     @objects.length = 0
-    @backgroundImage = null
+    @canvas.backgroundImage = null
 
 
 # API経由でデータを開く
