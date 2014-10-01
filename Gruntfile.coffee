@@ -134,18 +134,20 @@ module.exports = (grunt) ->
             [proxySnippet]
 
         proxies: [
-          context: "/api/floor/load"
+          context: "/"
           host: "app.haika.io"
           port: 443
           https: true
           xforward: false
+          headers:
+            'Strict-Transport-Security' : 'max-age=0'
         ]
-    open:
-      delayed:
-        path: "http://localhost:9000"
-        app: "Google Chrome"
-        options:
-          openOn: "serverListening"
+#    open:
+#      delayed:
+#        path: "http://localhost:9000"
+#        app: "Google Chrome"
+#        options:
+#          openOn: "serverListening"
   # loadNpmTasks
   require('load-grunt-tasks')(grunt);
   # # package.jsonから読み込んでるもの
@@ -166,6 +168,6 @@ module.exports = (grunt) ->
     grunt.task.run [
       "configureProxies:server"
       'connect:server'
-      "open"
+#      "open"
       "esteWatch"
     ]
