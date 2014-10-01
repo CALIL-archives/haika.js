@@ -104,44 +104,10 @@ module.exports = function(grunt) {
           message: 'Complete'
         }
       }
-    },
-    connect: {
-      server: {
-        options: {
-          hostname: "localhost",
-          port: 9000,
-          keepalive: true,
-          open: true,
-          middleware: function(connect, options) {
-            return [proxySnippet];
-          }
-        },
-        proxies: [
-          {
-            context: "/api/floor/load",
-            host: "app.haika.io",
-            port: 443,
-            https: true,
-            xforward: false
-          }
-        ]
-      }
-    },
-    open: {
-      delayed: {
-        path: "http://localhost:9000",
-        app: "Google Chrome",
-        options: {
-          openOn: "serverListening"
-        }
-      }
     }
   });
   require('load-grunt-tasks')(grunt);
-  grunt.registerTask("default", ["bower", "coffee", "concat", "uglify", 'notify:complete']);
-  return grunt.registerTask("server", function(target) {
-    return grunt.task.run(["configureProxies:server", 'connect:server', "open", "esteWatch"]);
-  });
+  return grunt.registerTask("default", ["bower", "coffee", "concat", "uglify", 'notify:complete']);
 };
 
 //# sourceMappingURL=Gruntfile.js.map

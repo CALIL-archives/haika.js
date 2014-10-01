@@ -798,3 +798,33 @@ if @options.bgurl
     <script src="vendor/ol.js"></script>
     <script src="js/map_setting.js"></script>
 -->
+
+
+    connect:
+      server:
+        options:
+          hostname: "localhost"
+          port: 9000
+          keepalive: true
+          open: true
+          middleware: (connect, options) ->
+            [proxySnippet]
+
+        proxies: [
+          context: "/"
+          host: "app.haika.io"
+          port: 443
+          https: true
+          xforward: true
+          headers:
+            'Strict-Transport-Security' : 'max-age=0'
+        ]
+
+
+  grunt.registerTask "server", (target) ->
+    grunt.task.run [
+      "configureProxies:server"
+      'connect:server'
+#      "open"
+      "esteWatch"
+    ]
