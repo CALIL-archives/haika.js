@@ -39,7 +39,6 @@ haika =
   xyScaleFactor: 1
 
   clipboard: []
-  clipboard_scale: 0
 
 # 座標変換関数
   transformLeftX_cm2px: (cm)->
@@ -265,9 +264,8 @@ haika =
 # コピー
   copy: ->
     @clipboard = []
-    @clipboard_scale = @scaleFactor
     @applyActiveObjects((object)=>
-      @clipboard.push(fabric.util.object.clone(object))
+      @clipboard.push(object.toGeoJSON().properties)
       return false
     )
     $(@).trigger('haika:copy')
@@ -275,15 +273,18 @@ haika =
 # 複製
   duplicate: ->
     _clipboard = @clipboard
-    _clipboard_scale = @clipboard_scale
     @copy()
     @paste()
     @clipboard = _clipboard
-    @clipboard_scale = _clipboard_scale
     $(@).trigger('haika:duplicate')
 
 # アクティブなグループを設定
   activeGroup: (new_ids)->
+    if new_ids.length==1
+      $(@canvas.getObjects()).each (i, obj)=>
+        if obj.id == @clipboard[0].id
+          @canvas.setActiveObject(obj)
+      return
     new_objects = []
     for object in @canvas.getObjects()
       for new_id in new_ids
@@ -302,31 +303,19 @@ haika =
 
 # ペースト
   paste: ->
-    # クリップボードに１つ
-    if @clipboard.length == 1
-      object = @clipboard[0]
-      o = fabric.util.object.clone(object)
-      o.top = @transformTopY_cm2px(@centerY)
-      o.left = @transformLeftX_cm2px(@centerX)
-      new_id = @add(o)
-      @saveDelay()
-      @render()
-      $(@canvas.getObjects()).each (i, obj)=>
-        if obj.id == new_id
-          @canvas.setActiveObject(obj)
-      # クリップボードに複数
-    else if @clipboard.length > 1
+   if @clipboard.length > 0
       new_ids = []
       for object in @clipboard
-        o = fabric.util.object.clone(object)
-        o.top = @transformTopY_cm2px(@centerY) + object.top * @scaleFactor / @clipboard_scale
-        o.left = @transformLeftX_cm2px(@centerX) + object.left * @scaleFactor / @clipboard_scale
-        new_id = @add(o)
-        new_ids.push(new_id)
-      @saveDelay()
+        object.id=@_getLatestId()
+        if @clipboard.length == 1
+          @clipboard[0].top_cm=@centerY
+          @clipboard[0].left_cm=@centerX
+        new_ids.push(object.id)
+        @objects.push(object)
       @render()
+      @saveDelay()
       @activeGroup(new_ids)
-    $(@).trigger('haika:paste')
+   $(@).trigger('haika:paste')
 # すべてを選択(全レイヤー)
   selectAll: ()->
     @canvas.discardActiveGroup()

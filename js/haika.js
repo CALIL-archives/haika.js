@@ -37,7 +37,6 @@ haika = {
   xyAngle: 0,
   xyScaleFactor: 1,
   clipboard: [],
-  clipboard_scale: 0,
   transformLeftX_cm2px: function(cm) {
     return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scaleFactor;
   },
@@ -277,27 +276,34 @@ haika = {
   },
   copy: function() {
     this.clipboard = [];
-    this.clipboard_scale = this.scaleFactor;
     this.applyActiveObjects((function(_this) {
       return function(object) {
-        _this.clipboard.push(fabric.util.object.clone(object));
+        _this.clipboard.push(object.toGeoJSON().properties);
         return false;
       };
     })(this));
     return $(this).trigger('haika:copy');
   },
   duplicate: function() {
-    var _clipboard, _clipboard_scale;
+    var _clipboard;
     _clipboard = this.clipboard;
-    _clipboard_scale = this.clipboard_scale;
     this.copy();
     this.paste();
     this.clipboard = _clipboard;
-    this.clipboard_scale = _clipboard_scale;
     return $(this).trigger('haika:duplicate');
   },
   activeGroup: function(new_ids) {
     var group, new_id, new_objects, object, _i, _j, _len, _len1, _ref;
+    if (new_ids.length === 1) {
+      $(this.canvas.getObjects()).each((function(_this) {
+        return function(i, obj) {
+          if (obj.id === _this.clipboard[0].id) {
+            return _this.canvas.setActiveObject(obj);
+          }
+        };
+      })(this));
+      return;
+    }
     new_objects = [];
     _ref = this.canvas.getObjects();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -320,35 +326,22 @@ haika = {
     return this.canvas.setActiveGroup(group.setCoords()).renderAll();
   },
   paste: function() {
-    var new_id, new_ids, o, object, _i, _len, _ref;
-    if (this.clipboard.length === 1) {
-      object = this.clipboard[0];
-      o = fabric.util.object.clone(object);
-      o.top = this.transformTopY_cm2px(this.centerY);
-      o.left = this.transformLeftX_cm2px(this.centerX);
-      new_id = this.add(o);
-      this.saveDelay();
-      this.render();
-      $(this.canvas.getObjects()).each((function(_this) {
-        return function(i, obj) {
-          if (obj.id === new_id) {
-            return _this.canvas.setActiveObject(obj);
-          }
-        };
-      })(this));
-    } else if (this.clipboard.length > 1) {
+    var new_ids, object, _i, _len, _ref;
+    if (this.clipboard.length > 0) {
       new_ids = [];
       _ref = this.clipboard;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         object = _ref[_i];
-        o = fabric.util.object.clone(object);
-        o.top = this.transformTopY_cm2px(this.centerY) + object.top * this.scaleFactor / this.clipboard_scale;
-        o.left = this.transformLeftX_cm2px(this.centerX) + object.left * this.scaleFactor / this.clipboard_scale;
-        new_id = this.add(o);
-        new_ids.push(new_id);
+        object.id = this._getLatestId();
+        if (this.clipboard.length === 1) {
+          this.clipboard[0].top_cm = this.centerY;
+          this.clipboard[0].left_cm = this.centerX;
+        }
+        new_ids.push(object.id);
+        this.objects.push(object);
       }
-      this.saveDelay();
       this.render();
+      this.saveDelay();
       this.activeGroup(new_ids);
     }
     return $(this).trigger('haika:paste');
