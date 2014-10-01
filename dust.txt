@@ -762,3 +762,39 @@ if @options.bgurl
 #            log [x,y]
 #            coordinate = ol.proj.transform([x,y], "EPSG:3857", "EPSG:4326")
 
+
+
+<!--
+    <script type="text/javascript" src="vendor/sprintf.js"></script>
+    <script type="text/javascript" src="bower_components/proj4/dist/proj4.js"></script>
+    <script type="text/javascript" src="bower_components/json-editor/dist/jsoneditor.min.js"></script>
+    <script type="text/javascript" src="bower_components/jquery-mousewheel/jquery.mousewheel.min.js"></script>
+    <script type="text/javascript" src="bower_components/dragdealer/dragdealer.min.js"></script>
+    <script type="text/javascript" src="bower_components/Javascript-Undo-Manager/js/undomanager.js"></script>
+    <script type="text/javascript" src="vendor/mousetrap.min.js"></script>
+    <script type="text/javascript" src="bower_components/jquery.finger/dist/jquery.finger.min.js"></script>
+    <script type="text/javascript" src="vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap-slider/bootstrap-slider.js"></script>
+    <script src="vendor/clipper.js"></script>
+    <script type="text/javascript" src="vendor/fabric.js"></script>
+    <script type="text/javascript" src="vendor/aligning_guidelines.js"></script>
+-->
+<!--
+    <script type="text/javascript" src="vendor/centering_guidelines.js"></script>
+    <script type="text/javascript" src="vendor/fabric.min.js"></script>
+    <script type="text/javascript" src="vendor/loadsvg.js"></script>
+-->
+<!--
+    <script type="text/javascript" src="js/fabric_obiect/shelf.js"></script>
+    <script type="text/javascript" src="js/fabric_obiect/curvedShelf.js"></script>
+    <script type="text/javascript" src="js/fabric_obiect/beacon.js"></script>
+    <script type="text/javascript" src="js/fabric_obiect/wall.js"></script>
+    <script type="text/javascript" src="js/fabric_obiect/floor.js"></script>
+    <script type="text/javascript" src="js/fabric_obiect/grid.js"></script>
+    <script type="text/javascript" src="js/haika.js"></script>
+    <script type="text/javascript" src="js/haika_io_v1.js"></script>
+    <script type="text/javascript" src="js/init.js"></script>
+    <script type="text/javascript" src="js/editor.js"></script>
+    <script src="vendor/ol.js"></script>
+    <script src="js/map_setting.js"></script>
+-->
