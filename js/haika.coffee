@@ -221,25 +221,66 @@ haika =
     $(@).trigger('haika:add')
     return o.id
 
-# fabric上のオブジェクトの取得 共通関数
-  getObjects: (func, do_active = true)->
-    object = @canvas.getActiveObject()
-    if object
-      new_id = func(object)
-      if new_id and do_active
-        $(@canvas.getObjects()).each (i, obj)=>
-          if obj.id == new_id
-            @canvas.setActiveObject(obj)
-    group = @canvas.getActiveGroup()
-    if group
-      new_ids = []
-      for object in group.getObjects()
-        new_id = func(object)
-        new_ids.push(new_id)
-      if do_active
-        @activeGroup(new_ids)
-      else
-        @render()
+  #選択中のオブジェクトに一括して処理を適用する
+  #setActiveは処理後、選択を維持するかどうか
+  #関数の戻り値がTrueの場合かつsetActiveはTrueの場合は維持
+  applyActiveObjects:(func)->
+    if @canvas.getActiveObject()
+      target =@canvas.getActiveObject()
+      if func(target)
+        @canvas.setActiveObject(target)
+    else if @canvas.getActiveGroup()
+      group=[]
+      for target in @canvas.getActiveGroup().getObjects()
+        if func(target)
+          group.push(target.id)
+      if group
+        @activeGroup(group)
+# 削除
+  remove: ->
+    @applyActiveObjects((object)=>
+      @canvas.remove(object)
+      @objects.splice(@getCountFindById(object.id), 1)
+      return false
+    )
+    @canvas.deactivateAll()
+    @canvas.renderAll()
+    @saveDelay()
+    $(@).trigger('haika:remove')
+
+# 最前面に移動
+  bringToFront: ->
+    @applyActiveObjects((object)=>
+      object.bringToFront()
+      count = @getCountFindById(object.id)
+      obj = @objects[count]
+      @objects.splice(count, 1)
+      @objects.push(obj)
+      return true
+    )
+    @canvas.renderAll()
+    @saveDelay()
+
+# コピー
+  copy: ->
+    @clipboard = []
+    @clipboard_scale = @scaleFactor
+    @applyActiveObjects((object)=>
+      @clipboard.push(fabric.util.object.clone(object))
+      return true
+    )
+    $(@).trigger('haika:copy')
+
+# 複製
+  duplicate: ->
+    _clipboard = @clipboard
+    _clipboard_scale = @clipboard_scale
+    @copy()
+    @paste()
+    @clipboard = _clipboard
+    @clipboard_scale = _clipboard_scale
+    $(@).trigger('haika:duplicate')
+
 # アクティブなグループを設定
   activeGroup: (new_ids)->
     new_objects = []
@@ -256,70 +297,10 @@ haika =
     )
     @canvas._activeObject = null
     @canvas.setActiveGroup(group.setCoords()).renderAll()
-# 削除
-  remove: ->
-    @getObjects((object)=>
-      @__remove(object)
-    , false)
-    $(@).trigger('haika:remove')
-  __remove: (object)->
-    @canvas.remove(object)
-    count = @getCountFindById(object.id)
-    @objects.splice(count, 1)
-    return object
-# 最前面に移動
-  bringToFront: ->
-    @getObjects((object)=>
-      count = @getCountFindById(object.id)
-      object.bringToFront()
-      obj = @objects[count]
-      @objects.splice(count, 1)
-      @objects.push(obj)
-      return obj.id
-    )
-# 複製
-  duplicate: ->
-    object = @canvas.getActiveObject()
-    if object
-      o = fabric.util.object.clone(object)
-      o.top = @transformTopY_cm2px(@centerY)
-      o.left = @transformLeftX_cm2px(@centerX)
-      new_id = @add(o)
-    group = @canvas.getActiveGroup()
-    if group
-      new_ids = []
-      for object in group.getObjects()
-        o = fabric.util.object.clone(object)
-        o.top = @transformTopY_cm2px(@centerY) + object.top
-        o.left = @transformLeftX_cm2px(@centerX) + object.left
-        new_id = @add(o)
-        new_ids.push(new_id)
-    @saveDelay()
-    @render()
-    if object
-      $(@canvas.getObjects()).each (i, obj)=>
-        if obj.id == new_id
-          @canvas.setActiveObject(obj)
-    if group
-      @activeGroup(new_ids)
-    $(@).trigger('haika:duplicate')
-# コピー
-  copy: ->
-    @clipboard = []
-    object = @canvas.getActiveObject()
-    if object
-      @clipboard.push(fabric.util.object.clone(object))
-    group = @canvas.getActiveGroup()
-    if group
-      for object in group.getObjects()
-        @clipboard.push(fabric.util.object.clone(object))
-    @clipboard_scale = @scaleFactor
-    $(@).trigger('haika:copy')
+
+
 # ペースト
   paste: ->
-    # クリップボードになにもない
-    if @clipboard.length <= 0
-      return
     # クリップボードに１つ
     if @clipboard.length == 1
       object = @clipboard[0]
@@ -333,7 +314,7 @@ haika =
         if obj.id == new_id
           @canvas.setActiveObject(obj)
       # クリップボードに複数
-    else
+    else if @clipboard.length > 1
       new_ids = []
       for object in @clipboard
         o = fabric.util.object.clone(object)
@@ -346,7 +327,7 @@ haika =
       @render()
       log 'after render' + @clipboard[0].top
       @activeGroup(new_ids)
-      $(@).trigger('haika:paste')
+    $(@).trigger('haika:paste')
 # すべてを選択(全レイヤー)
   selectAll: ()->
     @canvas.discardActiveGroup()
@@ -382,8 +363,7 @@ haika =
     if not @canvas.backgroundImage and @backgroundUrl
       fabric.Image.fromURL @backgroundUrl, (img)=>
         @canvas.backgroundImage = img
-        @render()
-        return
+        @canvas.renderAll()
     @canvas.renderOnAddRemove = false
     @canvas._objects.length = 0;
     beacons = []
@@ -413,7 +393,6 @@ haika =
       @addObjectToCanvas(o)
     @canvas.renderAll()
     @canvas.renderOnAddRemove = true
-    @setCanvasProperty()
     $(@).trigger('haika:render')
 
 
@@ -474,18 +453,6 @@ haika =
 
     @canvas.add(object)
 
-# キャンバスのプロパティを設定
-  setCanvasProperty: ->
-    $('#canvas_width').html(@canvas.getWidth())
-    $('#canvas_height').html(@canvas.getHeight())
-    $('#canvas_centerX').html(@centerX)
-    $('#canvas_centerY').html(@centerY)
-    $('#canvas_bgscale').val(@backgroundScaleFactor)
-    $('#canvas_bgopacity').val(@backgroundOpacity)
-    $('#canvas_lon').val(@xyLongitude)
-    $('#canvas_lat').val(@xyLatitude)
-    $('#canvas_angle').val(@canvas.angle)
-    $('.zoom').html((@scaleFactor * 100).toFixed(0) + '%')
 # 移動ピクセル数を取得
   getMovePixel: (event)->
     return if event.shiftKey then 10 else 1

@@ -44,6 +44,19 @@ windowSetting = {
   }
 };
 
+$(haika).on('haika:render', function() {
+  $('#canvas_width').html(haika.canvas.getWidth());
+  $('#canvas_height').html(haika.canvas.getHeight());
+  $('#canvas_centerX').html(haika.centerX);
+  $('#canvas_centerY').html(haika.centerY);
+  $('#canvas_bgscale').val(haika.backgroundScaleFactor);
+  $('#canvas_bgopacity').val(haika.backgroundOpacity);
+  $('#canvas_lon').val(haika.xyLongitude);
+  $('#canvas_lat').val(haika.xyLatitude);
+  $('#canvas_angle').val(haika.canvas.angle);
+  return $('.zoom').html((haika.scaleFactor * 100).toFixed(0) + '%');
+});
+
 $(haika).on('haika:initialized', function() {
   return haika.openFromApi(2, {
     succcess: (function(_this) {
