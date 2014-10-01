@@ -131,7 +131,7 @@ haika =
 # @param [Number] newScale 新しい拡大率(0.05~4=5~400%)
 #
   setScale: (newScale) ->
-    @canvas.deactivateAll()
+    #@canvas.deactivateAll()
     if newScale >= 4
       newScale = 4
     else if newScale <= 0.05
@@ -227,21 +227,16 @@ haika =
   applyActiveObjects: (func)->
     if @canvas.getActiveObject()
       target = @canvas.getActiveObject()
-      if func(target)
-        @canvas.setActiveObject(target)
+      func(target)
     else if @canvas.getActiveGroup()
-      group = []
       for target in @canvas.getActiveGroup().getObjects()
-        if func(target)
-          group.push(target.id)
-      if group
-        @activeGroup(group)
+        func(target)
+
 # 削除
   remove: ->
     @applyActiveObjects((object)=>
       @canvas.remove(object)
       @objects.splice(@getCountFindById(object.id), 1)
-      return false
     )
     @canvas.deactivateAll()
     @canvas.renderAll()
@@ -256,7 +251,6 @@ haika =
       obj = @objects[count]
       @objects.splice(count, 1)
       @objects.push(obj)
-      return true
     )
     @canvas.renderAll()
     @saveDelay()
@@ -266,7 +260,6 @@ haika =
     @clipboard = []
     @applyActiveObjects((object)=>
       @clipboard.push(object.toGeoJSON().properties)
-      return false
     )
     $(@).trigger('haika:copy')
 
@@ -280,9 +273,11 @@ haika =
 
 # アクティブなグループを設定
   activeGroup: (new_ids)->
+    if new_ids.length==0
+      return
     if new_ids.length==1
       $(@canvas.getObjects()).each (i, obj)=>
-        if obj.id == @clipboard[0].id
+        if obj.id == new_ids[0]
           @canvas.setActiveObject(obj)
       return
     new_objects = []
@@ -354,6 +349,12 @@ haika =
       fabric.Image.fromURL @backgroundUrl, (img)=>
         @canvas.backgroundImage = img
         @canvas.renderAll()
+
+    activeIds = []
+    @applyActiveObjects((object)=>
+      activeIds.push(object.id)
+    )
+
     @canvas.renderOnAddRemove = false
     @canvas._objects.length = 0;
     beacons = []
@@ -381,6 +382,7 @@ haika =
       @addObjectToCanvas(o)
     for o in beacons
       @addObjectToCanvas(o)
+    @activeGroup(activeIds)
     @canvas.renderAll()
     @canvas.renderOnAddRemove = true
     $(@).trigger('haika:render')

@@ -21,7 +21,6 @@ initScrollBar = function() {
         centerX = -maxX + haika.canvas.getWidth() / 2;
       }
       haika.centerX = -centerX.toFixed(0);
-      haika.canvas.deactivateAll();
       return haika.render();
     }
   });
@@ -39,7 +38,6 @@ initScrollBar = function() {
         centerY = -maxY + haika.canvas.getHeight() / 2;
       }
       haika.centerY = -centerY.toFixed(0);
-      haika.canvas.deactivateAll();
       return haika.render();
     }
   });
