@@ -107,8 +107,6 @@ haika =
       @setPropetyPanel()
     )
     @canvas.on 'before:selection:cleared', (e)=>
-      #@canvas.deactivateAll()
-      #@prepareData()
       @editor_change()
       @setPropetyPanel()
     @canvas.on 'object:scaling', (e) =>
@@ -131,7 +129,6 @@ haika =
 # @param [Number] newScale 新しい拡大率(0.05~4=5~400%)
 #
   setScale: (newScale) ->
-    #@canvas.deactivateAll()
     if newScale >= 4
       newScale = 4
     else if newScale <= 0.05
@@ -222,8 +219,6 @@ haika =
     return o.id
 
 #選択中のオブジェクトに一括して処理を適用する
-#setActiveは処理後、選択を維持するかどうか
-#関数の戻り値がTrueの場合かつsetActiveはTrueの場合は維持
   applyActiveObjects: (func)->
     if @canvas.getActiveObject()
       target = @canvas.getActiveObject()
@@ -328,14 +323,7 @@ haika =
 # すべての選択解除
   unselectAll: ()->
     @canvas.deactivateAll().renderAll()
-# 選択解除
-  unselect: ->
-    object = @canvas.getActiveObject()
-    if not object
-      object = @canvas.getActiveGroup()
-    if object
-      @canvas.fire('before:selection:cleared', { target: object })
-      @canvas.fire('selection:cleared', { target: object })
+
 # クラス名の取得
   getClass: (type)->
     if @INSTALLED_OBJECTS[type]?
