@@ -18,6 +18,7 @@ initScrollBar = () ->
       if centerX < -maxX + haika.canvas.getWidth() / 2
         centerX = -maxX + haika.canvas.getWidth() / 2
       haika.centerX = -centerX.toFixed(0)
+      haika.canvas.deactivateAll()
       haika.render()
   new Dragdealer 'vertical-scroller',
     y: defaultY
@@ -31,5 +32,6 @@ initScrollBar = () ->
       if centerY < -maxY + haika.canvas.getHeight() / 2
         centerY = -maxY + haika.canvas.getHeight() / 2
       haika.centerY = -centerY.toFixed(0)
+      haika.canvas.deactivateAll()
       haika.render()
 

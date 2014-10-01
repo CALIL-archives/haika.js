@@ -20,8 +20,8 @@ haika =
 
   centerX: 0 # 表示位置X(画面の中央が0) [エディタステータス系変数]
   centerY: 0 # 表示位置Y(画面の中央が0) [エディタステータス系変数]
-# Todo: fabricオブジェクトからの呼び出しについて検討の必要あり
   scaleFactor: 1 #表示倍率 [エディタステータス系変数] (このファイル外で使用禁止)
+# Todo: fabricオブジェクトからの呼び出しについて検討の必要あり
   layer: null #現在のレイヤー(CONST_LAYERS) [エディタステータス系変数]
 
   objects: []
@@ -108,7 +108,8 @@ haika =
       @setPropetyPanel()
     )
     @canvas.on 'before:selection:cleared', (e)=>
-      @canvas.deactivateAll()
+      #@canvas.deactivateAll()
+      #@prepareData()
       @editor_change()
       @setPropetyPanel()
     @canvas.on 'object:scaling', (e) =>
@@ -221,16 +222,16 @@ haika =
     $(@).trigger('haika:add')
     return o.id
 
-  #選択中のオブジェクトに一括して処理を適用する
-  #setActiveは処理後、選択を維持するかどうか
-  #関数の戻り値がTrueの場合かつsetActiveはTrueの場合は維持
-  applyActiveObjects:(func)->
+#選択中のオブジェクトに一括して処理を適用する
+#setActiveは処理後、選択を維持するかどうか
+#関数の戻り値がTrueの場合かつsetActiveはTrueの場合は維持
+  applyActiveObjects: (func)->
     if @canvas.getActiveObject()
-      target =@canvas.getActiveObject()
+      target = @canvas.getActiveObject()
       if func(target)
         @canvas.setActiveObject(target)
     else if @canvas.getActiveGroup()
-      group=[]
+      group = []
       for target in @canvas.getActiveGroup().getObjects()
         if func(target)
           group.push(target.id)
@@ -267,7 +268,7 @@ haika =
     @clipboard_scale = @scaleFactor
     @applyActiveObjects((object)=>
       @clipboard.push(fabric.util.object.clone(object))
-      return true
+      return false
     )
     $(@).trigger('haika:copy')
 
@@ -323,9 +324,7 @@ haika =
         new_id = @add(o)
         new_ids.push(new_id)
       @saveDelay()
-      log 'pre render' + @clipboard[0].top
       @render()
-      log 'after render' + @clipboard[0].top
       @activeGroup(new_ids)
     $(@).trigger('haika:paste')
 # すべてを選択(全レイヤー)
@@ -377,7 +376,7 @@ haika =
         walls.push(o)
       if o.type == 'floor'
         floors.push(o)
-      if o.type == 'shelf' or o.type=='curvedShelf'
+      if o.type == 'shelf' or o.type == 'curvedShelf'
         shelfs.push(o)
     if @layer != @CONST_LAYERS.FLOOR
       for o in floors

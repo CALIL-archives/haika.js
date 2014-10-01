@@ -24687,7 +24687,6 @@ haika = {
     })(this));
     this.canvas.on('before:selection:cleared', (function(_this) {
       return function(e) {
-        _this.canvas.deactivateAll();
         _this.editor_change();
         return _this.setPropetyPanel();
       };
@@ -24861,7 +24860,7 @@ haika = {
     this.applyActiveObjects((function(_this) {
       return function(object) {
         _this.clipboard.push(fabric.util.object.clone(object));
-        return true;
+        return false;
       };
     })(this));
     return $(this).trigger('haika:copy');
@@ -24928,9 +24927,7 @@ haika = {
         new_ids.push(new_id);
       }
       this.saveDelay();
-      log('pre render' + this.clipboard[0].top);
       this.render();
-      log('after render' + this.clipboard[0].top);
       this.activeGroup(new_ids);
     }
     return $(this).trigger('haika:paste');
@@ -25432,8 +25429,13 @@ haika = {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
-      object.top_cm = this.transformTopY_px2cm(object.top);
-      object.left_cm = this.transformLeftX_px2cm(object.left);
+      if (object.group != null) {
+        object.top_cm = this.transformTopY_px2cm(object.top + object.group.top);
+        object.left_cm = this.transformLeftX_px2cm(object.left + object.group.left);
+      } else {
+        object.top_cm = this.transformTopY_px2cm(object.top);
+        object.left_cm = this.transformLeftX_px2cm(object.left);
+      }
       count = this.getCountFindById(object.id);
       _data = object.toGeoJSON();
       _results.push(this.objects[count] = _data.properties);
@@ -25659,6 +25661,7 @@ initScrollBar = function() {
         centerX = -maxX + haika.canvas.getWidth() / 2;
       }
       haika.centerX = -centerX.toFixed(0);
+      haika.canvas.deactivateAll();
       return haika.render();
     }
   });
@@ -25676,6 +25679,7 @@ initScrollBar = function() {
         centerY = -maxY + haika.canvas.getHeight() / 2;
       }
       haika.centerY = -centerY.toFixed(0);
+      haika.canvas.deactivateAll();
       return haika.render();
     }
   });

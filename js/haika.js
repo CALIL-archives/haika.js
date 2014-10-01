@@ -108,7 +108,6 @@ haika = {
     })(this));
     this.canvas.on('before:selection:cleared', (function(_this) {
       return function(e) {
-        _this.canvas.deactivateAll();
         _this.editor_change();
         return _this.setPropetyPanel();
       };
@@ -282,7 +281,7 @@ haika = {
     this.applyActiveObjects((function(_this) {
       return function(object) {
         _this.clipboard.push(fabric.util.object.clone(object));
-        return true;
+        return false;
       };
     })(this));
     return $(this).trigger('haika:copy');
@@ -349,9 +348,7 @@ haika = {
         new_ids.push(new_id);
       }
       this.saveDelay();
-      log('pre render' + this.clipboard[0].top);
       this.render();
-      log('after render' + this.clipboard[0].top);
       this.activeGroup(new_ids);
     }
     return $(this).trigger('haika:paste');

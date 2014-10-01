@@ -31,8 +31,13 @@ $.extend(haika, {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
-      object.top_cm = this.transformTopY_px2cm(object.top);
-      object.left_cm = this.transformLeftX_px2cm(object.left);
+      if (object.group != null) {
+        object.top_cm = this.transformTopY_px2cm(object.top + object.group.top);
+        object.left_cm = this.transformLeftX_px2cm(object.left + object.group.left);
+      } else {
+        object.top_cm = this.transformTopY_px2cm(object.top);
+        object.left_cm = this.transformLeftX_px2cm(object.left);
+      }
       count = this.getCountFindById(object.id);
       _data = object.toGeoJSON();
       _results.push(this.objects[count] = _data.properties);

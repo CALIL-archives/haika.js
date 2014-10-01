@@ -25,8 +25,12 @@ $.extend haika,
   prepareData: ()->
     log 'prepareData'
     for object in @canvas.getObjects()
-      object.top_cm = @transformTopY_px2cm(object.top)
-      object.left_cm = @transformLeftX_px2cm(object.left)
+      if object.group?
+        object.top_cm = @transformTopY_px2cm(object.top + object.group.top)
+        object.left_cm = @transformLeftX_px2cm(object.left + object.group.left)
+      else
+        object.top_cm = @transformTopY_px2cm(object.top)
+        object.left_cm = @transformLeftX_px2cm(object.left)
       count = @getCountFindById(object.id)
       _data = object.toGeoJSON()
       @objects[count] = _data.properties
