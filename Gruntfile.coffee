@@ -123,25 +123,6 @@ module.exports = (grunt) ->
         options:
           title: 'Compile&Build'
           message: 'Complete'
-    connect:
-      server:
-        options:
-          hostname: "localhost"
-          port: 9000
-          keepalive: true
-          open: true
-          middleware: (connect, options) ->
-            [proxySnippet]
-
-        proxies: [
-          context: "/"
-          host: "app.haika.io"
-          port: 443
-          https: true
-          xforward: false
-          headers:
-            'Strict-Transport-Security' : 'max-age=0'
-        ]
 #    open:
 #      delayed:
 #        path: "http://localhost:9000"
@@ -164,10 +145,3 @@ module.exports = (grunt) ->
     "uglify"
     'notify:complete'
   ]
-  grunt.registerTask "server", (target) ->
-    grunt.task.run [
-      "configureProxies:server"
-      'connect:server'
-#      "open"
-      "esteWatch"
-    ]
