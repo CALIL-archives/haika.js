@@ -168,14 +168,6 @@ haika =
     @backgroundUrl = url
     @render()
 
-#(これはUI側のため将来的に移動)
-  loadBgFromUrl: (url) ->
-    @setBackgroundUrl url
-
-#(これはUI側のため将来的に移動)
-  resetBg: ->
-    @setBackgroundUrl ''
-
 # 新しいオブジェクトのIDを取得
 # [この関数は@objectsからデータを取得する]
 # [この関数はaddから呼ばれる以外は使用しない]

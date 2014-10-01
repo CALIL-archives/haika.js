@@ -38,7 +38,7 @@ $('#bgimg').change (e)->
     type: 'POST'
     success: (data) ->
       url = '/haika_store/image/'+haika.id+'_'+files[0].name
-      haika.loadBgFromUrl(url)
+      haika.setBackgroundUrl(url)
 
 # メニューのイベントバインド
 # haikaのデータロード完了時に実行する
@@ -105,7 +105,7 @@ $(haika).on 'haika:load', ->
 #    haika.save()
 
   $('#bgreset').click ->
-    haika.resetBg()
+    haika.setBackgroundUrl('')
 
   $('#bgopacity_slider').slider
     step: 1
