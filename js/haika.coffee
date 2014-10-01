@@ -315,6 +315,8 @@ haika =
       @render()
       @saveDelay()
       @activeGroup(new_ids)
+
+
    $(@).trigger('haika:paste')
 # すべてを選択(全レイヤー)
   selectAll: ()->
@@ -446,28 +448,32 @@ haika =
     return if event.shiftKey then 10 else 1
 # 上に移動
   up: (event)->
-    object = @canvas.getActiveObject()
+    object = if @canvas.getActiveObject() then @canvas.getActiveObject() else @canvas.getActiveGroup()
     if object
       object.top = object.top - @getMovePixel(event)
       @canvas.renderAll()
+      @saveDelay()
 # 下に移動
   down: (event)->
-    object = @canvas.getActiveObject()
+    object = if @canvas.getActiveObject() then @canvas.getActiveObject() else @canvas.getActiveGroup()
     if object
       object.top = object.top + @getMovePixel(event)
       @canvas.renderAll()
+      @saveDelay()
 # 左に移動
   left: (event)->
-    object = @canvas.getActiveObject()
+    object = if @canvas.getActiveObject() then @canvas.getActiveObject() else @canvas.getActiveGroup()
     if object
       object.left = object.left - @getMovePixel(event)
       @canvas.renderAll()
+      @saveDelay()
 # 右に移動
   right: (event)->
-    object = @canvas.getActiveObject()
+    object = if @canvas.getActiveObject() then @canvas.getActiveObject() else @canvas.getActiveGroup()
     if object
       object.left = object.left + @getMovePixel(event)
       @canvas.renderAll()
+      @saveDelay()
 # 左に整列
   alignLeft: ()->
     group = @canvas.getActiveGroup()

@@ -25090,34 +25090,38 @@ haika = {
   },
   up: function(event) {
     var object;
-    object = this.canvas.getActiveObject();
+    object = this.canvas.getActiveObject() ? this.canvas.getActiveObject() : this.canvas.getActiveGroup();
     if (object) {
       object.top = object.top - this.getMovePixel(event);
-      return this.canvas.renderAll();
+      this.canvas.renderAll();
+      return this.saveDelay();
     }
   },
   down: function(event) {
     var object;
-    object = this.canvas.getActiveObject();
+    object = this.canvas.getActiveObject() ? this.canvas.getActiveObject() : this.canvas.getActiveGroup();
     if (object) {
       object.top = object.top + this.getMovePixel(event);
-      return this.canvas.renderAll();
+      this.canvas.renderAll();
+      return this.saveDelay();
     }
   },
   left: function(event) {
     var object;
-    object = this.canvas.getActiveObject();
+    object = this.canvas.getActiveObject() ? this.canvas.getActiveObject() : this.canvas.getActiveGroup();
     if (object) {
       object.left = object.left - this.getMovePixel(event);
-      return this.canvas.renderAll();
+      this.canvas.renderAll();
+      return this.saveDelay();
     }
   },
   right: function(event) {
     var object;
-    object = this.canvas.getActiveObject();
+    object = this.canvas.getActiveObject() ? this.canvas.getActiveObject() : this.canvas.getActiveGroup();
     if (object) {
       object.left = object.left + this.getMovePixel(event);
-      return this.canvas.renderAll();
+      this.canvas.renderAll();
+      return this.saveDelay();
     }
   },
   alignLeft: function() {
