@@ -1,5 +1,6 @@
 #Gruntfile.coffee
 "use strict"
+proxySnippet = require("grunt-connect-proxy/lib/utils").proxyRequest
 module.exports = (grunt) ->
   #Gruntの設定
   grunt.initConfig
@@ -122,6 +123,29 @@ module.exports = (grunt) ->
         options:
           title: 'Compile&Build'
           message: 'Complete'
+    connect:
+      server:
+        options:
+          hostname: "localhost"
+          port: 9000
+          keepalive: true
+          open: true
+          middleware: (connect, options) ->
+            [proxySnippet]
+
+        proxies: [
+          context: "/api/floor/load"
+          host: "app.haika.io"
+          port: 443
+          https: true
+          xforward: false
+        ]
+    open:
+      delayed:
+        path: "http://localhost:9000"
+        app: "Google Chrome"
+        options:
+          openOn: "serverListening"
   # loadNpmTasks
   require('load-grunt-tasks')(grunt);
   # # package.jsonから読み込んでるもの
@@ -135,7 +159,13 @@ module.exports = (grunt) ->
     "bower"
     "coffee"
     "concat"
-    "cssmin"
     "uglify"
     'notify:complete'
   ]
+  grunt.registerTask "server", (target) ->
+    grunt.task.run [
+      "configureProxies:server"
+      'connect:server'
+      "open"
+      "esteWatch"
+    ]

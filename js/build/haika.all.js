@@ -26473,3 +26473,6 @@ haika.editor.on("change", function() {
 });
 
 //# sourceMappingURL=haika-map.js.map
+;
+
+//# sourceMappingURL=haika-init.js.map
