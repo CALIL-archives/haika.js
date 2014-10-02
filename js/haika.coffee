@@ -191,37 +191,27 @@ haika =
         count = i
     return count
 
-# haikaオブジェクトの追加
-  add: (object)->
+# GeoJSONオブジェクトの追加
+  addObject: (object)->
+#    log object
     object.id = @_getLatestId()
-    o =
-      id: object.id
-    props = [
-      'type'
-      'width'
-      'height'
-      'scaleX'
-      'scaleY'
-      'left'
-      'top'
-      'angle'
-      'fill'
-      'stroke'
-    ]
-    schema = object.constructor.prototype.getJsonSchema()
-    for key of schema.properties
-      props.push(key)
-    for prop in props
-      if prop == 'top'
-        o.top_cm = @transformTopY_px2cm(object.top)
-        continue
-      if prop == 'left'
-        o.left_cm = @transformLeftX_px2cm(object.left)
-        continue
-      o[prop] = object[prop]
-    @objects.push(o)
+    object.top_cm  = @centerY
+    object.left_cm = @centerX
+    object.scaleX = 1
+    object.scaleY = 1
+    object.fill   = @fillColor
+    object.stroke = @strokeColor
+    if not object.angle?
+      object.angle  = 0
+    @objects.push(object)
     $(@).trigger('haika:add')
-    return o.id
+#    @render()
+#    追加したオブジェクトの選択
+    setTimeout =>
+      o = @canvas.item(@getCountFindById(object.id))
+      @canvas.setActiveObject(o)
+    , 10
+    @undo.add(object.id)
 
 #選択中のオブジェクトに一括して処理を適用する
   applyActiveObjects: (func)->
