@@ -107,8 +107,16 @@ haika =
       @setPropetyPanel()
     )
     @canvas.on 'before:selection:cleared', (e)=>
+      @canvas.discardActiveGroup()
       @editor_change()
       @setPropetyPanel()
+    @canvas.on 'object:rotating', (e) =>
+      object = e.target
+      if object.__rotating?
+        object.__rotating()
+    @canvas.on 'object:moving', (e) =>
+      if e.target.__moving?
+        e.target.__moving()
     @canvas.on 'object:scaling', (e) =>
       object = e.target
       if object.__resizeShelf?
@@ -268,9 +276,9 @@ haika =
 
 # アクティブなグループを設定
   activeGroup: (new_ids)->
-    if new_ids.length==0
+    if new_ids.length == 0
       return
-    if new_ids.length==1
+    if new_ids.length == 1
       $(@canvas.getObjects()).each (i, obj)=>
         if obj.id == new_ids[0]
           @canvas.setActiveObject(obj)
@@ -287,19 +295,18 @@ haika =
       originX: "center"
       originY: "center"
     )
-    @canvas._activeObject = null
     @canvas.setActiveGroup(group.setCoords()).renderAll()
 
 
 # ペースト
   paste: ->
-   if @clipboard.length > 0
+    if @clipboard.length > 0
       new_ids = []
       for object in @clipboard
-        object.id=@_getLatestId()
+        object.id = @_getLatestId()
         if @clipboard.length == 1
-          @clipboard[0].top_cm=@centerY
-          @clipboard[0].left_cm=@centerX
+          @clipboard[0].top_cm = @centerY
+          @clipboard[0].left_cm = @centerX
         new_ids.push(object.id)
         @objects.push(object)
       @render()
@@ -307,19 +314,15 @@ haika =
       @activeGroup(new_ids)
 
 
-   $(@).trigger('haika:paste')
-# すべてを選択(全レイヤー)
+    $(@).trigger('haika:paste')
+
   selectAll: ()->
     @canvas.discardActiveGroup()
-    objects = @canvas.getObjects().map((o) ->
-      o.set "active", true
-    )
-    group = new fabric.Group(objects,
-      originX: "center"
-      originY: "center"
-    )
-    @canvas._activeObject = null
-    @canvas.setActiveGroup(group.setCoords()).renderAll()
+    ids = []
+    for object in @objects
+      ids.push(object.id)
+    @activeGroup(ids)
+
 # すべての選択解除
   unselectAll: ()->
     @canvas.deactivateAll().renderAll()
@@ -416,7 +419,7 @@ haika =
       object.fill = o.fill
       object.padding = 0
     object.stroke = o.stroke
-    object.transparentCorners = false
+    object.transparentCorners = true
     object.cornerColor = "#488BD4"
     object.borderOpacityWhenMoving = 0.8
     object.cornerSize = 10
@@ -488,6 +491,7 @@ haika =
       for object in group._objects
         bound = object.getBoundingRect()
         object.left = left - bound.width / 2
+      @saveDelay()
       @canvas.renderAll()
 # 横中央に整列
   alignCenter: ()->
@@ -495,6 +499,7 @@ haika =
     if group._objects
       for object in group._objects
         object.left = 0
+      @saveDelay()
       @canvas.renderAll()
 # 上に整列
   alignTop: ()->
@@ -507,6 +512,7 @@ haika =
       for object in group._objects
         bound = object.getBoundingRect()
         object.top = top + bound.height / 2
+      @saveDelay()
       @canvas.renderAll()
 # 下に整列
   alignBottom: ()->
@@ -519,6 +525,7 @@ haika =
       for object in group._objects
         bound = object.getBoundingRect()
         object.top = top - bound.height / 2
+      @saveDelay()
       @canvas.renderAll()
 # 縦中央に整列
   alignVcenter: ()->
@@ -526,6 +533,7 @@ haika =
     if group._objects
       for object in group._objects
         object.top = 0
+      @saveDelay()
       @canvas.renderAll()
 
 # プロパティパネルの設定

@@ -68,7 +68,6 @@ module.exports = (grunt) ->
           "js/haika-undo.js"
           "js/haika-editor.js"
           "js/haika-map.js"
-          "js/haika-init.js"
         ]
         dest: "js/build/haika.all.js"
         nonull: true

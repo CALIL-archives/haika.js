@@ -43,7 +43,7 @@
       this.height = this.__height();
     },
     _render: function(ctx) {
-      var h, isInPathGroup, label, sx, w, x, y;
+      var h, isInPathGroup, label, sx, sy, w, x, y;
       if (this.width === 1 && this.height === 1) {
         ctx.fillRect(0, 0, 1, 1);
         return;
@@ -56,10 +56,17 @@
       if (this.scaleX !== 0 && (this.__corner === 'ml' || this.__corner === 'tl' || this.__corner === 'bl')) {
         sx = -1 * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
       }
+      sy = 0;
+      if (this.scaleY !== 0 && (this.__corner === 'mb')) {
+        sy = (this.side * this.__eachHeight() - this.height * this.scaleY) / 2;
+      }
+      if (this.scaleY !== 0 && (this.__corner === 'mt')) {
+        sy = -1 * (this.side * this.__eachHeight() - this.height * this.scaleY) / 2;
+      }
       w = this.__eachWidth();
       h = this.__eachHeight();
       x = -w / 2 * this.count + sx;
-      y = -h / 2 * this.side;
+      y = -h / 2 * this.side + sy;
       isInPathGroup = this.group && this.group.type === "path-group";
       ctx.globalAlpha = (isInPathGroup ? ctx.globalAlpha * this.opacity : this.opacity);
       if (this.transformMatrix && isInPathGroup) {
@@ -134,8 +141,31 @@
       ctx.closePath();
       return this._renderStroke(ctx);
     },
+    __rotating: function() {
+      log('__rotating');
+      if (Math.abs(this.originalState.angle - this.angle) > 20) {
+        this.angle = this.angle % 360;
+        if (this.angle >= 350 || this.angle <= 10) {
+          this.angle = 0;
+        }
+        if (this.angle >= 80 && this.angle <= 100) {
+          this.angle = 90;
+        }
+        if (this.angle >= 170 && this.angle <= 190) {
+          this.angle = 180;
+        }
+        if (this.angle >= 260 && this.angle <= 280) {
+          return this.angle = 270;
+        }
+      }
+    },
+    __moving: function() {
+      this.left = Math.round(this.left / haika.scaleFactor / 10) * 10 * haika.scaleFactor;
+      return this.top = Math.round(this.top / haika.scaleFactor / 10) * 10 * haika.scaleFactor;
+    },
     __resizeShelf: function() {
       var actualHeight, actualWidth, count, side;
+      log('__resizeShelf');
       actualWidth = this.scaleX * this.currentWidth;
       actualHeight = this.scaleY * this.currentHeight;
       count = Math.floor(actualWidth / this.__eachWidth());
@@ -162,19 +192,8 @@
     },
     __modifiedShelf: function() {
       var th;
-      this.angle = this.angle % 360;
-      if (this.angle >= 350 || this.angle <= 10) {
-        this.angle = 0;
-      }
-      if (this.angle >= 80 && this.angle <= 100) {
-        this.angle = 90;
-      }
-      if (this.angle >= 170 && this.angle <= 190) {
-        this.angle = 180;
-      }
-      if (this.angle >= 260 && this.angle <= 280) {
-        this.angle = 270;
-      }
+      this.centeredScaling = false;
+      log('__modifiedShelf');
       if (this.scaleX !== 0 && (this.__corner === 'mr' || this.__corner === 'tr' || this.__corner === 'br')) {
         th = this.angle * (Math.PI / 180);
         this.top = this.top + Math.sin(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
@@ -184,6 +203,16 @@
         th = this.angle * (Math.PI / 180);
         this.top = this.top - Math.sin(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
         this.left = this.left - Math.cos(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
+      }
+      if (this.scaleY !== 0 && (this.__corner === 'mb')) {
+        th = this.angle * (Math.PI / 180);
+        this.left = this.left + Math.sin(th) * (this.side * this.__eachHeight() - this.height * this.scaleY) / 2;
+        this.top = this.top + Math.cos(th) * (this.side * this.__eachHeight() - this.height * this.scaleY) / 2;
+      }
+      if (this.scaleY !== 0 && (this.__corner === 'mt')) {
+        th = this.angle * (Math.PI / 180);
+        this.left = this.left - Math.sin(th) * (this.side * this.__eachHeight() - this.height * this.scaleY) / 2;
+        this.top = this.top - Math.cos(th) * (this.side * this.__eachHeight() - this.height * this.scaleY) / 2;
       }
       this.scaleX = this.scaleY = 1;
       this.width = this.__width();

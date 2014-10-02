@@ -23457,7 +23457,7 @@ a.length;b<e;b++)for(g.push(a[b].outer),c=0,f=a[b].holes.length;c<f;c++)g.push(a
       this.height = this.__height();
     },
     _render: function(ctx) {
-      var h, isInPathGroup, label, sx, w, x, y;
+      var h, isInPathGroup, label, sx, sy, w, x, y;
       if (this.width === 1 && this.height === 1) {
         ctx.fillRect(0, 0, 1, 1);
         return;
@@ -23470,10 +23470,17 @@ a.length;b<e;b++)for(g.push(a[b].outer),c=0,f=a[b].holes.length;c<f;c++)g.push(a
       if (this.scaleX !== 0 && (this.__corner === 'ml' || this.__corner === 'tl' || this.__corner === 'bl')) {
         sx = -1 * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
       }
+      sy = 0;
+      if (this.scaleY !== 0 && (this.__corner === 'mb')) {
+        sy = (this.side * this.__eachHeight() - this.height * this.scaleY) / 2;
+      }
+      if (this.scaleY !== 0 && (this.__corner === 'mt')) {
+        sy = -1 * (this.side * this.__eachHeight() - this.height * this.scaleY) / 2;
+      }
       w = this.__eachWidth();
       h = this.__eachHeight();
       x = -w / 2 * this.count + sx;
-      y = -h / 2 * this.side;
+      y = -h / 2 * this.side + sy;
       isInPathGroup = this.group && this.group.type === "path-group";
       ctx.globalAlpha = (isInPathGroup ? ctx.globalAlpha * this.opacity : this.opacity);
       if (this.transformMatrix && isInPathGroup) {
@@ -23548,8 +23555,31 @@ a.length;b<e;b++)for(g.push(a[b].outer),c=0,f=a[b].holes.length;c<f;c++)g.push(a
       ctx.closePath();
       return this._renderStroke(ctx);
     },
+    __rotating: function() {
+      log('__rotating');
+      if (Math.abs(this.originalState.angle - this.angle) > 20) {
+        this.angle = this.angle % 360;
+        if (this.angle >= 350 || this.angle <= 10) {
+          this.angle = 0;
+        }
+        if (this.angle >= 80 && this.angle <= 100) {
+          this.angle = 90;
+        }
+        if (this.angle >= 170 && this.angle <= 190) {
+          this.angle = 180;
+        }
+        if (this.angle >= 260 && this.angle <= 280) {
+          return this.angle = 270;
+        }
+      }
+    },
+    __moving: function() {
+      this.left = Math.round(this.left / haika.scaleFactor / 10) * 10 * haika.scaleFactor;
+      return this.top = Math.round(this.top / haika.scaleFactor / 10) * 10 * haika.scaleFactor;
+    },
     __resizeShelf: function() {
       var actualHeight, actualWidth, count, side;
+      log('__resizeShelf');
       actualWidth = this.scaleX * this.currentWidth;
       actualHeight = this.scaleY * this.currentHeight;
       count = Math.floor(actualWidth / this.__eachWidth());
@@ -23576,19 +23606,8 @@ a.length;b<e;b++)for(g.push(a[b].outer),c=0,f=a[b].holes.length;c<f;c++)g.push(a
     },
     __modifiedShelf: function() {
       var th;
-      this.angle = this.angle % 360;
-      if (this.angle >= 350 || this.angle <= 10) {
-        this.angle = 0;
-      }
-      if (this.angle >= 80 && this.angle <= 100) {
-        this.angle = 90;
-      }
-      if (this.angle >= 170 && this.angle <= 190) {
-        this.angle = 180;
-      }
-      if (this.angle >= 260 && this.angle <= 280) {
-        this.angle = 270;
-      }
+      this.centeredScaling = false;
+      log('__modifiedShelf');
       if (this.scaleX !== 0 && (this.__corner === 'mr' || this.__corner === 'tr' || this.__corner === 'br')) {
         th = this.angle * (Math.PI / 180);
         this.top = this.top + Math.sin(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
@@ -23598,6 +23617,16 @@ a.length;b<e;b++)for(g.push(a[b].outer),c=0,f=a[b].holes.length;c<f;c++)g.push(a
         th = this.angle * (Math.PI / 180);
         this.top = this.top - Math.sin(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
         this.left = this.left - Math.cos(th) * (this.count * this.__eachWidth() - this.width * this.scaleX) / 2;
+      }
+      if (this.scaleY !== 0 && (this.__corner === 'mb')) {
+        th = this.angle * (Math.PI / 180);
+        this.left = this.left + Math.sin(th) * (this.side * this.__eachHeight() - this.height * this.scaleY) / 2;
+        this.top = this.top + Math.cos(th) * (this.side * this.__eachHeight() - this.height * this.scaleY) / 2;
+      }
+      if (this.scaleY !== 0 && (this.__corner === 'mt')) {
+        th = this.angle * (Math.PI / 180);
+        this.left = this.left - Math.sin(th) * (this.side * this.__eachHeight() - this.height * this.scaleY) / 2;
+        this.top = this.top - Math.cos(th) * (this.side * this.__eachHeight() - this.height * this.scaleY) / 2;
       }
       this.scaleX = this.scaleY = 1;
       this.width = this.__width();
@@ -24686,8 +24715,25 @@ haika = {
     })(this));
     this.canvas.on('before:selection:cleared', (function(_this) {
       return function(e) {
+        _this.canvas.discardActiveGroup();
         _this.editor_change();
         return _this.setPropetyPanel();
+      };
+    })(this));
+    this.canvas.on('object:rotating', (function(_this) {
+      return function(e) {
+        var object;
+        object = e.target;
+        if (object.__rotating != null) {
+          return object.__rotating();
+        }
+      };
+    })(this));
+    this.canvas.on('object:moving', (function(_this) {
+      return function(e) {
+        if (e.target.__moving != null) {
+          return e.target.__moving();
+        }
       };
     })(this));
     this.canvas.on('object:scaling', (function(_this) {
@@ -24894,7 +24940,6 @@ haika = {
       originX: "center",
       originY: "center"
     });
-    this.canvas._activeObject = null;
     return this.canvas.setActiveGroup(group.setCoords()).renderAll();
   },
   paste: function() {
@@ -24919,35 +24964,18 @@ haika = {
     return $(this).trigger('haika:paste');
   },
   selectAll: function() {
-    var group, objects;
+    var ids, object, _i, _len, _ref;
     this.canvas.discardActiveGroup();
-    objects = this.canvas.getObjects().map(function(o) {
-      return o.set("active", true);
-    });
-    group = new fabric.Group(objects, {
-      originX: "center",
-      originY: "center"
-    });
-    this.canvas._activeObject = null;
-    return this.canvas.setActiveGroup(group.setCoords()).renderAll();
+    ids = [];
+    _ref = this.objects;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      ids.push(object.id);
+    }
+    return this.activeGroup(ids);
   },
   unselectAll: function() {
     return this.canvas.deactivateAll().renderAll();
-  },
-  unselect: function() {
-    var object;
-    object = this.canvas.getActiveObject();
-    if (!object) {
-      object = this.canvas.getActiveGroup();
-    }
-    if (object) {
-      this.canvas.fire('before:selection:cleared', {
-        target: object
-      });
-      return this.canvas.fire('selection:cleared', {
-        target: object
-      });
-    }
   },
   getClass: function(type) {
     if (this.INSTALLED_OBJECTS[type] != null) {
@@ -25065,7 +25093,7 @@ haika = {
       object.padding = 0;
     }
     object.stroke = o.stroke;
-    object.transparentCorners = false;
+    object.transparentCorners = true;
     object.cornerColor = "#488BD4";
     object.borderOpacityWhenMoving = 0.8;
     object.cornerSize = 10;
@@ -25162,6 +25190,7 @@ haika = {
         bound = object.getBoundingRect();
         object.left = left - bound.width / 2;
       }
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },
@@ -25174,6 +25203,7 @@ haika = {
         object = _ref[_i];
         object.left = 0;
       }
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },
@@ -25194,6 +25224,7 @@ haika = {
         bound = object.getBoundingRect();
         object.top = top + bound.height / 2;
       }
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },
@@ -25214,6 +25245,7 @@ haika = {
         bound = object.getBoundingRect();
         object.top = top - bound.height / 2;
       }
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },
@@ -25226,6 +25258,7 @@ haika = {
         object = _ref[_i];
         object.top = 0;
       }
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },
@@ -26475,6 +26508,3 @@ haika.editor.on("change", function() {
 });
 
 //# sourceMappingURL=haika-map.js.map
-;
-
-//# sourceMappingURL=haika-init.js.map

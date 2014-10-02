@@ -49,10 +49,15 @@
           sx=(@count*@__eachWidth()-@width*@scaleX)/2
       if @scaleX != 0 && (@__corner=='ml' || @__corner=='tl' || @__corner=='bl')
           sx=-1*(@count*@__eachWidth()-@width*@scaleX)/2
+      sy=0
+      if @scaleY != 0 && (@__corner=='mb')
+          sy=(@side*@__eachHeight()-@height*@scaleY)/2
+      if @scaleY != 0 && (@__corner=='mt')
+          sy=-1*(@side*@__eachHeight()-@height*@scaleY)/2
       w = @__eachWidth()
       h = @__eachHeight()
       x = -w / 2 * @count + sx
-      y = -h / 2 * @side
+      y = -h / 2 * @side + sy
       isInPathGroup = @group and @group.type is "path-group"
       ctx.globalAlpha = (if isInPathGroup then (ctx.globalAlpha * @opacity) else @opacity)
       if @transformMatrix and isInPathGroup
@@ -130,7 +135,25 @@
       #@_renderFill ctx
       @_renderStroke ctx
 
+    # 回転角度のスナップ
+    # 90度単位でスナップ、元の角度から20度まではスナップしない
+    __rotating : ()->
+      log '__rotating'
+      if Math.abs(@originalState.angle- @angle)>20
+        @angle = @angle % 360
+        if @angle >=350 || @angle <= 10 then @angle=0
+        if @angle >=80  && @angle <= 100 then @angle=90
+        if @angle >=170 && @angle <=190 then @angle=180
+        if @angle >=260 && @angle <=280 then @angle=270
+
+    # 移動時に10cm単位でスナップ
+    __moving : () ->
+      @left = Math.round(@left/haika.scaleFactor/10)*10*haika.scaleFactor
+      @top = Math.round(@top/haika.scaleFactor/10)*10*haika.scaleFactor
+
+    # サイズ変更のスナップ
     __resizeShelf: () ->
+      log '__resizeShelf'
       actualWidth = @scaleX * @currentWidth
       actualHeight = @scaleY * @currentHeight
       count = Math.floor(actualWidth / @__eachWidth())
@@ -143,13 +166,8 @@
       #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
 
     __modifiedShelf: () ->
-      #log '__modifiedShelf'
-      @angle = @angle % 360
-      if @angle >=350 || @angle <= 10 then @angle=0
-      if @angle >=80  && @angle <= 100 then @angle=90
-      if @angle >=170 && @angle <=190 then @angle=180
-      if @angle >=260 && @angle <=280 then @angle=270
-
+      @centeredScaling=false
+      log '__modifiedShelf'
       if @scaleX != 0 && (@__corner=='mr' || @__corner=='tr' || @__corner=='br')
          th = @angle * (Math.PI / 180)
          @top = @top + Math.sin(th)*(@count*@__eachWidth()-@width*@scaleX)/2
@@ -158,6 +176,14 @@
          th = @angle * (Math.PI / 180)
          @top = @top - Math.sin(th)*(@count*@__eachWidth()-@width*@scaleX)/2
          @left = @left - Math.cos(th)*(@count*@__eachWidth()-@width*@scaleX)/2
+      if @scaleY != 0 && (@__corner=='mb')
+         th = @angle * (Math.PI / 180)
+         @left = @left + Math.sin(th)*(@side*@__eachHeight()-@height*@scaleY)/2
+         @top = @top + Math.cos(th)*(@side*@__eachHeight()-@height*@scaleY)/2
+      if @scaleY != 0 && (@__corner=='mt')
+         th = @angle * (Math.PI / 180)
+         @left = @left - Math.sin(th)*(@side*@__eachHeight()-@height*@scaleY)/2
+         @top = @top - Math.cos(th)*(@side*@__eachHeight()-@height*@scaleY)/2
       @scaleX = @scaleY = 1
       @width = @__width()
       @height = @__height()

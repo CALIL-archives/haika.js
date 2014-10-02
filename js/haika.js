@@ -108,8 +108,25 @@ haika = {
     })(this));
     this.canvas.on('before:selection:cleared', (function(_this) {
       return function(e) {
+        _this.canvas.discardActiveGroup();
         _this.editor_change();
         return _this.setPropetyPanel();
+      };
+    })(this));
+    this.canvas.on('object:rotating', (function(_this) {
+      return function(e) {
+        var object;
+        object = e.target;
+        if (object.__rotating != null) {
+          return object.__rotating();
+        }
+      };
+    })(this));
+    this.canvas.on('object:moving', (function(_this) {
+      return function(e) {
+        if (e.target.__moving != null) {
+          return e.target.__moving();
+        }
       };
     })(this));
     this.canvas.on('object:scaling', (function(_this) {
@@ -316,7 +333,6 @@ haika = {
       originX: "center",
       originY: "center"
     });
-    this.canvas._activeObject = null;
     return this.canvas.setActiveGroup(group.setCoords()).renderAll();
   },
   paste: function() {
@@ -341,17 +357,15 @@ haika = {
     return $(this).trigger('haika:paste');
   },
   selectAll: function() {
-    var group, objects;
+    var ids, object, _i, _len, _ref;
     this.canvas.discardActiveGroup();
-    objects = this.canvas.getObjects().map(function(o) {
-      return o.set("active", true);
-    });
-    group = new fabric.Group(objects, {
-      originX: "center",
-      originY: "center"
-    });
-    this.canvas._activeObject = null;
-    return this.canvas.setActiveGroup(group.setCoords()).renderAll();
+    ids = [];
+    _ref = this.objects;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      ids.push(object.id);
+    }
+    return this.activeGroup(ids);
   },
   unselectAll: function() {
     return this.canvas.deactivateAll().renderAll();
@@ -472,7 +486,7 @@ haika = {
       object.padding = 0;
     }
     object.stroke = o.stroke;
-    object.transparentCorners = false;
+    object.transparentCorners = true;
     object.cornerColor = "#488BD4";
     object.borderOpacityWhenMoving = 0.8;
     object.cornerSize = 10;
@@ -569,6 +583,7 @@ haika = {
         bound = object.getBoundingRect();
         object.left = left - bound.width / 2;
       }
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },
@@ -581,6 +596,7 @@ haika = {
         object = _ref[_i];
         object.left = 0;
       }
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },
@@ -601,6 +617,7 @@ haika = {
         bound = object.getBoundingRect();
         object.top = top + bound.height / 2;
       }
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },
@@ -621,6 +638,7 @@ haika = {
         bound = object.getBoundingRect();
         object.top = top - bound.height / 2;
       }
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },
@@ -633,6 +651,7 @@ haika = {
         object = _ref[_i];
         object.top = 0;
       }
+      this.saveDelay();
       return this.canvas.renderAll();
     }
   },
