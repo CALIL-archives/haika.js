@@ -7,81 +7,81 @@
   fabric.drawGridLines = (ctx) ->
     width = ctx.canvas.width
     height = ctx.canvas.height
-
-    size = 100 * haika.scaleFactor
-    if size < 50 then size=500 * haika.scaleFactor
-    if size < 50 then size=1000 * haika.scaleFactor
+    #中心線を描く
     ctx.save()
-    ctx.beginPath()
-    ctx.setLineDash([2,2])
-    ctx.lineWidth = 1
-    ctx.strokeStyle = '#999999'
+    sx = haika.transformLeftX_cm2px(0)
+    sy = haika.transformTopY_cm2px(0)
     ctx.opacity = 1
-    sx = (haika.transformLeftX_cm2px(0)*1000 % Math.floor(size*1000))/1000
-    sy = (haika.transformTopY_cm2px(0)*1000 % Math.floor(size*1000))/1000
-    i = 0
-    while i < Math.ceil(width / size)+1
-        ctx.moveTo(Math.floor(i * size+sx)+0.5, 0)
-        ctx.lineTo(Math.floor(i * size+sx)+0.5, height)
+
+    # 1mごとの格子線
+
+    ctx.strokeStyle = '#cccccc'
+    size=100*haika.scaleFactor
+    gapX = (haika.transformLeftX_cm2px(0)*1000 % Math.floor(size*1000))/1000
+    gapY = (haika.transformTopY_cm2px(0)*1000 % Math.floor(size*1000))/1000
+    ctx.beginPath()
+    ctx.lineWidth = Math.max(Math.min(haika.scaleFactor,1),0.3)
+    i=0
+    while i < Math.ceil(width/size)+1
+        ctx.moveTo(Math.floor(size*i)+gapX+0.5, 0)
+        ctx.lineTo(Math.floor(size*i)+gapX+0.5, height)
         ++i
-    i = 0
-    while i < Math.ceil(height / size)+1
-        ctx.moveTo(0, Math.floor(i * size+sy)+0.5)
-        ctx.lineTo(width, Math.floor(i * size+sy)+0.5)
+    i=0
+    while i < Math.ceil(height/size)+1
+        ctx.moveTo(0,Math.floor(size*i)+gapY+0.5)
+        ctx.lineTo(width,Math.floor(size*i)+gapY+0.5)
         ++i
-    ctx.closePath()
+    ctx.stroke()
+
+    # 5mごとの格子線
+
+    size=500*haika.scaleFactor
+    gapX = (haika.transformLeftX_cm2px(0)*1000 % Math.floor(size*1000))/1000
+    gapY = (haika.transformTopY_cm2px(0)*1000 % Math.floor(size*1000))/1000
+    ctx.beginPath()
+    ctx.lineWidth = Math.max(Math.min(haika.scaleFactor*2,2),0.5)
+    i=0
+    while i < Math.ceil(width/size)+1
+        ctx.moveTo(Math.floor(size*i)+gapX+0.5, 0)
+        ctx.lineTo(Math.floor(size*i)+gapX+0.5, height)
+        ++i
+    i=0
+    while i < Math.ceil(height/size)+1
+        ctx.moveTo(0,Math.floor(size*i)+gapY+0.5)
+        ctx.lineTo(width,Math.floor(size*i)+gapY+0.5)
+        ++i
+    ctx.stroke()
+
+    # 中心線
+
+    ctx.lineWidth = Math.max(Math.min(haika.scaleFactor*2,2),0.5)
+    ctx.strokeStyle = '#aaaaaa'
+    ctx.beginPath()
+    ctx.moveTo(Math.floor(sx), 0)
+    ctx.lineTo(Math.floor(sx), height)
+    ctx.moveTo(0, Math.floor(sy))
+    ctx.lineTo(width, Math.floor(sy))
+    ctx.stroke()
+
+    #スケール
+    ctx.font="10px Open Sans";
+    if 100*haika.scaleFactor<=50
+      scale=500
+      ctx.fillText("5m",25,height-16);
+    else
+      scale=100
+      ctx.fillText("1m",25,height-16);
+    ctx.lineWidth = 2
+    ctx.strokeStyle = '#666666'
+    ctx.beginPath()
+    ctx.moveTo(20, height-15)
+    ctx.lineTo(20, height-10)
+    ctx.lineTo(20+scale*haika.scaleFactor,  height-10)
+    ctx.lineTo(20+scale*haika.scaleFactor,  height-15)
     ctx.stroke()
     ctx.restore()
     return
-    #縮尺を表示する
-    #canvas.renderOnAddRemove = false
-    points = [
-      {'x': 0, 'y': 0},
-      {'x': 0, 'y': size * 0.1},
-      {'x': size, 'y': size * 0.1},
-      {'x': size, 'y': 0},
-    ]
 
-    line = new fabric.Polyline(points,
-      stroke: "#000"
-      opacity: 0.3
-      top: size * 0.2,
-      left: size,
-      fill: "#fff",
-      strokeWidth: 2,
-      selectable: false
-      hasControls: false
-      hasBorders: false
-    )
-    canvas.add line
-    text = new fabric.Text('1m',
-      opacity: 0.3
-      left: size * 1.3
-      top: size * 0.35
-      fontSize: 12
-      selectable: false
-      hasControls: false
-      hasBorders: false
-      fontWeight: 'bold'
-      fontFamily: 'Open Sans'
-      useNative: true
-      fill: "#000"
-    )
-    canvas.add text
-    #図面のサイズ
-    text = new fabric.Text("SIZE = " + (width * 2 / 100) + "m x " + (height * 2 / 100) + "m",
-      opacity: 0.3
-      left: size + size * 1.3
-      top: size * 0.2
-      fontSize: 12
-      selectable: false
-      hasControls: false
-      hasBorders: false
-      fontWeight: 'bold'
-      fontFamily: 'Open Sans'
-      useNative: true
-      fill: "#000"
-    )
-    canvas.add text
+
 
   return) (if typeof exports isnt "undefined" then exports else this)
