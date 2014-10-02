@@ -23,17 +23,6 @@
       @height = @__height()
       return
 
-#    _render: (ctx) ->
-##      console.log @
-#      ctx.beginPath()
-#      if @width is 1 and @height is 1
-#        ctx.fillRect 0, 0, 1, 1
-#        return
-#      ctx.fillRect @width/2*(-1), @height/2*(-1), @width, @height
-#      @_renderFill ctx
-#      @_renderStroke ctx
-#      return
-
     __resizeShelf: () ->
       @set(flipX: false, flipY: false)
 

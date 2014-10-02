@@ -21,6 +21,7 @@ haika =
   centerX: 0 # 表示位置X(画面の中央が0) [エディタステータス系変数]
   centerY: 0 # 表示位置Y(画面の中央が0) [エディタステータス系変数]
   scaleFactor: 1 #表示倍率 [エディタステータス系変数] (このファイル外で使用禁止)
+# 外部からこの値を変更する場合はsetScaleメソッドを使うこと
 # Todo: fabricオブジェクトからの呼び出しについて検討の必要あり
   layer: null #現在のレイヤー(CONST_LAYERS) [エディタステータス系変数]
 
@@ -163,11 +164,6 @@ haika =
       newScale = 1
     @setScale newScale
 
-# 表示時の拡大率を等倍にする (これはUI側のため将来的に移動)
-#
-  zoomReset: ->
-    @setScale 1
-
   setBackgroundUrl: (url) ->
     @canvas.backgroundImage = null
     @backgroundUrl = url
@@ -194,6 +190,7 @@ haika =
       if obj.id == id
         count = i
     return count
+
 # haikaオブジェクトの追加
   add: (object)->
     object.id = @_getLatestId()
@@ -383,17 +380,30 @@ haika =
   addObjectToCanvas: (o)->
     klass = @getClass(o.type)
     object = new klass()
-    if o.type.match(/shelf$/)
+    object.borderColor = "#000000"
+    object.fill = o.fill
+    object.padding = 0
+    if o.type=='shelf' or o.type=='curvedShelf'
       object.side = o.side
       object.count = o.count
       object.eachWidth = o.eachWidth
       object.eachHeight = o.eachHeight
-
-    object.id = o.id
-    object.scaleX = object.scaleY = 1
     if o.type == 'wall' or o.type == 'floor'
       object.width_scale = o.width_scale
       object.height_scale = o.height_scale
+    if o.type == 'beacon'
+      object.fill = "#000000"
+      object.hasControls = false
+      object.padding = 10
+      object.borderColor = "#0000ee"
+    if o.type == 'wall'
+      object.fill = "#000000"
+      object.borderColor = "#000000"
+    if o.type == 'floor'
+      object.fill = ""
+      object.borderColor = "#000000"
+    object.id = o.id
+    object.scaleX = object.scaleY = 1
     object.width = object.__width()
     object.height = object.__height()
     object.top = @transformTopY_cm2px(o.top_cm)
@@ -403,37 +413,20 @@ haika =
     object.angle = o.angle
     object.originX = 'center'
     object.originY = 'center'
-    if o.type == 'beacon'
-      object.fill = "#000000"
-      object.hasControls = false
-      object.padding = 10
-      object.borderColor = "#0000ee"
-    else if o.type == 'wall'
-      object.fill = "#000000"
-      object.borderColor = "#000000"
-    else if o.type == 'floor'
-      object.fill = ""
-      object.borderColor = "#000000"
-    else
-      object.borderColor = "#000000"
-      object.fill = o.fill
-      object.padding = 0
     object.stroke = o.stroke
     object.transparentCorners = true
     object.cornerColor = "#488BD4"
     object.borderOpacityWhenMoving = 0.8
     object.cornerSize = 10
-    schema = object.constructor.prototype.getJsonSchema()
-    for key of schema.properties
-      object[key] = o[key]
-
+    #schema = object.constructor.prototype.getJsonSchema()
+    #for key of schema.properties
+    #  object[key] = o[key]
     #現在のレイヤーかどうか
     if ((o.type == 'shelf' or o.type == 'curvedShelf') and @layer == @CONST_LAYERS.SHELF) or (o.type == 'wall' and @layer == @CONST_LAYERS.WALL) or (o.type == 'beacon' and @layer == @CONST_LAYERS.BEACON) or (o.type == 'floor' and @layer == @CONST_LAYERS.FLOOR)
       object.selectable = true
     else
       object.selectable = false
       object.opacity = 0.5
-
     @canvas.add(object)
 
 # 移動ピクセル数を取得

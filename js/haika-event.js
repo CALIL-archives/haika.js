@@ -74,7 +74,7 @@ $(haika).on('haika:load', function() {
     return haika.zoomOut();
   });
   $(".zoomreset").click(function() {
-    return haika.zoomReset();
+    return haika.setScale(1);
   });
   $(".bringtofront").click(function() {
     return haika.bringToFront();

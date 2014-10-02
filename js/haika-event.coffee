@@ -59,7 +59,7 @@ $(haika).on 'haika:load', ->
   $(".zoomout").click ->
     haika.zoomOut()
   $(".zoomreset").click ->
-    haika.zoomReset()
+    haika.setScale 1
   $(".bringtofront").click ->
     haika.bringToFront()
   $(".duplicate").click ->
