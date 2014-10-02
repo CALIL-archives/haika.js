@@ -43,7 +43,7 @@ $.extend haika,
         id: id
         revision: option.revision
       error: ()=>
-        error and error('データが読み込めませんでした')
+        option.error and option.error('データが読み込めませんでした')
       success: (json)=>
         if json.locked
           # TODO : Read Onlyモードに切り替える

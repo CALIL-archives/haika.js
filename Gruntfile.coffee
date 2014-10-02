@@ -1,6 +1,5 @@
 #Gruntfile.coffee
 "use strict"
-proxySnippet = require("grunt-connect-proxy/lib/utils").proxyRequest
 module.exports = (grunt) ->
   #Gruntの設定
   grunt.initConfig
