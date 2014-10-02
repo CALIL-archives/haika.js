@@ -14,7 +14,7 @@ initScrollBar = function() {
     x: defaultX,
     animationCallback: function(x, y) {
       var centerX;
-      centerX = x * 10000 - scroll_weight * haika.xyScaleFactor;
+      centerX = x * 10000 - scroll_weight * haika.scaleFactor;
       if (centerX > maxX - haika.canvas.getWidth() / 2) {
         centerX = maxX - haika.canvas.getWidth() / 2;
       }
@@ -31,7 +31,7 @@ initScrollBar = function() {
     vertical: true,
     animationCallback: function(x, y) {
       var centerY;
-      centerY = y * 10000 - scroll_weight * haika.xyScaleFactor;
+      centerY = y * 10000 - scroll_weight * haika.scaleFactor;
       if (centerY > maxY - haika.canvas.getHeight() / 2) {
         centerY = maxY - haika.canvas.getHeight() / 2;
       }

@@ -12,7 +12,7 @@ initScrollBar = () ->
     x: defaultX
     animationCallback: (x, y)->
 #      log x
-      centerX = x * 10000 - scroll_weight * haika.xyScaleFactor
+      centerX = x * 10000 - scroll_weight * haika.scaleFactor
       if centerX > maxX - haika.canvas.getWidth() / 2
         centerX = maxX - haika.canvas.getWidth() / 2
       if centerX < -maxX + haika.canvas.getWidth() / 2
@@ -25,7 +25,7 @@ initScrollBar = () ->
     vertical: true,
 #    yPrecision: 500,
     animationCallback: (x, y)->
-      centerY = y * 10000 - scroll_weight * haika.xyScaleFactor
+      centerY = y * 10000 - scroll_weight * haika.scaleFactor
       if centerY > maxY - haika.canvas.getHeight() / 2
         centerY = maxY - haika.canvas.getHeight() / 2
       if centerY < -maxY + haika.canvas.getHeight() / 2
