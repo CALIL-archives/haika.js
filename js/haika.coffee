@@ -2,6 +2,16 @@ log = (obj) ->
   try
     console.log obj
 
+# fabricオブジェクトの共通設定
+fabric.Object.prototype.scaleX = 1
+fabric.Object.prototype.scaleY = 1
+fabric.Object.prototype.originX = 'center'
+fabric.Object.prototype.originY = 'center'
+fabric.Object.prototype.transparentCorners = true
+fabric.Object.prototype.cornerColor = "#488BD4"
+fabric.Object.prototype.borderOpacityWhenMoving = 0.8
+fabric.Object.prototype.cornerSize = 10
+
 haika =
   CONST_LAYERS: #現在のステータス [オプション定数]
     SHELF: 0
@@ -197,16 +207,16 @@ haika =
     object.id = @_getLatestId()
     object.top_cm  = @centerY
     object.left_cm = @centerX
-    object.scaleX = 1
-    object.scaleY = 1
-    object.fill   = @fillColor
-    object.stroke = @strokeColor
+    if not object.fill?
+      object.fill   = @fillColor
+    if not object.stroke?
+      object.stroke = @strokeColor
     if not object.angle?
       object.angle  = 0
     @objects.push(object)
     $(@).trigger('haika:add')
     @render()
-#    追加したオブジェクトの選択
+    #追加したオブジェクトの選択 描画されるまでの遅延必須
     setTimeout =>
       o = @canvas.item(@getCountFindById(object.id))
       @canvas.setActiveObject(o)
@@ -369,45 +379,12 @@ haika =
 # canvasにオブジェクトを追加
   addObjectToCanvas: (o)->
     klass = @getClass(o.type)
-    object = new klass()
-    object.borderColor = "#000000"
-    object.fill = o.fill
-    object.padding = 0
-    if o.type=='shelf' or o.type=='curvedShelf'
-      object.side = o.side
-      object.count = o.count
-      object.eachWidth = o.eachWidth
-      object.eachHeight = o.eachHeight
-    if o.type == 'wall' or o.type == 'floor'
-      object.width_scale = o.width_scale
-      object.height_scale = o.height_scale
-    if o.type == 'beacon'
-      object.fill = "#000000"
-      object.hasControls = false
-      object.padding = 10
-      object.borderColor = "#0000ee"
-    if o.type == 'wall'
-      object.fill = "#000000"
-      object.borderColor = "#000000"
-    if o.type == 'floor'
-      object.fill = ""
-      object.borderColor = "#000000"
-    object.id = o.id
-    object.scaleX = object.scaleY = 1
+    object = new klass(o)
+#    log object.toObject()
     object.width = object.__width()
     object.height = object.__height()
     object.top = @transformTopY_cm2px(o.top_cm)
     object.left = @transformLeftX_cm2px(o.left_cm)
-    object.top_cm = o.top_cm
-    object.left_cm = o.left_cm
-    object.angle = o.angle
-    object.originX = 'center'
-    object.originY = 'center'
-    object.stroke = o.stroke
-    object.transparentCorners = true
-    object.cornerColor = "#488BD4"
-    object.borderOpacityWhenMoving = 0.8
-    object.cornerSize = 10
     #schema = object.constructor.prototype.getJsonSchema()
     #for key of schema.properties
     #  object[key] = o[key]

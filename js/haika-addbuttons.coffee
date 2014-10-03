@@ -74,20 +74,22 @@ $ ->
       type: 'beacon'
       icon: 'square'
       title: 'ビーコン'
+      fill : '#000000'
+      stroke : '#0000ee'
     wall:
       type: 'wall'
       icon: 'square'
       title: '壁'
-      width: 90
-      height: 90
       height_scale: 1
       width_scale: 1
+      fill: '#000000'
     floor:
       type: 'floor'
       icon: 'square'
       title: '床'
       height_scale: 1
       width_scale: 1
+      fill : ''
   for key, val of addButtons
     # オブジェクト追加ボタンを生成
     html = """<li id="add_#{key}" key="#{key}" type="#{val.type}"><i class="fa fa-#{val.icon}"></i> #{val.title}</li>"""

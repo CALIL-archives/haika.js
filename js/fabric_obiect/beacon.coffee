@@ -9,6 +9,8 @@
     type: "beacon"
     eachWidth: 10
     eachHeight: 10
+    hasControls: false
+    padding : 10
     minor: 0
     __width: ->
       @eachWidth * haika.scaleFactor
@@ -107,6 +109,8 @@
           "fill": @fill
           "stroke": @stroke
           "minor": @minor
+          "hasControls": @hasControls
+          "padding": @padding
       return data
 
     toSVG: (reviver) ->

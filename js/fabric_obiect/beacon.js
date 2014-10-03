@@ -11,6 +11,8 @@
     type: "beacon",
     eachWidth: 10,
     eachHeight: 10,
+    hasControls: false,
+    padding: 10,
     minor: 0,
     __width: function() {
       return this.eachWidth * haika.scaleFactor;
@@ -130,7 +132,9 @@
           "angle": this.angle,
           "fill": this.fill,
           "stroke": this.stroke,
-          "minor": this.minor
+          "minor": this.minor,
+          "hasControls": this.hasControls,
+          "padding": this.padding
         }
       };
       return data;
