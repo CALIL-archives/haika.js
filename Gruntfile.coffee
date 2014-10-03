@@ -2,6 +2,36 @@
 "use strict"
 module.exports = (grunt) ->
   proxySnippet = require("grunt-connect-proxy/lib/utils").proxyRequest
+  jsfiles = [
+    "bower_components/fabric/dist/fabric.js"
+    "bower_components/proj4/dist/proj4.js"
+    "bower_components/json-editor/dist/jsoneditor.min.js"
+    "bower_components/jquery-mousewheel/jquery.mousewheel.min.js"
+    "bower_components/dragdealer/dragdealer.min.js"
+    "bower_components/Javascript-Undo-Manager/js/undomanager.js"
+    "bower_components/jquery.finger/dist/jquery.finger.min.js"
+    "bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"
+    "vendor/mousetrap.min.js"
+    "vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js"
+    "vendor/clipper.js"
+    "js/fabric_obiect/aligning_guidelines.js"
+    "js/fabric_obiect/shelf.js"
+    "js/fabric_obiect/curvedShelf.js"
+    "js/fabric_obiect/beacon.js"
+    "js/fabric_obiect/wall.js"
+    "js/fabric_obiect/floor.js"
+    "js/fabric_obiect/grid.js"
+    "js/haika.js"
+    "js/haika-io.js"
+    "js/haika-geojson.js"
+    "js/haika-scrollbar.js"
+    "js/haika-addbuttons.js"
+    "js/haika-colorpicker.js"
+    "js/haika-event.js"
+    "js/haika-undo.js"
+    "js/haika-editor.js"
+    "js/haika-map.js"
+  ]
   #Gruntの設定
   grunt.initConfig
     pkg: grunt.file.readJSON("package.json")
@@ -39,36 +69,7 @@ module.exports = (grunt) ->
           stripBanners: true
           separator: ";"
 
-        src: [
-          "bower_components/fabric/dist/fabric.js"
-          "bower_components/proj4/dist/proj4.js"
-          "bower_components/json-editor/dist/jsoneditor.min.js"
-          "bower_components/jquery-mousewheel/jquery.mousewheel.min.js"
-          "bower_components/dragdealer/dragdealer.min.js"
-          "bower_components/Javascript-Undo-Manager/js/undomanager.js"
-          "bower_components/jquery.finger/dist/jquery.finger.min.js"
-          "bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"
-          "vendor/mousetrap.min.js"
-          "vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js"
-          "vendor/aligning_guidelines.js"
-          "vendor/clipper.js"
-          "js/fabric_obiect/shelf.js"
-          "js/fabric_obiect/curvedShelf.js"
-          "js/fabric_obiect/beacon.js"
-          "js/fabric_obiect/wall.js"
-          "js/fabric_obiect/floor.js"
-          "js/fabric_obiect/grid.js"
-          "js/haika.js"
-          "js/haika-io.js"
-          "js/haika-geojson.js"
-          "js/haika-scrollbar.js"
-          "js/haika-addbuttons.js"
-          "js/haika-colorpicker.js"
-          "js/haika-event.js"
-          "js/haika-undo.js"
-          "js/haika-editor.js"
-          "js/haika-map.js"
-        ]
+        src: jsfiles
         dest: "js/build/haika.all.js"
         nonull: true
 
@@ -151,6 +152,10 @@ module.exports = (grunt) ->
         app: "Google Chrome"
         options:
           openOn: "serverListening"
+    save_license:
+      dist:
+        src: jsfiles,
+        dest: 'licenses.md'
   # loadNpmTasks
   require('load-grunt-tasks')(grunt);
   # # package.jsonから読み込んでるもの
@@ -165,6 +170,7 @@ module.exports = (grunt) ->
     "coffee"
     "concat"
     "uglify"
+    'save_license'
     'notify:complete'
   ]
   grunt.registerTask "server", (target) ->
