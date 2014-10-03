@@ -225,6 +225,7 @@ haika = {
     }
     this.objects.push(object);
     $(this).trigger('haika:add');
+    this.render();
     setTimeout((function(_this) {
       return function() {
         var o;

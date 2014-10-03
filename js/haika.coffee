@@ -205,7 +205,7 @@ haika =
       object.angle  = 0
     @objects.push(object)
     $(@).trigger('haika:add')
-#    @render()
+    @render()
 #    追加したオブジェクトの選択
     setTimeout =>
       o = @canvas.item(@getCountFindById(object.id))

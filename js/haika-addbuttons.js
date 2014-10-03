@@ -114,8 +114,7 @@ $(function() {
       object = addButtons[key];
       delete object.title;
       delete object.icon;
-      haika.addObject(object);
-      return haika.render();
+      return haika.addObject(object);
     });
   }
   return haika.addbuttons.showAddButtons('shelf');

@@ -100,5 +100,4 @@ $ ->
       delete object.title
       delete object.icon
       haika.addObject(object)
-      haika.render()
   haika.addbuttons.showAddButtons('shelf')
