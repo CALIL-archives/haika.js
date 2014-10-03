@@ -22945,230 +22945,6 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
   $.fn.colorselector.Constructor = ColorSelector;
 
 })(jQuery, window, document);
-;function initAligningGuidelines(canvas) {
-
-  var ctx = canvas.getSelectionContext(),
-      aligningLineOffset = 5,
-      aligningLineMargin = 4,
-      aligningLineWidth = 1,
-      aligningLineColor = 'rgb(0,255,0)';
-
-  function drawVerticalLine(coords) {
-    drawLine(
-      coords.x + 0.5,
-      coords.y1 > coords.y2 ? coords.y2 : coords.y1,
-      coords.x + 0.5,
-      coords.y2 > coords.y1 ? coords.y2 : coords.y1);
-  }
-
-  function drawHorizontalLine(coords) {
-    drawLine(
-      coords.x1 > coords.x2 ? coords.x2 : coords.x1,
-      coords.y + 0.5,
-      coords.x2 > coords.x1 ? coords.x2 : coords.x1,
-      coords.y + 0.5);
-  }
-
-  function drawLine(x1, y1, x2, y2) {
-    ctx.save();
-    ctx.setLineDash([4,4]);
-    ctx.lineWidth = aligningLineWidth;
-    ctx.strokeStyle = aligningLineColor;
-    ctx.beginPath();
-    ctx.moveTo(Math.floor(x1)+0.5, Math.floor(y1)+0.5);
-    ctx.lineTo(Math.floor(x2)+0.5, Math.floor(y2)+0.5);
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  function isInRange(value1, value2) {
-    value1 = Math.round(value1);
-    value2 = Math.round(value2);
-    for (var i = value1 - aligningLineMargin, len = value1 + aligningLineMargin; i <= len; i++) {
-      if (i === value2) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  var verticalLines = [ ],
-      horizontalLines = [ ];
-
-//  function getObjects(){
-//    var objects = [];
-//    $(haika.objects).each(function(i, object){
-//      objects.push(object);
-//    });
-//    return objects;
-//  }
-  canvas.on('object:moving', function(e) {
-
-    var activeObject = e.target,
-        canvasObjects = canvas.getObjects(),
-//        appObjects = getObjects(),
-        activeObjectCenter = activeObject.getCenterPoint(),
-        activeObjectLeft = activeObjectCenter.x,
-        activeObjectTop = activeObjectCenter.y,
-        activeObjectHeight = activeObject.getBoundingRectHeight(),
-        activeObjectWidth = activeObject.getBoundingRectWidth(),
-        horizontalInTheRange = false,
-        verticalInTheRange = false,
-        transform = canvas._currentTransform;
-
-    if (!transform) return;
-
-       horizontalLines.length = 0;
-       verticalLines.length = 0;
-    // It should be trivial to DRY this up by encapsulating (repeating) creation of x1, x2, y1, and y2 into functions,
-    // but we're not doing it here for perf. reasons -- as this a function that's invoked on every mouse move
-
-    for (var i = canvasObjects.length; i--; ) {
-
-      if (canvasObjects[i] === activeObject) continue;
-
-      var objectCenter = canvasObjects[i].getCenterPoint(),
-          objectLeft = objectCenter.x,
-          objectTop = objectCenter.y,
-          objectHeight = canvasObjects[i].getBoundingRectHeight(),
-          objectWidth = canvasObjects[i].getBoundingRectWidth();
-
-      // snap by the horizontal center line
-       /*
-      if (isInRange(objectLeft, activeObjectLeft)) {
-        verticalInTheRange = true;
-        verticalLines.push({
-          x: objectLeft,
-          y1: (objectTop < activeObjectTop)
-            ? (objectTop - objectHeight / 2 - aligningLineOffset)
-            : (objectTop + objectHeight / 2 + aligningLineOffset),
-          y2: (activeObjectTop > objectTop)
-            ? (activeObjectTop + activeObjectHeight / 2 + aligningLineOffset)
-            : (activeObjectTop - activeObjectHeight / 2 - aligningLineOffset)
-        });
-        activeObject.setPositionByOrigin(new fabric.Point(objectLeft, activeObjectTop), transform.originX, transform.originY);
-      }
-*/
-      // snap by the left edge
-      if (isInRange(objectLeft - objectWidth / 2, activeObjectLeft - activeObjectWidth / 2)) {
-        verticalInTheRange = true;
-        verticalLines.push({
-          x: objectLeft - objectWidth / 2,
-          y1: (objectTop < activeObjectTop)
-            ? (objectTop - objectHeight / 2 - aligningLineOffset)
-            : (objectTop + objectHeight / 2 + aligningLineOffset),
-          y2: (activeObjectTop > objectTop)
-            ? (activeObjectTop + activeObjectHeight / 2 + aligningLineOffset)
-            : (activeObjectTop - activeObjectHeight / 2 - aligningLineOffset)
-        });
-        activeObject.setPositionByOrigin(new fabric.Point(objectLeft - objectWidth / 2 + activeObjectWidth / 2, activeObjectTop), transform.originX, transform.originY);
-      }
-
-      // snap by the right edge
-      if (isInRange(objectLeft + objectWidth / 2, activeObjectLeft + activeObjectWidth / 2)) {
-        verticalInTheRange = true;
-        verticalLines.push({
-          x: objectLeft + objectWidth / 2,
-          y1: (objectTop < activeObjectTop)
-            ? (objectTop - objectHeight / 2 - aligningLineOffset)
-            : (objectTop + objectHeight / 2 + aligningLineOffset),
-          y2: (activeObjectTop > objectTop)
-            ? (activeObjectTop + activeObjectHeight / 2 + aligningLineOffset)
-            : (activeObjectTop - activeObjectHeight / 2 - aligningLineOffset)
-        });
-        activeObject.setPositionByOrigin(new fabric.Point(objectLeft + objectWidth / 2 - activeObjectWidth / 2, activeObjectTop), transform.originX, transform.originY);
-      }
-
-      // snap by the vertical center line
-        /*
-      if (isInRange(objectTop, activeObjectTop)) {
-        horizontalInTheRange = true;
-        horizontalLines.push({
-          y: objectTop,
-          x1: (objectLeft < activeObjectLeft)
-            ? (objectLeft - objectWidth / 2 - aligningLineOffset)
-            : (objectLeft + objectWidth / 2 + aligningLineOffset),
-          x2: (activeObjectLeft > objectLeft)
-            ? (activeObjectLeft + activeObjectWidth / 2 + aligningLineOffset)
-            : (activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset)
-        });
-        activeObject.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop), transform.originX, transform.originY);
-      }
-*/
-      // snap by the top edge
-      if (isInRange(objectTop - objectHeight / 2, activeObjectTop - activeObjectHeight / 2)) {
-        horizontalInTheRange = true;
-        var hs={
-          y: objectTop - objectHeight / 2,
-          x1: (objectLeft < activeObjectLeft)
-            ? (objectLeft - objectWidth / 2 - aligningLineOffset)
-            : (objectLeft + objectWidth / 2 + aligningLineOffset),
-          x2: (activeObjectLeft > objectLeft)
-            ? (activeObjectLeft + activeObjectWidth / 2 + aligningLineOffset)
-            : (activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset)
-        }
-        var enabled=true;
-        for (var x = horizontalLines.length; x--; ) {
-             if(hs.y==horizontalLines[x].y){
-                 if(Math.abs(horizontalLines[x].x2-horizontalLines[x].x1)>Math.abs(hs.x2-hs.x1)) {
-                     if(Math.abs(horizontalLines[x].x2-horizontalLines[x].x1)-Math.abs(hs.x2-hs.x1)>5){
-                         horizontalLines.splice(x, 1);
-                     }
-                 }else{
-                     enabled=false;
-                 }
-             }
-        }
-        if(enabled){
-            horizontalLines.push(hs);
-            activeObject.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop - objectHeight / 2 + activeObjectHeight / 2), transform.originX, transform.originY);
-        }
-      }
-
-      // snap by the bottom edge
-      if (isInRange(objectTop + objectHeight / 2, activeObjectTop + activeObjectHeight / 2)) {
-        horizontalInTheRange = true;
-        horizontalLines.push({
-          y: objectTop + objectHeight / 2,
-          x1: (objectLeft < activeObjectLeft)
-            ? (objectLeft - objectWidth / 2 - aligningLineOffset)
-            : (objectLeft + objectWidth / 2 + aligningLineOffset),
-          x2: (activeObjectLeft > objectLeft)
-            ? (activeObjectLeft + activeObjectWidth / 2 + aligningLineOffset)
-            : (activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset)
-        });
-        activeObject.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop + objectHeight / 2 - activeObjectHeight / 2), transform.originX, transform.originY);
-      }
-    }
-
-    if (!horizontalInTheRange) {
-      horizontalLines.length = 0;
-    }
-
-    if (!verticalInTheRange) {
-      verticalLines.length = 0;
-    }
-
-  });
-
-  canvas.on('before:render', function() {
-    canvas.clearContext(canvas.contextTop);
-  });
-
-  canvas.on('after:render', function() {
-    for (var i = verticalLines.length; i--; ) {
-      drawVerticalLine(verticalLines[i]);
-    }
-    for (var i = horizontalLines.length; i--; ) {
-      drawHorizontalLine(horizontalLines[i]);
-    }
-  });
-
-  canvas.on('mouse:up', function() {
-    verticalLines.length = horizontalLines.length = 0;
-    canvas.renderAll();
-  });
-}
 ;// rev 452
 /********************************************************************************
  *                                                                              *
@@ -23412,7 +23188,157 @@ f,g,h,l,k,m,p,q,r,s,t,u,v,x=a.length,y=b*b,w=[];for(c=0;c<x;c++)if(f=a[c],l=f.le
 h.push({X:f[l-1].X,Y:f[l-1].Y});r&&f.pop();if(q.length)f=h;else break}l=h.length;h[l-1].X==h[0].X&&h[l-1].Y==h[0].Y&&h.pop();2<h.length&&w.push(h)}!a[0]instanceof Array&&(w=w[0]);"undefined"==typeof w&&(w=[[]]);return w};d.JS.PerimeterOfPath=function(a,b,c){if("undefined"==typeof a)return 0;var e=Math.sqrt,d=0,g,h,k=0,m=g=0;h=0;var n=a.length;if(2>n)return 0;b&&(a[n]=a[0],n++);for(;--n;)g=a[n],k=g.X,g=g.Y,h=a[n-1],m=h.X,h=h.Y,d+=e((k-m)*(k-m)+(g-h)*(g-h));b&&a.pop();return d/c};d.JS.PerimeterOfPaths=
 function(a,b,c){c||(c=1);for(var e=0,f=0;f<a.length;f++)e+=d.JS.PerimeterOfPath(a[f],b,c);return e};d.JS.ScaleDownPath=function(a,b){var c,d;b||(b=1);for(c=a.length;c--;)d=a[c],d.X/=b,d.Y/=b};d.JS.ScaleDownPaths=function(a,b){var c,d,f;b||(b=1);for(c=a.length;c--;)for(d=a[c].length;d--;)f=a[c][d],f.X/=b,f.Y/=b};d.JS.ScaleUpPath=function(a,b){var c,d,f=Math.round;b||(b=1);for(c=a.length;c--;)d=a[c],d.X=f(d.X*b),d.Y=f(d.Y*b)};d.JS.ScaleUpPaths=function(a,b){var c,d,f,g=Math.round;b||(b=1);for(c=a.length;c--;)for(d=
 a[c].length;d--;)f=a[c][d],f.X=g(f.X*b),f.Y=g(f.Y*b)};d.ExPolygons=function(){return[]};d.ExPolygon=function(){this.holes=this.outer=null};d.JS.AddOuterPolyNodeToExPolygons=function(a,b){var c=new d.ExPolygon;c.outer=a.Contour();var e=a.Childs(),f=e.length;c.holes=Array(f);var g,h,k,m,n;for(h=0;h<f;h++)for(g=e[h],c.holes[h]=g.Contour(),k=0,m=g.Childs(),n=m.length;k<n;k++)g=m[k],d.JS.AddOuterPolyNodeToExPolygons(g,b);b.push(c)};d.JS.ExPolygonsToPaths=function(a){var b,c,e,f,g=new d.Paths;b=0;for(e=
-a.length;b<e;b++)for(g.push(a[b].outer),c=0,f=a[b].holes.length;c<f;c++)g.push(a[b].holes[c]);return g};d.JS.PolyTreeToExPolygons=function(a){var b=new d.ExPolygons,c,e,f;c=0;e=a.Childs();for(f=e.length;c<f;c++)a=e[c],d.JS.AddOuterPolyNodeToExPolygons(a,b);return b}})();;(function(global) {
+a.length;b<e;b++)for(g.push(a[b].outer),c=0,f=a[b].holes.length;c<f;c++)g.push(a[b].holes[c]);return g};d.JS.PolyTreeToExPolygons=function(a){var b=new d.ExPolygons,c,e,f;c=0;e=a.Childs();for(f=e.length;c<f;c++)a=e[c],d.JS.AddOuterPolyNodeToExPolygons(a,b);return b}})();;var initAligningGuidelines;
+
+initAligningGuidelines = function(canvas) {
+  var aligningLineColor, aligningLineMargin, aligningLineOffset, aligningLineWidth, ctx, drawHorizontalLine, drawLine, drawVerticalLine, horizontalLines, isInRange, verticalLines;
+  drawVerticalLine = function(coords) {
+    drawLine(coords.x + 0.5, (coords.y1 > coords.y2 ? coords.y2 : coords.y1), coords.x + 0.5, (coords.y2 > coords.y1 ? coords.y2 : coords.y1));
+  };
+  drawHorizontalLine = function(coords) {
+    drawLine((coords.x1 > coords.x2 ? coords.x2 : coords.x1), coords.y + 0.5, (coords.x2 > coords.x1 ? coords.x2 : coords.x1), coords.y + 0.5);
+  };
+  drawLine = function(x1, y1, x2, y2) {
+    ctx.save();
+    ctx.setLineDash([4, 4]);
+    ctx.lineWidth = aligningLineWidth;
+    ctx.strokeStyle = aligningLineColor;
+    ctx.beginPath();
+    ctx.moveTo(Math.floor(x1) + 0.5, Math.floor(y1) + 0.5);
+    ctx.lineTo(Math.floor(x2) + 0.5, Math.floor(y2) + 0.5);
+    ctx.stroke();
+    ctx.restore();
+  };
+  isInRange = function(value1, value2) {
+    var i, len;
+    value1 = Math.round(value1);
+    value2 = Math.round(value2);
+    i = value1 - aligningLineMargin;
+    len = value1 + aligningLineMargin;
+    while (i <= len) {
+      if (i === value2) {
+        return true;
+      }
+      i++;
+    }
+    return false;
+  };
+  ctx = canvas.getSelectionContext();
+  aligningLineOffset = 5;
+  aligningLineMargin = 4;
+  aligningLineWidth = 1;
+  aligningLineColor = "rgb(0,255,0)";
+  verticalLines = [];
+  horizontalLines = [];
+  canvas.on("object:moving", function(e) {
+    var activeObject, activeObjectCenter, activeObjectHeight, activeObjectLeft, activeObjectTop, activeObjectWidth, canvasObjects, enabled, horizontalInTheRange, hs, i, objectCenter, objectHeight, objectLeft, objectTop, objectWidth, transform, verticalInTheRange, x;
+    activeObject = e.target;
+    canvasObjects = canvas.getObjects();
+    activeObjectCenter = activeObject.getCenterPoint();
+    activeObjectLeft = activeObjectCenter.x;
+    activeObjectTop = activeObjectCenter.y;
+    activeObjectHeight = activeObject.getBoundingRectHeight();
+    activeObjectWidth = activeObject.getBoundingRectWidth();
+    horizontalInTheRange = false;
+    verticalInTheRange = false;
+    transform = canvas._currentTransform;
+    if (!transform) {
+      return;
+    }
+    horizontalLines.length = 0;
+    verticalLines.length = 0;
+    i = canvasObjects.length;
+    while (i--) {
+      if (canvasObjects[i] === activeObject) {
+        continue;
+      }
+      objectCenter = canvasObjects[i].getCenterPoint();
+      objectLeft = objectCenter.x;
+      objectTop = objectCenter.y;
+      objectHeight = canvasObjects[i].getBoundingRectHeight();
+      objectWidth = canvasObjects[i].getBoundingRectWidth();
+      if (isInRange(objectLeft - objectWidth / 2, activeObjectLeft - activeObjectWidth / 2)) {
+        verticalInTheRange = true;
+        verticalLines.push({
+          x: objectLeft - objectWidth / 2,
+          y1: (objectTop < activeObjectTop ? objectTop - objectHeight / 2 - aligningLineOffset : objectTop + objectHeight / 2 + aligningLineOffset),
+          y2: (activeObjectTop > objectTop ? activeObjectTop + activeObjectHeight / 2 + aligningLineOffset : activeObjectTop - activeObjectHeight / 2 - aligningLineOffset)
+        });
+        activeObject.setPositionByOrigin(new fabric.Point(objectLeft - objectWidth / 2 + activeObjectWidth / 2, activeObjectTop), transform.originX, transform.originY);
+      }
+      if (isInRange(objectLeft + objectWidth / 2, activeObjectLeft + activeObjectWidth / 2)) {
+        verticalInTheRange = true;
+        verticalLines.push({
+          x: objectLeft + objectWidth / 2,
+          y1: (objectTop < activeObjectTop ? objectTop - objectHeight / 2 - aligningLineOffset : objectTop + objectHeight / 2 + aligningLineOffset),
+          y2: (activeObjectTop > objectTop ? activeObjectTop + activeObjectHeight / 2 + aligningLineOffset : activeObjectTop - activeObjectHeight / 2 - aligningLineOffset)
+        });
+        activeObject.setPositionByOrigin(new fabric.Point(objectLeft + objectWidth / 2 - activeObjectWidth / 2, activeObjectTop), transform.originX, transform.originY);
+      }
+      if (isInRange(objectTop - objectHeight / 2, activeObjectTop - activeObjectHeight / 2)) {
+        horizontalInTheRange = true;
+        hs = {
+          y: objectTop - objectHeight / 2,
+          x1: (objectLeft < activeObjectLeft ? objectLeft - objectWidth / 2 - aligningLineOffset : objectLeft + objectWidth / 2 + aligningLineOffset),
+          x2: (activeObjectLeft > objectLeft ? activeObjectLeft + activeObjectWidth / 2 + aligningLineOffset : activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset)
+        };
+        enabled = true;
+        x = horizontalLines.length;
+        while (x--) {
+          if (hs.y === horizontalLines[x].y) {
+            if (Math.abs(horizontalLines[x].x2 - horizontalLines[x].x1) > Math.abs(hs.x2 - hs.x1)) {
+              if (Math.abs(horizontalLines[x].x2 - horizontalLines[x].x1) - Math.abs(hs.x2 - hs.x1) > 5) {
+                horizontalLines.splice(x, 1);
+              }
+            } else {
+              enabled = false;
+            }
+          }
+        }
+        if (enabled) {
+          horizontalLines.push(hs);
+          activeObject.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop - objectHeight / 2 + activeObjectHeight / 2), transform.originX, transform.originY);
+        }
+      }
+      if (isInRange(objectTop + objectHeight / 2, activeObjectTop + activeObjectHeight / 2)) {
+        horizontalInTheRange = true;
+        horizontalLines.push({
+          y: objectTop + objectHeight / 2,
+          x1: (objectLeft < activeObjectLeft ? objectLeft - objectWidth / 2 - aligningLineOffset : objectLeft + objectWidth / 2 + aligningLineOffset),
+          x2: (activeObjectLeft > objectLeft ? activeObjectLeft + activeObjectWidth / 2 + aligningLineOffset : activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset)
+        });
+        activeObject.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop + objectHeight / 2 - activeObjectHeight / 2), transform.originX, transform.originY);
+      }
+    }
+    if (!horizontalInTheRange) {
+      horizontalLines.length = 0;
+    }
+    if (!verticalInTheRange) {
+      verticalLines.length = 0;
+    }
+  });
+  canvas.on("before:render", function() {
+    canvas.clearContext(canvas.contextTop);
+  });
+  canvas.on("after:render", function() {
+    var i;
+    i = verticalLines.length;
+    while (i--) {
+      drawVerticalLine(verticalLines[i]);
+    }
+    i = horizontalLines.length;
+    while (i--) {
+      drawHorizontalLine(horizontalLines[i]);
+    }
+  });
+  canvas.on("mouse:up", function() {
+    verticalLines.length = horizontalLines.length = 0;
+    canvas.renderAll();
+  });
+};
+
+//# sourceMappingURL=aligning_guidelines.js.map
+;(function(global) {
   "use strict";
   var extend, fabric, stateProperties, _setDefaultLeftTopValues;
   _setDefaultLeftTopValues = function(attributes) {
