@@ -49,6 +49,13 @@ $(haika).on 'haika:initialized', ->
     error: (message) ->
       alert(message)
   )
+$('.fullscreen').click ->
+  if $('.haika_container')[0].requestFullScreen
+    $('.haika_container')[0].requestFullScreen()
+  if $('.haika_container')[0].webkitRequestFullScreen
+    $('.haika_container')[0].webkitRequestFullScreen()
+  if $('.haika_container')[0].mozRequestFullScreen
+    $('.haika_container')[0].mozRequestFullScreen()
 
 # 初期設定
 haika.init

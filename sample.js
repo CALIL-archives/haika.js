@@ -70,6 +70,18 @@ $(haika).on('haika:initialized', function() {
   });
 });
 
+$('.fullscreen').click(function() {
+  if ($('.haika_container')[0].requestFullScreen) {
+    $('.haika_container')[0].requestFullScreen();
+  }
+  if ($('.haika_container')[0].webkitRequestFullScreen) {
+    $('.haika_container')[0].webkitRequestFullScreen();
+  }
+  if ($('.haika_container')[0].mozRequestFullScreen) {
+    return $('.haika_container')[0].mozRequestFullScreen();
+  }
+});
+
 haika.init({
   canvasId: 'haika_canvas_area',
   width: window.innerWidth,
