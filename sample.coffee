@@ -42,24 +42,34 @@ $(haika).on 'haika:render', ->
     $('.zoom').html((haika.scaleFactor * 100).toFixed(0) + '%')
 
 $(haika).on 'haika:initialized', ->
+  # {}を使って引数を渡そうとしてはいけない coffeescrriptの変換がおかしくなる
   haika.openFromApi(2,
-    {
-      succcess: =>
-        @render()
-      error: (message) ->
-        alert(message)
-    }
+    succcess: =>
+      @render()
+    error: (message) ->
+      alert(message)
   )
 
 # 初期設定
 haika.init
-  canvasId : 'canvas_area'
-  width : windowSetting.getWidth()
-  height : windowSetting.getHeight()
+  canvasId : 'haika_canvas_area'
+  width : window.innerWidth
+  height : window.innerHeight
 
-haika.undo.init()
-windowSetting.start()
-haika.addbuttons.showAddButtons(haika.state)
-initScrollBar()
-haika.map.initMap()
-haika.colorpicker.init()
+setTimeout ->
+  haika.render()
+, 100
+
+$(window).resize =>
+  haika.canvas.setWidth(window.innerWidth)
+  haika.canvas.setHeight(window.innerHeight)
+  haika.render()
+
+
+
+#haika.undo.init()
+#windowSetting.start()
+#haika.addbuttons.showAddButtons(haika.state)
+#initScrollBar()
+#haika.map.initMap()
+#haika.colorpicker.init()

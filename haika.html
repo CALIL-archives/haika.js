@@ -9,6 +9,22 @@
 </head>
 <body>
 <div class="haika_container">
+  <div class="haika_canvas">
+    <canvas id="haika_canvas_area"></canvas>
+  </div>
+  <div class="toolbar_container">
+    <ul class="toolbar_menu">
+    </ul>
+    <select id="fill-color">
+        <option value="1" data-color="#CFE2F3" selected="selected">lightblue</option>
+    </select>
+    <select id="stroke-color">
+        <option value="1" data-color="#000000" selected="selected">balck</option>
+    </select>
+  </div>
+</div>
+<!--
+<div class="haika_container">
     <div class="header">
         <ul class="nav nav-tabs haika_nav">
             <li class="active"><a href="#" class="shelf">本棚</a></li>
@@ -22,16 +38,6 @@
         <div style="display:none;">
             <input type="file" id="file"/>
         </div>
-    </div>
-    <div class="toolbar_container">
-        <ul class="toolbar_menu">
-        </ul>
-        <select id="fill-color">
-            <option value="1" data-color="#CFE2F3" selected="selected">lightblue</option>
-        </select>
-        <select id="stroke-color">
-            <option value="1" data-color="#000000" selected="selected">balck</option>
-        </select>
     </div>
     <div class="side_container">
         <div  id="vertical-scroller" class="content-scroller">
@@ -126,7 +132,6 @@
         </div>
     </div>
     <div class="main_container">
-        <canvas id="canvas_area" width="800" height="600"></canvas>
         <div class="row">
             <div class="col-md-3" style="z-index: 10000;background-color: white;">
                 <i class="fa fa-search-plus zoomin btn btn-default"></i>
@@ -198,12 +203,13 @@
     <div id="map">
     </div>
   </div>
-  <!-- External script dependencies  -->
-  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+-->
+    <!-- External script dependencies  -->
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-  <script src="//maps.google.com/maps/api/js?v=3&sensor=false"></script>
-  <script type="text/javascript" src="js/build/haika.all.js"></script>
-  <script type="text/javascript" src="sample.js"></script>
-</body>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//maps.google.com/maps/api/js?v=3&sensor=false"></script>
+    <script type="text/javascript" src="js/build/haika.all.js"></script>
+    <script type="text/javascript" src="sample.js"></script>
+  </body>
 </html>

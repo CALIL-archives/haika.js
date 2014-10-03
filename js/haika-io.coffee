@@ -45,6 +45,7 @@ $.extend haika,
       error: ()=>
         option.error and option.error('データが読み込めませんでした')
       success: (json)=>
+        log option.success
         if json.locked
           # TODO : Read Onlyモードに切り替える
           return option.error and option.error('データはロックされています')

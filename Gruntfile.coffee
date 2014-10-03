@@ -5,7 +5,7 @@ module.exports = (grunt) ->
   jsfiles = [
     "bower_components/fabric/dist/fabric.js"
     "bower_components/proj4/dist/proj4.js"
-    "bower_components/json-editor/dist/jsoneditor.min.js"
+#    "bower_components/json-editor/dist/jsoneditor.min.js"
     "bower_components/jquery-mousewheel/jquery.mousewheel.min.js"
     "bower_components/dragdealer/dragdealer.min.js"
     "bower_components/Javascript-Undo-Manager/js/undomanager.js"
@@ -29,7 +29,7 @@ module.exports = (grunt) ->
     "js/haika-colorpicker.js"
     "js/haika-event.js"
     "js/haika-undo.js"
-    "js/haika-editor.js"
+#    "js/haika-editor.js"
     "js/haika-map.js"
   ]
   #Gruntの設定
@@ -152,10 +152,6 @@ module.exports = (grunt) ->
         app: "Google Chrome"
         options:
           openOn: "serverListening"
-    save_license:
-      dist:
-        src: jsfiles,
-        dest: 'licenses.md'
   # loadNpmTasks
   require('load-grunt-tasks')(grunt);
   # # package.jsonから読み込んでるもの
@@ -170,7 +166,6 @@ module.exports = (grunt) ->
     "coffee"
     "concat"
     "uglify"
-    'save_license'
     'notify:complete'
   ]
   grunt.registerTask "server", (target) ->

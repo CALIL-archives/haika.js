@@ -119,7 +119,7 @@ haika =
     )
     @canvas.on 'before:selection:cleared', (e)=>
       @canvas.discardActiveGroup()
-      @editor_change()
+#      @editor_change()
       @setPropetyPanel()
     @canvas.on 'object:rotating', (e) =>
       object = e.target
@@ -501,22 +501,23 @@ haika =
 #    log 'setPropetyPanel'
     $('.canvas_panel, .object_panel, .group_panel').hide()
     object = @canvas.getActiveObject()
-    if object and object.getJsonSchema?
-      @editor.schema = object.getJsonSchema()
-      # Set the value
-      properties = {}
-      for key of @editor.schema.properties
-        if @editor.schema.properties[key].type == 'integer'
-          value = parseInt(object[key]).toFixed(0)
-        else
-          value = object[key]
-        properties[key] = value
-      @editor.setValue properties
-      if object.toGeoJSON?
-        $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4))
+    if object
       $('.object_panel').show()
       $('#object_id').html(object.id)
       return
+#    if object and object.getJsonSchema?
+#      @editor.schema = object.getJsonSchema()
+#      # Set the value
+#      properties = {}
+#      for key of @editor.schema.properties
+#        if @editor.schema.properties[key].type == 'integer'
+#          value = parseInt(object[key]).toFixed(0)
+#        else
+#          value = object[key]
+#        properties[key] = value
+#      @editor.setValue properties
+#      if object.toGeoJSON?
+#        $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4))
     group = @canvas.getActiveGroup()
     if group
       objects = group._objects

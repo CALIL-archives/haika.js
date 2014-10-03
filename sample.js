@@ -71,21 +71,21 @@ $(haika).on('haika:initialized', function() {
 });
 
 haika.init({
-  canvasId: 'canvas_area',
-  width: windowSetting.getWidth(),
-  height: windowSetting.getHeight()
+  canvasId: 'haika_canvas_area',
+  width: window.innerWidth,
+  height: window.innerHeight
 });
 
-haika.undo.init();
+setTimeout(function() {
+  return haika.render();
+}, 100);
 
-windowSetting.start();
-
-haika.addbuttons.showAddButtons(haika.state);
-
-initScrollBar();
-
-haika.map.initMap();
-
-haika.colorpicker.init();
+$(window).resize((function(_this) {
+  return function() {
+    haika.canvas.setWidth(window.innerWidth);
+    haika.canvas.setHeight(window.innerHeight);
+    return haika.render();
+  };
+})(this));
 
 //# sourceMappingURL=sample.js.map

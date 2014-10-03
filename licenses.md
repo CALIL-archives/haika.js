@@ -35,6 +35,13 @@
 │  │  └─ 1: MIT
 │  ├─ homepage: https://github.com/proj4js/proj4js
 │  └─ repository: https://github.com/proj4js/proj4js
+
+オリジナルライセンス
+https://github.com/proj4js/proj4js/blob/master/LICENSE.md
+
+ライセンス表示を義務化？
+
+
 └─ seiyria-bootstrap-slider@3.1.0
    ├─ licenses
    │  ├─ 0: MIT
@@ -42,3 +49,8 @@
    ├─ homepage: https://github.com/seiyria/bootstrap-slider
    └─ repository: https://github.com/seiyria/bootstrap-slider
 
+https://github.com/seiyria/bootstrap-slider/blob/master/LICENSE.md
+
+Apache 2.0 (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+We only support modern browsers!!! Basically, anything below IE9 is not compatible with this plugin!

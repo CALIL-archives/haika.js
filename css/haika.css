@@ -1,5 +1,8 @@
+html,body {
+  height:100%;
+}
 body {
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .header {
@@ -11,8 +14,12 @@ body {
   width: 300px;
 }
 
-.main_container {
-  float: left;
+.haika_container {
+  height: 100%;
+}
+
+.haika_canvas {
+  height: 100%;
 }
 
 

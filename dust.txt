@@ -828,3 +828,9 @@ if @options.bgurl
 #      "open"
       "esteWatch"
     ]
+
+
+    save_license:
+      dist:
+        src: jsfiles,
+        dest: 'licenses.md'
