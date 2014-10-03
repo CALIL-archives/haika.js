@@ -5,9 +5,11 @@ initScrollBar = function() {
   new Dragdealer('horizontal-scroller', {
     x: 0.5,
     animationCallback: function(x, y) {
-      var _max;
-      _max = haika.canvas.backgroundImage ? haika.canvas.backgroundImage.width : 2500;
-      haika.centerX = ((x - 0.5) * _max).toFixed(0) * -1;
+      var maxWidth, viewWidth;
+      maxWidth = 25000;
+      viewWidth = haika.canvas.getWidth() * haika.scaleFactor;
+      log('viewWidth:' + viewWidth);
+      haika.centerX = ((x - 0.5) * ((maxWidth - viewWidth) / 2)).toFixed(0) * -1;
       return haika.render();
     }
   });
