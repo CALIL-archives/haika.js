@@ -57,19 +57,21 @@ $('.fullscreen').click ->
   if $('.haika_container')[0].mozRequestFullScreen
     $('.haika_container')[0].mozRequestFullScreen()
 
+
+
 # 初期設定
 haika.init
-  canvasId : 'haika_canvas_area'
-  width : window.innerWidth
-  height : window.innerHeight
+  divId : 'haika_canvas'
+  width : $('.haika_container').width()
+  height : $('.haika_container').height()
 
 setTimeout ->
   haika.render()
-, 100
+, 500
 
 $(window).resize =>
-  haika.canvas.setWidth(window.innerWidth)
-  haika.canvas.setHeight(window.innerHeight)
+  haika.canvas.setWidth($('.haika_container').width())
+  haika.canvas.setHeight($('.haika_container').height())
   haika.render()
 
 

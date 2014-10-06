@@ -83,19 +83,19 @@ $('.fullscreen').click(function() {
 });
 
 haika.init({
-  canvasId: 'haika_canvas_area',
-  width: window.innerWidth,
-  height: window.innerHeight
+  divId: 'haika_canvas',
+  width: $('.haika_container').width(),
+  height: $('.haika_container').height()
 });
 
 setTimeout(function() {
   return haika.render();
-}, 100);
+}, 500);
 
 $(window).resize((function(_this) {
   return function() {
-    haika.canvas.setWidth(window.innerWidth);
-    haika.canvas.setHeight(window.innerHeight);
+    haika.canvas.setWidth($('.haika_container').width());
+    haika.canvas.setHeight($('.haika_container').height());
     return haika.render();
   };
 })(this));

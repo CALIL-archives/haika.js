@@ -71,10 +71,13 @@ haika =
 # @option options [Number] scaleFactor 表示倍率
 #
   init: (options)->
-    if not options.canvasId?
+    if not options.divId?
       throw 'CanvasのIDが未定義です'
+    if not options.canvasId?
+      options.canvasId = 'haika_canvas_area'
     if canvas
       throw '既に初期化されています'
+    $('#'+options.divId).append("""<canvas id="#{options.canvasId}"></canvas>""")
     @scaleFactor = if options.scaleFactor? then options.scaleFactor else 1
     @layer = @CONST_LAYERS.SHELF
     canvas = new fabric.Canvas(options.canvasId, {
@@ -107,7 +110,7 @@ haika =
       ctx.mozImageSmoothingEnabled = true
       fabric.drawGridLines(ctx)
 
-    initAligningGuidelines(canvas)
+#    initAligninggelines(canvas)
     @canvas = canvas
     @canvas.parentHaika = @
     @canvas.on('object:selected', (e)=>
@@ -126,8 +129,11 @@ haika =
       if object.__rotating?
         object.__rotating()
     @canvas.on 'object:moving', (e) =>
-      if e.target.__moving?
-        e.target.__moving()
+      object = e.target
+      if object.lock
+        return
+      if object.__moving?
+        object.__moving()
     @canvas.on 'object:scaling', (e) =>
       object = e.target
       if object.__resizeShelf?
@@ -385,6 +391,16 @@ haika =
     object.height = object.__height()
     object.top = @transformTopY_cm2px(o.top_cm)
     object.left = @transformLeftX_cm2px(o.left_cm)
+    # オブジェクトのロック
+    if object.lock
+      object.lockMovementX  = true
+      object.lockMovementY  = true
+      object.lockRotation   = true
+      object.lockScalingX   = true
+      object.lockScalingY   = true
+      object.lockUniScaling = true
+      object.hasControls = false
+#      object.hasBorders = false
     #schema = object.constructor.prototype.getJsonSchema()
     #for key of schema.properties
     #  object[key] = o[key]

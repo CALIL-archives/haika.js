@@ -186,10 +186,9 @@ body {
   height: 100%;
 }
 
-.haika_canvas {
+#haika_canvas {
   height: 100%;
 }
-
 
 /* toolbar */
 .toolbar_container {
@@ -311,6 +310,7 @@ body {
 
 /* map */
 .map_container {
+  display: none;
   width: 900px;
   margin: 30px auto;
 }

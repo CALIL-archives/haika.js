@@ -68,12 +68,16 @@ haika = {
   },
   init: function(options) {
     var canvas;
-    if (options.canvasId == null) {
+    if (options.divId == null) {
       throw 'CanvasのIDが未定義です';
+    }
+    if (options.canvasId == null) {
+      options.canvasId = 'haika_canvas_area';
     }
     if (canvas) {
       throw '既に初期化されています';
     }
+    $('#' + options.divId).append("<canvas id=\"" + options.canvasId + "\"></canvas>");
     this.scaleFactor = options.scaleFactor != null ? options.scaleFactor : 1;
     this.layer = this.CONST_LAYERS.SHELF;
     canvas = new fabric.Canvas(options.canvasId, {
@@ -108,7 +112,6 @@ haika = {
       ctx.mozImageSmoothingEnabled = true;
       return fabric.drawGridLines(ctx);
     };
-    initAligningGuidelines(canvas);
     this.canvas = canvas;
     this.canvas.parentHaika = this;
     this.canvas.on('object:selected', (function(_this) {
@@ -139,8 +142,13 @@ haika = {
     })(this));
     this.canvas.on('object:moving', (function(_this) {
       return function(e) {
-        if (e.target.__moving != null) {
-          return e.target.__moving();
+        var object;
+        object = e.target;
+        if (object.lock) {
+          return;
+        }
+        if (object.__moving != null) {
+          return object.__moving();
         }
       };
     })(this));
@@ -462,6 +470,15 @@ haika = {
     object.height = object.__height();
     object.top = this.transformTopY_cm2px(o.top_cm);
     object.left = this.transformLeftX_cm2px(o.left_cm);
+    if (object.lock) {
+      object.lockMovementX = true;
+      object.lockMovementY = true;
+      object.lockRotation = true;
+      object.lockScalingX = true;
+      object.lockScalingY = true;
+      object.lockUniScaling = true;
+      object.hasControls = false;
+    }
     if (((o.type === 'shelf' || o.type === 'curvedShelf') && this.layer === this.CONST_LAYERS.SHELF) || (o.type === 'wall' && this.layer === this.CONST_LAYERS.WALL) || (o.type === 'beacon' && this.layer === this.CONST_LAYERS.BEACON) || (o.type === 'floor' && this.layer === this.CONST_LAYERS.FLOOR)) {
       object.selectable = true;
     } else {
