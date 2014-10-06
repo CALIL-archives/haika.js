@@ -54,9 +54,9 @@ $(haika).on 'haika:load', ->
     haika.remove()
     if object
       haika.undo.remove(object)
-  $(".zoomin").click ->
+  $(".haika-zoomin").click ->
     haika.zoomIn()
-  $(".zoomout").click ->
+  $(".haika-zoomout").click ->
     haika.zoomOut()
   $(".zoomreset").click ->
     haika.setScale 1

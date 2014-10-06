@@ -8,8 +8,8 @@ $.extend haika,
           $(button).show()
         else
           $(button).hide()
-      @setTop()
-      $(window).resize @setTop
+#      @setTop()
+#      $(window).resize @setTop
     setTop : ->
       $('.toolbar_container').css('top', -$(haika.divId).height()+'px')
 
