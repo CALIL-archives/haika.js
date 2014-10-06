@@ -45,7 +45,6 @@ $.extend haika,
       error: ()=>
         option.error and option.error('データが読み込めませんでした')
       success: (json)=>
-        log option.success
         if json.locked
           # TODO : Read Onlyモードに切り替える
           return option.error and option.error('データはロックされています')
@@ -56,7 +55,6 @@ $.extend haika,
         @loadFromGeoJson()
         $(@).trigger('haika:load')
         option.success and option.success()
-
 
 
 # API経由で開いたデータを保存

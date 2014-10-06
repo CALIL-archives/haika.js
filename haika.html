@@ -8,10 +8,24 @@
     <link href="css/haika.all.css" rel="stylesheet">
 </head>
 <body>
-<div class="haika_container">
-  <div id="haika_canvas">
-    <div class="toolbar_container">
-      <ul class="toolbar_menu">
+<div class="haika-container">
+  <div id="haika-canvas">
+    <div class="haika-header">
+        <ul class="nav nav-tabs haika-nav">
+            <li class="active"><a href="#" class="shelf">本棚</a></li>
+            <li><a href="#" class="beacon">ビーコン</a></li>
+            <li><a href="#" class="wall">壁</a></li>
+            <li><a href="#" class="floor">床</a></li>
+        </ul>
+        <i class="fa fa-copy copy btn btn-default"> copy</i>
+        <i class="fa fa-paste paste btn btn-default"> paste</i>
+        <button class="btn btn-default undo"><i class="fa fa-undo"></i> undo</button>
+        <div style="display:none;">
+            <input type="file" id="file"/>
+        </div>
+    </div>
+    <div class="toolbar-container">
+      <ul class="toolbar-menu">
       </ul>
       <select id="fill-color">
           <option value="1" data-color="#CFE2F3" selected="selected">lightblue</option>
@@ -32,24 +46,93 @@
         <i class="fa fa-minus"></i>
       </span>
     </div>
+    <div class="property-panel">
+      <div class="canvas-panel">
+          <h3>キャンバスのプロパティ</h3>
+          <label for="canvas-width">
+              width: <span id="canvas-width"></span>
+          </label>
+          <label for="canvas-height">
+              height: <span id="canvas-height"></span>
+          </label><br/>
+          <label for="canvas-centerX">
+              centerX: <span id="canvas-centerX"></span>
+          </label>
+          <label for="canvas-centerY">
+              centerY: <span id="canvas-centerY"></span>
+          </label><br/>
+          <label for="canvas-bgscale">
+              bgscale:
+              <input type="number" id="canvas-bgscale" class="form-control" value="0" step="0.01"/>
+          </label><br/>
+          <label for="canvas-bgopacity">
+              bgopacity:
+              <input type="number" id="canvas-bgopacity" class="form-control" value="0" step="0.1"/>
+              <input id="bgopacity-slider" data-slider-id='bgopacity-slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
+          </label><br/>
+          <label for="bgimg">
+              背景画像:
+              <input type="file" id="bgimg" class="btn btn-default"/>
+          </label>
+          <br/>
+          <br/>
+          <span class="map-setting btn btn-default">
+            <i class="fa fa-map-marker"></i>
+            地図設定
+          </span>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <span id="bgreset" class="btn btn-default">
+            <i class="fa fa-trash"></i>
+            背景リセット
+          </span>
+
+        </div>
+        <div class="object-panel">
+          <h3>オブジェクトのプロパティ</h3>
+
+          <p>id: <span id="object-id"></span></p>
+
+          <p><i class="fa fa-trash-o remove btn btn-default"> remove</i></p>
+
+          <p><i class="fa fa-files-o duplicate btn btn-default"> duplicate</i></p>
+
+          <p><input type="button" class="bringtofront btn btn-default" value="bringToFront "/></p>
+
+          <div id="editor"></div>
+          <textarea name="geojson" id="geojson" style="display:none;"></textarea>
+        </div>
+        <div class="group-panel">
+            <h3>グループのプロパティ</h3>
+
+            <p><span id="group-count"></span>個のオブジェクトを選択中。</p>
+
+            <p><i class="fa fa-trash-o remove btn btn-default"> remove</i></p>
+
+            <p>
+
+            <div class="btn-group">
+                <i class="fa fa-align-left align-left btn btn-default"></i>
+                <i class="fa fa-align-center align-center btn btn-default"></i>
+                <i class="fa fa-align-right align-right btn btn-default"></i>
+            </div>
+            </p>
+            <p>
+
+            <div class="btn-group">
+                <i class="fa fa-align-left fa-rotate-90 align-top btn btn-default"></i>
+                <i class="fa fa-align-center fa-rotate-90 align-vcenter btn btn-default"></i>
+                <i class="fa fa-align-right fa-rotate-90 align-bottom btn btn-default"></i>
+            </div>
+            </p>
+        </div>
+    </div>
   </div>
 </div>
 <!--
 <div class="haika_container">
-    <div class="header">
-        <ul class="nav nav-tabs haika_nav">
-            <li class="active"><a href="#" class="shelf">本棚</a></li>
-            <li><a href="#" class="beacon">ビーコン</a></li>
-            <li><a href="#" class="wall">壁</a></li>
-            <li><a href="#" class="floor">床</a></li>
-        </ul>
-        <i class="fa fa-copy copy btn btn-default"> copy</i>
-        <i class="fa fa-paste paste btn btn-default"> paste</i>
-        <button class="btn btn-default undo"><i class="fa fa-undo"></i> undo</button>
-        <div style="display:none;">
-            <input type="file" id="file"/>
-        </div>
-    </div>
     <div class="side_container">
         <div  id="vertical-scroller" class="content-scroller">
             <div class="dragdealer">
@@ -58,91 +141,8 @@
                 </div>
             </div>
         </div>
-        <div class="property_panel">
-            <div class="canvas_panel">
-                <h3>キャンバスのプロパティ</h3>
-                <label for="canvas_width">
-                    width: <span id="canvas_width"></span>
-                </label>
-                <label for="canvas_height">
-                    height: <span id="canvas_height"></span>
-                </label><br/>
-                <label for="canvas_centerX">
-                    centerX: <span id="canvas_centerX"></span>
-                </label>
-                <label for="canvas_centerY">
-                    centerY: <span id="canvas_centerY"></span>
-                </label><br/>
-                <label for="canvas_bgscale">
-                    bgscale:
-                    <input type="number" id="canvas_bgscale" class="form-control" value="0" step="0.01"/>
-                </label><br/>
-                <label for="canvas_bgopacity">
-                    bgopacity:
-                    <input type="number" id="canvas_bgopacity" class="form-control" value="0" step="0.1"/>
-                    <input id="bgopacity_slider" data-slider-id='bgopacity_slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
-                </label><br/>
-                <label for="bgimg">
-                    背景画像:
-                    <input type="file" id="bgimg" class="btn btn-default"/>
-                </label>
-                <br/>
-                <br/>
-          <span class="map_setting btn btn-default">
-            <i class="fa fa-map-marker"></i>
-            地図設定
-          </span>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-          <span id="bgreset" class="btn btn-default">
-            <i class="fa fa-trash"></i>
-            背景リセット
-          </span>
-
-            </div>
-            <div class="object_panel">
-                <h3>オブジェクトのプロパティ</h3>
-
-                <p>id: <span id="object_id"></span></p>
-
-                <p><i class="fa fa-trash-o remove btn btn-default"> remove</i></p>
-
-                <p><i class="fa fa-files-o duplicate btn btn-default"> duplicate</i></p>
-
-                <p><input type="button" class="bringtofront btn btn-default" value="bringToFront "/></p>
-
-                <div id="editor"></div>
-                <textarea name="geojson" id="geojson" style="display:none;"></textarea>
-            </div>
-            <div class="group_panel">
-                <h3>グループのプロパティ</h3>
-
-                <p><span id="group_count"></span>個のオブジェクトを選択中。</p>
-
-                <p><i class="fa fa-trash-o remove btn btn-default"> remove</i></p>
-
-                <p>
-
-                <div class="btn-group">
-                    <i class="fa fa-align-left align-left btn btn-default"></i>
-                    <i class="fa fa-align-center align-center btn btn-default"></i>
-                    <i class="fa fa-align-right align-right btn btn-default"></i>
-                </div>
-                </p>
-                <p>
-
-                <div class="btn-group">
-                    <i class="fa fa-align-left fa-rotate-90 align-top btn btn-default"></i>
-                    <i class="fa fa-align-center fa-rotate-90 align-vcenter btn btn-default"></i>
-                    <i class="fa fa-align-right fa-rotate-90 align-bottom btn btn-default"></i>
-                </div>
-                </p>
-            </div>
-        </div>
     </div>
-    <div class="main_container">
+    <div class="main-container">
         <div class="row">
             <div class="col-md-3" style="z-index: 10000;background-color: white;">
                 <i class="fa fa-search-plus zoomin btn btn-default"></i>
@@ -161,13 +161,13 @@
     </div>
 </div>
 <!-- MAP -->
-<div class="map_container">
+<div class="map-container">
     <div class="clearfix">
         <div class="pull-left">
             <div class="row">
                 <div class="col-sm-3" style="max-width: 200px;">
-                    <form id="map_search" style="width: 200px">
-                        <input type="text" placeholder="場所を図書館名で検索" id="map_query" class="form-control"/>
+                    <form id="map-search" style="width: 200px">
+                        <input type="text" placeholder="場所を図書館名で検索" id="map-query" class="form-control"/>
                     </form>
                 </div>
                 <div class="col-sm-9">
@@ -178,7 +178,7 @@
                                     角度:
                                 </div>
                                 <div class="col-sm-8">
-                                    <input id="canvas_angle" data-slider-id='canvas_angle' type="text"/>
+                                    <input id="canvas-angle" data-slider-id='canvas-angle' type="text"/>
                                 </div>
                             </div>
                         </div>
@@ -188,24 +188,24 @@
                                     倍率:
                                 </div>
                                 <div class="col-sm-8">
-                                    <input id="geojson_scale" data-slider-id='geojson_scale' type="text"/>
+                                    <input id="geojson-scale" data-slider-id='geojson-scale' type="text"/>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div style="display:none;">
                         <div class="col-sm-3">
-                            <input type="number" id="canvas_lat" class="form-control" value="" disabled/>
+                            <input type="number" id="canvas-lat" class="form-control" value="" disabled/>
                         </div>
                         <div class="col-sm-3">
-                            <input type="number" id="canvas_lon" class="form-control" value="" disabled/>
+                            <input type="number" id="canvas-lon" class="form-control" value="" disabled/>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="pull-right" style="text-align:right;">
-        <span class="map_setting btn btn-default">
+        <span class="map-setting btn btn-default">
           <i class="fa fa-times"></i>
           close
         </span>

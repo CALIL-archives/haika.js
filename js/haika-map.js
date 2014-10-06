@@ -6,19 +6,19 @@ $.extend(haika, {
     initMap: function() {
       return $('.map_setting').click((function(_this) {
         return function() {
-          if ($('.haika_container').css('display') === 'block') {
+          if ($('.haika-container').css('display') === 'block') {
             if (!_this.created) {
               _this.setMap();
               _this.created = true;
             }
-            $('.haika_container').hide();
+            $('.haika-container').hide();
             $(document.body).css('background', '#333333');
             _this.redrawMap();
             $('.map_container').show();
             return $('#map_query').focus();
           } else {
             $(document.body).css('background', '#FFFFFF');
-            $('.haika_container').show();
+            $('.haika-container').show();
             return $('.map_container').hide();
           }
         };

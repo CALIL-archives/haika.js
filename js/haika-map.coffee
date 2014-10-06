@@ -13,18 +13,18 @@ $.extend haika,
     features : []
     initMap : ->
       $('.map_setting').click =>
-        if $('.haika_container').css('display')=='block'
+        if $('.haika-container').css('display')=='block'
           if not @created
             @setMap()
             @created = true
-          $('.haika_container').hide()
+          $('.haika-container').hide()
           $(document.body).css('background', '#333333')
           @redrawMap()
           $('.map_container').show()
           $('#map_query').focus()
         else
           $(document.body).css('background', '#FFFFFF')
-          $('.haika_container').show()
+          $('.haika-container').show()
           $('.map_container').hide()
     redrawMap : ->
       if @features.length>0

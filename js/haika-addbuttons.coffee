@@ -3,15 +3,11 @@
 $.extend haika,
   addbuttons:
     init: (type)->
-      $('.toolbar_container ul:first>li').each (i, button)->
+      $('.toolbar-container ul:first>li').each (i, button)->
         if $(button).attr('type').match(type)
           $(button).show()
         else
           $(button).hide()
-#      @setTop()
-#      $(window).resize @setTop
-    setTop : ->
-      $('.toolbar_container').css('top', -$(haika.divId).height()+'px')
 
 $ ->
   addButtons =
@@ -85,7 +81,7 @@ $ ->
   for key, val of addButtons
     # オブジェクト追加ボタンを生成
     html = """<li id="add_#{key}" key="#{key}" type="#{val.type}"><i class="fa fa-#{val.icon}"></i> #{val.title}</li>"""
-    $('.toolbar_container ul:first').append(html)
+    $('.toolbar-menu').append(html)
     # 追加ボタンにイベントを設定
     $('#add_' + key).click (e)->
       key = $(e.target).attr('key')

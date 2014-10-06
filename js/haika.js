@@ -74,7 +74,7 @@ haika = {
       this.divId = '#' + options.divId;
     }
     if (options.canvasId == null) {
-      options.canvasId = 'haika_canvas_area';
+      options.canvasId = 'haika-canvas-area';
     }
     if (canvas) {
       throw '既に初期化されています';
@@ -651,20 +651,20 @@ haika = {
   },
   setPropetyPanel: function(object) {
     var group, objects;
-    $('.canvas_panel, .object_panel, .group_panel').hide();
+    $('.canvas-panel, .object-panel, .group-panel').hide();
     object = this.canvas.getActiveObject();
     if (object) {
-      $('.object_panel').show();
-      $('#object_id').html(object.id);
+      $('.object-panel').show();
+      $('#object-id').html(object.id);
       return;
     }
     group = this.canvas.getActiveGroup();
     if (group) {
       objects = group._objects;
-      $('#group_count').html(objects.length);
-      $('.group_panel').show();
+      $('#group-count').html(objects.length);
+      $('.group-panel').show();
     } else {
-      return $('.canvas_panel').show();
+      return $('.canvas-panel').show();
     }
   }
 };

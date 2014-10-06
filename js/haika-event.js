@@ -52,14 +52,6 @@ $('#bgimg').change(function(e) {
 });
 
 $(haika).on('haika:load', function() {
-  $(".add_custom_shelf").click(function() {
-    add('custom_shelf');
-    return haika.render();
-  });
-  $(".add_beacon").click(function() {
-    add('beacon');
-    return haika.render();
-  });
   $(".remove").click(function() {
     var object;
     object = haika.canvas.getActiveObject();
@@ -129,14 +121,14 @@ $(haika).on('haika:load', function() {
       }
     };
   })(this));
-  $('#canvas_bgscale').change(function() {
+  $('#canvas-bgscale').change(function() {
     haika.backgroundScaleFactor = parseFloat($(this).val());
     return haika.render();
   });
   $('#bgreset').click(function() {
     return haika.setBackgroundUrl('');
   });
-  $('#bgopacity_slider').slider({
+  $('#bgopacity-slider').slider({
     step: 1,
     min: 1,
     max: 100,

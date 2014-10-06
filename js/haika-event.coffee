@@ -43,12 +43,6 @@ $('#bgimg').change (e)->
 # メニューのイベントバインド
 # haikaのデータロード完了時に実行する
 $(haika).on 'haika:load', ->
-  $(".add_custom_shelf").click ->
-    add('custom_shelf')
-    haika.render()
-  $(".add_beacon").click ->
-    add('beacon')
-    haika.render()
   $(".remove").click ->
     object = haika.canvas.getActiveObject()
     haika.remove()
@@ -99,7 +93,7 @@ $(haika).on 'haika:load', ->
     if event.deltaY<0
       haika.zoomOut()
 
-  $('#canvas_bgscale').change ->
+  $('#canvas-bgscale').change ->
     haika.backgroundScaleFactor = parseFloat($(this).val())
     haika.render()
 #    haika.save()
@@ -107,7 +101,7 @@ $(haika).on 'haika:load', ->
   $('#bgreset').click ->
     haika.setBackgroundUrl('')
 
-  $('#bgopacity_slider').slider
+  $('#bgopacity-slider').slider
     step: 1
     min: 1
     max: 100

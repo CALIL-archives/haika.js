@@ -173,23 +173,29 @@ body {
   overflow: hidden;
 }
 
-.header {
-  height: 42px;
+.haika-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background: #FFFFFF;
   border-bottom: 1px solid #CCCCCC;
 }
-.haika_nav {
+.haika-nav {
   float: left;
   width: 300px;
+  border-bottom: none;
 }
 
-.haika_container {
+.haika-container {
   height: 100%;
 }
 
-#haika_canvas {
+#haika-canvas {
   position: relative;
   overflow: hidden;
-  width: 900px;
+  width: 1200px;
   margin-left: 300px;
   height: 100%;
   -moz-user-select: none;
@@ -198,21 +204,23 @@ body {
 }
 
 /* toolbar */
-.toolbar_container {
+.toolbar-container {
   width: 156px;
   position: absolute;
   left: 0;
-  top:  0;
+  top:  40px;
   z-index: 10000000;
   padding: 10px;
   border-right: 1px solid #CCCCCC;
+  border-left: 1px solid #CCCCCC;
+  border-bottom: 1px solid #CCCCCC;
   background-color: #FFFFFF;
 }
-.toolbar_container ul {
+.toolbar-container ul {
   margin-left: 0;
   padding-left: 0;
 }
-.toolbar_container ul.toolbar_menu>li {
+.toolbar-container ul.toolbar-menu >li {
   display: block;
   list-style: none;
   padding: 10px;
@@ -220,7 +228,7 @@ body {
   border: 1px solid #CCCCCC;
   background-color: #FFFFFF;
 }
-.toolbar_container ul.toolbar_menu>li:hover {
+.toolbar-container ul.toolbar-menu >li:hover {
   background-color: lightpink;
 }
 .dropdown-colorselector>.dropdown-menu {
@@ -317,26 +325,25 @@ body {
 }
 
 /* property_panel */
-.side_container {
-  float: right;
-  width: 270px;
-}
-.property_panel {
-  float: right;
+.property-panel {
+  position: absolute;
+  top: 40px;
+  right: 0;
   width: 240px;
+  height: 100%;
   color: #ffffff;
   padding: 10px;
   background-color: #000000;
 }
-.property_panel h3 {
+.property-panel h3 {
   font-size: 16px;
 }
-.canvas_panel {
+.canvas-panel {
 }
-.object_panel {
+.object-panel {
   display: none;
 }
-.group_panel {
+.group-panel {
   display: none;
 }
 
@@ -348,7 +355,7 @@ body {
 
 
 /* map */
-.map_container {
+.map-container {
   display: none;
   width: 900px;
   margin: 30px auto;
@@ -364,7 +371,7 @@ div.fill {
   width: 900px;
   height: 600px;
 }
-#map_search {
+#map-search {
   width: 900px
 }
 

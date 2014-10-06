@@ -76,7 +76,7 @@ haika =
     else
       @divId = '#'+options.divId
     if not options.canvasId?
-      options.canvasId = 'haika_canvas_area'
+      options.canvasId = 'haika-canvas-area'
     if canvas
       throw '既に初期化されています'
     $(@divId).prepend("""<canvas id="#{options.canvasId}" unselectable="on"></canvas>""")
@@ -521,11 +521,11 @@ haika =
 # プロパティパネルの設定
   setPropetyPanel: (object)->
 #    log 'setPropetyPanel'
-    $('.canvas_panel, .object_panel, .group_panel').hide()
+    $('.canvas-panel, .object-panel, .group-panel').hide()
     object = @canvas.getActiveObject()
     if object
-      $('.object_panel').show()
-      $('#object_id').html(object.id)
+      $('.object-panel').show()
+      $('#object-id').html(object.id)
       return
 #    if object and object.getJsonSchema?
 #      @editor.schema = object.getJsonSchema()
@@ -543,8 +543,8 @@ haika =
     group = @canvas.getActiveGroup()
     if group
       objects = group._objects
-      $('#group_count').html(objects.length)
-      $('.group_panel').show()
+      $('#group-count').html(objects.length)
+      $('.group-panel').show()
       return
     else
-      $('.canvas_panel').show()
+      $('.canvas-panel').show()

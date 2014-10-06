@@ -38,7 +38,6 @@ $.extend(haika, {
       })(this),
       success: (function(_this) {
         return function(json) {
-          log(option.success);
           if (json.locked) {
             return option.error && option.error('データはロックされています');
           }
