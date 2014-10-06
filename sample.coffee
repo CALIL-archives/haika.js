@@ -44,8 +44,8 @@ $(haika).on 'haika:render', ->
 $(haika).on 'haika:initialized', ->
   # {}を使って引数を渡そうとしてはいけない coffeescrriptの変換がおかしくなる
   haika.openFromApi(2,
-    succcess: =>
-      @render()
+    success: ->
+      haika.render()
     error: (message) ->
       alert(message)
   )
@@ -63,9 +63,6 @@ $('.fullscreen').click ->
 haika.init
   divId : 'haika_canvas'
 
-setTimeout ->
-  haika.render()
-, 500
 
 
 

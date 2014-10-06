@@ -59,11 +59,9 @@ $(haika).on('haika:render', function() {
 
 $(haika).on('haika:initialized', function() {
   return haika.openFromApi(2, {
-    succcess: (function(_this) {
-      return function() {
-        return _this.render();
-      };
-    })(this),
+    success: function() {
+      return haika.render();
+    },
     error: function(message) {
       return alert(message);
     }
@@ -85,9 +83,5 @@ $('.fullscreen').click(function() {
 haika.init({
   divId: 'haika_canvas'
 });
-
-setTimeout(function() {
-  return haika.render();
-}, 500);
 
 //# sourceMappingURL=sample.js.map

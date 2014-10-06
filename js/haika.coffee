@@ -79,7 +79,7 @@ haika =
       options.canvasId = 'haika_canvas_area'
     if canvas
       throw '既に初期化されています'
-    $(@divId).prepend("""<canvas id="#{options.canvasId}"></canvas>""")
+    $(@divId).prepend("""<canvas id="#{options.canvasId}" unselectable="on"></canvas>""")
     @scaleFactor = if options.scaleFactor? then options.scaleFactor else 1
     @layer = @CONST_LAYERS.SHELF
     canvas = new fabric.Canvas(options.canvasId, {
@@ -87,7 +87,6 @@ haika =
       height: $(@divId).height()
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
-
     $(window).resize =>
       @canvas.setWidth($(@divId).width())
       @canvas.setHeight($(@divId).height())

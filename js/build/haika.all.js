@@ -24585,7 +24585,7 @@ haika = {
     if (canvas) {
       throw '既に初期化されています';
     }
-    $(this.divId).prepend("<canvas id=\"" + options.canvasId + "\"></canvas>");
+    $(this.divId).prepend("<canvas id=\"" + options.canvasId + "\" unselectable=\"on\"></canvas>");
     this.scaleFactor = options.scaleFactor != null ? options.scaleFactor : 1;
     this.layer = this.CONST_LAYERS.SHELF;
     canvas = new fabric.Canvas(options.canvasId, {
