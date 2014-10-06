@@ -10,7 +10,7 @@ $('.nav-tabs a').click(function(e) {
   var tabName;
   e.preventDefault();
   tabName = $(e.target).attr('class');
-  haika.addbuttons.showAddButtons(tabName);
+  haika.addbuttons.show(tabName);
   if (tabName === 'beacon') {
     haika.layer = haika.CONST_LAYERS.BEACON;
   }

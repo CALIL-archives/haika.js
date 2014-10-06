@@ -26,16 +26,31 @@ fabric.Object.prototype.cornerSize = 10;
 haika = {
   CONST_LAYERS: {
     SHELF: 0,
-    WALL: 1,
-    FLOOR: 2,
-    BEACON: 3
+    BEACON: 1,
+    WALL: 2,
+    FLOOR: 3
   },
   INSTALLED_OBJECTS: {
-    'shelf': fabric.Shelf,
-    'curved_shelf': fabric.curvedShelf,
-    'beacon': fabric.Beacon,
-    'wall': fabric.Wall,
-    'floor': fabric.Floor
+    'shelf': {
+      'layer': 0,
+      'class': fabric.Shelf
+    },
+    'curved_shelf': {
+      'layer': 0,
+      'class': fabric.curvedShelf
+    },
+    'beacon': {
+      'layer': 1,
+      'class': fabric.Beacon
+    },
+    'wall': {
+      'layer': 2,
+      'class': fabric.Wall
+    },
+    'floor': {
+      'layer': 3,
+      'class': fabric.Floor
+    }
   },
   canvas: null,
   centerX: 0,
@@ -399,13 +414,13 @@ haika = {
   },
   getClass: function(type) {
     if (this.INSTALLED_OBJECTS[type] != null) {
-      return this.INSTALLED_OBJECTS[type];
+      return this.INSTALLED_OBJECTS[type]["class"];
     } else {
       throw '認識できないオブジェクトが含まれています';
     }
   },
   render: function() {
-    var activeIds, beacons, floors, o, shelfs, walls, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref;
+    var activeIds, beacons, floors, o, shelfs, walls, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref;
     if (!this.canvas.backgroundImage && this.backgroundUrl) {
       fabric.Image.fromURL(this.backgroundUrl, (function(_this) {
         return function(img) {
@@ -429,6 +444,7 @@ haika = {
     _ref = this.objects;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       o = _ref[_i];
+      o.selectable = this.layer === this.INSTALLED_OBJECTS[o.type].layer;
       if (o.type === 'beacon') {
         beacons.push(o);
       }
@@ -442,28 +458,20 @@ haika = {
         shelfs.push(o);
       }
     }
-    if (this.layer !== this.CONST_LAYERS.FLOOR) {
-      for (_j = 0, _len1 = floors.length; _j < _len1; _j++) {
-        o = floors[_j];
-        this.addObjectToCanvas(o);
-      }
+    for (_j = 0, _len1 = floors.length; _j < _len1; _j++) {
+      o = floors[_j];
+      this.addObjectToCanvas(o);
     }
     for (_k = 0, _len2 = walls.length; _k < _len2; _k++) {
       o = walls[_k];
       this.addObjectToCanvas(o);
     }
-    if (this.layer === this.CONST_LAYERS.FLOOR) {
-      for (_l = 0, _len3 = floors.length; _l < _len3; _l++) {
-        o = floors[_l];
-        this.addObjectToCanvas(o);
-      }
-    }
-    for (_m = 0, _len4 = shelfs.length; _m < _len4; _m++) {
-      o = shelfs[_m];
+    for (_l = 0, _len3 = shelfs.length; _l < _len3; _l++) {
+      o = shelfs[_l];
       this.addObjectToCanvas(o);
     }
-    for (_n = 0, _len5 = beacons.length; _n < _len5; _n++) {
-      o = beacons[_n];
+    for (_m = 0, _len4 = beacons.length; _m < _len4; _m++) {
+      o = beacons[_m];
       this.addObjectToCanvas(o);
     }
     this.activeGroup(activeIds);
@@ -479,6 +487,10 @@ haika = {
     object.height = object.__height();
     object.top = this.transformTopY_cm2px(o.top_cm);
     object.left = this.transformLeftX_cm2px(o.left_cm);
+    object.selectable = o.selectable;
+    if (!object.selectable) {
+      object.opacity = 0.5;
+    }
     if (object.lock) {
       object.lockMovementX = true;
       object.lockMovementY = true;
@@ -487,12 +499,6 @@ haika = {
       object.lockScalingY = true;
       object.lockUniScaling = true;
       object.hasControls = false;
-    }
-    if (((o.type === 'shelf' || o.type === 'curvedShelf') && this.layer === this.CONST_LAYERS.SHELF) || (o.type === 'wall' && this.layer === this.CONST_LAYERS.WALL) || (o.type === 'beacon' && this.layer === this.CONST_LAYERS.BEACON) || (o.type === 'floor' && this.layer === this.CONST_LAYERS.FLOOR)) {
-      object.selectable = true;
-    } else {
-      object.selectable = false;
-      object.opacity = 0.5;
     }
     return this.canvas.add(object);
   },

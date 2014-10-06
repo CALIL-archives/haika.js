@@ -8,7 +8,7 @@ $(window).on 'beforeunload', (event)=>
 $('.nav-tabs a').click (e)->
   e.preventDefault()
   tabName= $(e.target).attr('class')
-  haika.addbuttons.showAddButtons(tabName)
+  haika.addbuttons.show(tabName)
   if tabName=='beacon'
       haika.layer=haika.CONST_LAYERS.BEACON
   if tabName=='wall'

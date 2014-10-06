@@ -2,7 +2,7 @@
 
 $.extend haika,
   addbuttons:
-    init: (type)->
+    show: (type)->
       $('.toolbar-container ul:first>li').each (i, button)->
         if $(button).attr('type').match(type)
           $(button).show()
@@ -90,4 +90,4 @@ $ ->
       delete object.title
       delete object.icon
       haika.addObject(object)
-  haika.addbuttons.init('shelf')
+  haika.addbuttons.show('shelf')

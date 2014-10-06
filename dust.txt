@@ -889,3 +889,10 @@ windowSetting =
   $(".add_beacon").click ->
     add('beacon')
     haika.render()
+
+    #現在のレイヤーかどうか
+#    if ((o.type == 'shelf' or o.type == 'curvedShelf') and @layer == @CONST_LAYERS.SHELF) or (o.type == 'wall' and @layer == @CONST_LAYERS.WALL) or (o.type == 'beacon' and @layer == @CONST_LAYERS.BEACON) or (o.type == 'floor' and @layer == @CONST_LAYERS.FLOOR)
+#      object.selectable = true
+#    else
+#      object.selectable = false
+#      object.opacity = 0.5

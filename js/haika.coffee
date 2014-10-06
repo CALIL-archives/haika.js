@@ -14,17 +14,27 @@ fabric.Object.prototype.cornerSize = 10
 
 haika =
   CONST_LAYERS: #現在のステータス [オプション定数]
-    SHELF: 0
-    WALL: 1
-    FLOOR: 2
-    BEACON: 3
+    SHELF:  0
+    BEACON: 1
+    WALL:   2
+    FLOOR:  3
 
   INSTALLED_OBJECTS: # インストールされたオブジェクト
-    'shelf': fabric.Shelf
-    'curved_shelf': fabric.curvedShelf
-    'beacon': fabric.Beacon
-    'wall': fabric.Wall
-    'floor': fabric.Floor
+    'shelf':
+      'layer' : 0
+      'class' : fabric.Shelf
+    'curved_shelf':
+      'layer' : 0
+      'class' : fabric.curvedShelf
+    'beacon':
+      'layer' : 1
+      'class' : fabric.Beacon
+    'wall':
+      'layer' : 2
+      'class' : fabric.Wall
+    'floor':
+      'layer' : 3
+      'class' : fabric.Floor
 
   canvas: null # fabricのCanvasオブジェクト
 
@@ -339,7 +349,7 @@ haika =
 # クラス名の取得
   getClass: (type)->
     if @INSTALLED_OBJECTS[type]?
-      return @INSTALLED_OBJECTS[type]
+      return @INSTALLED_OBJECTS[type].class
     else
       throw '認識できないオブジェクトが含まれています'
 
@@ -356,12 +366,15 @@ haika =
     )
 
     @canvas.renderOnAddRemove = false
-    @canvas._objects.length = 0;
+    @canvas._objects.length = 0
     beacons = []
     shelfs = []
     walls = []
     floors = []
+    # オブジェクトの種類ごとに仕分ける
     for o in @objects
+      # 現在のレイヤーなら選択可能に
+      o.selectable = (@layer==@INSTALLED_OBJECTS[o.type].layer)
       if o.type == 'beacon'
         beacons.push(o)
       if o.type == 'wall'
@@ -370,14 +383,11 @@ haika =
         floors.push(o)
       if o.type == 'shelf' or o.type == 'curvedShelf'
         shelfs.push(o)
-    if @layer != @CONST_LAYERS.FLOOR
-      for o in floors
-        @addObjectToCanvas(o)
+    # レイヤーの順序で描く
+    for o in floors
+      @addObjectToCanvas(o)
     for o in walls
       @addObjectToCanvas(o)
-    if @layer == @CONST_LAYERS.FLOOR
-      for o in floors
-        @addObjectToCanvas(o)
     for o in shelfs
       @addObjectToCanvas(o)
     for o in beacons
@@ -397,6 +407,9 @@ haika =
     object.height = object.__height()
     object.top = @transformTopY_cm2px(o.top_cm)
     object.left = @transformLeftX_cm2px(o.left_cm)
+    object.selectable = o.selectable
+    if not object.selectable
+      object.opacity = 0.5
     # オブジェクトのロック
     if object.lock
       object.lockMovementX  = true
@@ -410,12 +423,6 @@ haika =
     #schema = object.constructor.prototype.getJsonSchema()
     #for key of schema.properties
     #  object[key] = o[key]
-    #現在のレイヤーかどうか
-    if ((o.type == 'shelf' or o.type == 'curvedShelf') and @layer == @CONST_LAYERS.SHELF) or (o.type == 'wall' and @layer == @CONST_LAYERS.WALL) or (o.type == 'beacon' and @layer == @CONST_LAYERS.BEACON) or (o.type == 'floor' and @layer == @CONST_LAYERS.FLOOR)
-      object.selectable = true
-    else
-      object.selectable = false
-      object.opacity = 0.5
     @canvas.add(object)
 
 # 移動ピクセル数を取得
