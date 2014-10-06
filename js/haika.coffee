@@ -73,18 +73,25 @@ haika =
   init: (options)->
     if not options.divId?
       throw 'CanvasのIDが未定義です'
+    else
+      @divId = '#'+options.divId
     if not options.canvasId?
       options.canvasId = 'haika_canvas_area'
     if canvas
       throw '既に初期化されています'
-    $('#'+options.divId).append("""<canvas id="#{options.canvasId}"></canvas>""")
+    $(@divId).prepend("""<canvas id="#{options.canvasId}"></canvas>""")
     @scaleFactor = if options.scaleFactor? then options.scaleFactor else 1
     @layer = @CONST_LAYERS.SHELF
     canvas = new fabric.Canvas(options.canvasId, {
-      width: if options.width? then options.width else 500
-      height: if options.height? then options.height else 500
+      width: $(@divId).width()
+      height: $(@divId).height()
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
+
+    $(window).resize =>
+      @canvas.setWidth($(@divId).width())
+      @canvas.setHeight($(@divId).height())
+      @render()
 
     canvas._getActionFromCorner = (target, corner) ->
       action = 'drag'

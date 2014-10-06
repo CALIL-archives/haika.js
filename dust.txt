@@ -834,3 +834,17 @@ if @options.bgurl
       dist:
         src: jsfiles,
         dest: 'licenses.md'
+
+
+
+    addmany: ->
+      y = 0
+      while y < 8
+        x = 0
+        while x < 22
+          haika.addObject 200 + 400 * y, 100 + 50 * x, 90
+          x++
+        y++
+      haika.render()
+      return
+

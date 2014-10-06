@@ -62,17 +62,11 @@ $('.fullscreen').click ->
 # 初期設定
 haika.init
   divId : 'haika_canvas'
-  width : $('.haika_container').width()
-  height : $('.haika_container').height()
 
 setTimeout ->
   haika.render()
 , 500
 
-$(window).resize =>
-  haika.canvas.setWidth($('.haika_container').width())
-  haika.canvas.setHeight($('.haika_container').height())
-  haika.render()
 
 
 

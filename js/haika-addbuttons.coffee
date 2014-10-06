@@ -2,24 +2,16 @@
 
 $.extend haika,
   addbuttons:
-  # テスト用
-    addmany: ->
-      y = 0
-      while y < 8
-        x = 0
-        while x < 22
-          haika.addObject 200 + 400 * y, 100 + 50 * x, 90
-          x++
-        y++
-      haika.render()
-      return
-
-    showAddButtons: (type)->
+    init: (type)->
       $('.toolbar_container ul:first>li').each (i, button)->
         if $(button).attr('type').match(type)
           $(button).show()
         else
           $(button).hide()
+      @setTop()
+      $(window).resize @setTop
+    setTop : ->
+      $('.toolbar_container').css('top', -$(haika.divId).height()+'px')
 
 $ ->
   addButtons =
@@ -102,4 +94,4 @@ $ ->
       delete object.title
       delete object.icon
       haika.addObject(object)
-  haika.addbuttons.showAddButtons('shelf')
+  haika.addbuttons.init('shelf')

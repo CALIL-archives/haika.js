@@ -83,21 +83,11 @@ $('.fullscreen').click(function() {
 });
 
 haika.init({
-  divId: 'haika_canvas',
-  width: $('.haika_container').width(),
-  height: $('.haika_container').height()
+  divId: 'haika_canvas'
 });
 
 setTimeout(function() {
   return haika.render();
 }, 500);
-
-$(window).resize((function(_this) {
-  return function() {
-    haika.canvas.setWidth($('.haika_container').width());
-    haika.canvas.setHeight($('.haika_container').height());
-    return haika.render();
-  };
-})(this));
 
 //# sourceMappingURL=sample.js.map
