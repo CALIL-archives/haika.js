@@ -7,22 +7,6 @@ log = function(obj) {
   } catch (_error) {}
 };
 
-fabric.Object.prototype.scaleX = 1;
-
-fabric.Object.prototype.scaleY = 1;
-
-fabric.Object.prototype.originX = 'center';
-
-fabric.Object.prototype.originY = 'center';
-
-fabric.Object.prototype.transparentCorners = true;
-
-fabric.Object.prototype.cornerColor = "#488BD4";
-
-fabric.Object.prototype.borderOpacityWhenMoving = 0.8;
-
-fabric.Object.prototype.cornerSize = 10;
-
 haika = {
   CONST_LAYERS: {
     SHELF: 0,
@@ -109,6 +93,14 @@ haika = {
         return _this.render();
       };
     })(this));
+    fabric.Object.prototype.scaleX = 1;
+    fabric.Object.prototype.scaleY = 1;
+    fabric.Object.prototype.originX = 'center';
+    fabric.Object.prototype.originY = 'center';
+    fabric.Object.prototype.transparentCorners = true;
+    fabric.Object.prototype.cornerColor = "#488BD4";
+    fabric.Object.prototype.borderOpacityWhenMoving = 0.8;
+    fabric.Object.prototype.cornerSize = 10;
     canvas._getActionFromCorner = function(target, corner) {
       var action;
       action = 'drag';
@@ -136,6 +128,7 @@ haika = {
       ctx.mozImageSmoothingEnabled = true;
       return fabric.drawGridLines(ctx);
     };
+    initAligningGuidelines(canvas);
     this.canvas = canvas;
     this.canvas.parentHaika = this;
     this.canvas.on('object:selected', (function(_this) {

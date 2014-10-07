@@ -196,7 +196,7 @@ body {
   position: relative;
   overflow: hidden;
   width: 1200px;
-  margin-left: 300px;
+  margin: 0 auto;
   height: 100%;
   -moz-user-select: none;
   -webkit-user-select: none;

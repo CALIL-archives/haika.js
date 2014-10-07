@@ -2,15 +2,6 @@ log = (obj) ->
   try
     console.log obj
 
-# fabricオブジェクトの共通設定
-fabric.Object.prototype.scaleX = 1
-fabric.Object.prototype.scaleY = 1
-fabric.Object.prototype.originX = 'center'
-fabric.Object.prototype.originY = 'center'
-fabric.Object.prototype.transparentCorners = true
-fabric.Object.prototype.cornerColor = "#488BD4"
-fabric.Object.prototype.borderOpacityWhenMoving = 0.8
-fabric.Object.prototype.cornerSize = 10
 
 haika =
   CONST_LAYERS: #現在のステータス [オプション定数]
@@ -102,6 +93,16 @@ haika =
       @canvas.setHeight($(@divId).height())
       @render()
 
+    # fabricオブジェクトの共通設定
+    fabric.Object.prototype.scaleX = 1
+    fabric.Object.prototype.scaleY = 1
+    fabric.Object.prototype.originX = 'center'
+    fabric.Object.prototype.originY = 'center'
+    fabric.Object.prototype.transparentCorners = true
+    fabric.Object.prototype.cornerColor = "#488BD4"
+    fabric.Object.prototype.borderOpacityWhenMoving = 0.8
+    fabric.Object.prototype.cornerSize = 10
+
     canvas._getActionFromCorner = (target, corner) ->
       action = 'drag'
       if corner
@@ -126,7 +127,7 @@ haika =
       ctx.mozImageSmoothingEnabled = true
       fabric.drawGridLines(ctx)
 
-#    initAligninggelines(canvas)
+    initAligningGuidelines(canvas)
     @canvas = canvas
     @canvas.parentHaika = @
     @canvas.on('object:selected', (e)=>
