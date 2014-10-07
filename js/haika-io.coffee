@@ -46,7 +46,7 @@ $.extend haika,
         option.error and option.error('データが読み込めませんでした')
       success: (json)=>
         if json.locked
-          # TODO : Read Onlyモードに切り替える
+          @readOnly = true
           return option.error and option.error('データはロックされています')
         @_dataId = json.id
         @_revision = json.revision
@@ -64,6 +64,9 @@ $.extend haika,
 #
   save: (success = null, error = null) ->
     log 'save'
+    # 読み取り専用モードでは保存しない
+    if @readOnly
+      return
     @prepareData()
     # 遅延タイマーより先に明示的な保存があった場合はタイマーを解除
     if @_autoSaveTimerId

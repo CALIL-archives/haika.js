@@ -28,7 +28,7 @@ haika =
       'class' : fabric.Floor
 
   canvas: null # fabricのCanvasオブジェクト
-
+  readOnly : false # 表示専用モード オブジェクトの移動・変更、保存を行わない [エディタステータス系変数]
   centerX: 0 # 表示位置X(画面の中央が0) [エディタステータス系変数]
   centerY: 0 # 表示位置Y(画面の中央が0) [エディタステータス系変数]
   scaleFactor: 1 #表示倍率 [エディタステータス系変数] (このファイル外で使用禁止)
@@ -78,6 +78,8 @@ haika =
       @divId = '#'+options.divId
     if not options.canvasId?
       options.canvasId = 'haika-canvas-area'
+    if options.readOnly?
+      @readOnly = options.readOnly
     if canvas
       throw '既に初期化されています'
     $(@divId).prepend("""<canvas id="#{options.canvasId}" unselectable="on"></canvas>""")
@@ -102,6 +104,11 @@ haika =
     fabric.Object.prototype.cornerColor = "#488BD4"
     fabric.Object.prototype.borderOpacityWhenMoving = 0.8
     fabric.Object.prototype.cornerSize = 10
+    if @readOnly
+      fabric.Object.prototype.padding     = 5
+      fabric.Object.prototype.borderColor = '#0000FF'
+      fabric.Object.prototype.cornerColor = '#0000FF'
+
 
     canvas._getActionFromCorner = (target, corner) ->
       action = 'drag'
@@ -127,7 +134,8 @@ haika =
       ctx.mozImageSmoothingEnabled = true
       fabric.drawGridLines(ctx)
 
-    initAligningGuidelines(canvas)
+    if not @readOnly
+      initAligningGuidelines(canvas)
     @canvas = canvas
     @canvas.parentHaika = @
     @canvas.on('object:selected', (e)=>
@@ -147,7 +155,7 @@ haika =
         object.__rotating()
     @canvas.on 'object:moving', (e) =>
       object = e.target
-      if object.lock
+      if @readOnly
         return
       if object.__moving?
         object.__moving()
@@ -178,6 +186,60 @@ haika =
     @scaleFactor = (newScale * 100).toFixed(0) / 100
     @render()
     return newScale
+
+# オブジェクトの最大幅を計算してそれにキャンバスをフィットさせて表示する (これはUI側のため将来的に移動)
+#
+  zoomFull: ->
+    if @objects.length<0
+      return
+    @setScale 1
+    @render()
+    for object in @canvas.getObjects()
+      bound  = object.getBoundingRect()
+      if not left?
+        left = bound.left
+        right = bound.left+bound.width
+        top = bound.top
+        bottom = bound.top+bound.height
+        continue
+      left   = Math.min(bound.left, left)
+      right  = Math.max(bound.left+bound.width, right)
+      top    = Math.min(bound.top, top)
+      bottom = Math.max(bound.top+bound.height, bottom)
+    # キャンバスの縦横を取得
+    canvasWidth  = @canvas.getWidth()
+    canvasHeight = @canvas.getHeight()
+
+    width = right-left
+    height = bottom-top
+
+    log width
+    log height
+
+    widthScale = canvasWidth/width
+    heightScale = canvasHeight/height
+
+    log widthScale
+    log heightScale
+    return
+
+#    if widthScale>=heightScale
+#      scaleFactor = widthScale
+#    else
+#      scaleFactor = heightScale
+    # 1より大きい、canvasに対して大きい→縮小=1以下
+    # 1より小さい、canvasに対して小さい→拡大=1以上
+    log scaleFactor
+    newScale = 1  - (scaleFactor - 1)
+    log newScale
+    @setScale newScale
+
+    # x canvasWidth/2 = 0
+    # y canvasHeight/2 = 0
+
+#    @centerX = width/2
+#    @centerY = height/2
+#    @render()
 
 # 表示時の拡大率を1ステップ拡大する (これはUI側のため将来的に移動)
 #
@@ -412,14 +474,16 @@ haika =
     if not object.selectable
       object.opacity = 0.5
     # オブジェクトのロック
-    if object.lock
-      object.lockMovementX  = true
-      object.lockMovementY  = true
-      object.lockRotation   = true
-      object.lockScalingX   = true
-      object.lockScalingY   = true
-      object.lockUniScaling = true
-      object.hasControls = false
+    if @readOnly
+      object.lockMovementX    = true
+      object.lockMovementY    = true
+      object.lockRotation     = true
+      object.lockScalingX     = true
+      object.lockScalingY     = true
+      object.lockUniScaling   = true
+      object.hasControls      = false
+      object.hoverCursor      = 'pointer'
+#      object.hasRotatingPoint = false
 #      object.hasBorders = false
     #schema = object.constructor.prototype.getJsonSchema()
     #for key of schema.properties
@@ -526,14 +590,14 @@ haika =
       @saveDelay()
       @canvas.renderAll()
 
-# プロパティパネルの設定
+# プロパティパネルの設定 (これはUI側のため将来的に移動)
   setPropetyPanel: (object)->
 #    log 'setPropetyPanel'
-    $('.canvas-panel, .object-panel, .group-panel').hide()
+    $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide()
     object = @canvas.getActiveObject()
     if object
-      $('.object-panel').show()
-      $('#object-id').html(object.id)
+      $('.haika-object-panel').show()
+      $('#haika-object-id').html(object.id)
       return
 #    if object and object.getJsonSchema?
 #      @editor.schema = object.getJsonSchema()
@@ -551,8 +615,8 @@ haika =
     group = @canvas.getActiveGroup()
     if group
       objects = group._objects
-      $('#group-count').html(objects.length)
-      $('.group-panel').show()
+      $('#haika-group-count').html(objects.length)
+      $('.haika-group-panel').show()
       return
     else
-      $('.canvas-panel').show()
+      $('.haika-canvas-panel').show()

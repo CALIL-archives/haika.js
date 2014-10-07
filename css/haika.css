@@ -6,6 +6,7 @@ body {
 }
 
 .haika-header {
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -36,7 +37,8 @@ body {
 }
 
 /* toolbar */
-.toolbar-container {
+.haika-toolbar-container {
+  display: none;
   width: 156px;
   position: absolute;
   left: 0;
@@ -48,11 +50,11 @@ body {
   border-bottom: 1px solid #CCCCCC;
   background-color: #FFFFFF;
 }
-.toolbar-container ul {
+.haika-toolbar-container ul {
   margin-left: 0;
   padding-left: 0;
 }
-.toolbar-container ul.toolbar-menu >li {
+.haika-toolbar-container ul.toolbar-menu >li {
   display: block;
   list-style: none;
   padding: 10px;
@@ -60,7 +62,7 @@ body {
   border: 1px solid #CCCCCC;
   background-color: #FFFFFF;
 }
-.toolbar-container ul.toolbar-menu >li:hover {
+.haika-toolbar-container ul.toolbar-menu >li:hover {
   background-color: lightpink;
 }
 .dropdown-colorselector>.dropdown-menu {
@@ -81,7 +83,7 @@ body {
   outline: none;
   cursor: pointer;
 }
-.haika-zoom-button {
+.haika-button {
   display: block;
   height: 29px;
   width: 29px;
@@ -157,7 +159,7 @@ body {
 }
 
 /* property_panel */
-.property-panel {
+.haika-property-panel {
   position: absolute;
   top: 40px;
   right: 0;
@@ -167,15 +169,15 @@ body {
   padding: 10px;
   background-color: #000000;
 }
-.property-panel h3 {
+.haika-property-panel h3 {
   font-size: 16px;
 }
-.canvas-panel {
+.haika-canvas-panel {
 }
-.object-panel {
+.haika-object-panel {
   display: none;
 }
-.group-panel {
+.haika-group-panel {
   display: none;
 }
 

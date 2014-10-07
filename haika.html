@@ -17,14 +17,14 @@
             <li><a href="#" class="wall">壁</a></li>
             <li><a href="#" class="floor">床</a></li>
         </ul>
-        <i class="fa fa-copy copy btn btn-default"> copy</i>
-        <i class="fa fa-paste paste btn btn-default"> paste</i>
-        <button class="btn btn-default undo"><i class="fa fa-undo"></i> undo</button>
+        <i class="fa fa-copy haika-copy btn btn-default"> copy</i>
+        <i class="fa fa-paste haika-paste btn btn-default"> paste</i>
+        <button class="btn btn-default haika-undo"><i class="fa fa-undo"></i> undo</button>
         <div style="display:none;">
             <input type="file" id="file"/>
         </div>
     </div>
-    <div class="toolbar-container">
+    <div class="haika-toolbar-container">
       <ul class="toolbar-menu">
       </ul>
       <select id="fill-color">
@@ -39,44 +39,47 @@
       </span>
     </div>
     <div class="haika-buttons">
-      <span class="haika-zoom-button haika-zoomin">
+      <span class="haika-button haika-full">
+        <span class="glyphicon glyphicon-resize-full"></span>
+      </span>
+      <span class="haika-button haika-zoomin">
         <i class="fa fa-plus"></i>
       </span>
-      <span class="haika-zoom-button haika-zoomout">
+      <span class="haika-button haika-zoomout">
         <i class="fa fa-minus"></i>
       </span>
     </div>
-    <div class="property-panel">
-      <div class="canvas-panel">
+    <div class="haika-property-panel">
+      <div class="haika-canvas-panel">
           <h3>キャンバスのプロパティ</h3>
-          <label for="canvas-width">
-              width: <span id="canvas-width"></span>
+          <label for="haika-canvas-width">
+              width: <span id="haika-canvas-width"></span>
           </label>
-          <label for="canvas-height">
-              height: <span id="canvas-height"></span>
+          <label for="haika-canvas-height">
+              height: <span id="haika-canvas-height"></span>
           </label><br/>
-          <label for="canvas-centerX">
-              centerX: <span id="canvas-centerX"></span>
+          <label for="haika-canvas-centerX">
+              centerX: <span id="haika-canvas-centerX"></span>
           </label>
-          <label for="canvas-centerY">
-              centerY: <span id="canvas-centerY"></span>
+          <label for="haika-canvas-centerY">
+              centerY: <span id="haika-canvas-centerY"></span>
           </label><br/>
-          <label for="canvas-bgscale">
+          <label for="haika-canvas-bgscale">
               bgscale:
-              <input type="number" id="canvas-bgscale" class="form-control" value="0" step="0.01"/>
+              <input type="number" id="haika-canvas-bgscale" class="form-control" value="0" step="0.01"/>
           </label><br/>
-          <label for="canvas-bgopacity">
+          <label for="haika-canvas-bgopacity">
               bgopacity:
-              <input type="number" id="canvas-bgopacity" class="form-control" value="0" step="0.1"/>
-              <input id="bgopacity-slider" data-slider-id='bgopacity-slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
+              <input type="number" id="haika-canvas-bgopacity" class="form-control" value="0" step="0.1"/>
+              <input id="haika-bgopacity-slider" data-slider-id='haika-bgopacity-slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
           </label><br/>
-          <label for="bgimg">
+          <label for="haika-bgimg">
               背景画像:
-              <input type="file" id="bgimg" class="btn btn-default"/>
+              <input type="file" id="haika-bgimg" class="btn btn-default"/>
           </label>
           <br/>
           <br/>
-          <span class="map-setting btn btn-default">
+          <span class="haika-map-setting btn btn-default">
             <i class="fa fa-map-marker"></i>
             地図設定
           </span>
@@ -84,47 +87,47 @@
           <br/>
           <br/>
           <br/>
-          <span id="bgreset" class="btn btn-default">
+          <span id="haika-bgreset" class="btn btn-default">
             <i class="fa fa-trash"></i>
             背景リセット
           </span>
 
         </div>
-        <div class="object-panel">
+        <div class="haika-object-panel">
           <h3>オブジェクトのプロパティ</h3>
 
-          <p>id: <span id="object-id"></span></p>
+          <p>id: <span id="haika-object-id"></span></p>
 
-          <p><i class="fa fa-trash-o remove btn btn-default"> remove</i></p>
+          <p><i class="fa fa-trash-o haika-remove btn btn-default"> remove</i></p>
 
-          <p><i class="fa fa-files-o duplicate btn btn-default"> duplicate</i></p>
+          <p><i class="fa fa-files-o haika-duplicate btn btn-default"> duplicate</i></p>
 
-          <p><input type="button" class="bringtofront btn btn-default" value="bringToFront "/></p>
+          <p><input type="button" class="haika-bringtofront btn btn-default" value="bringToFront "/></p>
 
           <div id="editor"></div>
           <textarea name="geojson" id="geojson" style="display:none;"></textarea>
         </div>
-        <div class="group-panel">
+        <div class="haika-group-panel">
             <h3>グループのプロパティ</h3>
 
-            <p><span id="group-count"></span>個のオブジェクトを選択中。</p>
+            <p><span id="haika-group-count"></span>個のオブジェクトを選択中。</p>
 
-            <p><i class="fa fa-trash-o remove btn btn-default"> remove</i></p>
+            <p><i class="fa fa-trash-o haika-remove btn btn-default"> remove</i></p>
 
             <p>
 
             <div class="btn-group">
-                <i class="fa fa-align-left align-left btn btn-default"></i>
-                <i class="fa fa-align-center align-center btn btn-default"></i>
-                <i class="fa fa-align-right align-right btn btn-default"></i>
+                <i class="fa fa-align-left haika-align-left btn btn-default"></i>
+                <i class="fa fa-align-center haika-align-center btn btn-default"></i>
+                <i class="fa fa-align-right haika-align-right btn btn-default"></i>
             </div>
             </p>
             <p>
 
             <div class="btn-group">
-                <i class="fa fa-align-left fa-rotate-90 align-top btn btn-default"></i>
-                <i class="fa fa-align-center fa-rotate-90 align-vcenter btn btn-default"></i>
-                <i class="fa fa-align-right fa-rotate-90 align-bottom btn btn-default"></i>
+                <i class="fa fa-align-left fa-rotate-90 haika-align-top btn btn-default"></i>
+                <i class="fa fa-align-center fa-rotate-90 haika-align-vcenter btn btn-default"></i>
+                <i class="fa fa-align-right fa-rotate-90 haika-align-bottom btn btn-default"></i>
             </div>
             </p>
         </div>

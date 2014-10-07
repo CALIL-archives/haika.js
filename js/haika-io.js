@@ -39,6 +39,7 @@ $.extend(haika, {
       success: (function(_this) {
         return function(json) {
           if (json.locked) {
+            _this.readOnly = true;
             return option.error && option.error('データはロックされています');
           }
           _this._dataId = json.id;
@@ -61,6 +62,9 @@ $.extend(haika, {
       error = null;
     }
     log('save');
+    if (this.readOnly) {
+      return;
+    }
     this.prepareData();
     if (this._autoSaveTimerId) {
       clearTimeout(this._autoSaveTimerId);

@@ -28,9 +28,14 @@ $('.fullscreen').click ->
 # 初期設定
 haika.init
   divId : 'haika-canvas'
+#  readOnly: true
 
-
-#haika.undo.init()
-#initScrollBar()
-#haika.map.initMap()
-#haika.colorpicker.init()
+if haika.readOnly
+  haika.event.zoom()
+else
+  haika.toolbar.init()
+  haika.event.init()
+  haika.undo.init()
+  initScrollBar()
+  haika.map.initMap()
+  haika.colorpicker.init()
