@@ -10,6 +10,7 @@ $.extend haika,
     @setScale 1
     @render()
     for object in @canvas.getObjects()
+      log object.top
       bound  = object.getBoundingRect()
       if not left?
         left = bound.left
@@ -25,36 +26,39 @@ $.extend haika,
     canvasWidth  = @canvas.getWidth()
     canvasHeight = @canvas.getHeight()
 
+
     width = right-left
     height = bottom-top
 
     log width
     log height
 
-    widthScale = canvasWidth/width
-    heightScale = canvasHeight/height
+    widthScale = width/canvasWidth
+    heightScale = height/canvasHeight
 
     log widthScale
     log heightScale
-    return
-
-#    if widthScale>=heightScale
-#      scaleFactor = widthScale
-#    else
-#      scaleFactor = heightScale
-    # 1より小さい、canvasに対して大きい→縮小=1以下
-    # 1より大きい、canvasに対して小さい→拡大=1以上
-    log scaleFactor
-    newScale = 1  - (scaleFactor - 1)
-    log newScale
-    @setScale newScale
 
     # x canvasWidth/2 = 0
     # y canvasHeight/2 = 0
 
-#    @centerX = width/2
-#    @centerY = height/2
-#    @render()
+    @centerX = @centerX-(left+width/2-canvasWidth/2)
+    @centerY = @centerY-(top+height/2-canvasHeight/2)
+
+    scale = if widthScale>=heightScale then widthScale else heightScale
+#    scale = scale - 4
+    log scale
+    # 1より小さい、canvasに対して小さい→拡大=1以上
+    # 1より大きい、canvasに対して大きい→縮小=1以下
+#    log scaleFactor
+#    newScale = 1  - (scaleFactor - 1)
+#    log newScale
+#    @setScale  0.5 + Math.log(scale) / 20
+    @setScale scale
+#    @zoomOut()
+#    @zoomOut()
+#    @zoomOut()
+
 
 # 表示時の拡大率を1ステップ拡大する (これはUI側のため将来的に移動)
 #
