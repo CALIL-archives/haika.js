@@ -5,7 +5,7 @@ $.extend haika,
 # オブジェクトの最大幅を計算してそれにキャンバスをフィットさせて表示する (これはUI側のため将来的に移動)
 #
   zoomFull: ->
-    if @objects.length<0
+    if @objects.length<=0
       return
     geojson = @toGeoJSON()
     for object in geojson.features
