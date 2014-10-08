@@ -7,57 +7,52 @@ $.extend haika,
   zoomFull: ->
     if @objects.length<0
       return
-    @setScale 1
-    @render()
-    for object in @canvas.getObjects()
-      log object.top
-      bound  = object.getBoundingRect()
-      if not left?
-        left = bound.left
-        right = bound.left+bound.width
-        top = bound.top
-        bottom = bound.top+bound.height
-        continue
-      left   = Math.min(bound.left, left)
-      right  = Math.max(bound.left+bound.width, right)
-      top    = Math.min(bound.top, top)
-      bottom = Math.max(bound.top+bound.height, bottom)
-    # キャンバスの縦横を取得
-    canvasWidth  = @canvas.getWidth()
-    canvasHeight = @canvas.getHeight()
+    geojson = @toGeoJSON()
+    for object in geojson.features
+      for point in object.geometry.coordinates[0]
+#        log point[0]
+        if not left?
+          left   = point[0]
+          right  = point[0]
+          top    = point[1]
+          bottom = point[1]
+          continue
+        left   = Math.min(point[0]*100, left)
+        right  = Math.max(point[0]*100, right)
+        top    = Math.min(point[1]*100, top)
+        bottom = Math.max(point[1]*100, bottom)
+    log left
+    log right
 
+    @centerX = -(right+left)/2
+    @centerY = (bottom+top)/2
+#    @render()
+#    return
 
-    width = right-left
+    width  = right-left
     height = bottom-top
 
     log width
     log height
 
-    widthScale = width/canvasWidth
-    heightScale = height/canvasHeight
+    # キャンバスの縦横を取得
+    canvasWidth  = @canvas.getWidth()
+    canvasHeight = @canvas.getHeight()
+
+    log canvasWidth
+    log canvasHeight
+
+    widthScale = canvasWidth/width
+    heightScale = canvasHeight/height
 
     log widthScale
     log heightScale
 
-    # x canvasWidth/2 = 0
-    # y canvasHeight/2 = 0
-
-    @centerX = @centerX-(left+width/2-canvasWidth/2)
-    @centerY = @centerY-(top+height/2-canvasHeight/2)
-
-    scale = if widthScale>=heightScale then widthScale else heightScale
-#    scale = scale - 4
+    scale = if widthScale<heightScale then widthScale else heightScale
     log scale
-    # 1より小さい、canvasに対して小さい→拡大=1以上
-    # 1より大きい、canvasに対して大きい→縮小=1以下
-#    log scaleFactor
-#    newScale = 1  - (scaleFactor - 1)
-#    log newScale
-#    @setScale  0.5 + Math.log(scale) / 20
-    @setScale scale
-#    @zoomOut()
-#    @zoomOut()
-#    @zoomOut()
+    # 1より大きい、canvasに対して小さい→拡大=1以上
+    # 1より小さい、canvasに対して大きい→縮小=1以下
+    @setScale scale * 0.5
 
 
 # 表示時の拡大率を1ステップ拡大する (これはUI側のため将来的に移動)
