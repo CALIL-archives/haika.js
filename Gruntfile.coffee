@@ -24,6 +24,7 @@ module.exports = (grunt) ->
     "js/haika.js"
     "js/haika-io.js"
     "js/haika-geojson.js"
+    "js/haika-zoom.js"
     "js/haika-scrollbar.js"
     "js/haika-toolbar.js"
     "js/haika-colorpicker.js"
