@@ -24658,9 +24658,8 @@ haika = {
         return _this.setPropetyPanel();
       };
     })(this));
-    this.canvas.on('before:selection:cleared', (function(_this) {
+    this.canvas.on('selection:cleared', (function(_this) {
       return function(e) {
-        _this.canvas.discardActiveGroup();
         return _this.setPropetyPanel();
       };
     })(this));
@@ -25164,7 +25163,7 @@ haika = {
     if (group) {
       objects = group._objects;
       $('#haika-group-count').html(objects.length);
-      $('.haika-group-panel').show();
+      return $('.haika-group-panel').show();
     } else {
       return $('.haika-canvas-panel').show();
     }

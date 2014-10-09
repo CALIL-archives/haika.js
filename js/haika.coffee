@@ -145,8 +145,8 @@ haika =
         object.lockScalingY = true
       @setPropetyPanel()
     )
-    @canvas.on 'before:selection:cleared', (e)=>
-      @canvas.discardActiveGroup()
+#    @canvas.on 'before:selection:cleared', (e)=>
+    @canvas.on 'selection:cleared', (e)=>
 #      @editor_change()
       @setPropetyPanel()
     @canvas.on 'object:rotating', (e) =>
@@ -550,6 +550,5 @@ haika =
       objects = group._objects
       $('#haika-group-count').html(objects.length)
       $('.haika-group-panel').show()
-      return
     else
       $('.haika-canvas-panel').show()
