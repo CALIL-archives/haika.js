@@ -134,6 +134,61 @@
     </div>
   </div>
 </div>
+<!-- MAP -->
+<div class="haika-map-container">
+  <div class="clearfix">
+      <div class="pull-left">
+          <div class="row">
+              <div class="col-sm-3" style="max-width: 200px;">
+                  <form id="haika-map-search" style="width: 200px">
+                      <input type="text" placeholder="場所を図書館名で検索" id="haika-map-query" class="form-control"/>
+                  </form>
+              </div>
+              <div class="col-sm-9">
+                  <div class="row">
+                      <div class="col-sm-6">
+                          <div class="row">
+                              <div class="col-sm-4" style="color: white;text-align:right;">
+                                  角度:
+                              </div>
+                              <div class="col-sm-8">
+                                  <input id="haika-canvas-angle" data-slider-id='haika-canvas-angle' type="text"/>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-sm-6">
+                          <div class="row">
+                              <div class="col-sm-4" style="color: white;text-align:right;">
+                                  倍率:
+                              </div>
+                              <div class="col-sm-8">
+                                  <input id="haika-geojson-scale" data-slider-id='haika-geojson-scale' type="text"/>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div style="display:none;">
+                      <div class="col-sm-3">
+                          <input type="number" id="haika-canvas-lat" class="form-control" value="" disabled/>
+                      </div>
+                      <div class="col-sm-3">
+                          <input type="number" id="haika-canvas-lon" class="form-control" value="" disabled/>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="pull-right" style="text-align:right;">
+      <span class="haika-map-setting btn btn-default">
+        <i class="fa fa-times"></i>
+        close
+      </span>
+      </div>
+  </div>
+  <div id="haika-map">
+  </div>
+</div>
+
 <!--
 <div class="haika_container">
     <div class="side_container">
@@ -163,60 +218,6 @@
         </div>
     </div>
 </div>
-<!-- MAP -->
-<div class="map-container">
-    <div class="clearfix">
-        <div class="pull-left">
-            <div class="row">
-                <div class="col-sm-3" style="max-width: 200px;">
-                    <form id="map-search" style="width: 200px">
-                        <input type="text" placeholder="場所を図書館名で検索" id="map-query" class="form-control"/>
-                    </form>
-                </div>
-                <div class="col-sm-9">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="row">
-                                <div class="col-sm-4" style="color: white;text-align:right;">
-                                    角度:
-                                </div>
-                                <div class="col-sm-8">
-                                    <input id="canvas-angle" data-slider-id='canvas-angle' type="text"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="row">
-                                <div class="col-sm-4" style="color: white;text-align:right;">
-                                    倍率:
-                                </div>
-                                <div class="col-sm-8">
-                                    <input id="geojson-scale" data-slider-id='geojson-scale' type="text"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display:none;">
-                        <div class="col-sm-3">
-                            <input type="number" id="canvas-lat" class="form-control" value="" disabled/>
-                        </div>
-                        <div class="col-sm-3">
-                            <input type="number" id="canvas-lon" class="form-control" value="" disabled/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="pull-right" style="text-align:right;">
-        <span class="map-setting btn btn-default">
-          <i class="fa fa-times"></i>
-          close
-        </span>
-        </div>
-    </div>
-    <div id="map">
-    </div>
-  </div>
 -->
     <!-- External script dependencies  -->
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>

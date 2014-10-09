@@ -1,7 +1,7 @@
 # テスト ロード時にマップ表示
 # haikaのデータロード完了時に実行する
 #$(haika).on 'haika:load', ->
-#    $($('.map_setting')[0]).trigger('click')
+#    $($('.haika-map-setting')[0]).trigger('click')
 #  , 1000
 
 # haikaの地図設定
@@ -12,7 +12,7 @@ $.extend haika,
     created : false
     features : []
     initMap : ->
-      $('.map_setting').click =>
+      $('.haika-map-setting').click =>
         if $('.haika-container').css('display')=='block'
           if not @created
             @setMap()
@@ -20,25 +20,25 @@ $.extend haika,
           $('.haika-container').hide()
           $(document.body).css('background', '#333333')
           @redrawMap()
-          $('.map_container').show()
-          $('#map_query').focus()
+          $('.haika-map-container').show()
+          $('#haika-map-query').focus()
         else
           $(document.body).css('background', '#FFFFFF')
           $('.haika-container').show()
-          $('.map_container').hide()
+          $('.haika-map-container').hide()
     redrawMap : ->
       if @features.length>0
         for feature in @features
           @map.data.remove feature
         @features = @map.data.addGeoJson(haika.createGeoJson())
     saveMap : (lat, lon)->
-      $('#canvas_lon').val(lon)
-      $('#canvas_lat').val(lat)
+      $('#haika-canvas-lon').val(lon)
+      $('#haika-canvas-lat').val(lat)
       haika.xyLongitude = lon
       haika.xyLatitude = lat
       haika.save()
     setMap : ->
-      @map = new google.maps.Map(document.getElementById('map'),
+      @map = new google.maps.Map(document.getElementById('haika-map'),
         zoom: 20
         maxZoom: 28
         center:
@@ -53,6 +53,17 @@ $.extend haika,
       @map.data.setStyle(featureStyle)
       @features = @map.data.addGeoJson(haika.createGeoJson())
 
+      markerCenter = new google.maps.Marker
+        position: @map.getCenter()
+        map: @map
+        icon: "img/mapCenterMarker.png" # アイコン画像を指定
+        draggable: true # ドラッグ可能にする
+
+      # リスナーを追加：中心移動時にセンターマーカーを再描画(位置とタイトル)
+      google.maps.event.addListener @map, "center_changed", =>
+        pos = @map.getCenter()
+        markerCenter.setPosition pos
+
       google.maps.event.addListener @map, 'dragend', =>
         log @map.getCenter()
         lon = @map.getCenter().lng()
@@ -60,9 +71,9 @@ $.extend haika,
         @saveMap(lat, lon)
         @redrawMap()
 
-      $('#map_search').submit =>
-    #    alert $('#map_query').val()
-        address = $('#map_query').val()
+      $('#haika-map-search').submit =>
+    #    alert $('#map-query').val()
+        address = $('#haika-map-query').val()
         geocoder = new google.maps.Geocoder()
         geocoder.geocode
           address: address
@@ -79,17 +90,17 @@ $.extend haika,
             alert "ジオコーディングがうまくいきませんでした。: " + status
         return false
 
-      $('#canvas_lat').change ->
+      $('#haika-canvas-lat').change ->
         haika.xyLatitude = parseFloat($(this).val())
         haika.save()
-      $('#canvas_lon').change ->
+      $('#haika-canvas-lon').change ->
         haika.xyLongitude = parseFloat($(this).val())
         haika.save()
 
-      $('#canvas_angle').change =>
+      $('#haika-canvas-angle').change =>
         @redrawMap()
 
-      $('#canvas_angle').slider
+      $('#haika-canvas-angle').slider
         tooltip: 'always'
         step: 1
         min: 0
@@ -101,7 +112,7 @@ $.extend haika,
           @redrawMap()
           return value+'度'
 
-      $('#geojson_scale').slider
+      $('#haika-geojson-scale').slider
           tooltip: 'always'
           step: 1
           min: 0
