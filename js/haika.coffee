@@ -229,7 +229,8 @@ haika =
     @objects.push(object)
     $(@).trigger('haika:add')
     @render()
-    @setGroup([object.id])
+    @saveDelay()
+    @activeGroup([object.id])
     @undo.add(object.id)
 
 #選択中のオブジェクトに一括して処理を適用する
@@ -384,7 +385,8 @@ haika =
       @addObjectToCanvas(o)
     for o in beacons
       @addObjectToCanvas(o)
-    @activeGroup(activeIds)
+    if activeIds.length>0
+      @activeGroup(activeIds)
     @canvas.renderAll()
     @canvas.renderOnAddRemove = true
     $(@).trigger('haika:render')
