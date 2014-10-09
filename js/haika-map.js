@@ -49,8 +49,8 @@ $.extend(haika, {
         zoom: 20,
         maxZoom: 28,
         center: {
-          lat: haika.xyLatitude,
-          lng: haika.xyLongitude
+          lat: haika.xyLatitude ? haika.xyLatitude : 0,
+          lng: haika.xyLongitude ? haika.xyLongitude : 0
         }
       });
       featureStyle = {

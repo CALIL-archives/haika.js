@@ -42,8 +42,8 @@ $.extend haika,
         zoom: 20
         maxZoom: 28
         center:
-          lat: haika.xyLatitude
-          lng: haika.xyLongitude
+          lat: if haika.xyLatitude then haika.xyLatitude else 0
+          lng: if haika.xyLongitude then haika.xyLongitude else 0
       )
       # Set the stroke width, and fill color for each polygon
       featureStyle = {
