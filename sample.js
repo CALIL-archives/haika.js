@@ -12,17 +12,6 @@ $(haika).on('haika:render', function() {
   return $('.zoom').html((haika.scaleFactor * 100).toFixed(0) + '%');
 });
 
-$(haika).on('haika:initialized', function() {
-  return haika.openFromApi(2, {
-    success: function() {
-      return haika.render();
-    },
-    error: function(message) {
-      return alert(message);
-    }
-  });
-});
-
 $('.fullscreen').click(function() {
   if ($('.haika-container')[0].requestFullScreen) {
     $('.haika-container')[0].requestFullScreen();
@@ -33,6 +22,17 @@ $('.fullscreen').click(function() {
   if ($('.haika-container')[0].mozRequestFullScreen) {
     return $('.haika-container')[0].mozRequestFullScreen();
   }
+});
+
+$(haika).on('haika:initialized', function() {
+  return haika.openFromApi(2, {
+    success: function() {
+      return haika.render();
+    },
+    error: function(message) {
+      return alert(message);
+    }
+  });
 });
 
 haika.init({

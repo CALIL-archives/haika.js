@@ -25547,7 +25547,7 @@ haika = {
 ;$.extend(haika, {
   zoomFull: function() {
     var bottom, canvasHeight, canvasWidth, geojson, height, heightScale, left, object, point, right, scale, top, width, widthScale, _i, _j, _len, _len1, _ref, _ref1;
-    if (this.objects.length < 0) {
+    if (this.objects.length <= 0) {
       return;
     }
     geojson = this.toGeoJSON();

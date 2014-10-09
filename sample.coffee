@@ -10,13 +10,6 @@ $(haika).on 'haika:render', ->
     $('#canvas_angle').val(haika.canvas.angle)
     $('.zoom').html((haika.scaleFactor * 100).toFixed(0) + '%')
 
-$(haika).on 'haika:initialized', ->
-  haika.openFromApi(2,{
-    success: ->
-      haika.render()
-    error: (message) ->
-      alert(message)
-  })
 $('.fullscreen').click ->
   if $('.haika-container')[0].requestFullScreen
     $('.haika-container')[0].requestFullScreen()
@@ -24,6 +17,16 @@ $('.fullscreen').click ->
     $('.haika-container')[0].webkitRequestFullScreen()
   if $('.haika-container')[0].mozRequestFullScreen
     $('.haika-container')[0].mozRequestFullScreen()
+
+
+
+$(haika).on 'haika:initialized', ->
+  haika.openFromApi(2,{
+    success: ->
+      haika.render()
+    error: (message) ->
+      alert(message)
+  })
 
 # 初期設定
 haika.init
