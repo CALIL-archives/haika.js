@@ -25898,10 +25898,10 @@ initScrollBar = function() {
           return;
         }
         data = new FormData();
-        data.append('id', haika.id);
+        data.append('id', haika._dataId);
         data.append('userfile', files[0]);
         return $.ajax({
-          url: '/haika_store/upload.php',
+          url: 'http://lab.calil.jp/haika_store/upload.php',
           data: data,
           cache: false,
           contentType: false,
@@ -25909,7 +25909,7 @@ initScrollBar = function() {
           type: 'POST',
           success: function(data) {
             var url;
-            url = '/haika_store/image/' + haika.id + '_' + files[0].name;
+            url = 'http://lab.calil.jp/haika_store/image/' + haika._dataId + '_' + files[0].name;
             return haika.setBackgroundUrl(url);
           }
         });
