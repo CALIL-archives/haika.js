@@ -229,11 +229,7 @@ haika =
     @objects.push(object)
     $(@).trigger('haika:add')
     @render()
-    #追加したオブジェクトの選択 描画されるまでの遅延必須
-    setTimeout =>
-      o = @canvas.item(@getCountFindById(object.id))
-      @canvas.setActiveObject(o)
-    , 10
+    @setGroup([object.id])
     @undo.add(object.id)
 
 #選択中のオブジェクトに一括して処理を適用する
