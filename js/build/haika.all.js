@@ -25553,8 +25553,8 @@ haika = {
       _ref1 = object.geometry.coordinates[0];
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         geometry = _ref1[_j];
-        x = metreToLatitudeSecond(geometry[0] / 100) / 360;
-        y = metreToLongitudeSecond(geometry[1] / 100, x) / 360;
+        x = metreToLatitudeSecond(geometry[0] / 100) / 60 * geojson.haika.xyScaleFactor;
+        y = metreToLongitudeSecond(geometry[1] / 100, x) / 60 * geojson.haika.xyScaleFactor;
         coordinate = [geojson.haika.xyLongitude + x, geojson.haika.xyLatitude + y];
         coordinates.push(coordinate);
       }
