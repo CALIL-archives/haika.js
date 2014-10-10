@@ -1,4 +1,4 @@
-/js/haika.html#2((global) ->
+((global) ->
   "use strict"
   fabric = global.fabric or (global.fabric = {})
   if fabric.drawGridLines
