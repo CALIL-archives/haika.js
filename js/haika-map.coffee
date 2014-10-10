@@ -53,16 +53,21 @@ $.extend haika,
       @map.data.setStyle(featureStyle)
       @features = @map.data.addGeoJson(haika.createGeoJson())
 
-      markerCenter = new google.maps.Marker
+      # センターマーカー
+      markerImage = new google.maps.MarkerImage('img/mapCenterMarker.png',
+        new google.maps.Size(50, 50),
+        new google.maps.Point(0, 0),
+        new google.maps.Point(25, 25))
+      centerMarker = new google.maps.Marker
         position: @map.getCenter()
         map: @map
-        icon: "img/mapCenterMarker.png" # アイコン画像を指定
-        draggable: true # ドラッグ可能にする
+        icon: markerImage # アイコン画像を指定
+        draggable: false
 
       # リスナーを追加：中心移動時にセンターマーカーを再描画(位置とタイトル)
       google.maps.event.addListener @map, "center_changed", =>
-        pos = @map.getCenter()
-        markerCenter.setPosition pos
+        position = @map.getCenter()
+        centerMarker.setPosition position
 
       google.maps.event.addListener @map, 'dragend', =>
         log @map.getCenter()
@@ -103,8 +108,8 @@ $.extend haika,
       $('#haika-canvas-angle').slider
         tooltip: 'always'
         step: 1
-        min: 0
-        max: 360
+        min: -180
+        max: 180
         value: haika.xyAngle
         formatter: (value) =>
           haika.xyAngle = parseFloat(value)
