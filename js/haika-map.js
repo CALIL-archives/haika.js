@@ -68,15 +68,9 @@ $.extend(haika, {
       });
       google.maps.event.addListener(this.map, "center_changed", (function(_this) {
         return function() {
-          var position;
+          var lat, lon, position;
           position = _this.map.getCenter();
-          return centerMarker.setPosition(position);
-        };
-      })(this));
-      google.maps.event.addListener(this.map, 'dragend', (function(_this) {
-        return function() {
-          var lat, lon;
-          log(_this.map.getCenter());
+          centerMarker.setPosition(position);
           lon = _this.map.getCenter().lng();
           lat = _this.map.getCenter().lat();
           _this.saveMap(lat, lon);

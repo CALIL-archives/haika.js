@@ -64,17 +64,14 @@ $.extend haika,
         icon: markerImage # アイコン画像を指定
         draggable: false
 
-      # リスナーを追加：中心移動時にセンターマーカーを再描画(位置とタイトル)
       google.maps.event.addListener @map, "center_changed", =>
         position = @map.getCenter()
         centerMarker.setPosition position
-
-      google.maps.event.addListener @map, 'dragend', =>
-        log @map.getCenter()
         lon = @map.getCenter().lng()
         lat = @map.getCenter().lat()
         @saveMap(lat, lon)
         @redrawMap()
+
 
       $('#haika-map-search').submit =>
     #    alert $('#map-query').val()
