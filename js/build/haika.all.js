@@ -25380,41 +25380,13 @@ haika = {
     return data;
   },
   createGeoJson: function() {
-    var EPSG3857_geojson, coordinate, coordinates, data, features, geojson, geometry, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
+    var geojson;
     geojson = this.toGeoJSON();
     geojson = this.rotateGeoJSON(geojson);
     geojson = this.mergeGeoJson(geojson);
     geojson = this.moveGeoJSON(geojson);
-    features = [];
-    if (geojson && geojson.features.length > 0) {
-      _ref = geojson.features;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        object = _ref[_i];
-        coordinates = [];
-        _ref1 = object.geometry.coordinates[0];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          geometry = _ref1[_j];
-          x = geometry[0];
-          y = geometry[1];
-          coordinate = proj4('EPSG:3857', 'EPSG:4326', [x, y]);
-          coordinates.push(coordinate);
-          data = {
-            "type": "Feature",
-            "geometry": {
-              "type": "Polygon",
-              "coordinates": [coordinates]
-            },
-            "properties": object.properties
-          };
-          features.push(data);
-        }
-      }
-    }
-    EPSG3857_geojson = {
-      "type": "FeatureCollection",
-      "features": features
-    };
-    return EPSG3857_geojson;
+    geojson = this.translateGeoJSON(geojson);
+    return geojson;
   },
   rotateGeoJSON: function(geojson) {
     var coordinate, coordinates, features, geometry, new_coordinate, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
@@ -25523,7 +25495,37 @@ haika = {
         }
         object.geometry.coordinates = [coordinates];
       }
-      features.push(object);
+      features.unshift(object);
+    }
+    geojson.features = features;
+    return geojson;
+  },
+  translateGeoJSON: function(geojson) {
+    var coordinate, coordinates, data, features, geometry, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
+    features = [];
+    if (geojson && geojson.features.length > 0) {
+      _ref = geojson.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        coordinates = [];
+        _ref1 = object.geometry.coordinates[0];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          geometry = _ref1[_j];
+          x = geometry[0];
+          y = geometry[1];
+          coordinate = proj4('EPSG:3857', 'EPSG:4326', [x, y]);
+          coordinates.push(coordinate);
+          data = {
+            "type": "Feature",
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [coordinates]
+            },
+            "properties": object.properties
+          };
+          features.push(data);
+        }
+      }
     }
     geojson.features = features;
     return geojson;

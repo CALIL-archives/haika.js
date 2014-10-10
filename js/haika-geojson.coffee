@@ -62,35 +62,14 @@ $.extend haika,
 
 # Todo:Mapでのみ使う関数だけど、現状haika直下
 # Todo:この部分をnodeモジュールにしてサーバーサイド使えるようにしたい
-# geojsonの作成 座標変換
+# EPSG:3857のgeojsonの作成
   createGeoJson: ->
     geojson = @toGeoJSON()
     geojson = @rotateGeoJSON(geojson)
     geojson = @mergeGeoJson(geojson)
     geojson = @moveGeoJSON(geojson)
-
-    features = []
-    if geojson and geojson.features.length > 0
-      for object in geojson.features
-        coordinates = []
-        for geometry in object.geometry.coordinates[0]
-          x = geometry[0]
-          y = geometry[1]
-          coordinate = proj4('EPSG:3857', 'EPSG:4326', [x, y]);
-          coordinates.push(coordinate)
-          data =
-            "type": "Feature"
-            "geometry":
-              "type": "Polygon",
-              "coordinates": [
-                coordinates
-              ]
-            "properties": object.properties
-          features.push(data)
-    EPSG3857_geojson =
-      "type": "FeatureCollection"
-      "features": features
-    return EPSG3857_geojson
+    geojson = @translateGeoJSON(geojson)
+    return geojson
 # geojsonの回転
   rotateGeoJSON: (geojson)->
     features = []
@@ -172,7 +151,29 @@ $.extend haika,
           coordinate = [mapCenter[0] + x, mapCenter[1] + y]
           coordinates.push(coordinate)
         object.geometry.coordinates = [coordinates]
-      features.push(object)
+      features.unshift(object)
+    geojson.features = features
+    return geojson
+# 測地系の変換
+  translateGeoJSON: (geojson)->
+    features = []
+    if geojson and geojson.features.length > 0
+      for object in geojson.features
+        coordinates = []
+        for geometry in object.geometry.coordinates[0]
+          x = geometry[0]
+          y = geometry[1]
+          coordinate = proj4('EPSG:3857', 'EPSG:4326', [x, y]);
+          coordinates.push(coordinate)
+          data =
+            "type": "Feature"
+            "geometry":
+              "type": "Polygon",
+              "coordinates": [
+                coordinates
+              ]
+            "properties": object.properties
+          features.push(data)
     geojson.features = features
     return geojson
 
