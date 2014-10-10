@@ -25384,8 +25384,7 @@ haika = {
     geojson = this.toGeoJSON();
     geojson = this.rotateGeoJSON(geojson);
     geojson = this.mergeGeoJSON(geojson);
-    geojson = this.moveGeoJSON(geojson);
-    geojson = this.translateGeoJSON(geojson);
+    geojson = this.transformGeoJSON(geojson);
     return geojson;
   },
   rotateGeoJSON: function(geojson) {
@@ -25526,6 +25525,41 @@ haika = {
           features.push(data);
         }
       }
+    }
+    geojson.features = features;
+    return geojson;
+  },
+  transformGeoJSON: function(geojson) {
+
+    /* 定数 */
+    var PI, coordinate, coordinates, cos, earthCircumference, earthRadius, features, geometry, latSecPmetre, metreToLatitudeSecond, metreToLongitudeSecond, object, radian, x, y, _i, _j, _len, _len1, _ref, _ref1;
+    PI = Math.PI;
+    radian = (2 * PI) / 360;
+    earthRadius = 6378150;
+    earthCircumference = 2 * PI * earthRadius;
+    latSecPmetre = (360 * 60 * 60) / earthCircumference;
+    cos = Math.cos;
+    metreToLatitudeSecond = function(metre) {
+      return metre * latSecPmetre;
+    };
+    metreToLongitudeSecond = function(metre, lat) {
+      return metre * ((360 * 60 * 60) / (earthCircumference * cos(lat * radian)));
+    };
+    features = [];
+    _ref = geojson.features;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      coordinates = [];
+      _ref1 = object.geometry.coordinates[0];
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        geometry = _ref1[_j];
+        x = metreToLatitudeSecond(geometry[0] / 100) / 360;
+        y = metreToLongitudeSecond(geometry[1] / 100, x) / 360;
+        coordinate = [geojson.haika.xyLongitude + x, geojson.haika.xyLatitude + y];
+        coordinates.push(coordinate);
+      }
+      object.geometry.coordinates = [coordinates];
+      features.push(object);
     }
     geojson.features = features;
     return geojson;

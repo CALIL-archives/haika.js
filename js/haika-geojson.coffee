@@ -67,8 +67,9 @@ $.extend haika,
     geojson = @toGeoJSON()
     geojson = @rotateGeoJSON(geojson)
     geojson = @mergeGeoJSON(geojson)
-    geojson = @moveGeoJSON(geojson)
-    geojson = @translateGeoJSON(geojson)
+#    geojson = @moveGeoJSON(geojson)
+#    geojson = @translateGeoJSON(geojson)
+    geojson = @transformGeoJSON(geojson)
     return geojson
 # geojsonの回転
   rotateGeoJSON: (geojson)->
@@ -175,6 +176,38 @@ $.extend haika,
             "properties": object.properties
           features.push(data)
     geojson.features = features
+    return geojson
+#
+  transformGeoJSON: (geojson)->
+    ### 定数 ###
+    PI = Math.PI
+    radian =  (2*PI)/360 #0.017...
+    earthRadius = 6378150 #地球の半径
+    earthCircumference = (2*PI*earthRadius) #地球の円周 = 40054782
+    latSecPmetre = (360*60*60)/earthCircumference #1m相当の緯度秒
+
+    cos = Math.cos
+
+    #メートル -> 緯度秒
+    metreToLatitudeSecond = (metre) ->
+      metre * latSecPmetre
+
+    #メートル,緯度 -> 経度秒
+    metreToLongitudeSecond = (metre, lat) ->
+      metre * ((360*60*60)/(earthCircumference*cos(lat*radian)))
+
+    features = []
+    for object in geojson.features
+      coordinates = []
+      for geometry in object.geometry.coordinates[0]
+        x = metreToLatitudeSecond(geometry[0]/100)/360
+        y = metreToLongitudeSecond(geometry[1]/100, x)/360
+        coordinate = [geojson.haika.xyLongitude+x, geojson.haika.xyLatitude+y]
+        coordinates.push(coordinate)
+      object.geometry.coordinates = [coordinates]
+      features.push(object)
+    geojson.features = features
+
     return geojson
 
 
