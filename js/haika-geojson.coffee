@@ -66,7 +66,7 @@ $.extend haika,
   createGeoJson: ->
     geojson = @toGeoJSON()
     geojson = @rotateGeoJSON(geojson)
-    geojson = @mergeGeoJson(geojson)
+    geojson = @mergeGeoJSON(geojson)
     geojson = @moveGeoJSON(geojson)
     geojson = @translateGeoJSON(geojson)
     return geojson
@@ -80,7 +80,7 @@ $.extend haika,
         y = geometry[1]
         # 回転の反映
         new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0),
-          fabric.util.degreesToRadians(-@xyAngle))
+          fabric.util.degreesToRadians(-geojson.haika.xyAngle))
         coordinate = [new_coordinate.x, new_coordinate.y]
         coordinates.push(coordinate)
       object.geometry.coordinates = [coordinates]
@@ -88,7 +88,7 @@ $.extend haika,
     geojson.features = features
     return geojson
 # geojson床オブジェクトのマージ
-  mergeGeoJson: (geojson) ->
+  mergeGeoJSON: (geojson) ->
     if geojson.features.length<=0
       return geojson
     features = []
@@ -126,7 +126,7 @@ $.extend haika,
         coordinates.push [p.X, p.Y]
       coordinates.push first_coordinates
 
-      features.push(
+      features.unshift(
         "type": "Feature"
         "geometry":
           "type": "Polygon",
@@ -142,16 +142,16 @@ $.extend haika,
   moveGeoJSON: (geojson)->
     features = []
     for object in geojson.features
-      mapCenter = proj4("EPSG:4326", "EPSG:3857", [@xyLongitude, @xyLatitude])
+      mapCenter = proj4("EPSG:4326", "EPSG:3857", [geojson.haika.xyLongitude, geojson.haika.xyLatitude])
       if mapCenter
         coordinates = []
         for geometry in object.geometry.coordinates[0]
-          x = geometry[0] * @xyScaleFactor / 100
-          y = geometry[1] * @xyScaleFactor / 100
+          x = geometry[0] * geojson.haika.xyScaleFactor / 100
+          y = geometry[1] * geojson.haika.xyScaleFactor / 100
           coordinate = [mapCenter[0] + x, mapCenter[1] + y]
           coordinates.push(coordinate)
         object.geometry.coordinates = [coordinates]
-      features.unshift(object)
+      features.push(object)
     geojson.features = features
     return geojson
 # 測地系の変換
