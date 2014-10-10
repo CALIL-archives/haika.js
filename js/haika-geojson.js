@@ -223,7 +223,7 @@ $.extend(haika, {
   transformGeoJSON: function(geojson) {
 
     /* 定数 */
-    var PI, coordinate, coordinates, cos, earthCircumference, earthRadius, features, geometry, latSecPmetre, metreToLatitudeSecond, metreToLongitudeSecond, object, radian, x, y, _i, _j, _len, _len1, _ref, _ref1;
+    var PI, coordinate, coordinates, cos, earthCircumference, earthRadius, features, geometry, latSecPmetre, metreToLatitudeSecond, metreToLongitudeSecond, object, radian, x, xSecond, y, ySecond, _i, _j, _len, _len1, _ref, _ref1;
     PI = Math.PI;
     radian = (2 * PI) / 360;
     earthRadius = 6378150;
@@ -244,8 +244,11 @@ $.extend(haika, {
       _ref1 = object.geometry.coordinates[0];
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         geometry = _ref1[_j];
-        x = metreToLatitudeSecond(geometry[0] / 100) / 60 * geojson.haika.xyScaleFactor;
-        y = metreToLongitudeSecond(geometry[1] / 100, x) / 60 * geojson.haika.xyScaleFactor;
+        log(geometry);
+        xSecond = metreToLatitudeSecond(geometry[0] / 100);
+        x = xSecond / 60 * geojson.haika.xyScaleFactor;
+        ySecond = metreToLongitudeSecond(geometry[1] / 100, xSecond);
+        y = ySecond / 60 * geojson.haika.xyScaleFactor;
         coordinate = [geojson.haika.xyLongitude + x, geojson.haika.xyLatitude + y];
         coordinates.push(coordinate);
       }

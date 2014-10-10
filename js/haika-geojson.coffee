@@ -200,8 +200,11 @@ $.extend haika,
     for object in geojson.features
       coordinates = []
       for geometry in object.geometry.coordinates[0]
-        x = metreToLatitudeSecond(geometry[0]/100) / 60 * geojson.haika.xyScaleFactor
-        y = metreToLongitudeSecond(geometry[1]/100, x) / 60 * geojson.haika.xyScaleFactor
+        log geometry
+        xSecond = metreToLatitudeSecond(geometry[0]/100)
+        x = xSecond / 60 * geojson.haika.xyScaleFactor
+        ySecond = metreToLongitudeSecond(geometry[1]/100, xSecond)
+        y = ySecond / 60 * geojson.haika.xyScaleFactor
         coordinate = [geojson.haika.xyLongitude+x, geojson.haika.xyLatitude+y]
         coordinates.push(coordinate)
       object.geometry.coordinates = [coordinates]
