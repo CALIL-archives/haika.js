@@ -48,6 +48,7 @@ $.extend(haika, {
       this.map = new google.maps.Map(document.getElementById('haika-map'), {
         zoom: 20,
         maxZoom: 28,
+        scaleControl: true,
         center: {
           lat: haika.xyLatitude ? haika.xyLatitude : 0,
           lng: haika.xyLongitude ? haika.xyLongitude : 0
@@ -61,18 +62,21 @@ $.extend(haika, {
       this.features = this.map.data.addGeoJson(haika.createGeoJson());
       markerImage = new google.maps.MarkerImage('img/mapCenterMarker.png', new google.maps.Size(50, 50), new google.maps.Point(0, 0), new google.maps.Point(25, 25));
       centerMarker = new google.maps.Marker({
-        position: this.map.getCenter(),
+        position: {
+          lat: haika.xyLatitude,
+          lng: haika.xyLongitude
+        },
         map: this.map,
         icon: markerImage,
-        draggable: false
+        draggable: true
       });
-      google.maps.event.addListener(this.map, "center_changed", (function(_this) {
+      google.maps.event.addListener(centerMarker, "dragend", (function(_this) {
         return function() {
           var lat, lon, position;
-          position = _this.map.getCenter();
-          centerMarker.setPosition(position);
-          lon = _this.map.getCenter().lng();
-          lat = _this.map.getCenter().lat();
+          log('centerMarker');
+          position = centerMarker.getPosition();
+          lon = position.lng();
+          lat = position.lat();
           _this.saveMap(lat, lon);
           return _this.redrawMap();
         };
@@ -127,8 +131,8 @@ $.extend(haika, {
       return $('#haika-geojson-scale').slider({
         tooltip: 'always',
         step: 1,
-        min: 0,
-        max: 400,
+        min: 70,
+        max: 150,
         value: haika.xyScaleFactor * 100,
         formatter: (function(_this) {
           return function(value) {

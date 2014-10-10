@@ -128,12 +128,12 @@
       object
 
     toGeoJSON: ->
-      w = @__eachWidth() * @count # / 100
-      h = @__eachHeight() * @side # / 100
+      w = @__eachWidth() * @count
+      h = @__eachHeight() * @side
       center = @getCenterPoint()
 #      log center
-      x = -w / 2 + center.x # / 100)
-      y = -h / 2 + center.y # / 100)
+      x = -w / 2 + center.x
+      y = -h / 2 + center.y
       x = haika.transformLeftX_px2cm(x)
       y = haika.transformTopY_px2cm(y)
       data =

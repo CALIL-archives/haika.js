@@ -41,6 +41,7 @@ $.extend haika,
       @map = new google.maps.Map(document.getElementById('haika-map'),
         zoom: 20
         maxZoom: 28
+        scaleControl: true,
         center:
           lat: if haika.xyLatitude then haika.xyLatitude else 0
           lng: if haika.xyLongitude then haika.xyLongitude else 0
@@ -59,18 +60,32 @@ $.extend haika,
         new google.maps.Point(0, 0),
         new google.maps.Point(25, 25))
       centerMarker = new google.maps.Marker
-        position: @map.getCenter()
+        position:
+          lat: haika.xyLatitude
+          lng: haika.xyLongitude
         map: @map
         icon: markerImage # アイコン画像を指定
-        draggable: false
-
-      google.maps.event.addListener @map, "center_changed", =>
-        position = @map.getCenter()
-        centerMarker.setPosition position
-        lon = @map.getCenter().lng()
-        lat = @map.getCenter().lat()
+        draggable: true
+      google.maps.event.addListener centerMarker, "dragend", =>
+        log 'centerMarker'
+        position = centerMarker.getPosition()
+        lon = position.lng()
+        lat = position.lat()
         @saveMap(lat, lon)
         @redrawMap()
+
+#      google.maps.event.addListener @map, "center_changed", =>
+#        log 'center_changed'
+#        position = @map.getCenter()
+#        centerMarker.setPosition position
+#        lon = @map.getCenter().lng()
+#        lat = @map.getCenter().lat()
+#        @saveMap(lat, lon)
+#        @redrawMap()
+#
+#      google.maps.event.addListener @map, "zoom_changed", =>
+#        log 'zoom_changed'
+#        @map.setCenter(lat: haika.xyLatitude, lng: haika.xyLongitude)
 
 
       $('#haika-map-search').submit =>
@@ -117,8 +132,8 @@ $.extend haika,
       $('#haika-geojson-scale').slider
           tooltip: 'always'
           step: 1
-          min: 0
-          max: 400
+          min: 70
+          max: 150
           value: haika.xyScaleFactor * 100
           formatter: (value) =>
             haika.xyScaleFactor = parseFloat(value) / 100

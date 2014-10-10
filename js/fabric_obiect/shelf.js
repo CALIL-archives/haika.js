@@ -257,17 +257,17 @@
     },
     toGeoJSON: function() {
       var c, coordinate, coordinates, data, h, new_coordinate, new_coordinates, w, x, y, _i, _j, _len, _len1;
-      w = this.eachWidth * this.count / 100;
-      h = this.eachHeight * this.side / 100;
-      x = -w / 2 + this.left_cm / 100;
-      y = -h / 2 + this.top_cm / 100;
+      w = this.eachWidth * this.count;
+      h = this.eachHeight * this.side;
+      x = -w / 2 + this.left_cm;
+      y = -h / 2 + this.top_cm;
       coordinates = [[[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]];
       new_coordinates = [];
       for (_i = 0, _len = coordinates.length; _i < _len; _i++) {
         c = coordinates[_i];
         for (_j = 0, _len1 = c.length; _j < _len1; _j++) {
           coordinate = c[_j];
-          new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(this.left_cm / 100, this.top_cm / 100), fabric.util.degreesToRadians(this.angle));
+          new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(this.left_cm, this.top_cm), fabric.util.degreesToRadians(this.angle));
           new_coordinates.push([-new_coordinate.x, new_coordinate.y]);
         }
       }

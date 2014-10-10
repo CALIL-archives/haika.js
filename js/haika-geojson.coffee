@@ -103,8 +103,8 @@ $.extend haika,
       if mapCenter
         coordinates = []
         for geometry in object.geometry.coordinates[0]
-          x = geometry[0] * @xyScaleFactor
-          y = geometry[1] * @xyScaleFactor
+          x = geometry[0] * @xyScaleFactor / 100
+          y = geometry[1] * @xyScaleFactor / 100
           # 回転の反映
           new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0),
             fabric.util.degreesToRadians(-@xyAngle))

@@ -74,10 +74,10 @@
       return object
 
     toGeoJSON: ->
-      w = @__width() / 100
-      h = @__height() / 100
-      x = -w / 2 + @left_cm / 100
-      y = -h / 2 + @top_cm / 100
+      w = @__width()
+      h = @__height()
+      x = -w / 2 + @left_cm
+      y = -h / 2 + @top_cm
       coordinates = [
         [
           [x, y],
@@ -92,7 +92,7 @@
         for coordinate in c
           # 回転の反映
           new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]),
-            new fabric.Point(@left_cm / 100, @top_cm / 100), fabric.util.degreesToRadians(@angle));
+            new fabric.Point(@left_cm, @top_cm), fabric.util.degreesToRadians(@angle));
           # fabricとGeoJSONではX軸が逆なので変更する
           new_coordinates.push([-new_coordinate.x, new_coordinate.y])
       data =

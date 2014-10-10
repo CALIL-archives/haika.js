@@ -124,8 +124,8 @@ $.extend(haika, {
         _ref1 = object.geometry.coordinates[0];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           geometry = _ref1[_j];
-          x = geometry[0] * this.xyScaleFactor;
-          y = geometry[1] * this.xyScaleFactor;
+          x = geometry[0] * this.xyScaleFactor / 100;
+          y = geometry[1] * this.xyScaleFactor / 100;
           new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-this.xyAngle));
           coordinate = [mapCenter[0] + new_coordinate.x, mapCenter[1] + new_coordinate.y];
           coordinates.push(coordinate);
