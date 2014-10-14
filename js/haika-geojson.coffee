@@ -24,6 +24,9 @@ $.extend haika,
 # オブジェクトのプロパティの保存
   prepareData: ()->
     log 'prepareData'
+    # 地図のようにキャンバスを使わないケース
+    if not @canvas
+      return
     for object in @canvas.getObjects()
       if object.group?
         object.top_cm = @transformTopY_px2cm(object.top + object.group.top)
@@ -42,9 +45,13 @@ $.extend haika,
 #
   toGeoJSON: ->
     features = []
-    for object in @canvas.getObjects()
-      geojson = object.toGeoJSON()
-      features.push(geojson)
+    if @canvas
+      for object in @canvas.getObjects()
+        geojson = object.toGeoJSON()
+        features.push(geojson)
+    # 地図のようにキャンバスを使わないケース
+    if not @canvas
+      features = @_geojson.features
     data =
       "type": "FeatureCollection"
       "features": features
@@ -63,8 +70,7 @@ $.extend haika,
 # Todo:Mapでのみ使う関数だけど、現状haika直下
 # Todo:この部分をnodeモジュールにしてサーバーサイド使えるようにしたい
 # EPSG:3857(経度緯度)のgeojsonの作成
-  createGeoJSON: ->
-    geojson = @toGeoJSON()
+  createGeoJSON: (geojson)->
     geojson = @rotateGeoJSON(geojson)
     geojson = @mergeGeoJSON(geojson)
     geojson = @scaleGeoJSON(geojson)

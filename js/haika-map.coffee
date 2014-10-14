@@ -14,14 +14,14 @@ $.extend haika,
       if @features.length>0
         for feature in @features
           @map.data.remove feature
-        @features = @map.data.addGeoJson(haika.createGeoJSON())
+        @features = @map.data.addGeoJson(haika.createGeoJSON(haika._geojson))
     saveMap : (lat, lon)->
       $('#haika-canvas-lon').val(lon)
       $('#haika-canvas-lat').val(lat)
       haika.xyLongitude = lon
       haika.xyLatitude = lat
       haika.save()
-    init : ->
+    init : (geojson)->
       @map = new google.maps.Map(document.getElementById('haika-map'),
         zoom: 20
         maxZoom: 28
@@ -36,7 +36,7 @@ $.extend haika,
         strokeWeight: 1
       }
       @map.data.setStyle(featureStyle)
-      @features = @map.data.addGeoJson(haika.createGeoJSON())
+      @features = @map.data.addGeoJson(haika.createGeoJSON(haika._geojson))
 
       # センターマーカー
       markerImage = new google.maps.MarkerImage('img/mapCenterMarker.png',
@@ -95,7 +95,7 @@ $.extend haika,
           $('#haika-canvas-angle').find('.slider-handle').focus()
           haika.xyAngle = parseFloat(value)
           haika.saveDelay()
-          @redrawMap()
+#          @redrawMap()
           return value+'度'
 
       $('#haika-geojson-scale').slider
@@ -108,7 +108,7 @@ $.extend haika,
           $('#haika-geojson-scale').find('.slider-handle').focus()
           haika.xyScaleFactor = parseFloat(value) / 100
           haika.saveDelay()
-          @redrawMap()
+#          @redrawMap()
           return value+'%'
 
       $('.haika-map-close').click ->

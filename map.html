@@ -95,19 +95,13 @@
     <script type="text/javascript" src="js/build/haika.all.js"></script>
     <script type="text/javascript" src="js/haika-map.js"></script>
     <script>
-      $(haika).on('haika:initialized', function() {
-        return haika.openFromApi(2, {
-          success: function() {
-            haika.render();
-            haika.map.init();
-          },
-          error: function(message) {
-            return alert(message);
-          }
-        });
-      });
-      haika.init({
-        divId: 'haika-canvas',
+      haika.openFromApi(2, {
+        success: function() {
+          haika.map.init();
+        },
+        error: function(message) {
+          return alert(message);
+        }
       });
     </script>
   </body>

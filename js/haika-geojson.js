@@ -28,6 +28,9 @@ $.extend(haika, {
   prepareData: function() {
     var count, object, _data, _i, _len, _ref, _results;
     log('prepareData');
+    if (!this.canvas) {
+      return;
+    }
     _ref = this.canvas.getObjects();
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -48,11 +51,16 @@ $.extend(haika, {
   toGeoJSON: function() {
     var data, features, geojson, object, _i, _len, _ref;
     features = [];
-    _ref = this.canvas.getObjects();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      geojson = object.toGeoJSON();
-      features.push(geojson);
+    if (this.canvas) {
+      _ref = this.canvas.getObjects();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
+        geojson = object.toGeoJSON();
+        features.push(geojson);
+      }
+    }
+    if (!this.canvas) {
+      features = this._geojson.features;
     }
     data = {
       "type": "FeatureCollection",
@@ -70,9 +78,7 @@ $.extend(haika, {
     };
     return data;
   },
-  createGeoJSON: function() {
-    var geojson;
-    geojson = this.toGeoJSON();
+  createGeoJSON: function(geojson) {
     geojson = this.rotateGeoJSON(geojson);
     geojson = this.mergeGeoJSON(geojson);
     geojson = this.scaleGeoJSON(geojson);
