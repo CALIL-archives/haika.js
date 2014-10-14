@@ -75,11 +75,12 @@ $.extend(haika, {
     geojson = this.toGeoJSON();
     geojson = this.rotateGeoJSON(geojson);
     geojson = this.mergeGeoJSON(geojson);
+    geojson = this.scaleGeoJSON(geojson);
     geojson = this.transformGeoJSON(geojson);
     return geojson;
   },
-  rotateGeoJSON: function(geojson) {
-    var coordinate, coordinates, features, geometry, new_coordinate, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
+  changeFeatures: function(geojson, func) {
+    var coordinate, coordinates, features, geometry, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
     features = [];
     _ref = geojson.features;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -90,14 +91,21 @@ $.extend(haika, {
         geometry = _ref1[_j];
         x = geometry[0];
         y = geometry[1];
-        new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-geojson.haika.xyAngle));
-        coordinate = [new_coordinate.x, new_coordinate.y];
+        coordinate = func(x, y, geojson);
         coordinates.push(coordinate);
       }
       object.geometry.coordinates = [coordinates];
       features.push(object);
     }
     geojson.features = features;
+    return geojson;
+  },
+  rotateGeoJSON: function(geojson) {
+    geojson = this.changeFeatures(geojson, function(x, y, geojson) {
+      var cordinate;
+      cordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-geojson.haika.xyAngle));
+      return [cordinate.x, cordinate.y];
+    });
     return geojson;
   },
   mergeGeoJSON: function(geojson) {
@@ -166,7 +174,28 @@ $.extend(haika, {
     geojson.features = features;
     return geojson;
   },
-  scaleGeoJSON: function(geojson) {},
+  scaleGeoJSON: function(geojson) {
+    var coordinate, coordinates, features, geometry, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
+    features = [];
+    _ref = geojson.features;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      object = _ref[_i];
+      coordinates = [];
+      _ref1 = object.geometry.coordinates[0];
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        geometry = _ref1[_j];
+        log(geometry);
+        x = geometry[0] * geojson.haika.xyScaleFactor;
+        y = geometry[1] * geojson.haika.xyScaleFactor;
+        coordinate = [x, y];
+        coordinates.push(coordinate);
+      }
+      object.geometry.coordinates = [coordinates];
+      features.push(object);
+    }
+    geojson.features = features;
+    return geojson;
+  },
   transformGeoJSON: function(geojson) {
 
     /* 定数 */
@@ -194,8 +223,7 @@ $.extend(haika, {
         log(geometry);
         ySecond = metreToLatitudeSecond(geometry[1] / 100);
         y = ySecond / 3600;
-        xSecond = metreToLongitudeSecond(geometry[0] / 100, geojson.haika.xyLongitude + y);
-        log(xSecond);
+        xSecond = metreToLongitudeSecond(geometry[0] / 100, geojson.haika.xyLatitude + y);
         x = xSecond / 3600;
         coordinate = [geojson.haika.xyLongitude + x, geojson.haika.xyLatitude + y];
         coordinates.push(coordinate);

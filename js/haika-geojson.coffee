@@ -62,31 +62,37 @@ $.extend haika,
 
 # Todo:Mapでのみ使う関数だけど、現状haika直下
 # Todo:この部分をnodeモジュールにしてサーバーサイド使えるようにしたい
-# EPSG:3857のgeojsonの作成
+# EPSG:3857(経度緯度)のgeojsonの作成
   createGeoJson: ->
     geojson = @toGeoJSON()
     geojson = @rotateGeoJSON(geojson)
     geojson = @mergeGeoJSON(geojson)
-#    geojson = @moveGeoJSON(geojson)
-#    geojson = @translateGeoJSON(geojson)
+    geojson = @scaleGeoJSON(geojson)
     geojson = @transformGeoJSON(geojson)
     return geojson
-# geojsonの回転
-  rotateGeoJSON: (geojson)->
+# 共通処理
+  changeFeatures : (geojson, func)->
     features = []
     for object in geojson.features
       coordinates = []
       for geometry in object.geometry.coordinates[0]
         x = geometry[0]
         y = geometry[1]
-        # 回転の反映
-        new_coordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0),
-          fabric.util.degreesToRadians(-geojson.haika.xyAngle))
-        coordinate = [new_coordinate.x, new_coordinate.y]
+        # 関数処理
+        coordinate = func(x, y, geojson)
         coordinates.push(coordinate)
       object.geometry.coordinates = [coordinates]
       features.push(object)
     geojson.features = features
+    return geojson
+
+# geojsonの回転
+  rotateGeoJSON: (geojson)->
+    geojson = @changeFeatures(geojson,(x, y, geojson)->
+      # 回転の反映
+      cordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0),fabric.util.degreesToRadians(-geojson.haika.xyAngle))
+      return [cordinate.x, cordinate.y]
+    )
     return geojson
 # geojson床オブジェクトのマージ
   mergeGeoJSON: (geojson) ->
@@ -141,7 +147,14 @@ $.extend haika,
     return geojson
 # 倍率
   scaleGeoJSON: (geojson)->
-#
+    geojson = @changeFeatures(geojson,(x, y, geojson)->
+        x = x * geojson.haika.xyScaleFactor
+        y = y * geojson.haika.xyScaleFactor
+      return [x, y]
+    )
+    return geojson
+
+# メートルから経度緯度変換
   transformGeoJSON: (geojson)->
     ### 定数 ###
     PI = Math.PI
@@ -160,22 +173,13 @@ $.extend haika,
     metreToLongitudeSecond = (metre, lat) ->
       metre * ((360*60*60)/(earthCircumference*cos(lat*radian)))
 
-    features = []
-    for object in geojson.features
-      coordinates = []
-      for geometry in object.geometry.coordinates[0]
-        log geometry
-        ySecond = metreToLatitudeSecond(geometry[1]/100)
-        y = ySecond / 3600 # * geojson.haika.xyScaleFactor
-        xSecond = metreToLongitudeSecond(geometry[0]/100, geojson.haika.xyLongitude+y)
-        log xSecond
-        x = xSecond / 3600 # * geojson.haika.xyScaleFactor
-        coordinate = [geojson.haika.xyLongitude+x, geojson.haika.xyLatitude+y]
-        coordinates.push(coordinate)
-      object.geometry.coordinates = [coordinates]
-      features.push(object)
-    geojson.features = features
-
+    geojson = @changeFeatures(geojson,(x, y, geojson)->
+      ySecond = metreToLatitudeSecond(x/100)
+      y = ySecond / 3600
+      xSecond = metreToLongitudeSecond(y/100, geojson.haika.xyLatitude+y)
+      x = xSecond / 3600
+      return [geojson.haika.xyLongitude+x, geojson.haika.xyLatitude+y]
+    )
     return geojson
 
 
