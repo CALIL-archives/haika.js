@@ -294,7 +294,7 @@ body {
 }
 
 #horizontal-scroller {
-  width: calc(100% - 30px - 240px);
+  width: 100%;
   position: absolute;
   bottom: 0;
   border-top: 1px solid #CCCCCC;
@@ -332,7 +332,7 @@ body {
   top: 40px;
   right: 0;
   width: 240px;
-  height: 100%;
+  height: calc(100% - 30px);
   color: #ffffff;
   padding: 10px;
   background-color: #000000;

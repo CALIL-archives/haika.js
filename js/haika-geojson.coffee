@@ -139,44 +139,8 @@ $.extend haika,
       )
     geojson.features = features
     return geojson
-# geojsonの移動
-  moveGeoJSON: (geojson)->
-    features = []
-    for object in geojson.features
-      mapCenter = proj4("EPSG:4326", "EPSG:3857", [geojson.haika.xyLongitude, geojson.haika.xyLatitude])
-      if mapCenter
-        coordinates = []
-        for geometry in object.geometry.coordinates[0]
-          x = geometry[0] * geojson.haika.xyScaleFactor / 100
-          y = geometry[1] * geojson.haika.xyScaleFactor / 100
-          coordinate = [mapCenter[0] + x, mapCenter[1] + y]
-          coordinates.push(coordinate)
-        object.geometry.coordinates = [coordinates]
-      features.push(object)
-    geojson.features = features
-    return geojson
-# 測地系の変換
-  translateGeoJSON: (geojson)->
-    features = []
-    if geojson and geojson.features.length > 0
-      for object in geojson.features
-        coordinates = []
-        for geometry in object.geometry.coordinates[0]
-          x = geometry[0]
-          y = geometry[1]
-          coordinate = proj4('EPSG:3857', 'EPSG:4326', [x, y]);
-          coordinates.push(coordinate)
-          data =
-            "type": "Feature"
-            "geometry":
-              "type": "Polygon",
-              "coordinates": [
-                coordinates
-              ]
-            "properties": object.properties
-          features.push(data)
-    geojson.features = features
-    return geojson
+# 倍率
+  scaleGeoJSON: (geojson)->
 #
   transformGeoJSON: (geojson)->
     ### 定数 ###
@@ -201,10 +165,11 @@ $.extend haika,
       coordinates = []
       for geometry in object.geometry.coordinates[0]
         log geometry
-        xSecond = metreToLatitudeSecond(geometry[0]/100)
-        x = xSecond / 60 * geojson.haika.xyScaleFactor
-        ySecond = metreToLongitudeSecond(geometry[1]/100, xSecond)
-        y = ySecond / 60 * geojson.haika.xyScaleFactor
+        ySecond = metreToLatitudeSecond(geometry[1]/100)
+        y = ySecond / 3600 # * geojson.haika.xyScaleFactor
+        xSecond = metreToLongitudeSecond(geometry[0]/100, geojson.haika.xyLongitude+y)
+        log xSecond
+        x = xSecond / 3600 # * geojson.haika.xyScaleFactor
         coordinate = [geojson.haika.xyLongitude+x, geojson.haika.xyLatitude+y]
         coordinates.push(coordinate)
       object.geometry.coordinates = [coordinates]

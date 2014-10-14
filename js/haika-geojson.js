@@ -166,60 +166,7 @@ $.extend(haika, {
     geojson.features = features;
     return geojson;
   },
-  moveGeoJSON: function(geojson) {
-    var coordinate, coordinates, features, geometry, mapCenter, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
-    features = [];
-    _ref = geojson.features;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      object = _ref[_i];
-      mapCenter = proj4("EPSG:4326", "EPSG:3857", [geojson.haika.xyLongitude, geojson.haika.xyLatitude]);
-      if (mapCenter) {
-        coordinates = [];
-        _ref1 = object.geometry.coordinates[0];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          geometry = _ref1[_j];
-          x = geometry[0] * geojson.haika.xyScaleFactor / 100;
-          y = geometry[1] * geojson.haika.xyScaleFactor / 100;
-          coordinate = [mapCenter[0] + x, mapCenter[1] + y];
-          coordinates.push(coordinate);
-        }
-        object.geometry.coordinates = [coordinates];
-      }
-      features.push(object);
-    }
-    geojson.features = features;
-    return geojson;
-  },
-  translateGeoJSON: function(geojson) {
-    var coordinate, coordinates, data, features, geometry, object, x, y, _i, _j, _len, _len1, _ref, _ref1;
-    features = [];
-    if (geojson && geojson.features.length > 0) {
-      _ref = geojson.features;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        object = _ref[_i];
-        coordinates = [];
-        _ref1 = object.geometry.coordinates[0];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          geometry = _ref1[_j];
-          x = geometry[0];
-          y = geometry[1];
-          coordinate = proj4('EPSG:3857', 'EPSG:4326', [x, y]);
-          coordinates.push(coordinate);
-          data = {
-            "type": "Feature",
-            "geometry": {
-              "type": "Polygon",
-              "coordinates": [coordinates]
-            },
-            "properties": object.properties
-          };
-          features.push(data);
-        }
-      }
-    }
-    geojson.features = features;
-    return geojson;
-  },
+  scaleGeoJSON: function(geojson) {},
   transformGeoJSON: function(geojson) {
 
     /* 定数 */
@@ -245,10 +192,11 @@ $.extend(haika, {
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         geometry = _ref1[_j];
         log(geometry);
-        xSecond = metreToLatitudeSecond(geometry[0] / 100);
-        x = xSecond / 60 * geojson.haika.xyScaleFactor;
-        ySecond = metreToLongitudeSecond(geometry[1] / 100, xSecond);
-        y = ySecond / 60 * geojson.haika.xyScaleFactor;
+        ySecond = metreToLatitudeSecond(geometry[1] / 100);
+        y = ySecond / 3600;
+        xSecond = metreToLongitudeSecond(geometry[0] / 100, geojson.haika.xyLongitude + y);
+        log(xSecond);
+        x = xSecond / 3600;
         coordinate = [geojson.haika.xyLongitude + x, geojson.haika.xyLatitude + y];
         coordinates.push(coordinate);
       }
