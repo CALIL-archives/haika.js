@@ -9,35 +9,19 @@
 $.extend haika, 
   map:
     map : null
-    created : false
     features : []
-    initMap : ->
-      $('.haika-map-setting').click =>
-        if $('.haika-container').css('display')=='block'
-          if not @created
-            @setMap()
-            @created = true
-          $('.haika-container').hide()
-          $(document.body).css('background', '#333333')
-          @redrawMap()
-          $('.haika-map-container').show()
-          $('#haika-map-query').focus()
-        else
-          $(document.body).css('background', '#FFFFFF')
-          $('.haika-container').show()
-          $('.haika-map-container').hide()
     redrawMap : ->
       if @features.length>0
         for feature in @features
           @map.data.remove feature
-        @features = @map.data.addGeoJson(haika.createGeoJson())
+        @features = @map.data.addGeoJson(haika.createGeoJSON())
     saveMap : (lat, lon)->
       $('#haika-canvas-lon').val(lon)
       $('#haika-canvas-lat').val(lat)
       haika.xyLongitude = lon
       haika.xyLatitude = lat
       haika.save()
-    setMap : ->
+    init : ->
       @map = new google.maps.Map(document.getElementById('haika-map'),
         zoom: 20
         maxZoom: 28
@@ -52,13 +36,14 @@ $.extend haika,
         strokeWeight: 1
       }
       @map.data.setStyle(featureStyle)
-      @features = @map.data.addGeoJson(haika.createGeoJson())
+      @features = @map.data.addGeoJson(haika.createGeoJSON())
 
       # センターマーカー
       markerImage = new google.maps.MarkerImage('img/mapCenterMarker.png',
         new google.maps.Size(50, 50),
         new google.maps.Point(0, 0),
         new google.maps.Point(25, 25))
+      log markerImage
       centerMarker = new google.maps.Marker
         position:
           lat: haika.xyLatitude
@@ -74,22 +59,7 @@ $.extend haika,
         @saveMap(lat, lon)
         @redrawMap()
 
-#      google.maps.event.addListener @map, "center_changed", =>
-#        log 'center_changed'
-#        position = @map.getCenter()
-#        centerMarker.setPosition position
-#        lon = @map.getCenter().lng()
-#        lat = @map.getCenter().lat()
-#        @saveMap(lat, lon)
-#        @redrawMap()
-#
-#      google.maps.event.addListener @map, "zoom_changed", =>
-#        log 'zoom_changed'
-#        @map.setCenter(lat: haika.xyLatitude, lng: haika.xyLongitude)
-
-
       $('#haika-map-search').submit =>
-    #    alert $('#map-query').val()
         address = $('#haika-map-query').val()
         geocoder = new google.maps.Geocoder()
         geocoder.geocode
@@ -97,10 +67,6 @@ $.extend haika,
         , (results, status) =>
           if status==google.maps.GeocoderStatus.OK
             @map.setCenter results[0].geometry.location
-      #        marker = new google.maps.Marker(
-      #          map: @map.map
-      #          position: results[0].geometry.location
-      #        )
             @saveMap(results[0].geometry.location.lat(), results[0].geometry.location.lng())
             @redrawMap()
           else
@@ -119,25 +85,31 @@ $.extend haika,
 
       $('#haika-canvas-angle').slider
         tooltip: 'always'
-        step: 1
+        step: 0.1
+        precision: 1
         min: -180
         max: 180
+        natural_arrow_keys: true
         value: haika.xyAngle
         formatter: (value) =>
+          $('#haika-canvas-angle').find('.slider-handle').focus()
           haika.xyAngle = parseFloat(value)
           haika.saveDelay()
           @redrawMap()
           return value+'度'
 
       $('#haika-geojson-scale').slider
-          tooltip: 'always'
-          step: 1
-          min: 70
-          max: 150
-          value: haika.xyScaleFactor * 100
-          formatter: (value) =>
-            haika.xyScaleFactor = parseFloat(value) / 100
-            haika.saveDelay()
-            @redrawMap()
-            return value+'%'
+        tooltip: 'always'
+        step: 1
+        min: 80
+        max: 120
+        value: haika.xyScaleFactor * 100
+        formatter: (value) =>
+          $('#haika-geojson-scale').find('.slider-handle').focus()
+          haika.xyScaleFactor = parseFloat(value) / 100
+          haika.saveDelay()
+          @redrawMap()
+          return value+'%'
 
+      $('.haika-map-close').click ->
+        history.back()

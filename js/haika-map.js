@@ -2,29 +2,7 @@
 $.extend(haika, {
   map: {
     map: null,
-    created: false,
     features: [],
-    initMap: function() {
-      return $('.haika-map-setting').click((function(_this) {
-        return function() {
-          if ($('.haika-container').css('display') === 'block') {
-            if (!_this.created) {
-              _this.setMap();
-              _this.created = true;
-            }
-            $('.haika-container').hide();
-            $(document.body).css('background', '#333333');
-            _this.redrawMap();
-            $('.haika-map-container').show();
-            return $('#haika-map-query').focus();
-          } else {
-            $(document.body).css('background', '#FFFFFF');
-            $('.haika-container').show();
-            return $('.haika-map-container').hide();
-          }
-        };
-      })(this));
-    },
     redrawMap: function() {
       var feature, _i, _len, _ref;
       if (this.features.length > 0) {
@@ -33,7 +11,7 @@ $.extend(haika, {
           feature = _ref[_i];
           this.map.data.remove(feature);
         }
-        return this.features = this.map.data.addGeoJson(haika.createGeoJson());
+        return this.features = this.map.data.addGeoJson(haika.createGeoJSON());
       }
     },
     saveMap: function(lat, lon) {
@@ -43,7 +21,7 @@ $.extend(haika, {
       haika.xyLatitude = lat;
       return haika.save();
     },
-    setMap: function() {
+    init: function() {
       var centerMarker, featureStyle, markerImage;
       this.map = new google.maps.Map(document.getElementById('haika-map'), {
         zoom: 20,
@@ -59,8 +37,9 @@ $.extend(haika, {
         strokeWeight: 1
       };
       this.map.data.setStyle(featureStyle);
-      this.features = this.map.data.addGeoJson(haika.createGeoJson());
+      this.features = this.map.data.addGeoJson(haika.createGeoJSON());
       markerImage = new google.maps.MarkerImage('img/mapCenterMarker.png', new google.maps.Size(50, 50), new google.maps.Point(0, 0), new google.maps.Point(25, 25));
+      log(markerImage);
       centerMarker = new google.maps.Marker({
         position: {
           lat: haika.xyLatitude,
@@ -115,12 +94,15 @@ $.extend(haika, {
       })(this));
       $('#haika-canvas-angle').slider({
         tooltip: 'always',
-        step: 1,
+        step: 0.1,
+        precision: 1,
         min: -180,
         max: 180,
+        natural_arrow_keys: true,
         value: haika.xyAngle,
         formatter: (function(_this) {
           return function(value) {
+            $('#haika-canvas-angle').find('.slider-handle').focus();
             haika.xyAngle = parseFloat(value);
             haika.saveDelay();
             _this.redrawMap();
@@ -128,20 +110,24 @@ $.extend(haika, {
           };
         })(this)
       });
-      return $('#haika-geojson-scale').slider({
+      $('#haika-geojson-scale').slider({
         tooltip: 'always',
         step: 1,
-        min: 70,
-        max: 150,
+        min: 80,
+        max: 120,
         value: haika.xyScaleFactor * 100,
         formatter: (function(_this) {
           return function(value) {
+            $('#haika-geojson-scale').find('.slider-handle').focus();
             haika.xyScaleFactor = parseFloat(value) / 100;
             haika.saveDelay();
             _this.redrawMap();
             return value + '%';
           };
         })(this)
+      });
+      return $('.haika-map-close').click(function() {
+        return history.back();
       });
     }
   }

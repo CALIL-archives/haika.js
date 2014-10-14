@@ -46,7 +46,6 @@ if (haika.readOnly) {
   haika.event.init();
   haika.undo.init();
   initScrollBar();
-  haika.map.initMap();
   haika.colorpicker.init();
 }
 

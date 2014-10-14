@@ -31,7 +31,6 @@ module.exports = (grunt) ->
     "js/haika-event.js"
     "js/haika-undo.js"
 #    "js/haika-editor.js"
-    "js/haika-map.js"
   ]
   #Gruntの設定
   grunt.initConfig

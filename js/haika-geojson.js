@@ -70,7 +70,7 @@ $.extend(haika, {
     };
     return data;
   },
-  createGeoJson: function() {
+  createGeoJSON: function() {
     var geojson;
     geojson = this.toGeoJSON();
     geojson = this.rotateGeoJSON(geojson);
@@ -109,7 +109,7 @@ $.extend(haika, {
     return geojson;
   },
   mergeGeoJSON: function(geojson) {
-    var coordinates, cpr, features, first, first_coordinates, geometry, object, p, path, paths, solution_paths, succeeded, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
+    var coordinates, cpr, features, first, first_coordinates, geometry, object, p, path, paths, solution_paths, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
     if (geojson.features.length <= 0) {
       return geojson;
     }
@@ -123,7 +123,6 @@ $.extend(haika, {
       }
       if (object.properties.type === 'floor') {
         path = [];
-        log(object.geometry.coordinates[0]);
         _ref1 = object.geometry.coordinates[0];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           geometry = _ref1[_j];
@@ -136,15 +135,13 @@ $.extend(haika, {
         paths.push([path]);
       }
     }
-    log(paths);
     cpr = new ClipperLib.Clipper();
     for (_k = 0, _len2 = paths.length; _k < _len2; _k++) {
       path = paths[_k];
       cpr.AddPaths(path, ClipperLib.PolyType.ptSubject, true);
     }
     solution_paths = new ClipperLib.Paths();
-    succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
-    log(solution_paths);
+    cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
     for (_l = 0, _len3 = solution_paths.length; _l < _len3; _l++) {
       path = solution_paths[_l];
       coordinates = [];

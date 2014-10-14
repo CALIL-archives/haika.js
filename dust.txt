@@ -936,3 +936,35 @@ windowSetting =
           features.push(data)
     geojson.features = features
     return geojson
+
+      $('#haika-canvas-angle-slider').slider
+        tooltip: false
+        step: 1
+        min: -180
+        max: 180
+        value: haika.xyAngle
+        formatter: (value) =>
+          $('#haika-canvas-angle').val(value)
+          haika.xyAngle = parseFloat(value)
+          haika.saveDelay()
+          @redrawMap()
+          return value+'度'
+
+#      google.maps.event.addListener @map, "center_changed", =>
+#        log 'center_changed'
+#        position = @map.getCenter()
+#        centerMarker.setPosition position
+#        lon = @map.getCenter().lng()
+#        lat = @map.getCenter().lat()
+#        @saveMap(lat, lon)
+#        @redrawMap()
+#
+#      google.maps.event.addListener @map, "zoom_changed", =>
+#        log 'zoom_changed'
+#        @map.setCenter(lat: haika.xyLatitude, lng: haika.xyLongitude)
+
+
+      #        marker = new google.maps.Marker(
+      #          map: @map.map
+      #          position: results[0].geometry.location
+      #        )

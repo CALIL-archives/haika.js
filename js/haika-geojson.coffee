@@ -63,13 +63,14 @@ $.extend haika,
 # Todo:Mapでのみ使う関数だけど、現状haika直下
 # Todo:この部分をnodeモジュールにしてサーバーサイド使えるようにしたい
 # EPSG:3857(経度緯度)のgeojsonの作成
-  createGeoJson: ->
+  createGeoJSON: ->
     geojson = @toGeoJSON()
     geojson = @rotateGeoJSON(geojson)
     geojson = @mergeGeoJSON(geojson)
     geojson = @scaleGeoJSON(geojson)
     geojson = @transformGeoJSON(geojson)
     return geojson
+
 # 共通処理
   changeFeatures : (geojson, func)->
     features = []
@@ -94,6 +95,7 @@ $.extend haika,
       return [cordinate.x, cordinate.y]
     )
     return geojson
+
 # geojson床オブジェクトのマージ
   mergeGeoJSON: (geojson) ->
     if geojson.features.length<=0
@@ -105,24 +107,21 @@ $.extend haika,
         features.push(object)
       if object.properties.type == 'floor'
         path = []
-        log object.geometry.coordinates[0]
         for geometry in object.geometry.coordinates[0]
-          p = {
+          p =
             X: geometry[0]
             Y: geometry[1]
-          }
           path.push(p)
         paths.push([path])
-    log paths
 
+    # パスの結合
     cpr = new ClipperLib.Clipper()
     for path in paths
       cpr.AddPaths path, ClipperLib.PolyType.ptSubject, true # true means closed path
     solution_paths = new ClipperLib.Paths()
-    succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero,
-      ClipperLib.PolyFillType.pftNonZero)
+    cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero,ClipperLib.PolyFillType.pftNonZero)
 
-    log solution_paths
+    # geojsonにする
     for path in solution_paths
       coordinates = []
       first = true
@@ -132,7 +131,7 @@ $.extend haika,
           first = false
         coordinates.push [p.X, p.Y]
       coordinates.push first_coordinates
-
+      # 先頭に追加
       features.unshift(
         "type": "Feature"
         "geometry":
@@ -145,6 +144,7 @@ $.extend haika,
       )
     geojson.features = features
     return geojson
+
 # 倍率
   scaleGeoJSON: (geojson)->
     geojson = @changeFeatures(geojson,(x, y, geojson)->
@@ -153,6 +153,7 @@ $.extend haika,
       return [x, y]
     )
     return geojson
+
 # メートルから経度緯度変換
   transformGeoJSON: (geojson)->
     ### 定数 ###
