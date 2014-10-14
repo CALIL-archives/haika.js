@@ -78,6 +78,15 @@ $.extend(haika, {
     };
     return data;
   },
+  cloneGeoJSON: function() {
+    var geojson;
+    geojson = $.extend(true, {}, this._geojson);
+    geojson.haika.xyLongitude = this.xyLongitude;
+    geojson.haika.xyLatitude = this.xyLatitude;
+    geojson.haika.xyAngle = this.xyAngle;
+    geojson.haika.xyScaleFactor = this.xyScaleFactor;
+    return geojson;
+  },
   createGeoJSON: function(geojson) {
     geojson = this.rotateGeoJSON(geojson);
     geojson = this.mergeGeoJSON(geojson);
@@ -109,6 +118,7 @@ $.extend(haika, {
   rotateGeoJSON: function(geojson) {
     geojson = this.changeFeatures(geojson, function(x, y, geojson) {
       var cordinate;
+      log(geojson.haika.xyAngle);
       cordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-geojson.haika.xyAngle));
       return [cordinate.x, cordinate.y];
     });

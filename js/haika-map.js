@@ -11,7 +11,7 @@ $.extend(haika, {
           feature = _ref[_i];
           this.map.data.remove(feature);
         }
-        return this.features = this.map.data.addGeoJson(haika.createGeoJSON(haika._geojson));
+        return this.features = this.map.data.addGeoJson(haika.createGeoJSON(haika.cloneGeoJSON()));
       }
     },
     saveMap: function(lat, lon) {
@@ -37,9 +37,8 @@ $.extend(haika, {
         strokeWeight: 1
       };
       this.map.data.setStyle(featureStyle);
-      this.features = this.map.data.addGeoJson(haika.createGeoJSON(haika._geojson));
+      this.features = this.map.data.addGeoJson(haika.createGeoJSON(haika.cloneGeoJSON()));
       markerImage = new google.maps.MarkerImage('img/mapCenterMarker.png', new google.maps.Size(50, 50), new google.maps.Point(0, 0), new google.maps.Point(25, 25));
-      log(markerImage);
       centerMarker = new google.maps.Marker({
         position: {
           lat: haika.xyLatitude,
@@ -105,6 +104,7 @@ $.extend(haika, {
             $('#haika-canvas-angle').find('.slider-handle').focus();
             haika.xyAngle = parseFloat(value);
             haika.saveDelay();
+            _this.redrawMap();
             return value + '度';
           };
         })(this)
@@ -120,6 +120,7 @@ $.extend(haika, {
             $('#haika-geojson-scale').find('.slider-handle').focus();
             haika.xyScaleFactor = parseFloat(value) / 100;
             haika.saveDelay();
+            _this.redrawMap();
             return value + '%';
           };
         })(this)

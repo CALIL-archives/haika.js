@@ -67,6 +67,15 @@ $.extend haika,
     return data
 
 
+  cloneGeoJSON : ->
+    # 参照渡し回避のためにクローンする
+    geojson = $.extend(true, {}, @_geojson)
+    geojson.haika.xyLongitude = @xyLongitude
+    geojson.haika.xyLatitude = @xyLatitude
+    geojson.haika.xyAngle = @xyAngle
+    geojson.haika.xyScaleFactor = @xyScaleFactor
+    return geojson
+
 # Todo:Mapでのみ使う関数だけど、現状haika直下
 # Todo:この部分をnodeモジュールにしてサーバーサイド使えるようにしたい
 # EPSG:3857(経度緯度)のgeojsonの作成
@@ -97,6 +106,7 @@ $.extend haika,
   rotateGeoJSON: (geojson)->
     geojson = @changeFeatures(geojson,(x, y, geojson)->
       # 回転の反映
+      log geojson.haika.xyAngle
       cordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0),fabric.util.degreesToRadians(-geojson.haika.xyAngle))
       return [cordinate.x, cordinate.y]
     )
