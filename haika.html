@@ -17,9 +17,17 @@
             <li><a href="#" class="wall">壁</a></li>
             <li><a href="#" class="floor">床</a></li>
         </ul>
-        <i class="fa fa-copy haika-copy btn btn-default"> copy</i>
-        <i class="fa fa-paste haika-paste btn btn-default"> paste</i>
-        <button class="btn btn-default haika-undo"><i class="fa fa-undo"></i> undo</button>
+        <div style="margin-top: 5px;" class="pull-left">
+          <i class="fa fa-copy haika-copy btn btn-default"> copy</i>
+          <i class="fa fa-paste haika-paste btn btn-default"> paste</i>
+          <i class="fa fa-undobtn haika-undo btn btn-default"> undo</i>
+        </div>
+        <div class="pull-right">
+          <span class="fullscreen btn btn-default">
+            <span class="glyphicon glyphicon-fullscreen"></span>
+            fullscreen
+          </span>
+        </div>
         <div style="display:none;">
             <input type="file" id="file"/>
         </div>
@@ -33,10 +41,6 @@
       <select id="stroke-color">
           <option value="1" data-color="#000000" selected="selected">balck</option>
       </select>
-      <span class="fullscreen btn btn-default">
-        <span class="glyphicon glyphicon-fullscreen"></span>
-        fullscreen
-      </span>
     </div>
     <div class="haika-buttons">
       <span class="haika-button haika-full">
@@ -48,6 +52,18 @@
       <span class="haika-button haika-zoomout">
         <i class="fa fa-minus"></i>
       </span>
+    </div>
+    <div  id="vertical-scroller" class="content-scroller">
+      <div class="dragdealer">
+        <div class="handle gray-bar">
+          <span class="value"><i class="fa fa-bars"></i></span>
+        </div>
+      </div>
+    </div>
+    <div id="horizontal-scroller" class="dragdealer">
+      <div class="handle gray-bar">
+        <span class="value"><i class="fa fa-bars fa-rotate-90"></i></span>
+      </div>
     </div>
     <div class="haika-property-panel">
       <div class="haika-canvas-panel">
@@ -192,13 +208,6 @@
 <!--
 <div class="haika_container">
     <div class="side_container">
-        <div  id="vertical-scroller" class="content-scroller">
-            <div class="dragdealer">
-                <div class="handle gray-bar">
-                    <span class="value"><i class="fa fa-bars"></i></span>
-                </div>
-            </div>
-        </div>
     </div>
     <div class="main-container">
         <div class="row">
@@ -207,13 +216,6 @@
                 <span class="zoom">100%</span>
                 <i class="fa fa-search-minus zoomout btn btn-default"></i>
                 <i class="fa fa-search zoomreset btn btn-default"></i>
-            </div>
-            <div class="col-md-9">
-                <div id="horizontal-scroller" class="dragdealer">
-                    <div class="handle gray-bar">
-                        <span class="value"><i class="fa fa-bars fa-rotate-90"></i></span>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

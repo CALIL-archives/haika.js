@@ -211,7 +211,6 @@ body {
   position: absolute;
   left: 0;
   top:  40px;
-  z-index: 10000000;
   padding: 10px;
   border-right: 1px solid #CCCCCC;
   border-left: 1px solid #CCCCCC;
@@ -243,7 +242,6 @@ body {
   position: absolute;
   left : 20px;
   bottom : 50px;
-  z-index: 0;
   background-clip: padding-box;
   /*height: 64px;*/
   width: 29px;
@@ -275,16 +273,16 @@ body {
 /* scrollbar */
 
 #vertical-scroller {
-  float: left;
-  z-index: 10001;
-}
-#vertical-scroller.dragdealer {
-  border-left: 1px solid #CCCCCC; 
-/*  border-top: 1px solid #CCCCCC; */
-  border-bottom: 1px solid #CCCCCC; 
+  position: absolute;
+  top: 40px;
+  right: 240px;
+  height: calc(100% - 40px - 30px);
 }
 #vertical-scroller .dragdealer {
+  height: 100%;
   width: 30px;
+  border-left: 1px solid #CCCCCC;
+  border-bottom: 1px solid #CCCCCC;
 }
 #vertical-scroller .dragdealer .handle {
   width: 30px;
@@ -296,7 +294,9 @@ body {
 }
 
 #horizontal-scroller {
-  z-index: 10000;
+  width: calc(100% - 30px - 240px);
+  position: absolute;
+  bottom: 0;
   border-top: 1px solid #CCCCCC;
   border-right: 1px solid #CCCCCC;
   border-left: 1px solid #CCCCCC;
