@@ -148,12 +148,11 @@ $.extend haika,
 # 倍率
   scaleGeoJSON: (geojson)->
     geojson = @changeFeatures(geojson,(x, y, geojson)->
-        x = x * geojson.haika.xyScaleFactor
-        y = y * geojson.haika.xyScaleFactor
+      x = x * geojson.haika.xyScaleFactor
+      y = y * geojson.haika.xyScaleFactor
       return [x, y]
     )
     return geojson
-
 # メートルから経度緯度変換
   transformGeoJSON: (geojson)->
     ### 定数 ###
@@ -174,11 +173,11 @@ $.extend haika,
       metre * ((360*60*60)/(earthCircumference*cos(lat*radian)))
 
     geojson = @changeFeatures(geojson,(x, y, geojson)->
-      ySecond = metreToLatitudeSecond(x/100)
-      y = ySecond / 3600
-      xSecond = metreToLongitudeSecond(y/100, geojson.haika.xyLatitude+y)
-      x = xSecond / 3600
-      return [geojson.haika.xyLongitude+x, geojson.haika.xyLatitude+y]
+      ySecond = metreToLatitudeSecond(y/100)
+      yHour = ySecond / 3600
+      xSecond = metreToLongitudeSecond(x/100, geojson.haika.xyLatitude+yHour)
+      xHour = xSecond / 3600
+      return [geojson.haika.xyLongitude+xHour, geojson.haika.xyLatitude+yHour]
     )
     return geojson
 
