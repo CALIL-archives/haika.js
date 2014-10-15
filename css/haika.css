@@ -31,6 +31,8 @@ body {
   width: 1200px;
   margin: 0 auto;
   height: 100%;
+  border-right: 1px solid #CCCCCC;
+  border-left: 1px solid #CCCCCC;
   -moz-user-select: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -45,7 +47,6 @@ body {
   top:  40px;
   padding: 10px;
   border-right: 1px solid #CCCCCC;
-  border-left: 1px solid #CCCCCC;
   border-bottom: 1px solid #CCCCCC;
   background-color: #FFFFFF;
 }
@@ -107,14 +108,12 @@ body {
 #vertical-scroller {
   position: absolute;
   top: 40px;
-  right: 240px;
+  right: 0;
   height: calc(100% - 40px - 30px);
 }
 #vertical-scroller .dragdealer {
   height: 100%;
   width: 30px;
-  border-left: 1px solid #CCCCCC;
-  border-bottom: 1px solid #CCCCCC;
 }
 #vertical-scroller .dragdealer .handle {
   width: 30px;
@@ -126,12 +125,10 @@ body {
 }
 
 #horizontal-scroller {
-  width: 100%;
+  width: calc(100% - 30px);
   position: absolute;
   bottom: 0;
   border-top: 1px solid #CCCCCC;
-  border-right: 1px solid #CCCCCC;
-  border-left: 1px solid #CCCCCC;
 }
 
 .gray-bar {
@@ -162,12 +159,13 @@ body {
 .haika-property-panel {
   position: absolute;
   top: 40px;
-  right: 0;
+  right: 30px;
   width: 240px;
-  height: calc(100% - 30px);
+  height: calc(100% - 40px - 30px);
   color: #ffffff;
   padding: 10px;
   background-color: #000000;
+  opacity: 0.8;
 }
 .haika-property-panel h3 {
   font-size: 16px;

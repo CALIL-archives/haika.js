@@ -66,7 +66,7 @@ $.extend haika,
         version: 1
     return data
 
-
+# geojsonのクローン
   cloneGeoJSON : ->
     # 参照渡し回避のためにクローンする
     geojson = $.extend(true, {}, @toGeoJSON())
