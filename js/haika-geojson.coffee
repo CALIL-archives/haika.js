@@ -69,11 +69,7 @@ $.extend haika,
 
   cloneGeoJSON : ->
     # 参照渡し回避のためにクローンする
-    geojson = $.extend(true, {}, @_geojson)
-    geojson.haika.xyLongitude = @xyLongitude
-    geojson.haika.xyLatitude = @xyLatitude
-    geojson.haika.xyAngle = @xyAngle
-    geojson.haika.xyScaleFactor = @xyScaleFactor
+    geojson = $.extend(true, {}, @toGeoJSON())
     return geojson
 
 # Todo:Mapでのみ使う関数だけど、現状haika直下

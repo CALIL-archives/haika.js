@@ -80,11 +80,7 @@ $.extend(haika, {
   },
   cloneGeoJSON: function() {
     var geojson;
-    geojson = $.extend(true, {}, this._geojson);
-    geojson.haika.xyLongitude = this.xyLongitude;
-    geojson.haika.xyLatitude = this.xyLatitude;
-    geojson.haika.xyAngle = this.xyAngle;
-    geojson.haika.xyScaleFactor = this.xyScaleFactor;
+    geojson = $.extend(true, {}, this.toGeoJSON());
     return geojson;
   },
   createGeoJSON: function(geojson) {
