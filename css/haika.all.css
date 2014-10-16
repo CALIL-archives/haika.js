@@ -299,6 +299,15 @@ body {
   bottom: 0;
   border-top: 1px solid #CCCCCC;
 }
+.scroller-gray-bar {
+  width: 100px;
+  height: 30px;
+  background: #666666;
+  color: #FFF;
+  font-size: 14px;
+  line-height: 30px;
+  text-align: center;
+}
 
 /* editor */
 
