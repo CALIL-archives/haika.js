@@ -142,7 +142,7 @@ module.exports = (grunt) ->
         ,
           context: "/"
           host: "localhost"
-          port: 64358
+          port: 58913
           https: false
           xforward: false
         ]

@@ -109,6 +109,7 @@ body {
   position: absolute;
   top: 40px;
   right: 0;
+  z-index: 1;
   height: calc(100% - 40px - 30px);
 }
 #vertical-scroller .dragdealer {

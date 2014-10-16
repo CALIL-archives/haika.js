@@ -438,7 +438,8 @@ haika = {
       if (o.type === 'floor') {
         floors.push(o);
       }
-      if (o.type === 'shelf' || o.type === 'curvedShelf') {
+      if (o.type === 'shelf' || o.type === 'curved_shelf') {
+        log(shelfs);
         shelfs.push(o);
       }
     }

@@ -16,10 +16,10 @@ $.extend haika,
           top    = point[1]
           bottom = point[1]
           continue
-        left   = Math.min(point[0]*100, left)
-        right  = Math.max(point[0]*100, right)
-        top    = Math.min(point[1]*100, top)
-        bottom = Math.max(point[1]*100, bottom)
+        left   = Math.min(point[0], left)
+        right  = Math.max(point[0], right)
+        top    = Math.min(point[1], top)
+        bottom = Math.max(point[1], bottom)
 
     @centerX = -(right+left)/2
     @centerY = (bottom+top)/2
