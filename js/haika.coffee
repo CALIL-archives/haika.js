@@ -375,7 +375,6 @@ haika =
       if o.type == 'floor'
         floors.push(o)
       if o.type == 'shelf' or o.type == 'curved_shelf'
-        log shelfs
         shelfs.push(o)
     # レイヤーの順序で描く
     for o in floors

@@ -114,7 +114,6 @@ $.extend(haika, {
   rotateGeoJSON: function(geojson) {
     geojson = this.changeFeatures(geojson, function(x, y, geojson) {
       var cordinate;
-      log(geojson.haika.xyAngle);
       cordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0), fabric.util.degreesToRadians(-geojson.haika.xyAngle));
       return [cordinate.x, cordinate.y];
     });

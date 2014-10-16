@@ -63,18 +63,18 @@
     ctx.font = "10px Open Sans";
     if (100 * haika.scaleFactor <= 50) {
       scale = 500;
-      ctx.fillText("5m", 25, height - 16);
+      ctx.fillText("5m", 25, height - 66);
     } else {
       scale = 100;
-      ctx.fillText("1m", 25, height - 16);
+      ctx.fillText("1m", 25, height - 66);
     }
     ctx.lineWidth = 2;
     ctx.strokeStyle = '#666666';
     ctx.beginPath();
-    ctx.moveTo(20, height - 15);
-    ctx.lineTo(20, height - 10);
-    ctx.lineTo(20 + scale * haika.scaleFactor, height - 10);
-    ctx.lineTo(20 + scale * haika.scaleFactor, height - 15);
+    ctx.moveTo(20, height - 65);
+    ctx.lineTo(20, height - 60);
+    ctx.lineTo(20 + scale * haika.scaleFactor, height - 60);
+    ctx.lineTo(20 + scale * haika.scaleFactor, height - 65);
     ctx.stroke();
     ctx.restore();
   };

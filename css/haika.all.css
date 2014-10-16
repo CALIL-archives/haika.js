@@ -242,7 +242,7 @@ body {
 .haika-buttons {
   position: absolute;
   left : 20px;
-  bottom : 50px;
+  bottom : 90px;
   background-clip: padding-box;
   /*height: 64px;*/
   width: 29px;
@@ -298,23 +298,6 @@ body {
   position: absolute;
   bottom: 0;
   border-top: 1px solid #CCCCCC;
-}
-
-.gray-bar {
-  width: 100px;
-  height: 30px;
-  background: #666666;
-  color: #FFF;
-  font-size: 14px;
-  line-height: 30px;
-  text-align: center;
-}
-
-/* zoom */
-.zoom {
-  display: inline-block;
-  width: 3em;
-  text-align: center;
 }
 
 /* editor */
