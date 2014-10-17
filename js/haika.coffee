@@ -212,9 +212,9 @@ haika =
 
 # JSONでオブジェクトを変更する
 # TODO: geojsonベースにする？
-  changeObject: (json)->
+  changeObject: (id, json)->
     # オブエジェクトを検索
-    count = @getCountFindById(this.id)
+    count = @getCountFindById(id)
     object = @objects[count]
     changed = false
     # idが一致すれば保存

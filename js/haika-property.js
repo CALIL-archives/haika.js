@@ -13,15 +13,18 @@ fabric.Object.prototype.createPropetyPanel = function() {
 };
 
 fabric.Object.prototype.savePropetyPanel = function(propertyPanel) {
-  var input, json, _i, _len, _ref;
+  var input, json, value, _i, _len, _ref;
   json = {};
   _ref = propertyPanel.find('input, select, option');
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     input = _ref[_i];
-    json[$(input).attr('prop')] = parseInt($(input).val());
+    value = parseInt($(input).val());
+    if (value) {
+      json[$(input).attr('prop')] = value;
+    }
   }
   log(json);
-  return haika.changeObject(json);
+  return haika.changeObject(this.id, json);
 };
 
 $.extend(haika, {
@@ -32,15 +35,10 @@ $.extend(haika, {
           return _this.setPropetyPanel();
         };
       })(this));
-      haika.canvas.on('selection:cleared', (function(_this) {
+      return haika.canvas.on('selection:cleared', (function(_this) {
         return function(e) {
           $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide();
           return $('.haika-canvas-panel').show();
-        };
-      })(this));
-      return haika.canvas.on('object:modified', (function(_this) {
-        return function(e) {
-          return _this.setPropetyPanel();
         };
       })(this));
     },

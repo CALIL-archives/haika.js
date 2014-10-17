@@ -22,26 +22,31 @@ fabric.Object.prototype.createPropetyPanel = ->
 fabric.Object.prototype.savePropetyPanel = (propertyPanel)->
   json = {}
   for input in propertyPanel.find('input, select, option')
-    json[$(input).attr('prop')] = parseInt($(input).val())
+    value = parseInt($(input).val())
+    if value
+      json[$(input).attr('prop')] = value
   log json
-  haika.changeObject(json)
+  haika.changeObject(this.id, json)
 
 $.extend haika,
 
   property:
+  # 初期設定
     init: ->
       haika.canvas.on 'object:selected', (e)=>
         @setPropetyPanel()
       haika.canvas.on 'selection:cleared', (e)=>
         $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide()
         $('.haika-canvas-panel').show()
-      haika.canvas.on 'object:modified', (e)=>
-        @setPropetyPanel()
+#      haika.canvas.on 'object:modified', (e)=>
+#        @setPropetyPanel()
+  # プロパティパネルの作成
     createPanel : (object)->
       log 'createPanel'
       $('#haika-object-property').html(object.createPropetyPanel())
       $('#haika-object-property').find('input, select, option').change =>
         @savePanel(object)
+  # プロパティパネルの値を保存
     savePanel : (object)->
       log 'savePanel'
       object.savePropetyPanel($('#haika-object-property'))

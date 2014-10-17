@@ -237,9 +237,9 @@ haika = {
     });
     return count;
   },
-  changeObject: function(json) {
+  changeObject: function(id, json) {
     var changed, count, key, object, value;
-    count = this.getCountFindById(this.id);
+    count = this.getCountFindById(id);
     object = this.objects[count];
     changed = false;
     if (object.id === json.id) {
