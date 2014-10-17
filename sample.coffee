@@ -19,25 +19,29 @@ $('.fullscreen').click ->
     $('.haika-container')[0].mozRequestFullScreen()
 
 
-
-$(haika).on 'haika:initialized', ->
-  haika.openFromApi(2,{
-    success: ->
-      haika.render()
-    error: (message) ->
-      alert(message)
-  })
-
-# 初期設定
-haika.init
-  divId : 'haika-canvas'
-#  readOnly: true
-
-if haika.readOnly
-  haika.event.zoom()
+haikaId = location.hash.split('#')[1]
+if not haikaId
+  alert('HaikaIDを指定して下さい')
 else
-  haika.toolbar.init()
-  haika.event.init()
-  haika.undo.init()
-  initScrollBar()
-  haika.colorpicker.init()
+
+  $(haika).on 'haika:initialized', ->
+    haika.openFromApi(haikaId,{
+      success: ->
+        haika.render()
+      error: (message) ->
+        alert(message)
+    })
+
+  # 初期設定
+  haika.init
+    divId : 'haika-canvas'
+  #  readOnly: true
+
+  if haika.readOnly
+    haika.event.zoom()
+  else
+    haika.toolbar.init()
+    haika.event.init()
+    haika.undo.init()
+    initScrollBar()
+    haika.colorpicker.init()
