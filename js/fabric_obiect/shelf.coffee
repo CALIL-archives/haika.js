@@ -286,10 +286,10 @@
         title: "基本情報"
         type: "object"
         properties:
-          label:
-            title: "ラベル"
-            type: "string"
-            default: ""
+#          label:
+#            title: "ラベル"
+#            type: "string"
+#            default: ""
           count:
             title: "連数"
             type: "integer"

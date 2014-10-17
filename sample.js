@@ -106,7 +106,8 @@ if (!haikaId) {
   $(haika).on('haika:initialized', function() {
     return haika.openFromApi(haikaId, {
       success: function() {
-        return haika.render();
+        haika.render();
+        return haika.property.init();
       },
       error: function(message) {
         return alert(message);

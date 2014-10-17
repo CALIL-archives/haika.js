@@ -148,14 +148,8 @@ haika = {
         object = e.target;
         if (object._objects != null) {
           object.lockScalingX = true;
-          object.lockScalingY = true;
+          return object.lockScalingY = true;
         }
-        return _this.setPropetyPanel();
-      };
-    })(this));
-    this.canvas.on('selection:cleared', (function(_this) {
-      return function(e) {
-        return _this.setPropetyPanel();
       };
     })(this));
     this.canvas.on('object:rotating', (function(_this) {
@@ -197,8 +191,7 @@ haika = {
         }
         object.top_cm = _this.transformTopY_px2cm(object.top);
         object.left_cm = _this.transformLeftX_px2cm(object.left);
-        _this.saveDelay();
-        return _this.setPropetyPanel();
+        return _this.saveDelay();
       };
     })(this));
     return $(this).trigger('haika:initialized');
@@ -243,6 +236,25 @@ haika = {
       }
     });
     return count;
+  },
+  changeObject: function(json) {
+    var changed, count, key, object, value;
+    count = this.getCountFindById(this.id);
+    object = this.objects[count];
+    changed = false;
+    if (object.id === json.id) {
+      for (key in json) {
+        value = json[key];
+        if (object[key] !== value) {
+          object[key] = value;
+          changed = true;
+        }
+      }
+      if (changed) {
+        this.render();
+        return this.saveDelay();
+      }
+    }
   },
   addObject: function(object) {
     object.id = this._getLatestId();
@@ -640,24 +652,6 @@ haika = {
       }
       this.saveDelay();
       return this.canvas.renderAll();
-    }
-  },
-  setPropetyPanel: function(object) {
-    var group, objects;
-    $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide();
-    object = this.canvas.getActiveObject();
-    if (object) {
-      $('.haika-object-panel').show();
-      $('#haika-object-id').html(object.id);
-      return;
-    }
-    group = this.canvas.getActiveGroup();
-    if (group) {
-      objects = group._objects;
-      $('#haika-group-count').html(objects.length);
-      return $('.haika-group-panel').show();
-    } else {
-      return $('.haika-canvas-panel').show();
     }
   }
 };

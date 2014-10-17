@@ -30,6 +30,7 @@ module.exports = (grunt) ->
     "js/haika-colorpicker.js"
     "js/haika-event.js"
     "js/haika-undo.js"
+    "js/haika-property.js"
 #    "js/haika-editor.js"
   ]
   #Gruntの設定

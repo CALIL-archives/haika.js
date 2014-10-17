@@ -89,6 +89,7 @@ else
     haika.openFromApi(haikaId,{
       success: ->
         haika.render()
+        haika.property.init()
       error: (message) ->
         alert(message)
     })

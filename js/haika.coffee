@@ -143,12 +143,9 @@ haika =
       if object._objects?
         object.lockScalingX = true
         object.lockScalingY = true
-      @setPropetyPanel()
     )
 #    @canvas.on 'before:selection:cleared', (e)=>
-    @canvas.on 'selection:cleared', (e)=>
-#      @editor_change()
-      @setPropetyPanel()
+#    @canvas.on 'selection:cleared', (e)=>
     @canvas.on 'object:rotating', (e) =>
       object = e.target
       if object.__rotating?
@@ -170,7 +167,6 @@ haika =
       object.top_cm = @transformTopY_px2cm(object.top)
       object.left_cm = @transformLeftX_px2cm(object.left)
       @saveDelay()
-      @setPropetyPanel()
     $(@).trigger('haika:initialized')
 
 
@@ -213,6 +209,23 @@ haika =
       if obj.id == id
         count = i
     return count
+
+# JSONでオブジェクトを変更する
+# TODO: geojsonベースにする？
+  changeObject: (json)->
+    # オブエジェクトを検索
+    count = @getCountFindById(this.id)
+    object = @objects[count]
+    changed = false
+    # idが一致すれば保存
+    if object.id==json.id
+      for key, value of json
+        if object[key]!=value
+          object[key] = value
+          changed = true
+      if changed
+        @render()
+        @saveDelay()
 
 # GeoJSONオブジェクトの追加
   addObject: (object)->
@@ -521,32 +534,3 @@ haika =
       @saveDelay()
       @canvas.renderAll()
 
-# プロパティパネルの設定 (これはUI側のため将来的に移動)
-  setPropetyPanel: (object)->
-#    log 'setPropetyPanel'
-    $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide()
-    object = @canvas.getActiveObject()
-    if object
-      $('.haika-object-panel').show()
-      $('#haika-object-id').html(object.id)
-      return
-#    if object and object.getJsonSchema?
-#      @editor.schema = object.getJsonSchema()
-#      # Set the value
-#      properties = {}
-#      for key of @editor.schema.properties
-#        if @editor.schema.properties[key].type == 'integer'
-#          value = parseInt(object[key]).toFixed(0)
-#        else
-#          value = object[key]
-#        properties[key] = value
-#      @editor.setValue properties
-#      if object.toGeoJSON?
-#        $('#geojson').val(JSON.stringify(object.toGeoJSON(), null, 4))
-    group = @canvas.getActiveGroup()
-    if group
-      objects = group._objects
-      $('#haika-group-count').html(objects.length)
-      $('.haika-group-panel').show()
-    else
-      $('.haika-canvas-panel').show()
