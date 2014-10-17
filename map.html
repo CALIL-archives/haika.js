@@ -95,14 +95,20 @@
     <script type="text/javascript" src="js/build/haika.all.js"></script>
     <script type="text/javascript" src="js/haika-map.js"></script>
     <script>
-      haika.openFromApi(2, {
-        success: function() {
-          haika.map.init();
-        },
-        error: function(message) {
-          return alert(message);
-        }
-      });
+      haikaId = location.hash.split('#')[1]
+      if(!haikaId){
+        alert('HaikaIDを指定して下さい')
+      }else{
+        haika.openFromApi(haikaId, {
+          success: function() {
+            haika.map.init();
+          },
+          error: function(message) {
+            return alert(message);
+          }
+        });
+      }
+
 
 $('.haika-map-close').click(function() {
         return history.back();

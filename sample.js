@@ -15,7 +15,7 @@ $.extend(haika, {
       this.close();
     }
     return $.ajax({
-      url: 'http://lab.calil.jp/haika_store/data/' + id + '.json',
+      url: 'https://app.haika.io/js/haika_json/' + id + '.json',
       type: 'POST',
       cache: false,
       dataType: 'json',

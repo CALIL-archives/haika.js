@@ -15,7 +15,8 @@ $.extend haika,
     if @_dataId
       @close() #開いたデータがある場合は閉じる
     $.ajax
-      url: 'http://lab.calil.jp/haika_store/data/'+id+'.json'
+#      url: 'http://lab.calil.jp/haika_store/data/'+id+'.json'
+      url: 'https://app.haika.io/js/haika_json/'+id+'.json'
       type: 'POST'
       cache: false
       dataType: 'json'

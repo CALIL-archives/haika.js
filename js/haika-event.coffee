@@ -10,7 +10,7 @@ $.extend haika,
     # ボタン類のイベントバインド
     button: ->
       $(".haika-map-setting").click ->
-        location.href = 'map.html'
+        location.href = 'map.html'+location.hash
       $(".haika-remove").click ->
         object = haika.canvas.getActiveObject()
         haika.remove()
