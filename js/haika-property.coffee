@@ -5,7 +5,7 @@
 
 # オブジェクトからプロパティパネルを作る
 fabric.Object.prototype.createPropetyPanel = ->
-  json = this.getJsonSchema()
+  json = this.getJSONSchema()
   PropetyPanelHTML = '<form class="form-horizontal" role="form">'
   PropetyPanelHTML += """<input type="hidden" prop="id" value="#{this.id}">"""
   for prop, val of json.properties
@@ -13,19 +13,32 @@ fabric.Object.prototype.createPropetyPanel = ->
 <div class="form-group">
   <label for="haika-object-#{prop}" class="col-sm-5 control-label">#{prop}</label>
   <div class="col-sm-7">
-    <input type="text" prop="#{prop}" value="#{this[prop]}" class="form-control #{val.type}">
+    <input type="number" prop="#{prop}" value="#{this[prop]}" class="form-control #{val.type}">
   </div>
 </div>
 """
   return PropetyPanelHTML
+# JSONスキーマから該当プロパティを取得する
+fabric.Object.prototype.getJSON = (name)->
+  jsonSchema = this.getJSONSchema()
+  for key, property of  jsonSchema.properties
+    if key==name
+      return property
+  return {}
 # プロパティパネルから保存
 fabric.Object.prototype.savePropetyPanel = (propertyPanel)->
   json = {}
   for input in propertyPanel.find('input, select, option')
+    name  = $(input).attr('prop')
+    jsonSchema  = this.getJSON(name)
     value = parseInt($(input).val())
     if value
-      json[$(input).attr('prop')] = value
-  log json
+      if jsonSchema.minimum? and value<jsonSchema.minimum
+        value = jsonSchema.minimum
+      if jsonSchema.maximum? and value>jsonSchema.maximum
+        value = jsonSchema.maximum
+      json[name] = value
+#    log json
   haika.changeObject(this.id, json)
 
 $.extend haika,

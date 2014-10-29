@@ -89,7 +89,7 @@
 
     toSVG: (reviver) ->
       ""
-    getJsonSchema : () ->
+    getJSONSchema : () ->
       schema =
         title: "基本情報"
         type: "object"

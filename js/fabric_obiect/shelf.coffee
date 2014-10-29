@@ -281,7 +281,7 @@
 
       (if reviver then reviver(markup.join("")) else markup.join(""))
 
-    getJsonSchema : () ->
+    getJSONSchema : () ->
       schema =
         title: "基本情報"
         type: "object"
@@ -295,7 +295,7 @@
             type: "integer"
             default: 3
             minimum: 1
-            maximum: 10
+            maximum: 15
           side:
             type: "integer"
             default: 1

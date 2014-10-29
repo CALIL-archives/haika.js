@@ -171,7 +171,7 @@
 
       (if reviver then reviver(markup.join("")) else markup.join(""))
 
-    getJsonSchema : () ->
+    getJSONSchema : () ->
       schema =
         title: "基本情報"
         type: "object"

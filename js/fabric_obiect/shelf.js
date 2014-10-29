@@ -324,7 +324,7 @@
         return markup.join("");
       }
     },
-    getJsonSchema: function() {
+    getJSONSchema: function() {
       var schema;
       schema = {
         title: "基本情報",
@@ -335,7 +335,7 @@
             type: "integer",
             "default": 3,
             minimum: 1,
-            maximum: 10
+            maximum: 15
           },
           side: {
             type: "integer",

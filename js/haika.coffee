@@ -217,15 +217,13 @@ haika =
     count = @getCountFindById(id)
     object = @objects[count]
     changed = false
-    # idが一致すれば保存
-    if object.id==json.id
-      for key, value of json
-        if object[key]!=value
-          object[key] = value
-          changed = true
-      if changed
-        @render()
-        @saveDelay()
+    for key, value of json
+      if object[key]!=value
+        object[key] = value
+        changed = true
+    if changed
+      @render()
+      @saveDelay()
 
 # GeoJSONオブジェクトの追加
   addObject: (object)->

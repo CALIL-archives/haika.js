@@ -84,7 +84,7 @@
         y = -@height / 2
       markup.push "<rect ", "x=\"", x, "\" y=\"", y, "\" rx=\"", @get("rx"), "\" ry=\"", @get("ry"), "\" width=\"", @width, "\" height=\"", @height, "\" style=\"", @getSvgStyles(), "\" transform=\"", @getSvgTransform(),  "\"/>\n"
       (if reviver then reviver(markup.join("")) else markup.join(""))
-    getJsonSchema : () ->
+    getJSONSchema : () ->
       schema =
         title: "基本情報"
         type: "object"

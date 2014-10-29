@@ -242,18 +242,16 @@ haika = {
     count = this.getCountFindById(id);
     object = this.objects[count];
     changed = false;
-    if (object.id === json.id) {
-      for (key in json) {
-        value = json[key];
-        if (object[key] !== value) {
-          object[key] = value;
-          changed = true;
-        }
+    for (key in json) {
+      value = json[key];
+      if (object[key] !== value) {
+        object[key] = value;
+        changed = true;
       }
-      if (changed) {
-        this.render();
-        return this.saveDelay();
-      }
+    }
+    if (changed) {
+      this.render();
+      return this.saveDelay();
     }
   },
   addObject: function(object) {
