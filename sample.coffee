@@ -49,17 +49,6 @@ $.extend haika,
         $('#haika-canvas-bgopacity').val(data.canvas.bgopacity)
 
 
-$('#haika-import').click ->
-  id = prompt('インポートするデータのIDを6桁で指定して下さい。')
-  if id
-    haika.import(id, {
-      success: ->
-        haika.render()
-        haika.save()
-      error: (message) ->
-        alert(message)
-    })
-
 $(haika).on 'haika:render', ->
     $('#canvas_width').html(haika.canvas.getWidth())
     $('#canvas_height').html(haika.canvas.getHeight())
@@ -72,20 +61,13 @@ $(haika).on 'haika:render', ->
     $('#canvas_angle').val(haika.canvas.angle)
     $('.zoom').html((haika.scaleFactor * 100).toFixed(0) + '%')
 
-$('.fullscreen').click ->
-  if $('.haika-container')[0].requestFullScreen
-    $('.haika-container')[0].requestFullScreen()
-  if $('.haika-container')[0].webkitRequestFullScreen
-    $('.haika-container')[0].webkitRequestFullScreen()
-  if $('.haika-container')[0].mozRequestFullScreen
-    $('.haika-container')[0].mozRequestFullScreen()
 
 
 haikaId = location.hash.split('#')[1]
 if not haikaId
   alert('HaikaIDを指定して下さい')
 else
-
+  haika.html('.haika-container')
   $(haika).on 'haika:initialized', ->
     haika.openFromApi(haikaId,{
       success: ->
@@ -108,3 +90,24 @@ else
     haika.undo.init()
     initScrollBar()
     haika.colorpicker.init()
+
+# フルスクリーンモードボタン
+$('.fullscreen').click ->
+  if $('.haika-container')[0].requestFullScreen
+    $('.haika-container')[0].requestFullScreen()
+  if $('.haika-container')[0].webkitRequestFullScreen
+    $('.haika-container')[0].webkitRequestFullScreen()
+  if $('.haika-container')[0].mozRequestFullScreen
+    $('.haika-container')[0].mozRequestFullScreen()
+
+# データのインポートボタン
+$('#haika-import').click ->
+  id = prompt('インポートするデータのIDを6桁で指定して下さい。')
+  if id
+    haika.import(id, {
+      success: ->
+        haika.render()
+        haika.save()
+      error: (message) ->
+        alert(message)
+    })

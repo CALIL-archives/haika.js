@@ -57,22 +57,6 @@ $.extend(haika, {
   }
 });
 
-$('#haika-import').click(function() {
-  var id;
-  id = prompt('インポートするデータのIDを6桁で指定して下さい。');
-  if (id) {
-    return haika["import"](id, {
-      success: function() {
-        haika.render();
-        return haika.save();
-      },
-      error: function(message) {
-        return alert(message);
-      }
-    });
-  }
-});
-
 $(haika).on('haika:render', function() {
   $('#canvas_width').html(haika.canvas.getWidth());
   $('#canvas_height').html(haika.canvas.getHeight());
@@ -86,23 +70,12 @@ $(haika).on('haika:render', function() {
   return $('.zoom').html((haika.scaleFactor * 100).toFixed(0) + '%');
 });
 
-$('.fullscreen').click(function() {
-  if ($('.haika-container')[0].requestFullScreen) {
-    $('.haika-container')[0].requestFullScreen();
-  }
-  if ($('.haika-container')[0].webkitRequestFullScreen) {
-    $('.haika-container')[0].webkitRequestFullScreen();
-  }
-  if ($('.haika-container')[0].mozRequestFullScreen) {
-    return $('.haika-container')[0].mozRequestFullScreen();
-  }
-});
-
 haikaId = location.hash.split('#')[1];
 
 if (!haikaId) {
   alert('HaikaIDを指定して下さい');
 } else {
+  haika.html('.haika-container');
   $(haika).on('haika:initialized', function() {
     return haika.openFromApi(haikaId, {
       success: function() {
@@ -127,5 +100,33 @@ if (!haikaId) {
     haika.colorpicker.init();
   }
 }
+
+$('.fullscreen').click(function() {
+  if ($('.haika-container')[0].requestFullScreen) {
+    $('.haika-container')[0].requestFullScreen();
+  }
+  if ($('.haika-container')[0].webkitRequestFullScreen) {
+    $('.haika-container')[0].webkitRequestFullScreen();
+  }
+  if ($('.haika-container')[0].mozRequestFullScreen) {
+    return $('.haika-container')[0].mozRequestFullScreen();
+  }
+});
+
+$('#haika-import').click(function() {
+  var id;
+  id = prompt('インポートするデータのIDを6桁で指定して下さい。');
+  if (id) {
+    return haika["import"](id, {
+      success: function() {
+        haika.render();
+        return haika.save();
+      },
+      error: function(message) {
+        return alert(message);
+      }
+    });
+  }
+});
 
 //# sourceMappingURL=sample.js.map
