@@ -1,7 +1,6 @@
 $.extend(haika, {
   event: {
     init: function() {
-      $('.haika-header').show();
       this.shortcut();
       this.button();
       this.zoom();
@@ -230,7 +229,8 @@ $.extend(haika, {
           haika.layer = haika.CONST_LAYERS.SHELF;
         }
         haika.render();
-        return $(this).tab('show');
+        $('.haika-nav li').removeClass('active');
+        return $(this).closest('li').addClass('active');
       });
     }
   }

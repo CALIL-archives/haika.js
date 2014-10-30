@@ -91,6 +91,7 @@ else
     initScrollBar()
     haika.colorpicker.init()
 
+
 # フルスクリーンモードボタン
 $('.fullscreen').click ->
   if $('.haika-container')[0].requestFullScreen

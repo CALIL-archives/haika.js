@@ -3,19 +3,19 @@ $.extend haika,
   html : (container)->
     $(container).html("""
 <div id="haika-canvas">
+  <ul class="haika-nav">
+      <li><a href="#" class="floor">床</a></li>
+      <li><a href="#" class="wall">壁</a></li>
+      <li><a href="#" class="beacon">ビーコン</a></li>
+      <li class="active"><a href="#" class="shelf">本棚</a></li>
+  </ul>
   <div class="haika-header">
-      <ul class="nav nav-tabs haika-nav">
-          <li class="active"><a href="#" class="shelf">本棚</a></li>
-          <li><a href="#" class="beacon">ビーコン</a></li>
-          <li><a href="#" class="wall">壁</a></li>
-          <li><a href="#" class="floor">床</a></li>
-      </ul>
       <div style="margin-top: 5px;" class="pull-left">
         <i class="fa fa-copy haika-copy btn btn-default"> copy</i>
         <i class="fa fa-paste haika-paste btn btn-default"> paste</i>
         <i class="fa fa-undobtn haika-undo btn btn-default"> undo</i>
       </div>
-      <div class="pull-right" style="margin-right: 30px;margin-top: 2px;">
+      <div class="pull-right" style="margin-top: 2px;">
         <span class="fullscreen btn btn-default">
           <span class="glyphicon glyphicon-fullscreen"></span>
           fullscreen

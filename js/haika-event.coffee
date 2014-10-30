@@ -1,7 +1,7 @@
 $.extend haika,
   event:
     init: ->
-      $('.haika-header').show()
+#      $('.haika-header').show()
       @shortcut()
       @button()
       @zoom()
@@ -188,5 +188,6 @@ $.extend haika,
         if tabName=='shelf'
             haika.layer=haika.CONST_LAYERS.SHELF
         haika.render()
-        $(this).tab('show')
+        $('.haika-nav li').removeClass('active')
+        $(this).closest('li').addClass('active')
 

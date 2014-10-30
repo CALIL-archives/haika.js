@@ -86,6 +86,20 @@
                 <small>Haika Cloud Manager</small>
             </a>
         </div>
+
+        <!-- haika用ボタン -->
+        <div style="margin-top: 5px;" class="pull-left">
+          <i class="fa fa-copy haika-copy btn btn-default"> copy</i>
+          <i class="fa fa-paste haika-paste btn btn-default"> paste</i>
+          <i class="fa fa-undobtn haika-undo btn btn-default"> undo</i>
+        </div>
+        <div class="pull-right">
+          <span class="fullscreen btn btn-default">
+            <span class="glyphicon glyphicon-fullscreen"></span>
+            fullscreen
+          </span>
+        </div>
+
         <!-- #section:basics/navbar.dropdown -->
         <div class="navbar-buttons navbar-header pull-right" role="navigation">
             <ul class="nav ace-nav">
@@ -258,8 +272,14 @@
             <div class="row">
                 <div class="col-xs-12">
                   <style>
+                    .sidebar.menu-min+.main-content {
+                      margin-left: 58px;
+                    }
+                    .sidebar+.main-content {
+                      margin-left: 205px;
+                    }
                     .page-content {
-                      padding-bottom: 0;
+                      padding: 0;
                     }
                     .footer {
                       display: none;
@@ -270,13 +290,22 @@
                   <div class="haika-container"></div>
                   <script type="text/javascript" src="js/build/haika.all.js"></script>
                   <script>
-                  $('.haika-container').css('height', $(window).height()-$('.navbar').height()-8)
+                  $('.haika-container').css('height', $(window).height()-$('.navbar').height())
                   $(window).resize(function(){
-                    $('.haika-container').css('height', $(window).height()-$('.navbar').height()-8)
+                    $('.haika-container').css('height', $(window).height()-$('.navbar').height())
                   });
                   </script>
                   <script type="text/javascript" src="sample.js"></script>
-
+                  <script>
+                  // ヘッダーをなくす処理
+                  $('.haika-header').hide()
+                  $('.haika-property-panel, #vertical-scroller').css({
+                    'height': 'calc(100% - 30px)',
+                    'top' : 0
+                  })
+                  $('.haika-toolbar-container').css('top', 0)
+                  $('.haika-nav').css('top', '8px')
+                  </script>
                     <!-- PAGE CONTENT ENDS -->
                 </div>
                 <!-- /.col -->
