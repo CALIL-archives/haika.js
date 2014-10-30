@@ -73,6 +73,7 @@ else
       success: ->
         haika.render()
         haika.property.init()
+        haika.zoomFull()
       error: (message) ->
         alert(message)
     })

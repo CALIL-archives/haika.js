@@ -80,7 +80,8 @@ if (!haikaId) {
     return haika.openFromApi(haikaId, {
       success: function() {
         haika.render();
-        return haika.property.init();
+        haika.property.init();
+        return haika.zoomFull();
       },
       error: function(message) {
         return alert(message);
