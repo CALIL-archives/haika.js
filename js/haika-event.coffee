@@ -9,32 +9,32 @@ $.extend haika,
 
     # ボタン類のイベントバインド
     button: ->
-      $(".haika-map-setting").click ->
+      $('.haika-map-setting').click ->
         location.href = 'map.html'+location.hash
-      $(".haika-remove").click ->
+      $('.haika-remove').click ->
         object = haika.canvas.getActiveObject()
         haika.remove()
         if object
           haika.undo.remove(object)
-      $(".haika-bringtofront").click ->
+      $('.haika-bringtofront').click ->
         haika.bringToFront()
-      $(".haika-duplicate").click ->
+      $('.haika-duplicate').click ->
         haika.duplicate()
-      $(".haika-copy").click ->
+      $('.haika-copy').click ->
         haika.copy()
-      $(".haika-paste").click ->
+      $('.haika-paste').click ->
         haika.paste()
-      $(".haika-align-left").click ->
+      $('.haika-align-left').click ->
         haika.alignLeft()
-      $(".haika-align-center").click ->
+      $('.haika-align-center').click ->
         haika.alignCenter()
-      $(".haika-align-right").click ->
+      $('.haika-align-right').click ->
         haika.alignRight()
-      $(".haika-align-top").click ->
+      $('.haika-align-top').click ->
         haika.alignTop()
-      $(".haika-align-vcenter").click ->
+      $('.haika-align-vcenter').click ->
         haika.alignVcenter()
-      $(".haika-align-bottom").click ->
+      $('.haika-align-bottom').click ->
         haika.alignBottom()
 
       $('#haika-canvas-bgscale').change ->
@@ -129,11 +129,11 @@ $.extend haika,
         cancel_default(e)
         haika.right(e)
         return false
-      $(document).unbind("keydown").bind "keydown", (event) ->
+      $(document).unbind('keydown').bind 'keydown', (event) ->
         doPrevent = false
         if event.keyCode is 8 or event.keyCode is 46
           d = event.srcElement or event.target
-          if (d.tagName.toUpperCase() is "INPUT" and (d.type.toUpperCase() is "TEXT" or d.type.toUpperCase() is "PASSWORD" or d.type.toUpperCase() is "FILE" or d.type.toUpperCase() is "EMAIL")) or d.tagName.toUpperCase() is "TEXTAREA"
+          if (d.tagName.toUpperCase() is 'INPUT' and (d.type.toUpperCase() is 'TEXT' or d.type.toUpperCase() is 'PASSWORD' or d.type.toUpperCase() is 'FILE' or d.type.toUpperCase() is 'EMAIL')) or d.tagName.toUpperCase() is 'TEXTAREA'
             doPrevent = d.readOnly or d.disabled
           else
             doPrevent = true
@@ -144,13 +144,13 @@ $.extend haika,
 
     # ズーム関連
     zoom: ->
-      $(".haika-full").click ->
+      $('.haika-full').click ->
         haika.zoomFull()
-      $(".haika-zoomin").click ->
+      $('.haika-zoomin').click ->
         haika.zoomIn()
-      $(".haika-zoomout").click ->
+      $('.haika-zoomout').click ->
         haika.zoomOut()
-      $(".zoomreset").click ->
+      $('.zoomreset').click ->
         haika.setScale 1
       # マウスホイール
       timeout = false
@@ -168,10 +168,25 @@ $.extend haika,
 
     # 右クリックメニュー
     contextMenu : ->
-      $("#haika-canvas").contextmenu()
-#        target: "#context-menu"
-#        before: (e, context) ->
-#        onItem: (context, e) ->
+      $('#haika-canvas').contextmenu(
+        target: '#haika-context-menu'
+        before: (e, element, target) ->
+          e.preventDefault()
+          # Canvas上か？
+          if e.target.tagName != 'CANVAS'
+            @closemenu()
+            return false
+          # 選択中か？
+          if haika.canvas.getActiveObject()
+            log 'selected'
+            $('#haika-context-menu').find('.haika-select-context-menu').show()
+          else
+            log 'nonselect'
+            $('#haika-context-menu').find('.haika-select-context-menu').hide()
+          return true
+        onItem: (context, e) ->
+          return
+      )
     # その他
     etc: ->
             # 画面遷移時に保存
