@@ -2,7 +2,7 @@
 $.extend haika,
   html : (container)->
     $(container).html("""
-<div id="haika-canvas" data-toggle="context" data-target="#context-menu">
+<div id="haika-canvas" data-toggle="context" data-target="#haika-context-menu">
   <ul class="haika-nav">
       <li><a href="#" class="floor">床</a></li>
       <li><a href="#" class="wall">壁</a></li>
@@ -148,10 +148,17 @@ $.extend haika,
       </div>
   </div>
 </div>
-<div id="context-menu">
+<div id="haika-context-menu">
   <ul class="dropdown-menu" role="menu">
-    <li><a tabindex="-1" href="#">Action</a></li>
-    <li><a tabindex="-1" href="#">Separated link</a></li>
+    <li>
+      <a class="fa fa-copy haika-copy"> copy</a>
+    </li>
+    <li>
+      <a class="fa fa-paste haika-paste"> paste</a>
+    </li>
+    <li>
+      <a class="fa fa-undobtn haika-undo"> undo</a>
+    </li>
   </ul>
 </div>
 """)
