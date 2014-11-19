@@ -16,7 +16,7 @@
   "dependencies": {
     "jquery": "~2.1.1",
     "bootstrap": "~3.1.1",
-    "fabric": "~1.4.11",
+    "fabric": "~1.4.12",
     "jquery.hotkeys": "*",
     "jquery-mousewheel": "~3.1.11",
     "jquery-ui": "~1.10.4",

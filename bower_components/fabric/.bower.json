@@ -1,6 +1,6 @@
 {
   "name": "fabric.js",
-  "version": "1.4.11",
+  "version": "1.4.12",
   "homepage": "http://fabricjs.com",
   "authors": [
     "kangax",
@@ -30,14 +30,13 @@
     "object model"
   ],
   "license": "MIT",
-  "_release": "1.4.11",
+  "_release": "1.4.12",
   "_resolution": {
     "type": "version",
-    "tag": "v1.4.11",
-    "commit": "63c43163caa42f4a9a0d8dd6bacc0395d4f23de2"
+    "tag": "v1.4.12",
+    "commit": "139b77c8a06993c097d6ed597556e68a1370cbb6"
   },
   "_source": "git://github.com/kangax/fabric.js.git",
-  "_target": "~1.4.11",
-  "_originalSource": "fabric",
-  "_direct": true
+  "_target": "~1.4.12",
+  "_originalSource": "fabric"
 }

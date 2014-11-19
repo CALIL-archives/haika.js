@@ -21,6 +21,12 @@ MIT
 
 ## Development
 
+python -m SimpleHTTPServer 9998
+cd haika/
+python manage.py runserver 9999
+grunt server
+grunt esteWatch
+
 ### Dependencies
 - `node.js` >= 11.0
 - `npm install -g grunt-cli`
