@@ -4,6 +4,7 @@ $.extend(haika, {
       this.shortcut();
       this.button();
       this.zoom();
+      this.contextMenu();
       return this.etc();
     },
     button: function() {
@@ -203,6 +204,9 @@ $.extend(haika, {
           }
         };
       })(this));
+    },
+    contextMenu: function() {
+      return $("#haika-canvas").contextmenu();
     },
     etc: function() {
       $(window).on('beforeunload', (function(_this) {

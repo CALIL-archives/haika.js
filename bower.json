@@ -24,7 +24,8 @@
     "Javascript-Undo-Manager": "*",
     "proj4": "~2.1.2",
     "json-editor": "~0.6.17",
-    "seiyria-bootstrap-slider": "~4.0.1"
+    "seiyria-bootstrap-slider": "~4.0.1",
+    "bootstrap-contextmenu": "~0.2.0"
   },
   "devDependencies": {
     "jsonform": "*"

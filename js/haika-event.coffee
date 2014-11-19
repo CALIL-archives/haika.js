@@ -1,10 +1,10 @@
 $.extend haika,
   event:
     init: ->
-#      $('.haika-header').show()
       @shortcut()
       @button()
       @zoom()
+      @contextMenu()
       @etc()
 
     # ボタン類のイベントバインド
@@ -166,6 +166,12 @@ $.extend haika,
         if event.deltaY<0
           haika.zoomOut()
 
+    # 右クリックメニュー
+    contextMenu : ->
+      $("#haika-canvas").contextmenu()
+#        target: "#context-menu"
+#        before: (e, context) ->
+#        onItem: (context, e) ->
     # その他
     etc: ->
             # 画面遷移時に保存
