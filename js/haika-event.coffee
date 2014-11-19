@@ -152,19 +152,6 @@ $.extend haika,
         haika.zoomOut()
       $('.zoomreset').click ->
         haika.setScale 1
-      # マウスホイール
-      timeout = false
-      $('canvas').on 'mousewheel', (event)=>
-        if timeout
-          return
-        else
-          timeout = setTimeout ->
-              timeout = false
-          , 100
-        if event.deltaY>0
-          haika.zoomIn()
-        if event.deltaY<0
-          haika.zoomOut()
 
     # 右クリックメニュー
     contextMenu : ->

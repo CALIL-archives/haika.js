@@ -66,7 +66,7 @@ haika = {
     return this.centerY - (px - this.canvas.getHeight() / 2) / this.scaleFactor;
   },
   init: function(options) {
-    var canvas;
+    var canvas, timeout;
     if (options.divId == null) {
       throw 'CanvasのIDが未定義です';
     } else {
@@ -89,6 +89,9 @@ haika = {
       height: $(this.divId).height(),
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     });
+    canvas.selectionBorderColor = 'black';
+    canvas.selectionLineWidth = 1;
+    canvas.selectionDashArray = [2, 2];
     $(window).resize((function(_this) {
       return function() {
         _this.canvas.setWidth($(_this.divId).width());
@@ -191,6 +194,27 @@ haika = {
         object.top_cm = _this.transformTopY_px2cm(object.top);
         object.left_cm = _this.transformLeftX_px2cm(object.left);
         return _this.saveDelay();
+      };
+    })(this));
+    timeout = false;
+    $(this.canvas.wrapperEl).on("mousewheel", (function(_this) {
+      return function(e) {
+        var delta;
+        delta = e.originalEvent.wheelDelta / 120;
+        log(delta);
+        if (timeout) {
+          return;
+        } else {
+          timeout = setTimeout(function() {
+            return timeout = false;
+          }, 100);
+        }
+        if (delta > 0) {
+          _this.zoomIn();
+        }
+        if (delta < 0) {
+          return _this.zoomOut();
+        }
       };
     })(this));
     return $(this).trigger('haika:initialized');
@@ -437,7 +461,11 @@ haika = {
     _ref = this.objects;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       o = _ref[_i];
-      o.selectable = this.layer === this.INSTALLED_OBJECTS[o.type].layer;
+      if (this.layer === this.INSTALLED_OBJECTS[o.type].layer) {
+        o.selectable = true;
+      } else {
+        o.selectable = false;
+      }
       if (o.type === 'beacon') {
         beacons.push(o);
       }

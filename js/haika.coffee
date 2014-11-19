@@ -90,6 +90,12 @@ haika =
       height: $(@divId).height()
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
+
+#    canvas.selectionColor = 'rgba(0,0,0,0)'
+    canvas.selectionBorderColor = 'black'
+    canvas.selectionLineWidth = 1
+    canvas.selectionDashArray = [2, 2]
+
     $(window).resize =>
       @canvas.setWidth($(@divId).width())
       @canvas.setHeight($(@divId).height())
@@ -167,6 +173,22 @@ haika =
       object.top_cm = @transformTopY_px2cm(object.top)
       object.left_cm = @transformLeftX_px2cm(object.left)
       @saveDelay()
+    # マウスホイール
+    timeout = false
+    $(@canvas.wrapperEl).on "mousewheel", (e) =>
+      delta = e.originalEvent.wheelDelta / 120
+      log delta
+      if timeout
+        return
+      else
+        timeout = setTimeout ->
+            timeout = false
+        , 100
+      if delta>0
+        @zoomIn()
+      if delta<0
+        @zoomOut()
+
     $(@).trigger('haika:initialized')
 
 
@@ -378,7 +400,11 @@ haika =
     # オブジェクトの種類ごとに仕分ける
     for o in @objects
       # 現在のレイヤーなら選択可能に
-      o.selectable = (@layer==@INSTALLED_OBJECTS[o.type].layer)
+
+      if @layer==@INSTALLED_OBJECTS[o.type].layer
+        o.selectable = true
+      else
+        o.selectable = false
       if o.type == 'beacon'
         beacons.push(o)
       if o.type == 'wall'
