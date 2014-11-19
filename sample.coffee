@@ -49,17 +49,14 @@ $.extend haika,
         $('#haika-canvas-bgopacity').val(data.canvas.bgopacity)
 
 
+# プロパティパネルの表示
 $(haika).on 'haika:render', ->
-    $('#canvas_width').html(haika.canvas.getWidth())
-    $('#canvas_height').html(haika.canvas.getHeight())
-    $('#canvas_centerX').html(haika.centerX)
-    $('#canvas_centerY').html(haika.centerY)
-    $('#canvas_bgscale').val(haika.backgroundScaleFactor)
-    $('#canvas_bgopacity').val(haika.backgroundOpacity)
-    $('#canvas_lon').val(haika.xyLongitude)
-    $('#canvas_lat').val(haika.xyLatitude)
-    $('#canvas_angle').val(haika.canvas.angle)
-    $('.zoom').html((haika.scaleFactor * 100).toFixed(0) + '%')
+    $('#haika-canvas-width').html(haika.canvas.getWidth())
+    $('#haika-canvas-height').html(haika.canvas.getHeight())
+    $('#haika-canvas-centerX').html(haika.centerX.toFixed(0))
+    $('#haika-canvas-centerY').html(haika.centerY.toFixed(0))
+    $('#haika-canvas-bgscale').val(haika.backgroundScaleFactor)
+    $('#haika-canvas-bgopacity').val(haika.backgroundOpacity)
 
 
 
