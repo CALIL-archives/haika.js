@@ -4,7 +4,6 @@ module.exports = (grunt) ->
   proxySnippet = require("grunt-connect-proxy/lib/utils").proxyRequest
   jsfiles = [
     "bower_components/fabric/dist/fabric.js"
-    "bower_components/proj4/dist/proj4.js"
     "bower_components/jquery-mousewheel/jquery.mousewheel.min.js"
     "bower_components/dragdealer/dragdealer.min.js"
     "bower_components/Javascript-Undo-Manager/js/undomanager.js"

@@ -13,9 +13,6 @@ The MIT License (MIT)
 │  └─ licenses
 │     └─ 0: MIT
 
-├─ json-editor@0.6.17
-│  └─ licenses: MIT*
-
 
 ├─ Javascript-Undo-Manager@undefined
 │  ├─ licenses: UNKNOWN
@@ -49,17 +46,6 @@ MIT License
 
 Code and documentation copyright 2011-2014 Twitter, Inc. Code released under the MIT license. Docs released under Creative Commons.
 
-├─ proj4@2.1.2
-│  ├─ licenses
-│  │  ├─ 0: MIT
-│  │  └─ 1: MIT
-│  ├─ homepage: https://github.com/proj4js/proj4js
-│  └─ repository: https://github.com/proj4js/proj4js
-
-オリジナルライセンス
-https://github.com/proj4js/proj4js/blob/master/LICENSE.md
-
-ライセンス表示を義務化？
 
 
 └─ seiyria-bootstrap-slider@3.1.0
@@ -105,3 +91,13 @@ Mousetrap is a simple library for handling keyboard shortcuts in Javascript.
 
 It is licensed under the Apache 2.0 license.
 
+
+
+
+Bootstrap Context Menu
+
+https://github.com/sydcanem/bootstrap-contextmenu
+
+License
+
+MIT
