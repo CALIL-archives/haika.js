@@ -185,7 +185,6 @@
 
 	$(document)
 		.on('contextmenu', toggle, function(e) {
-      log('right click')
 			$(this).contextmenu('show', e);
 			e.preventDefault();
 		});

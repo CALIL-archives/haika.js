@@ -5,11 +5,9 @@ module.exports = (grunt) ->
   jsfiles = [
     "bower_components/fabric/dist/fabric.js"
     "bower_components/proj4/dist/proj4.js"
-#    "bower_components/json-editor/dist/jsoneditor.min.js"
     "bower_components/jquery-mousewheel/jquery.mousewheel.min.js"
     "bower_components/dragdealer/dragdealer.min.js"
     "bower_components/Javascript-Undo-Manager/js/undomanager.js"
-#    "bower_components/jquery.finger/dist/jquery.finger.min.js"
     "bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"
     "bower_components/bootstrap-contextmenu/bootstrap-contextmenu.js"
     "vendor/mousetrap.min.js"

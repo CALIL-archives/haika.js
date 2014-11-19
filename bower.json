@@ -17,13 +17,10 @@
     "jquery": "~2.1.1",
     "bootstrap": "~3.1.1",
     "fabric": "~1.4.12",
-    "jquery.hotkeys": "*",
     "jquery-mousewheel": "~3.1.11",
-    "jquery-ui": "~1.10.4",
     "dragdealer": "*",
     "Javascript-Undo-Manager": "*",
     "proj4": "~2.1.2",
-    "json-editor": "~0.6.17",
     "seiyria-bootstrap-slider": "~4.0.1",
     "bootstrap-contextmenu": "~0.2.0"
   },
