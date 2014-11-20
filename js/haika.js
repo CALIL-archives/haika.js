@@ -201,7 +201,6 @@ haika = {
       return function(e) {
         var delta;
         delta = e.originalEvent.wheelDelta / 120;
-        log(delta);
         if (timeout) {
           return;
         } else {

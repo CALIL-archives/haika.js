@@ -177,7 +177,6 @@ haika =
     timeout = false
     $(@canvas.wrapperEl).on "mousewheel", (e) =>
       delta = e.originalEvent.wheelDelta / 120
-      log delta
       if timeout
         return
       else
@@ -400,7 +399,6 @@ haika =
     # オブジェクトの種類ごとに仕分ける
     for o in @objects
       # 現在のレイヤーなら選択可能に
-
       if @layer==@INSTALLED_OBJECTS[o.type].layer
         o.selectable = true
       else
@@ -439,6 +437,7 @@ haika =
     object.top = @transformTopY_cm2px(o.top_cm)
     object.left = @transformLeftX_cm2px(o.left_cm)
     object.selectable = o.selectable
+
     if not object.selectable
       object.opacity = 0.5
     # オブジェクトのロック

@@ -8160,9 +8160,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
         (target && !target.evented)
         ||
         (target &&
-          !target.selectable &&
-          activeObject &&
-          activeObject !== target)
+          !target.selectable)
       );
     },
 
@@ -25413,7 +25411,6 @@ haika = {
       return function(e) {
         var delta;
         delta = e.originalEvent.wheelDelta / 120;
-        log(delta);
         if (timeout) {
           return;
         } else {
