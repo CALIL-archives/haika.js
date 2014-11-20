@@ -8161,7 +8161,9 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
         (target && !target.evented)
         ||
         (target &&
-          !target.selectable)
+          !target.selectable &&
+          activeObject &&
+          activeObject !== target)
       );
     },
 

@@ -8160,7 +8160,9 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
         (target && !target.evented)
         ||
         (target &&
-          !target.selectable)
+          !target.selectable &&
+          activeObject &&
+          activeObject !== target)
       );
     },
 
@@ -25322,6 +25324,12 @@ haika = {
       fabric.Object.prototype.borderColor = '#0000FF';
       fabric.Object.prototype.cornerColor = '#0000FF';
     }
+    fabric.Canvas.prototype._shouldClearSelection = function(e, target) {
+      var activeGroup, activeObject;
+      activeGroup = this.getActiveGroup();
+      activeObject = this.getActiveObject();
+      return !target || (target && activeGroup && !activeGroup.contains(target) && activeGroup !== target && !e.shiftKey) || (target && !target.evented) || (target && !target.selectable);
+    };
     canvas._getActionFromCorner = function(target, corner) {
       var action;
       action = 'drag';

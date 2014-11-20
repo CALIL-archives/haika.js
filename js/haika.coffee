@@ -115,6 +115,11 @@ haika =
       fabric.Object.prototype.borderColor = '#0000FF'
       fabric.Object.prototype.cornerColor = '#0000FF'
 
+    # seletable=falseのオブジェクトの上で範囲選択ができない問題を修正するパッチ
+    fabric.Canvas.prototype._shouldClearSelection = (e, target) ->
+      activeGroup = @getActiveGroup()
+      activeObject = @getActiveObject()
+      return not target or (target and activeGroup and not activeGroup.contains(target) and activeGroup isnt target and not e.shiftKey) or (target and not target.evented) or (target and not target.selectable)
 
     canvas._getActionFromCorner = (target, corner) ->
       action = 'drag'
