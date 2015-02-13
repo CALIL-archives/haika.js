@@ -5,30 +5,30 @@ log = (obj) ->
 
 haika =
   CONST_LAYERS: #現在のステータス [オプション定数]
-    SHELF:  0
+    SHELF: 0
     BEACON: 1
-    WALL:   2
-    FLOOR:  3
+    WALL: 2
+    FLOOR: 3
 
   INSTALLED_OBJECTS: # インストールされたオブジェクト
     'shelf':
-      'layer' : 0
-      'class' : fabric.Shelf
+      'layer': 0
+      'class': fabric.Shelf
     'curved_shelf':
-      'layer' : 0
-      'class' : fabric.curvedShelf
+      'layer': 0
+      'class': fabric.curvedShelf
     'beacon':
-      'layer' : 1
-      'class' : fabric.Beacon
+      'layer': 1
+      'class': fabric.Beacon
     'wall':
-      'layer' : 2
-      'class' : fabric.Wall
+      'layer': 2
+      'class': fabric.Wall
     'floor':
-      'layer' : 3
-      'class' : fabric.Floor
+      'layer': 3
+      'class': fabric.Floor
 
   canvas: null # fabricのCanvasオブジェクト
-  readOnly : false # 表示専用モード オブジェクトの移動・変更、保存を行わない [エディタステータス系変数]
+  readOnly: false # 表示専用モード オブジェクトの移動・変更、保存を行わない [エディタステータス系変数]
   centerX: 0 # 表示位置X(画面の中央が0) [エディタステータス系変数]
   centerY: 0 # 表示位置Y(画面の中央が0) [エディタステータス系変数]
   scaleFactor: 1 #表示倍率 [エディタステータス系変数] (このファイル外で使用禁止)
@@ -75,7 +75,7 @@ haika =
     if not options.divId?
       throw 'CanvasのIDが未定義です'
     else
-      @divId = '#'+options.divId
+      @divId = '#' + options.divId
     if not options.canvasId?
       options.canvasId = 'haika-canvas-area'
     if options.readOnly?
@@ -91,7 +91,7 @@ haika =
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
 
-#    canvas.selectionColor = 'rgba(0,0,0,0)'
+    #    canvas.selectionColor = 'rgba(0,0,0,0)'
     canvas.selectionBorderColor = 'black'
     canvas.selectionLineWidth = 1
     canvas.selectionDashArray = [2, 2]
@@ -111,7 +111,7 @@ haika =
     fabric.Object.prototype.borderOpacityWhenMoving = 0.8
     fabric.Object.prototype.cornerSize = 10
     if @readOnly
-      fabric.Object.prototype.padding     = 5
+      fabric.Object.prototype.padding = 5
       fabric.Object.prototype.borderColor = '#0000FF'
       fabric.Object.prototype.cornerColor = '#0000FF'
 
@@ -155,8 +155,8 @@ haika =
         object.lockScalingX = true
         object.lockScalingY = true
     )
-#    @canvas.on 'before:selection:cleared', (e)=>
-#    @canvas.on 'selection:cleared', (e)=>
+    #    @canvas.on 'before:selection:cleared', (e)=>
+    #    @canvas.on 'selection:cleared', (e)=>
     @canvas.on 'object:rotating', (e) =>
       object = e.target
       if object.__rotating?
@@ -186,11 +186,11 @@ haika =
         return
       else
         timeout = setTimeout ->
-            timeout = false
+          timeout = false
         , 100
-      if delta>0
+      if delta > 0
         @zoomIn()
-      if delta<0
+      if delta < 0
         @zoomOut()
 
     $(@).trigger('haika:initialized')
@@ -244,7 +244,7 @@ haika =
     object = @objects[count]
     changed = false
     for key, value of json
-      if object[key]!=value
+      if object[key] != value
         object[key] = value
         changed = true
     if changed
@@ -255,14 +255,14 @@ haika =
   addObject: (object)->
 #    log object
     object.id = @_getLatestId()
-    object.top_cm  = @centerY
+    object.top_cm = @centerY
     object.left_cm = @centerX
     if not object.fill?
-      object.fill   = @fillColor
+      object.fill = @fillColor
     if not object.stroke?
       object.stroke = @strokeColor
     if not object.angle?
-      object.angle  = 0
+      object.angle = 0
     @objects.push(object)
     $(@).trigger('haika:add')
     @render()
@@ -404,7 +404,7 @@ haika =
     # オブジェクトの種類ごとに仕分ける
     for o in @objects
       # 現在のレイヤーなら選択可能に
-      if @layer==@INSTALLED_OBJECTS[o.type].layer
+      if @layer == @INSTALLED_OBJECTS[o.type].layer
         o.selectable = true
       else
         o.selectable = false
@@ -425,7 +425,7 @@ haika =
       @addObjectToCanvas(o)
     for o in beacons
       @addObjectToCanvas(o)
-    if activeIds.length>0
+    if activeIds.length > 0
       @activeGroup(activeIds)
     @canvas.renderAll()
     @canvas.renderOnAddRemove = true
@@ -436,7 +436,7 @@ haika =
   addObjectToCanvas: (o)->
     klass = @getClass(o.type)
     object = new klass(o)
-#    log object.toObject()
+    #    log object.toObject()
     object.width = object.__width()
     object.height = object.__height()
     object.top = @transformTopY_cm2px(o.top_cm)
@@ -447,16 +447,16 @@ haika =
       object.opacity = 0.5
     # オブジェクトのロック
     if @readOnly
-      object.lockMovementX    = true
-      object.lockMovementY    = true
-      object.lockRotation     = true
-      object.lockScalingX     = true
-      object.lockScalingY     = true
-      object.lockUniScaling   = true
-      object.hasControls      = false
-      object.hoverCursor      = 'pointer'
-#      object.hasRotatingPoint = false
-#      object.hasBorders = false
+      object.lockMovementX = true
+      object.lockMovementY = true
+      object.lockRotation = true
+      object.lockScalingX = true
+      object.lockScalingY = true
+      object.lockUniScaling = true
+      object.hasControls = false
+      object.hoverCursor = 'pointer'
+    #      object.hasRotatingPoint = false
+    #      object.hasBorders = false
     #schema = object.constructor.prototype.getJsonSchema()
     #for key of schema.properties
     #  object[key] = o[key]
