@@ -3,7 +3,7 @@
 module.exports = function(grunt) {
   var jsfiles, proxySnippet;
   proxySnippet = require("grunt-connect-proxy/lib/utils").proxyRequest;
-  jsfiles = ["bower_components/fabric/dist/fabric.js", "bower_components/jquery-mousewheel/jquery.mousewheel.min.js", "bower_components/dragdealer/dragdealer.min.js", "bower_components/Javascript-Undo-Manager/js/undomanager.js", "bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js", "bower_components/bootstrap-contextmenu/bootstrap-contextmenu.js", "vendor/mousetrap.min.js", "vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js", "vendor/clipper.js", "js/fabric_obiect/aligning_guidelines.js", "js/fabric_obiect/shelf.js", "js/fabric_obiect/curvedShelf.js", "js/fabric_obiect/beacon.js", "js/fabric_obiect/wall.js", "js/fabric_obiect/floor.js", "js/fabric_obiect/grid.js", "js/haika.js", "js/haika-io.js", "js/haika-geojson.js", "js/haika-zoom.js", "js/haika-scrollbar.js", "js/haika-toolbar.js", "js/haika-colorpicker.js", "js/haika-event.js", "js/haika-undo.js", "js/haika-property.js", "js/haika-html.js"];
+  jsfiles = ["bower_components/fabric/dist/fabric.js", "bower_components/Javascript-Undo-Manager/js/undomanager.js", "bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js", "bower_components/bootstrap-contextmenu/bootstrap-contextmenu.js", "vendor/mousetrap.min.js", "vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js", "vendor/clipper.js", "vendor/dragdealer/dragdealer.min.js", "js/fabric_obiect/aligning_guidelines.js", "js/fabric_obiect/shelf.js", "js/fabric_obiect/curvedShelf.js", "js/fabric_obiect/beacon.js", "js/fabric_obiect/wall.js", "js/fabric_obiect/floor.js", "js/fabric_obiect/grid.js", "js/haika.js", "js/haika-io.js", "js/haika-geojson.js", "js/haika-zoom.js", "js/haika-scrollbar.js", "js/haika-toolbar.js", "js/haika-colorpicker.js", "js/haika-event.js", "js/haika-undo.js", "js/haika-property.js", "js/haika-html.js"];
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
     bower: {
@@ -53,7 +53,7 @@ module.exports = function(grunt) {
         nonull: true
       },
       css: {
-        src: ["bower_components/dragdealer/dragdealer.css", "vendor/bootstrap-colorselector-0.2.0/css/bootstrap-colorselector.css", "bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css", "css/haika.css"],
+        src: ["vendor/dragdealer/dragdealer.css", "vendor/bootstrap-colorselector-0.2.0/css/bootstrap-colorselector.css", "bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css", "css/haika.css"],
         dest: "css/haika.all.css",
         nonull: true
       }

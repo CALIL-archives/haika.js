@@ -4,13 +4,13 @@ module.exports = (grunt) ->
   proxySnippet = require("grunt-connect-proxy/lib/utils").proxyRequest
   jsfiles = [
     "bower_components/fabric/dist/fabric.js"
-    "bower_components/dragdealer/dragdealer.min.js"
     "bower_components/Javascript-Undo-Manager/js/undomanager.js"
     "bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"
     "bower_components/bootstrap-contextmenu/bootstrap-contextmenu.js"
     "vendor/mousetrap.min.js"
     "vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js"
     "vendor/clipper.js"
+    "vendor/dragdealer/dragdealer.min.js"
     "js/fabric_obiect/aligning_guidelines.js"
     "js/fabric_obiect/shelf.js"
     "js/fabric_obiect/curvedShelf.js"
@@ -73,7 +73,7 @@ module.exports = (grunt) ->
 
       css:
         src: [
-          "bower_components/dragdealer/dragdealer.css"
+          "vendor/dragdealer/dragdealer.css"
           "vendor/bootstrap-colorselector-0.2.0/css/bootstrap-colorselector.css"
           "bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css"
           "css/haika.css"
