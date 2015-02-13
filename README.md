@@ -36,6 +36,7 @@ grunt esteWatch
 ```
 $ git clone git@github.com:CALIL/haika.js.git
 $ cd haika
+$ bower install
 $ npm install
 $ grunt
 ```
