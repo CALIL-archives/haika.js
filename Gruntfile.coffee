@@ -1,7 +1,5 @@
-#Gruntfile.coffee
 "use strict"
 module.exports = (grunt) ->
-  proxySnippet = require("grunt-connect-proxy/lib/utils").proxyRequest
   jsfiles = [
     "bower_components/fabric/dist/fabric.js"
     "bower_components/Javascript-Undo-Manager/js/undomanager.js"
@@ -30,7 +28,6 @@ module.exports = (grunt) ->
     "js/haika-property.js"
     "js/haika-html.js"
   ]
-  #Gruntの設定
   grunt.initConfig
     pkg: grunt.file.readJSON("package.json")
     bower:
@@ -42,25 +39,25 @@ module.exports = (grunt) ->
           cleanBowerDir: false
     coffee:
       compile:
-          options:
-            sourceMap: true
-            bare: true
-          expand: true,
-          flatten: true,
-          cwd: 'js/',
-          src: ['*.coffee'],
-          dest: 'js/',
-          ext: '.js'
-       fabric_object:
-          options:
-            sourceMap: true
-            bare: true
-          expand: true,
-          flatten: true,
-          cwd: 'js/fabric_object/',
-          src: ['*.coffee'],
-          dest: 'js/fabric_object/',
-          ext: '.js'
+        options:
+          sourceMap: true
+          bare: true
+        expand: true,
+        flatten: true,
+        cwd: 'js/',
+        src: ['*.coffee'],
+        dest: 'js/',
+        ext: '.js'
+    fabric_object:
+      options:
+        sourceMap: true
+        bare: true
+      expand: true,
+      flatten: true,
+      cwd: 'js/fabric_object/',
+      src: ['*.coffee'],
+      dest: 'js/fabric_object/',
+      ext: '.js'
     concat:
       js:
         options:
@@ -97,79 +94,10 @@ module.exports = (grunt) ->
         files:
           "js/build/haika.all.min.js": ["js/build/haika.all.js"]
 
-#    watch:
-#      devel:
-#        files: ['js/*.coffee', 'css/*.css']
-#        tasks: ["coffee", "concat:js", "concat:css"]
-#      options:
-#        nospawn: false
-#        livereload: true
-    esteWatch:
-      options:
-          dirs: ['.', 'js/**/', 'css/']
-          livereload:
-            enabled: true
-            extensions: ['js', 'html', 'css']
-            port: 35729
-      # 更新されたファイルだけコンパイルするように指定する
-      'coffee': (path) ->
-          ['newer:coffee','concat:js','notify:complete']
-      'css': (path) ->
-          ['newer:concat:css','notify:complete']
-    notify:
-      complete:
-        options:
-          title: 'Compile&Build'
-          message: 'Complete'
-    connect:
-      server:
-        options:
-          hostname: "localhost"
-          port: 9000
-          keepalive: true
-          open: false
-          middleware: (connect, options) ->
-            [proxySnippet]
-
-        proxies: [
-          context: "/api"
-          host: "localhost"
-          port: 9999
-          https: false
-          xforward: false
-        ,
-          context: "/"
-          host: "localhost"
-          port: 9998
-          https: false
-          xforward: false
-        ]
-    open:
-      delayed:
-        path: "http://localhost:9000/haika.html"
-        app: "Google Chrome"
-        options:
-          openOn: "serverListening"
-  # loadNpmTasks
-  require('load-grunt-tasks')(grunt);
-  # # package.jsonから読み込んでるもの
-  # grunt.loadNpmTasks "grunt-contrib-jshint"
-  # grunt.loadNpmTasks "grunt-contrib-uglify"
-  # grunt.loadNpmTasks "grunt-contrib-concat"
-  # grunt.loadNpmTasks "grunt-contrib-copy"
-  # grunt.loadNpmTasks "grunt-bower-task"
-#  grunt.renameTask('esteWatch', 'watch');
+  require('load-grunt-tasks')(grunt)
   grunt.registerTask "default", [
     "bower"
     "coffee"
     "concat"
     "uglify"
-    'notify:complete'
   ]
-  grunt.registerTask "server", (target) ->
-    grunt.task.run [
-      "configureProxies:server"
-      'connect:server'
-      "open"
-      "esteWatch"
-    ]

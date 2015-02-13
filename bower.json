@@ -1,17 +1,16 @@
 {
-  "name": "app",
-  "version": "0.0.1",
+  "name": "haika.js",
+  "version": "0.1.0",
   "authors": [
     "CALIL Inc. <contact@calil.jp>"
   ],
   "license": "MIT",
   "private": true,
   "ignore": [
-    "**/.*",
+    "*/.*",
     "node_modules",
     "bower_components",
-    "test",
-    "tests"
+    "test"
   ],
   "dependencies": {
     "jquery": "~2.1.3",
