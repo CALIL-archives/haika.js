@@ -6,4 +6,5 @@ data/
 node_modules/
 bower_components/
 js/*.js
+js/fabric_object/*.js
 
