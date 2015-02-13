@@ -1,6 +1,6 @@
 "use strict"
 module.exports = (grunt) ->
-  jsfiles = [
+  js_files = [
     "bower_components/fabric/dist/fabric.js"
     "bower_components/Javascript-Undo-Manager/js/undomanager.js"
     "bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"
@@ -9,24 +9,24 @@ module.exports = (grunt) ->
     "vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js"
     "vendor/clipper.js"
     "vendor/dragdealer/dragdealer.min.js"
-    "js/fabric_object/aligning_guidelines.js"
-    "js/fabric_object/shelf.js"
-    "js/fabric_object/curvedShelf.js"
-    "js/fabric_object/beacon.js"
-    "js/fabric_object/wall.js"
-    "js/fabric_object/floor.js"
-    "js/fabric_object/grid.js"
-    "js/haika.js"
-    "js/haika-io.js"
-    "js/haika-geojson.js"
-    "js/haika-zoom.js"
-    "js/haika-scrollbar.js"
-    "js/haika-toolbar.js"
-    "js/haika-colorpicker.js"
-    "js/haika-event.js"
-    "js/haika-undo.js"
-    "js/haika-property.js"
-    "js/haika-html.js"
+    "src/fabric_object/aligning_guidelines.js"
+    "src/fabric_object/shelf.js"
+    "src/fabric_object/curvedShelf.js"
+    "src/fabric_object/beacon.js"
+    "src/fabric_object/wall.js"
+    "src/fabric_object/floor.js"
+    "src/fabric_object/grid.js"
+    "src/haika.js"
+    "src/haika-io.js"
+    "src/haika-geojson.js"
+    "src/haika-zoom.js"
+    "src/haika-scrollbar.js"
+    "src/haika-toolbar.js"
+    "src/haika-colorpicker.js"
+    "src/haika-event.js"
+    "src/haika-undo.js"
+    "src/haika-property.js"
+    "src/haika-html.js"
   ]
   grunt.initConfig
     pkg: grunt.file.readJSON("package.json")
@@ -63,11 +63,9 @@ module.exports = (grunt) ->
         options:
           stripBanners: true
           separator: ";"
-
-        src: jsfiles
-        dest: "js/build/haika.all.js"
+        src: js_files
+        dest: "dist/haika.all.js"
         nonull: true
-
       css:
         src: [
           "vendor/dragdealer/dragdealer.css"
@@ -89,11 +87,9 @@ module.exports = (grunt) ->
     uglify:
       options:
         banner: "/*! <%= pkg.name %> <%= grunt.template.today(\"dd-mm-yyyy\") %> */\n"
-
       dist:
         files:
-          "js/build/haika.all.min.js": ["js/build/haika.all.js"]
-
+          "dist/haika.all.min.js": ["dist/haika.all.js"]
   require('load-grunt-tasks')(grunt)
   grunt.registerTask "default", [
     "bower"
