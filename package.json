@@ -32,7 +32,6 @@
     "grunt-contrib-uglify": "^0.4.1",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-este-watch": "^0.1.18",
-    "grunt-license-saver": "0.0.0",
     "grunt-newer": "^0.7.0",
     "grunt-notify": "^0.3.1",
     "grunt-open": "^0.2.3",

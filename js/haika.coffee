@@ -2,6 +2,8 @@ log = (obj) ->
   try
     console.log obj
 
+haika_utils = global.haika_utils or (global.haika_utils = {})
+haika = global.haika or (global.haika = {})
 
 haika =
   CONST_LAYERS: #現在のステータス [オプション定数]
@@ -143,7 +145,10 @@ haika =
         @backgroundImage.opacity = @parentHaika.backgroundOpacity
         @backgroundImage.render ctx
       ctx.mozImageSmoothingEnabled = true
-      fabric.drawGridLines(ctx)
+      haika_utils.drawGridLines(ctx)
+
+    canvas._renderOverlay = (ctx) ->
+      haika_utils.drawScale(ctx)
 
     if not @readOnly
       initAligningGuidelines(canvas)

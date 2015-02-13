@@ -25737,14 +25737,10 @@ initAligningGuidelines = function(canvas) {
 //# sourceMappingURL=floor.js.map
 ;(function(global) {
   "use strict";
-  var fabric;
-  fabric = global.fabric || (global.fabric = {});
-  if (fabric.drawGridLines) {
-    console.warn("fabric.drawGridLines is already defined");
-    return;
-  }
-  fabric.drawGridLines = function(ctx) {
-    var gapX, gapY, height, i, scale, size, sx, sy, width;
+  var haika_utils;
+  haika_utils = global.haika_utils || (global.haika_utils = {});
+  haika_utils.drawGridLines = function(ctx) {
+    var gapX, gapY, height, i, size, sx, sy, width;
     width = ctx.canvas.width;
     height = ctx.canvas.height;
     ctx.save();
@@ -25796,21 +25792,26 @@ initAligningGuidelines = function(canvas) {
     ctx.moveTo(0, Math.floor(sy));
     ctx.lineTo(width, Math.floor(sy));
     ctx.stroke();
+  };
+  haika_utils.drawScale = function(ctx) {
+    var height, posy, scale;
+    height = ctx.canvas.height;
+    posy = 20;
     ctx.font = "10px Open Sans";
     if (100 * haika.scaleFactor <= 50) {
       scale = 500;
-      ctx.fillText("5m", 25, height - 66);
+      ctx.fillText("5m", 25, height - 66 + posy);
     } else {
       scale = 100;
-      ctx.fillText("1m", 25, height - 66);
+      ctx.fillText("1m", 25, height - 66 + posy);
     }
     ctx.lineWidth = 2;
     ctx.strokeStyle = '#666666';
     ctx.beginPath();
-    ctx.moveTo(20, height - 65);
-    ctx.lineTo(20, height - 60);
-    ctx.lineTo(20 + scale * haika.scaleFactor, height - 60);
-    ctx.lineTo(20 + scale * haika.scaleFactor, height - 65);
+    ctx.moveTo(20, height - 65 + posy);
+    ctx.lineTo(20, height - 60 + posy);
+    ctx.lineTo(20 + scale * haika.scaleFactor, height - 60 + posy);
+    ctx.lineTo(20 + scale * haika.scaleFactor, height - 65 + posy);
     ctx.stroke();
     ctx.restore();
   };
@@ -25962,7 +25963,10 @@ haika = {
         this.backgroundImage.render(ctx);
       }
       ctx.mozImageSmoothingEnabled = true;
-      return fabric.drawGridLines(ctx);
+      return haika_utils.drawGridLines(ctx);
+    };
+    canvas._renderOverlay = function(ctx) {
+      return haika_utils.drawScale(ctx);
     };
     if (!this.readOnly) {
       initAligningGuidelines(canvas);
