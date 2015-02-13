@@ -11,13 +11,13 @@ module.exports = (grunt) ->
     "vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js"
     "vendor/clipper.js"
     "vendor/dragdealer/dragdealer.min.js"
-    "js/fabric_obiect/aligning_guidelines.js"
-    "js/fabric_obiect/shelf.js"
-    "js/fabric_obiect/curvedShelf.js"
-    "js/fabric_obiect/beacon.js"
-    "js/fabric_obiect/wall.js"
-    "js/fabric_obiect/floor.js"
-    "js/fabric_obiect/grid.js"
+    "js/fabric_object/aligning_guidelines.js"
+    "js/fabric_object/shelf.js"
+    "js/fabric_object/curvedShelf.js"
+    "js/fabric_object/beacon.js"
+    "js/fabric_object/wall.js"
+    "js/fabric_object/floor.js"
+    "js/fabric_object/grid.js"
     "js/haika.js"
     "js/haika-io.js"
     "js/haika-geojson.js"
@@ -57,9 +57,9 @@ module.exports = (grunt) ->
             bare: true
           expand: true,
           flatten: true,
-          cwd: 'js/fabric_obiect/',
+          cwd: 'js/fabric_object/',
           src: ['*.coffee'],
-          dest: 'js/fabric_obiect/',
+          dest: 'js/fabric_object/',
           ext: '.js'
     concat:
       js:
