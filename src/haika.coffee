@@ -52,6 +52,13 @@ haika =
   clipboard: []
 
 # 座標変換関数
+  cm2px_x: (cm)->
+    return @canvas.getWidth() / 2 + (@centerX - cm) * @scaleFactor
+  cm2px_y: (cm)->
+    return @canvas.getHeight() / 2 + (@centerY - cm) * @scaleFactor
+  cm2px: (cm)->
+    return cm * @scaleFactor
+
   transformLeftX_cm2px: (cm)->
     return @canvas.getWidth() / 2 + (@centerX - cm) * @scaleFactor
   transformTopY_cm2px: (cm)->
@@ -132,25 +139,16 @@ haika =
       return action
 
     #背景にグリッドラインを追加するためにオーバーライド
-    canvas._renderBackground = (ctx) ->
-      ctx.mozImageSmoothingEnabled = false
-      if @backgroundImage
-        @backgroundImage.left = Math.floor(@parentHaika.transformLeftX_cm2px(@backgroundImage._originalElement.width / 2 * @parentHaika.backgroundScaleFactor))
-        @backgroundImage.top = Math.floor(@parentHaika.transformTopY_cm2px(@backgroundImage._originalElement.height / 2 * @parentHaika.backgroundScaleFactor))
-        @backgroundImage.width = Math.floor(@backgroundImage._originalElement.width * @parentHaika.backgroundScaleFactor * @parentHaika.scaleFactor)
-        @backgroundImage.height = Math.floor(@backgroundImage._originalElement.height * @parentHaika.backgroundScaleFactor * @parentHaika.scaleFactor)
-        @backgroundImage.opacity = @parentHaika.backgroundOpacity
-        @backgroundImage.render ctx
-      ctx.mozImageSmoothingEnabled = true
-      haika_utils.drawGridLines(ctx)
+    canvas._renderBackground = (ctx) =>
+      haika_utils.drawBackground(@,ctx)
+      haika_utils.drawGridLines(@,ctx)
 
-    canvas._renderOverlay = (ctx) ->
-      haika_utils.drawScale(ctx)
+    canvas._renderOverlay = (ctx) =>
+      haika_utils.drawScale(@,ctx)
 
     if not @readOnly
       initAligningGuidelines(canvas)
     @canvas = canvas
-    @canvas.parentHaika = @
     @canvas.on('object:selected', (e)=>
       object = e.target
       if object._objects?

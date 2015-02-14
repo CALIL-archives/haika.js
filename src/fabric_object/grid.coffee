@@ -4,7 +4,7 @@
 
   # 格子線を描画
   #
-  haika_utils.drawGridLines = (ctx) ->
+  haika_utils.drawGridLines = (haika, ctx) ->
     ctx.save()
     ctx.opacity = 1
     width = ctx.canvas.width
@@ -12,9 +12,9 @@
 
     # 1mごとの格子線
     ctx.strokeStyle = '#cccccc'
-    size = 100 * haika.scaleFactor
-    gapX = (haika.transformLeftX_cm2px(0) * 1000 % Math.floor(size * 1000)) / 1000
-    gapY = (haika.transformTopY_cm2px(0) * 1000 % Math.floor(size * 1000)) / 1000
+    size = haika.cm2px(100)
+    gapX = (haika.cm2px_x(0) * 1000 % Math.floor(size * 1000)) / 1000
+    gapY = (haika.cm2px_y(0) * 1000 % Math.floor(size * 1000)) / 1000
     ctx.beginPath()
     ctx.lineWidth = Math.max(Math.min(haika.scaleFactor, 1), 0.3)
     i = 0
@@ -30,9 +30,9 @@
     ctx.stroke()
 
     # 5mごとの格子線
-    size = 500 * haika.scaleFactor
-    gapX = (haika.transformLeftX_cm2px(0) * 1000 % Math.floor(size * 1000)) / 1000
-    gapY = (haika.transformTopY_cm2px(0) * 1000 % Math.floor(size * 1000)) / 1000
+    size = haika.cm2px(500)
+    gapX = (haika.cm2px_x(0) * 1000 % Math.floor(size * 1000)) / 1000
+    gapY = (haika.cm2px_y(0) * 1000 % Math.floor(size * 1000)) / 1000
     ctx.beginPath()
     ctx.lineWidth = Math.max(Math.min(haika.scaleFactor * 2, 2), 0.5)
     i = 0
@@ -51,8 +51,8 @@
     ctx.lineWidth = Math.max(Math.min(haika.scaleFactor * 2, 2), 0.5)
     ctx.strokeStyle = '#aaaaaa'
     ctx.beginPath()
-    sx = haika.transformLeftX_cm2px(0)
-    sy = haika.transformTopY_cm2px(0)
+    sx = haika.cm2px_x(0)
+    sy = haika.cm2px_y(0)
     ctx.moveTo(Math.floor(sx), 0)
     ctx.lineTo(Math.floor(sx), height)
     ctx.moveTo(0, Math.floor(sy))
@@ -63,13 +63,13 @@
 
   # 左下にスケールを描画
   #
-  haika_utils.drawScale = (ctx) ->
+  haika_utils.drawScale = (haika, ctx) ->
     ctx.save()
     ctx.opacity = 1
     height = ctx.canvas.height
     posy = 20
     ctx.font = "10px Open Sans"
-    if 100 * haika.scaleFactor <= 50
+    if haika.cm2px(100) <= 50
       scale = 500
       ctx.fillText("5m", 25, height - 66 + posy)
     else
@@ -80,10 +80,25 @@
     ctx.beginPath()
     ctx.moveTo(20, height - 65 + posy)
     ctx.lineTo(20, height - 60 + posy)
-    ctx.lineTo(20 + scale * haika.scaleFactor, height - 60 + posy)
-    ctx.lineTo(20 + scale * haika.scaleFactor, height - 65 + posy)
+    ctx.lineTo(20 + haika.cm2px(scale), height - 60 + posy)
+    ctx.lineTo(20 + haika.cm2px(scale), height - 65 + posy)
     ctx.stroke()
     ctx.restore()
+    return
+
+
+  # 背景画像の描画
+  #
+  haika_utils.drawBackground = (haika, ctx) ->
+    if haika.canvas.backgroundImage
+      ctx.mozImageSmoothingEnabled = false
+      haika.canvas.backgroundImage.left = Math.floor(haika.cm2px_x(haika.canvas.backgroundImage._originalElement.width / 2 * haika.backgroundScaleFactor))
+      haika.canvas.backgroundImage.top = Math.floor(haika.cm2px_y(haika.canvas.backgroundImage._originalElement.height / 2 * haika.backgroundScaleFactor))
+      haika.canvas.backgroundImage.width = Math.floor(haika.cm2px(haika.canvas.backgroundImage._originalElement.width * haika.backgroundScaleFactor))
+      haika.canvas.backgroundImage.height = Math.floor(haika.cm2px(haika.canvas.backgroundImage._originalElement.height * haika.backgroundScaleFactor))
+      haika.canvas.backgroundImage.opacity = haika.backgroundOpacity
+      haika.canvas.backgroundImage.render ctx
+      ctx.mozImageSmoothingEnabled = true
     return
 
 

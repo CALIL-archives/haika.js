@@ -25741,16 +25741,16 @@ initAligningGuidelines = function(canvas) {
   "use strict";
   var haika_utils;
   haika_utils = global.haika_utils || (global.haika_utils = {});
-  haika_utils.drawGridLines = function(ctx) {
+  haika_utils.drawGridLines = function(haika, ctx) {
     var gapX, gapY, height, i, size, sx, sy, width;
     ctx.save();
     ctx.opacity = 1;
     width = ctx.canvas.width;
     height = ctx.canvas.height;
     ctx.strokeStyle = '#cccccc';
-    size = 100 * haika.scaleFactor;
-    gapX = (haika.transformLeftX_cm2px(0) * 1000 % Math.floor(size * 1000)) / 1000;
-    gapY = (haika.transformTopY_cm2px(0) * 1000 % Math.floor(size * 1000)) / 1000;
+    size = haika.cm2px(100);
+    gapX = (haika.cm2px_x(0) * 1000 % Math.floor(size * 1000)) / 1000;
+    gapY = (haika.cm2px_y(0) * 1000 % Math.floor(size * 1000)) / 1000;
     ctx.beginPath();
     ctx.lineWidth = Math.max(Math.min(haika.scaleFactor, 1), 0.3);
     i = 0;
@@ -25766,9 +25766,9 @@ initAligningGuidelines = function(canvas) {
       ++i;
     }
     ctx.stroke();
-    size = 500 * haika.scaleFactor;
-    gapX = (haika.transformLeftX_cm2px(0) * 1000 % Math.floor(size * 1000)) / 1000;
-    gapY = (haika.transformTopY_cm2px(0) * 1000 % Math.floor(size * 1000)) / 1000;
+    size = haika.cm2px(500);
+    gapX = (haika.cm2px_x(0) * 1000 % Math.floor(size * 1000)) / 1000;
+    gapY = (haika.cm2px_y(0) * 1000 % Math.floor(size * 1000)) / 1000;
     ctx.beginPath();
     ctx.lineWidth = Math.max(Math.min(haika.scaleFactor * 2, 2), 0.5);
     i = 0;
@@ -25787,8 +25787,8 @@ initAligningGuidelines = function(canvas) {
     ctx.lineWidth = Math.max(Math.min(haika.scaleFactor * 2, 2), 0.5);
     ctx.strokeStyle = '#aaaaaa';
     ctx.beginPath();
-    sx = haika.transformLeftX_cm2px(0);
-    sy = haika.transformTopY_cm2px(0);
+    sx = haika.cm2px_x(0);
+    sy = haika.cm2px_y(0);
     ctx.moveTo(Math.floor(sx), 0);
     ctx.lineTo(Math.floor(sx), height);
     ctx.moveTo(0, Math.floor(sy));
@@ -25796,14 +25796,14 @@ initAligningGuidelines = function(canvas) {
     ctx.stroke();
     ctx.restore();
   };
-  haika_utils.drawScale = function(ctx) {
+  haika_utils.drawScale = function(haika, ctx) {
     var height, posy, scale;
     ctx.save();
     ctx.opacity = 1;
     height = ctx.canvas.height;
     posy = 20;
     ctx.font = "10px Open Sans";
-    if (100 * haika.scaleFactor <= 50) {
+    if (haika.cm2px(100) <= 50) {
       scale = 500;
       ctx.fillText("5m", 25, height - 66 + posy);
     } else {
@@ -25815,10 +25815,22 @@ initAligningGuidelines = function(canvas) {
     ctx.beginPath();
     ctx.moveTo(20, height - 65 + posy);
     ctx.lineTo(20, height - 60 + posy);
-    ctx.lineTo(20 + scale * haika.scaleFactor, height - 60 + posy);
-    ctx.lineTo(20 + scale * haika.scaleFactor, height - 65 + posy);
+    ctx.lineTo(20 + haika.cm2px(scale), height - 60 + posy);
+    ctx.lineTo(20 + haika.cm2px(scale), height - 65 + posy);
     ctx.stroke();
     ctx.restore();
+  };
+  haika_utils.drawBackground = function(haika, ctx) {
+    if (haika.canvas.backgroundImage) {
+      ctx.mozImageSmoothingEnabled = false;
+      haika.canvas.backgroundImage.left = Math.floor(haika.cm2px_x(haika.canvas.backgroundImage._originalElement.width / 2 * haika.backgroundScaleFactor));
+      haika.canvas.backgroundImage.top = Math.floor(haika.cm2px_y(haika.canvas.backgroundImage._originalElement.height / 2 * haika.backgroundScaleFactor));
+      haika.canvas.backgroundImage.width = Math.floor(haika.cm2px(haika.canvas.backgroundImage._originalElement.width * haika.backgroundScaleFactor));
+      haika.canvas.backgroundImage.height = Math.floor(haika.cm2px(haika.canvas.backgroundImage._originalElement.height * haika.backgroundScaleFactor));
+      haika.canvas.backgroundImage.opacity = haika.backgroundOpacity;
+      haika.canvas.backgroundImage.render(ctx);
+      ctx.mozImageSmoothingEnabled = true;
+    }
   };
 })((typeof exports !== "undefined" ? exports : this));
 
@@ -25879,6 +25891,15 @@ haika = {
   xyAngle: 0,
   xyScaleFactor: 1,
   clipboard: [],
+  cm2px_x: function(cm) {
+    return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scaleFactor;
+  },
+  cm2px_y: function(cm) {
+    return this.canvas.getHeight() / 2 + (this.centerY - cm) * this.scaleFactor;
+  },
+  cm2px: function(cm) {
+    return cm * this.scaleFactor;
+  },
   transformLeftX_cm2px: function(cm) {
     return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scaleFactor;
   },
@@ -25958,27 +25979,21 @@ haika = {
       }
       return action;
     };
-    canvas._renderBackground = function(ctx) {
-      ctx.mozImageSmoothingEnabled = false;
-      if (this.backgroundImage) {
-        this.backgroundImage.left = Math.floor(this.parentHaika.transformLeftX_cm2px(this.backgroundImage._originalElement.width / 2 * this.parentHaika.backgroundScaleFactor));
-        this.backgroundImage.top = Math.floor(this.parentHaika.transformTopY_cm2px(this.backgroundImage._originalElement.height / 2 * this.parentHaika.backgroundScaleFactor));
-        this.backgroundImage.width = Math.floor(this.backgroundImage._originalElement.width * this.parentHaika.backgroundScaleFactor * this.parentHaika.scaleFactor);
-        this.backgroundImage.height = Math.floor(this.backgroundImage._originalElement.height * this.parentHaika.backgroundScaleFactor * this.parentHaika.scaleFactor);
-        this.backgroundImage.opacity = this.parentHaika.backgroundOpacity;
-        this.backgroundImage.render(ctx);
-      }
-      ctx.mozImageSmoothingEnabled = true;
-      return haika_utils.drawGridLines(ctx);
-    };
-    canvas._renderOverlay = function(ctx) {
-      return haika_utils.drawScale(ctx);
-    };
+    canvas._renderBackground = (function(_this) {
+      return function(ctx) {
+        haika_utils.drawBackground(_this, ctx);
+        return haika_utils.drawGridLines(_this, ctx);
+      };
+    })(this);
+    canvas._renderOverlay = (function(_this) {
+      return function(ctx) {
+        return haika_utils.drawScale(_this, ctx);
+      };
+    })(this);
     if (!this.readOnly) {
       initAligningGuidelines(canvas);
     }
     this.canvas = canvas;
-    this.canvas.parentHaika = this;
     this.canvas.on('object:selected', (function(_this) {
       return function(e) {
         var object;
