@@ -80,14 +80,11 @@ haika =
   init: (options)->
     if not options.divId?
       throw 'CanvasのIDが未定義です'
-    else
-      @divId = '#' + options.divId
+    @divId = '#' + options.divId
     if not options.canvasId?
       options.canvasId = 'haika-canvas-area'
     if options.readOnly?
       @readOnly = options.readOnly
-    if canvas
-      throw '既に初期化されています'
     $(@divId).prepend("""<canvas id="#{options.canvasId}" unselectable="on"></canvas>""")
     @scaleFactor = if options.scaleFactor? then options.scaleFactor else 1
     @layer = @CONST_LAYERS.SHELF
@@ -124,7 +121,7 @@ haika =
     # seletable=falseのオブジェクトの上で範囲選択ができない問題を修正するパッチ
     fabric.Canvas.prototype._shouldClearSelection = (e, target) ->
       activeGroup = @getActiveGroup()
-      activeObject = @getActiveObject()
+      # activeObject = @getActiveObject()
       return not target or (target and activeGroup and not activeGroup.contains(target) and activeGroup isnt target and not e.shiftKey) or (target and not target.evented) or (target and not target.selectable)
 
     canvas._getActionFromCorner = (target, corner) ->
@@ -138,25 +135,22 @@ haika =
           action = 'rotate'
       return action
 
-    #背景にグリッドラインを追加するためにオーバーライド
     canvas._renderBackground = (ctx) =>
-      haika_utils.drawBackground(@,ctx)
-      haika_utils.drawGridLines(@,ctx)
+      haika_utils.drawBackground(@, ctx)
+      haika_utils.drawGridLines(@, ctx)
 
     canvas._renderOverlay = (ctx) =>
-      haika_utils.drawScale(@,ctx)
+      haika_utils.drawScale(@, ctx)
 
     if not @readOnly
       initAligningGuidelines(canvas)
     @canvas = canvas
-    @canvas.on('object:selected', (e)=>
+    @canvas.on 'object:selected', (e)=>
       object = e.target
       if object._objects?
         object.lockScalingX = true
         object.lockScalingY = true
-    )
-    #    @canvas.on 'before:selection:cleared', (e)=>
-    #    @canvas.on 'selection:cleared', (e)=>
+
     @canvas.on 'object:rotating', (e) =>
       object = e.target
       if object.__rotating?
