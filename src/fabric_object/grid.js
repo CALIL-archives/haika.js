@@ -5,12 +5,10 @@
   haika_utils = global.haika_utils || (global.haika_utils = {});
   haika_utils.drawGridLines = function(ctx) {
     var gapX, gapY, height, i, size, sx, sy, width;
+    ctx.save();
+    ctx.opacity = 1;
     width = ctx.canvas.width;
     height = ctx.canvas.height;
-    ctx.save();
-    sx = haika.transformLeftX_cm2px(0);
-    sy = haika.transformTopY_cm2px(0);
-    ctx.opacity = 1;
     ctx.strokeStyle = '#cccccc';
     size = 100 * haika.scaleFactor;
     gapX = (haika.transformLeftX_cm2px(0) * 1000 % Math.floor(size * 1000)) / 1000;
@@ -51,14 +49,19 @@
     ctx.lineWidth = Math.max(Math.min(haika.scaleFactor * 2, 2), 0.5);
     ctx.strokeStyle = '#aaaaaa';
     ctx.beginPath();
+    sx = haika.transformLeftX_cm2px(0);
+    sy = haika.transformTopY_cm2px(0);
     ctx.moveTo(Math.floor(sx), 0);
     ctx.lineTo(Math.floor(sx), height);
     ctx.moveTo(0, Math.floor(sy));
     ctx.lineTo(width, Math.floor(sy));
     ctx.stroke();
+    ctx.restore();
   };
   haika_utils.drawScale = function(ctx) {
     var height, posy, scale;
+    ctx.save();
+    ctx.opacity = 1;
     height = ctx.canvas.height;
     posy = 20;
     ctx.font = "10px Open Sans";

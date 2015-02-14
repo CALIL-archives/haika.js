@@ -119,5 +119,3 @@ $.extend haika,
       @_autoSaveTimerId = null
       @save()
     , delay
-
-

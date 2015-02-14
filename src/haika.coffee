@@ -2,9 +2,6 @@ log = (obj) ->
   try
     console.log obj
 
-haika_utils = global.haika_utils or (global.haika_utils = {})
-haika = global.haika or (global.haika = {})
-
 haika =
   CONST_LAYERS: #現在のステータス [オプション定数]
     SHELF: 0
@@ -566,4 +563,3 @@ haika =
         object.top = 0
       @saveDelay()
       @canvas.renderAll()
-

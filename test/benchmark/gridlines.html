@@ -1,10 +1,18 @@
-((global) ->
-  "use strict"
-  haika_utils = global.haika_utils or (global.haika_utils = {})
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<script src="http://coffeescript.org/extras/coffee-script.js"></script>
+<body>
+<canvas id="canvas" width="1000" height="800"></canvas>
+<script type="text/coffeescript">
+haika={
+    scaleFactor:1,
 
-  # 格子線を描画
-  #
-  haika_utils.drawGridLines = (ctx) ->
+}
+drawGridLines = (ctx) ->
     ctx.save()
     ctx.opacity = 1
     width = ctx.canvas.width
@@ -61,30 +69,6 @@
     ctx.restore()
     return
 
-  # 左下にスケールを描画
-  #
-  haika_utils.drawScale = (ctx) ->
-    ctx.save()
-    ctx.opacity = 1
-    height = ctx.canvas.height
-    posy = 20
-    ctx.font = "10px Open Sans"
-    if 100 * haika.scaleFactor <= 50
-      scale = 500
-      ctx.fillText("5m", 25, height - 66 + posy)
-    else
-      scale = 100
-      ctx.fillText("1m", 25, height - 66 + posy)
-    ctx.lineWidth = 2
-    ctx.strokeStyle = '#666666'
-    ctx.beginPath()
-    ctx.moveTo(20, height - 65 + posy)
-    ctx.lineTo(20, height - 60 + posy)
-    ctx.lineTo(20 + scale * haika.scaleFactor, height - 60 + posy)
-    ctx.lineTo(20 + scale * haika.scaleFactor, height - 65 + posy)
-    ctx.stroke()
-    ctx.restore()
-    return
-
-
-  return) (if typeof exports isnt "undefined" then exports else this)
+</script>
+</body>
+</html>
