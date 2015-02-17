@@ -24494,7 +24494,13 @@ h.push({X:f[l-1].X,Y:f[l-1].Y});r&&f.pop();if(q.length)f=h;else break}l=h.length
 function(a,b,c){c||(c=1);for(var e=0,f=0;f<a.length;f++)e+=d.JS.PerimeterOfPath(a[f],b,c);return e};d.JS.ScaleDownPath=function(a,b){var c,d;b||(b=1);for(c=a.length;c--;)d=a[c],d.X/=b,d.Y/=b};d.JS.ScaleDownPaths=function(a,b){var c,d,f;b||(b=1);for(c=a.length;c--;)for(d=a[c].length;d--;)f=a[c][d],f.X/=b,f.Y/=b};d.JS.ScaleUpPath=function(a,b){var c,d,f=Math.round;b||(b=1);for(c=a.length;c--;)d=a[c],d.X=f(d.X*b),d.Y=f(d.Y*b)};d.JS.ScaleUpPaths=function(a,b){var c,d,f,g=Math.round;b||(b=1);for(c=a.length;c--;)for(d=
 a[c].length;d--;)f=a[c][d],f.X=g(f.X*b),f.Y=g(f.Y*b)};d.ExPolygons=function(){return[]};d.ExPolygon=function(){this.holes=this.outer=null};d.JS.AddOuterPolyNodeToExPolygons=function(a,b){var c=new d.ExPolygon;c.outer=a.Contour();var e=a.Childs(),f=e.length;c.holes=Array(f);var g,h,k,m,n;for(h=0;h<f;h++)for(g=e[h],c.holes[h]=g.Contour(),k=0,m=g.Childs(),n=m.length;k<n;k++)g=m[k],d.JS.AddOuterPolyNodeToExPolygons(g,b);b.push(c)};d.JS.ExPolygonsToPaths=function(a){var b,c,e,f,g=new d.Paths;b=0;for(e=
 a.length;b<e;b++)for(g.push(a[b].outer),c=0,f=a[b].holes.length;c<f;c++)g.push(a[b].holes[c]);return g};d.JS.PolyTreeToExPolygons=function(a){var b=new d.ExPolygons,c,e,f;c=0;e=a.Childs();for(f=e.length;c<f;c++)a=e[c],d.JS.AddOuterPolyNodeToExPolygons(a,b);return b}})();;(function(root,factory){if(typeof define==="function"&&define.amd){define(factory)}else{root.Dragdealer=factory()}})(this,function(){var Dragdealer=function(wrapper,options){this.bindMethods();this.options=this.applyDefaults(options||{});this.wrapper=this.getWrapperElement(wrapper);if(!this.wrapper){return}this.handle=this.getHandleElement(this.wrapper,this.options.handleClass);if(!this.handle){return}this.init();this.bindEventListeners()};Dragdealer.prototype={defaults:{disabled:false,horizontal:true,vertical:false,slide:true,steps:0,snap:false,loose:false,speed:.1,xPrecision:0,yPrecision:0,handleClass:"handle"},init:function(){this.value={prev:[-1,-1],current:[this.options.x||0,this.options.y||0],target:[this.options.x||0,this.options.y||0]};this.offset={wrapper:[0,0],mouse:[0,0],prev:[-999999,-999999],current:[0,0],target:[0,0]};this.change=[0,0];this.stepRatios=this.calculateStepRatios();this.activity=false;this.dragging=false;this.tapping=false;this.reflow();if(this.options.disabled){this.disable()}},applyDefaults:function(options){for(var k in this.defaults){if(!options.hasOwnProperty(k)){options[k]=this.defaults[k]}}return options},getWrapperElement:function(wrapper){if(typeof wrapper=="string"){return document.getElementById(wrapper)}else{return wrapper}},getHandleElement:function(wrapper,handleClass){var childElements=wrapper.getElementsByTagName("div"),handleClassMatcher=new RegExp("(^|\\s)"+handleClass+"(\\s|$)"),i;for(i=0;i<childElements.length;i++){if(handleClassMatcher.test(childElements[i].className)){return childElements[i]}}},calculateStepRatios:function(){var stepRatios=[];if(this.options.steps>1){for(var i=0;i<=this.options.steps-1;i++){stepRatios[i]=i/(this.options.steps-1)}}return stepRatios},setWrapperOffset:function(){this.offset.wrapper=Position.get(this.wrapper)},calculateBounds:function(){var bounds={top:this.options.top||0,bottom:-(this.options.bottom||0)+this.wrapper.offsetHeight,left:this.options.left||0,right:-(this.options.right||0)+this.wrapper.offsetWidth};bounds.availWidth=bounds.right-bounds.left-this.handle.offsetWidth;bounds.availHeight=bounds.bottom-bounds.top-this.handle.offsetHeight;return bounds},calculateValuePrecision:function(){var xPrecision=this.options.xPrecision||Math.abs(this.bounds.availWidth),yPrecision=this.options.yPrecision||Math.abs(this.bounds.availHeight);return[xPrecision?1/xPrecision:0,yPrecision?1/yPrecision:0]},bindMethods:function(){this.onHandleMouseDown=bind(this.onHandleMouseDown,this);this.onHandleTouchStart=bind(this.onHandleTouchStart,this);this.onDocumentMouseMove=bind(this.onDocumentMouseMove,this);this.onWrapperTouchMove=bind(this.onWrapperTouchMove,this);this.onWrapperMouseDown=bind(this.onWrapperMouseDown,this);this.onWrapperTouchStart=bind(this.onWrapperTouchStart,this);this.onDocumentMouseUp=bind(this.onDocumentMouseUp,this);this.onDocumentTouchEnd=bind(this.onDocumentTouchEnd,this);this.onHandleClick=bind(this.onHandleClick,this);this.onWindowResize=bind(this.onWindowResize,this)},bindEventListeners:function(){addEventListener(this.handle,"mousedown",this.onHandleMouseDown);addEventListener(this.handle,"touchstart",this.onHandleTouchStart);addEventListener(document,"mousemove",this.onDocumentMouseMove);addEventListener(this.wrapper,"touchmove",this.onWrapperTouchMove);addEventListener(this.wrapper,"mousedown",this.onWrapperMouseDown);addEventListener(this.wrapper,"touchstart",this.onWrapperTouchStart);addEventListener(document,"mouseup",this.onDocumentMouseUp);addEventListener(document,"touchend",this.onDocumentTouchEnd);addEventListener(this.handle,"click",this.onHandleClick);addEventListener(window,"resize",this.onWindowResize);var _this=this;this.interval=setInterval(function(){_this.animate()},25);this.animate(false,true)},unbindEventListeners:function(){removeEventListener(this.handle,"mousedown",this.onHandleMouseDown);removeEventListener(this.handle,"touchstart",this.onHandleTouchStart);removeEventListener(document,"mousemove",this.onDocumentMouseMove);removeEventListener(this.wrapper,"touchmove",this.onWrapperTouchMove);removeEventListener(this.wrapper,"mousedown",this.onWrapperMouseDown);removeEventListener(this.wrapper,"touchstart",this.onWrapperTouchStart);removeEventListener(document,"mouseup",this.onDocumentMouseUp);removeEventListener(document,"touchend",this.onDocumentTouchEnd);removeEventListener(this.handle,"click",this.onHandleClick);removeEventListener(window,"resize",this.onWindowResize);clearInterval(this.interval)},onHandleMouseDown:function(e){Cursor.refresh(e);preventEventDefaults(e);stopEventPropagation(e);this.activity=false;this.startDrag()},onHandleTouchStart:function(e){Cursor.refresh(e);stopEventPropagation(e);this.activity=false;this.startDrag()},onDocumentMouseMove:function(e){Cursor.refresh(e);if(this.dragging){this.activity=true}},onWrapperTouchMove:function(e){Cursor.refresh(e);if(!this.activity&&this.draggingOnDisabledAxis()){if(this.dragging){this.stopDrag()}return}preventEventDefaults(e);this.activity=true},onWrapperMouseDown:function(e){Cursor.refresh(e);preventEventDefaults(e);this.startTap()},onWrapperTouchStart:function(e){Cursor.refresh(e);preventEventDefaults(e);this.startTap()},onDocumentMouseUp:function(e){this.stopDrag();this.stopTap()},onDocumentTouchEnd:function(e){this.stopDrag();this.stopTap()},onHandleClick:function(e){if(this.activity){preventEventDefaults(e);stopEventPropagation(e)}},onWindowResize:function(e){this.reflow()},enable:function(){this.disabled=false;this.handle.className=this.handle.className.replace(/\s?disabled/g,"")},disable:function(){this.disabled=true;this.handle.className+=" disabled"},reflow:function(){this.setWrapperOffset();this.bounds=this.calculateBounds();this.valuePrecision=this.calculateValuePrecision();this.updateOffsetFromValue()},getStep:function(){return[this.getStepNumber(this.value.target[0]),this.getStepNumber(this.value.target[1])]},getValue:function(){return this.value.target},setStep:function(x,y,snap){this.setValue(this.options.steps&&x>1?(x-1)/(this.options.steps-1):0,this.options.steps&&y>1?(y-1)/(this.options.steps-1):0,snap)},setValue:function(x,y,snap){this.setTargetValue([x,y||0]);if(snap){this.groupCopy(this.value.current,this.value.target);this.updateOffsetFromValue();this.callAnimationCallback()}},startTap:function(){if(this.disabled){return}this.tapping=true;this.setWrapperOffset();this.setTargetValueByOffset([Cursor.x-this.offset.wrapper[0]-this.handle.offsetWidth/2,Cursor.y-this.offset.wrapper[1]-this.handle.offsetHeight/2])},stopTap:function(){if(this.disabled||!this.tapping){return}this.tapping=false;this.setTargetValue(this.value.current)},startDrag:function(){if(this.disabled){return}this.dragging=true;this.setWrapperOffset();this.offset.mouse=[Cursor.x-Position.get(this.handle)[0],Cursor.y-Position.get(this.handle)[1]]},stopDrag:function(){if(this.disabled||!this.dragging){return}this.dragging=false;var target=this.groupClone(this.value.current);if(this.options.slide){var ratioChange=this.change;target[0]+=ratioChange[0]*4;target[1]+=ratioChange[1]*4}this.setTargetValue(target)},callAnimationCallback:function(){var value=this.value.current;if(this.options.snap&&this.options.steps>1){value=this.getClosestSteps(value)}if(!this.groupCompare(value,this.value.prev)){if(typeof this.options.animationCallback=="function"){this.options.animationCallback.call(this,value[0],value[1])}this.groupCopy(this.value.prev,value)}},callTargetCallback:function(){if(typeof this.options.callback=="function"){this.options.callback.call(this,this.value.target[0],this.value.target[1])}},animate:function(direct,first){if(direct&&!this.dragging){return}if(this.dragging){var prevTarget=this.groupClone(this.value.target);var offset=[Cursor.x-this.offset.wrapper[0]-this.offset.mouse[0],Cursor.y-this.offset.wrapper[1]-this.offset.mouse[1]];this.setTargetValueByOffset(offset,this.options.loose);this.change=[this.value.target[0]-prevTarget[0],this.value.target[1]-prevTarget[1]]}if(this.dragging||first){this.groupCopy(this.value.current,this.value.target)}if(this.dragging||this.glide()||first){this.updateOffsetFromValue();this.callAnimationCallback()}},glide:function(){var diff=[this.value.target[0]-this.value.current[0],this.value.target[1]-this.value.current[1]];if(!diff[0]&&!diff[1]){return false}if(Math.abs(diff[0])>this.valuePrecision[0]||Math.abs(diff[1])>this.valuePrecision[1]){this.value.current[0]+=diff[0]*this.options.speed;this.value.current[1]+=diff[1]*this.options.speed}else{this.groupCopy(this.value.current,this.value.target)}return true},updateOffsetFromValue:function(){if(!this.options.snap){this.offset.current=this.getOffsetsByRatios(this.value.current)}else{this.offset.current=this.getOffsetsByRatios(this.getClosestSteps(this.value.current))}if(!this.groupCompare(this.offset.current,this.offset.prev)){this.renderHandlePosition();this.groupCopy(this.offset.prev,this.offset.current)}},renderHandlePosition:function(){if(this.options.horizontal){this.handle.style.left=String(this.offset.current[0])+"px"}if(this.options.vertical){this.handle.style.top=String(this.offset.current[1])+"px"}},setTargetValue:function(value,loose){var target=loose?this.getLooseValue(value):this.getProperValue(value);this.groupCopy(this.value.target,target);this.offset.target=this.getOffsetsByRatios(target);this.callTargetCallback()},setTargetValueByOffset:function(offset,loose){var value=this.getRatiosByOffsets(offset);var target=loose?this.getLooseValue(value):this.getProperValue(value);this.groupCopy(this.value.target,target);this.offset.target=this.getOffsetsByRatios(target)},getLooseValue:function(value){var proper=this.getProperValue(value);return[proper[0]+(value[0]-proper[0])/4,proper[1]+(value[1]-proper[1])/4]},getProperValue:function(value){var proper=this.groupClone(value);proper[0]=Math.max(proper[0],0);proper[1]=Math.max(proper[1],0);proper[0]=Math.min(proper[0],1);proper[1]=Math.min(proper[1],1);if(!this.dragging&&!this.tapping||this.options.snap){if(this.options.steps>1){proper=this.getClosestSteps(proper)}}return proper},getRatiosByOffsets:function(group){return[this.getRatioByOffset(group[0],this.bounds.availWidth,this.bounds.left),this.getRatioByOffset(group[1],this.bounds.availHeight,this.bounds.top)]},getRatioByOffset:function(offset,range,padding){return range?(offset-padding)/range:0},getOffsetsByRatios:function(group){return[this.getOffsetByRatio(group[0],this.bounds.availWidth,this.bounds.left),this.getOffsetByRatio(group[1],this.bounds.availHeight,this.bounds.top)]},getOffsetByRatio:function(ratio,range,padding){return Math.round(ratio*range)+padding},getStepNumber:function(value){return this.getClosestStep(value)*(this.options.steps-1)+1},getClosestSteps:function(group){return[this.getClosestStep(group[0]),this.getClosestStep(group[1])]},getClosestStep:function(value){var k=0;var min=1;for(var i=0;i<=this.options.steps-1;i++){if(Math.abs(this.stepRatios[i]-value)<min){min=Math.abs(this.stepRatios[i]-value);k=i}}return this.stepRatios[k]},groupCompare:function(a,b){return a[0]==b[0]&&a[1]==b[1]},groupCopy:function(a,b){a[0]=b[0];a[1]=b[1]},groupClone:function(a){return[a[0],a[1]]},draggingOnDisabledAxis:function(){return!this.options.horizontal&&Cursor.xDiff>Cursor.yDiff||!this.options.vertical&&Cursor.yDiff>Cursor.xDiff}};var bind=function(fn,context){return function(){return fn.apply(context,arguments)}};var addEventListener=function(element,type,callback){if(element.addEventListener){element.addEventListener(type,callback,false)}else if(element.attachEvent){element.attachEvent("on"+type,callback)}};var removeEventListener=function(element,type,callback){if(element.removeEventListener){element.removeEventListener(type,callback,false)}else if(element.detachEvent){element.detachEvent("on"+type,callback)}};var preventEventDefaults=function(e){if(!e){e=window.event}if(e.preventDefault){e.preventDefault()}e.returnValue=false};var stopEventPropagation=function(e){if(!e){e=window.event}if(e.stopPropagation){e.stopPropagation()}e.cancelBubble=true};var Cursor={x:0,y:0,xDiff:0,yDiff:0,refresh:function(e){if(!e){e=window.event}if(e.type=="mousemove"){this.set(e)}else if(e.touches){this.set(e.touches[0])}},set:function(e){var lastX=this.x,lastY=this.y;if(e.pageX||e.pageY){this.x=e.pageX;this.y=e.pageY}else if(e.clientX||e.clientY){this.x=e.clientX+document.body.scrollLeft+document.documentElement.scrollLeft;this.y=e.clientY+document.body.scrollTop+document.documentElement.scrollTop}this.xDiff=Math.abs(this.x-lastX);this.yDiff=Math.abs(this.y-lastY)}};var Position={get:function(obj){var curleft=0,curtop=0;if(obj.offsetParent){do{curleft+=obj.offsetLeft;curtop+=obj.offsetTop}while(obj=obj.offsetParent)}return[curleft,curtop]}};return Dragdealer});
-;var initAligningGuidelines;
+;function ConvexHullGrahamScan(){this.anchorPoint=undefined;this.reverse=false;this.points=[]}ConvexHullGrahamScan.prototype={constructor:ConvexHullGrahamScan,Point:function(e,t){this.x=e;this.y=t},_findPolarAngle:function(e,t){var n=57.295779513082;var r=t.x-e.x;var i=t.y-e.y;if(r==0&&i==0){return 0}var s=Math.atan2(i,r)*n;if(this.reverse){if(s<=0){s+=360}}else{if(s>=0){s+=360}}return s},addPoint:function(e,t){if(this.anchorPoint===undefined){this.anchorPoint=new this.Point(e,t)}else if(this.anchorPoint.y>t||this.anchorPoint.y==t&&this.anchorPoint.x>e){this.anchorPoint.y=t;this.anchorPoint.x=e;this.points.unshift(new this.Point(e,t));return}this.points.push(new this.Point(e,t))},_sortPoints:function(){var e=this;return this.points.sort(function(t,n){var r=e._findPolarAngle(e.anchorPoint,t);var i=e._findPolarAngle(e.anchorPoint,n);if(r<i){return-1}if(r>i){return 1}return 0})},_checkPoints:function(e,t,n){var r;var i=this._findPolarAngle(e,t);var s=this._findPolarAngle(e,n);if(i>s){r=i-s;return!(r>180)}else if(i<s){r=s-i;return r>180}return false},getHull:function(){var e=[],t,n;this.reverse=this.points.every(function(e){return e.x<0&&e.y<0});t=this._sortPoints();n=t.length;if(n<4){return t}e.push(t.shift(),t.shift());while(true){var r,i,s;e.push(t.shift());r=e[e.length-3];i=e[e.length-2];s=e[e.length-1];if(this._checkPoints(r,i,s)){e.splice(e.length-2,1)}if(t.length==0){if(n==e.length){return e}t=e;n=t.length;e=[];e.push(t.shift(),t.shift())}}}};// Generated by CoffeeScript 1.8.0
+
+/**
+Should objects be aligned by a bounding box?
+[Bug] Scaled objects sometimes can not be aligned by edges
+ */
+var initAligningGuidelines;
 
 initAligningGuidelines = function(canvas) {
   var aligningLineColor, aligningLineMargin, aligningLineOffset, aligningLineWidth, ctx, drawHorizontalLine, drawLine, drawVerticalLine, horizontalLines, isInRange, verticalLines;
@@ -24647,13 +24653,14 @@ initAligningGuidelines = function(canvas) {
 ;// Generated by CoffeeScript 1.8.0
 (function(global) {
   "use strict";
-  var extend, fabric, stateProperties, _setDefaultLeftTopValues;
+  var degreesToRadians, extend, fabric, stateProperties, _setDefaultLeftTopValues;
   _setDefaultLeftTopValues = function(attributes) {
     attributes.left = attributes.left || 0;
     attributes.top = attributes.top || 0;
     return attributes;
   };
   fabric = global.fabric || (global.fabric = {});
+  degreesToRadians = fabric.util.degreesToRadians;
   extend = fabric.util.object.extend;
   if (fabric.Shelf) {
     console.warn("fabric.Shelf is already defined");
@@ -25031,7 +25038,8 @@ initAligningGuidelines = function(canvas) {
 })((typeof exports !== "undefined" ? exports : this));
 
 //# sourceMappingURL=shelf.js.map
-;(function(global) {
+;// Generated by CoffeeScript 1.8.0
+(function(global) {
   "use strict";
   var extend, fabric, stateProperties, _setDefaultLeftTopValues;
   _setDefaultLeftTopValues = function(attributes) {
@@ -25297,7 +25305,8 @@ initAligningGuidelines = function(canvas) {
 })((typeof exports !== "undefined" ? exports : this));
 
 //# sourceMappingURL=curvedShelf.js.map
-;(function(global) {
+;// Generated by CoffeeScript 1.8.0
+(function(global) {
   "use strict";
   var extend, fabric;
   fabric = global.fabric || (global.fabric = {});
@@ -25467,7 +25476,8 @@ initAligningGuidelines = function(canvas) {
 })((typeof exports !== "undefined" ? exports : this));
 
 //# sourceMappingURL=beacon.js.map
-;(function(global) {
+;// Generated by CoffeeScript 1.8.0
+(function(global) {
   "use strict";
   var extend, fabric;
   fabric = global.fabric || (global.fabric = {});
@@ -25608,32 +25618,82 @@ initAligningGuidelines = function(canvas) {
 })((typeof exports !== "undefined" ? exports : this));
 
 //# sourceMappingURL=wall.js.map
-;(function(global) {
+;// Generated by CoffeeScript 1.8.0
+(function(global) {
   "use strict";
-  var extend, fabric;
+  var degreesToRadians, fabric;
   fabric = global.fabric || (global.fabric = {});
-  extend = fabric.util.object.extend;
+  degreesToRadians = fabric.util.degreesToRadians;
   if (fabric.Floor) {
     console.warn("fabric.Floor is already defined");
     return;
   }
   fabric.Floor = fabric.util.createClass(fabric.Rect, {
     type: "floor",
-    eachWidth: 1000,
-    eachHeight: 1000,
-    width_scale: 1,
-    height_scale: 1,
+    width_cm: 1000,
+    height_cm: 1000,
+    is_negative: false,
+    fill: '#ffffff',
+    stroke: '#000000',
+    strokeDashArray: [2, 2],
     __width: function() {
-      return this.eachWidth * this.width_scale * haika.scaleFactor;
+      return this.width_cm * haika.scaleFactor;
     },
     __height: function() {
-      return this.eachHeight * this.height_scale * haika.scaleFactor;
+      return this.height_cm * haika.scaleFactor;
     },
     initialize: function(options) {
       options = options || {};
       this.callSuper("initialize", options);
       this.width = this.__width();
       this.height = this.__height();
+    },
+    _render: function(ctx, noTransform) {
+      var h, isRounded, k, rx, ry, w, x, y;
+      if (!this.selectable) {
+        return;
+      }
+      if (this.is_negative) {
+        ctx.fillStyle = 'rgba(255,255,255,1)';
+      } else {
+        ctx.fillStyle = 'rgba(255,0,0,0.3)';
+      }
+      rx = this.rx ? Math.min(this.rx, this.width / 2) : 0;
+      ry = this.ry ? Math.min(this.ry, this.height / 2) : 0;
+      w = this.width;
+      h = this.height;
+      x = noTransform ? this.left : -this.width / 2;
+      y = noTransform ? this.top : -this.height / 2;
+      isRounded = rx !== 0 || ry !== 0;
+      k = 1 - 0.5522847498;
+      ctx.beginPath();
+      ctx.moveTo(x + rx, y);
+      ctx.lineTo(x + w - rx, y);
+      isRounded && ctx.bezierCurveTo(x + w - k * rx, y, x + w, y + k * ry, x + w, y + ry);
+      ctx.lineTo(x + w, y + h - ry);
+      isRounded && ctx.bezierCurveTo(x + w, y + h - k * ry, x + w - k * rx, y + h, x + w - rx, y + h);
+      ctx.lineTo(x + rx, y + h);
+      isRounded && ctx.bezierCurveTo(x + k * rx, y + h, x, y + h - k * ry, x, y + h - ry);
+      ctx.lineTo(x, y + ry);
+      isRounded && ctx.bezierCurveTo(x, y + k * ry, x + k * rx, y, x + rx, y);
+      ctx.closePath();
+      this._renderFill(ctx);
+      this._renderStroke(ctx);
+      ctx.save();
+      if (this.angle > 90 && this.angle < 270) {
+        ctx.rotate(degreesToRadians(180));
+      }
+      ctx.font = "12px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      if (this.is_negative) {
+        ctx.fillStyle = '#000000';
+        ctx.fillText('吹き抜け指定領域', 0, 0);
+      } else {
+        ctx.fillStyle = '#000000';
+        ctx.fillText('フロア指定領域', 0, 0);
+      }
+      ctx.restore();
     },
     __resizeShelf: function() {
       return this.set({
@@ -25642,7 +25702,7 @@ initAligningGuidelines = function(canvas) {
       });
     },
     __modifiedShelf: function() {
-      this.angle = this.angle % 360;
+      this.angle = Math.floor(this.angle % 360);
       if (this.angle >= 350 || this.angle <= 10) {
         this.angle = 0;
       }
@@ -25657,19 +25717,19 @@ initAligningGuidelines = function(canvas) {
       }
       if (this.sacleX !== 1) {
         this.width = this.width * this.scaleX;
-        this.width_scale = this.width / (this.eachWidth * haika.scaleFactor);
+        this.width_cm = Math.floor(this.width / haika.scaleFactor);
       }
       if (this.sacleY !== 1) {
         this.height = this.height * this.scaleY;
-        this.height_scale = this.height / (this.eachHeight * haika.scaleFactor);
+        this.height_cm = Math.floor(this.height / haika.scaleFactor);
       }
       this.scaleX = this.scaleY = 1;
       return this.setCoords();
     },
     toGeoJSON: function() {
       var c, coordinate, coordinates, data, h, new_coordinate, new_coordinates, w, x, y, _i, _j, _len, _len1;
-      w = this.eachWidth * this.width_scale;
-      h = this.eachHeight * this.height_scale;
+      w = this.width_cm;
+      h = this.height_cm;
       x = -w / 2 + this.left_cm;
       y = -h / 2 + this.top_cm;
       coordinates = [[[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]];
@@ -25689,21 +25749,16 @@ initAligningGuidelines = function(canvas) {
           "coordinates": [new_coordinates]
         },
         "properties": {
+          "id": this.id,
           "type": this.type,
           "left_cm": this.left_cm,
           "top_cm": this.top_cm,
-          "id": this.id,
-          "angle": this.angle,
-          "fill": this.fill,
-          "stroke": this.stroke,
-          "width_scale": this.width_scale,
-          "height_scale": this.height_scale
+          "width_cm": this.width_cm,
+          "height_cm": this.height_cm,
+          "angle": this.angle
         }
       };
       return data;
-    },
-    toSVG: function(reviver) {
-      return "";
     },
     getJSONSchema: function() {
       var schema;
@@ -25717,13 +25772,17 @@ initAligningGuidelines = function(canvas) {
             minimum: 0,
             maximum: 360
           },
-          width_scale: {
+          width_cm: {
             type: "number",
             "default": 1
           },
-          height_scale: {
+          height_cm: {
             type: "number",
             "default": 1
+          },
+          is_negative: {
+            type: "boolean",
+            "default": false
           }
         }
       };
@@ -25797,7 +25856,7 @@ initAligningGuidelines = function(canvas) {
     ctx.restore();
   };
   haika_utils.drawScale = function(haika, ctx) {
-    var height, posy, scale;
+    var height, posy, scale, text;
     ctx.save();
     ctx.opacity = 1;
     height = ctx.canvas.height;
@@ -25805,11 +25864,23 @@ initAligningGuidelines = function(canvas) {
     ctx.font = "10px Open Sans";
     if (haika.cm2px(100) <= 50) {
       scale = 500;
-      ctx.fillText("5m", 25, height - 66 + posy);
+      text = "5m";
     } else {
       scale = 100;
-      ctx.fillText("1m", 25, height - 66 + posy);
+      text = "1m";
     }
+    ctx.lineWidth = 4.0;
+    ctx.strokeStyle = "rgba(255,255,255,0.8)";
+    ctx.strokeText(text, 25, height - 66 + posy);
+    ctx.fillText(text, 25, height - 66 + posy);
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "rgba(255,255,255,0.8)";
+    ctx.beginPath();
+    ctx.moveTo(20, height - 65 + posy - 2);
+    ctx.lineTo(20, height - 60 + posy);
+    ctx.lineTo(20 + haika.cm2px(scale), height - 60 + posy);
+    ctx.lineTo(20 + haika.cm2px(scale), height - 65 + posy - 2);
+    ctx.stroke();
     ctx.lineWidth = 2;
     ctx.strokeStyle = '#666666';
     ctx.beginPath();
@@ -25835,8 +25906,7 @@ initAligningGuidelines = function(canvas) {
 })((typeof exports !== "undefined" ? exports : this));
 
 //# sourceMappingURL=grid.js.map
-;// Generated by CoffeeScript 1.8.0
-var haika, log;
+;var haika, log;
 
 log = function(obj) {
   try {
@@ -25881,8 +25951,8 @@ haika = {
   layer: null,
   objects: [],
   _geojson: {},
-  fillColor: "#CFE2F3",
-  strokeColor: "#000000",
+  fillColor: '#CFE2F3',
+  strokeColor: '#000000',
   backgroundUrl: null,
   backgroundOpacity: 1,
   backgroundScaleFactor: 1,
@@ -25916,17 +25986,13 @@ haika = {
     var canvas, timeout;
     if (options.divId == null) {
       throw 'CanvasのIDが未定義です';
-    } else {
-      this.divId = '#' + options.divId;
     }
+    this.divId = '#' + options.divId;
     if (options.canvasId == null) {
       options.canvasId = 'haika-canvas-area';
     }
     if (options.readOnly != null) {
       this.readOnly = options.readOnly;
-    }
-    if (canvas) {
-      throw '既に初期化されています';
     }
     $(this.divId).prepend("<canvas id=\"" + options.canvasId + "\" unselectable=\"on\"></canvas>");
     this.scaleFactor = options.scaleFactor != null ? options.scaleFactor : 1;
@@ -25960,9 +26026,8 @@ haika = {
       fabric.Object.prototype.cornerColor = '#0000FF';
     }
     fabric.Canvas.prototype._shouldClearSelection = function(e, target) {
-      var activeGroup, activeObject;
+      var activeGroup;
       activeGroup = this.getActiveGroup();
-      activeObject = this.getActiveObject();
       return !target || (target && activeGroup && !activeGroup.contains(target) && activeGroup !== target && !e.shiftKey) || (target && !target.evented) || (target && !target.selectable);
     };
     canvas._getActionFromCorner = function(target, corner) {
@@ -25987,7 +26052,34 @@ haika = {
     })(this);
     canvas._renderOverlay = (function(_this) {
       return function(ctx) {
-        return haika_utils.drawScale(_this, ctx);
+        var convex, geojson, i, item, object, ret, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+        haika_utils.drawScale(_this, ctx);
+        convex = new ConvexHullGrahamScan();
+        _ref = _this.canvas.getObjects();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          object = _ref[_i];
+          geojson = object.toGeoJSON();
+          _ref1 = geojson.geometry.coordinates[0];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            item = _ref1[_j];
+            convex.addPoint(-1 * item[0], item[1]);
+          }
+        }
+        ret = convex.getHull();
+        if (ret.length > 0) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.lineWidth = 4;
+          ctx.strokeStyle = "#ff0000";
+          ctx.moveTo(haika.cm2px_x(ret[0].x), haika.cm2px_y(ret[0].y));
+          for (_k = 0, _len2 = ret.length; _k < _len2; _k++) {
+            i = ret[_k];
+            ctx.lineTo(haika.cm2px_x(i.x), haika.cm2px_y(i.y));
+          }
+          ctx.lineTo(haika.cm2px_x(ret[0].x), haika.cm2px_y(ret[0].y));
+          ctx.stroke();
+          return ctx.restore();
+        }
       };
     })(this);
     if (!this.readOnly) {
@@ -26085,11 +26177,8 @@ haika = {
   },
   _getLatestId: function() {
     var lastId, object, _i, _len, _ref;
-    if (this.objects.length === 0) {
-      return 0;
-    }
     lastId = 0;
-    _ref = this.objects;
+    _ref = this.canvas.getObject();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
       if (object.id > lastId) {
@@ -26264,7 +26353,7 @@ haika = {
     var ids, object, _i, _len, _ref;
     this.canvas.discardActiveGroup();
     ids = [];
-    _ref = this.objects;
+    _ref = this.canvas.getObjects();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       object = _ref[_i];
       ids.push(object.id);
@@ -26360,9 +26449,6 @@ haika = {
     object.top = this.transformTopY_cm2px(o.top_cm);
     object.left = this.transformLeftX_cm2px(o.left_cm);
     object.selectable = o.selectable;
-    if (!object.selectable) {
-      object.opacity = 0.5;
-    }
     if (this.readOnly) {
       object.lockMovementX = true;
       object.lockMovementY = true;
@@ -26531,8 +26617,7 @@ haika = {
 };
 
 //# sourceMappingURL=haika.js.map
-;// Generated by CoffeeScript 1.8.0
-$.extend(haika, {
+;$.extend(haika, {
   _api_load_endpoint: '/api/floor/load',
   _api_save_endpoint: '/api/floor/save',
   _dataId: null,
@@ -27654,7 +27739,7 @@ $.extend(haika, {
 //# sourceMappingURL=haika-property.js.map
 ;$.extend(haika, {
   html: function(container) {
-    return $(container).html("<div id=\"haika-canvas\">\n  <ul class=\"haika-nav\">\n      <li><a href=\"#\" class=\"floor\">床</a></li>\n      <li><a href=\"#\" class=\"wall\">壁</a></li>\n      <li><a href=\"#\" class=\"beacon\">ビーコン</a></li>\n      <li class=\"active\"><a href=\"#\" class=\"shelf\">本棚</a></li>\n  </ul>\n  <div class=\"haika-header\">\n      <div style=\"margin-top: 5px;\" class=\"pull-left\">\n        <i class=\"fa fa-copy haika-copy btn btn-default\"> copy</i>\n        <i class=\"fa fa-paste haika-paste btn btn-default\"> paste</i>\n        <i class=\"fa fa-undobtn haika-undo btn btn-default\"> undo</i>\n      </div>\n      <div class=\"pull-right\" style=\"margin-top: 2px;\">\n        <span class=\"fullscreen btn btn-default\">\n          <span class=\"glyphicon glyphicon-fullscreen\"></span>\n          fullscreen\n        </span>\n      </div>\n      <div style=\"display:none;\">\n          <input type=\"file\" id=\"file\"/>\n      </div>\n  </div>\n  <div class=\"haika-toolbar-container\">\n    <ul class=\"toolbar-menu\">\n    </ul>\n    <select id=\"fill-color\">\n        <option value=\"1\" data-color=\"#CFE2F3\" selected=\"selected\">lightblue</option>\n    </select>\n    <select id=\"stroke-color\">\n        <option value=\"1\" data-color=\"#000000\" selected=\"selected\">balck</option>\n    </select>\n  </div>\n  <div class=\"haika-buttons\">\n    <span class=\"haika-button haika-full\">\n      <span class=\"glyphicon glyphicon-resize-full\"></span>\n    </span>\n    <span class=\"haika-button haika-zoomin\">\n      <i class=\"fa fa-plus\"></i>\n    </span>\n    <span class=\"haika-button haika-zoomout\">\n      <i class=\"fa fa-minus\"></i>\n    </span>\n  </div>\n  <div  id=\"vertical-scroller\" class=\"content-scroller\">\n    <div class=\"dragdealer\">\n      <div class=\"handle scroller-gray-bar\">\n        <span class=\"value\"><i class=\"fa fa-bars\"></i></span>\n      </div>\n    </div>\n  </div>\n  <div id=\"horizontal-scroller\" class=\"dragdealer\">\n    <div class=\"handle scroller-gray-bar\">\n      <span class=\"value\"><i class=\"fa fa-bars fa-rotate-90\"></i></span>\n    </div>\n  </div>\n  <div class=\"haika-property-panel\">\n    <div class=\"haika-canvas-panel\">\n        <h3>キャンバスのプロパティ</h3>\n        <label for=\"haika-canvas-width\">\n            width: <span id=\"haika-canvas-width\"></span>\n        </label>\n        <label for=\"haika-canvas-height\">\n            height: <span id=\"haika-canvas-height\"></span>\n        </label><br/>\n        <label for=\"haika-canvas-centerX\">\n            centerX: <span id=\"haika-canvas-centerX\"></span>\n        </label>\n        <label for=\"haika-canvas-centerY\">\n            centerY: <span id=\"haika-canvas-centerY\"></span>\n        </label><br/>\n        <label for=\"haika-canvas-bgscale\">\n            bgscale:\n            <input type=\"number\" id=\"haika-canvas-bgscale\" class=\"form-control\" value=\"0\" step=\"0.01\"/>\n        </label><br/>\n        <label for=\"haika-canvas-bgopacity\">\n            bgopacity:\n            <input type=\"number\" id=\"haika-canvas-bgopacity\" class=\"form-control\" value=\"0\" step=\"0.1\"/>\n            <input id=\"haika-bgopacity-slider\" data-slider-id='haika-bgopacity-slider' type=\"text\" data-slider-min=\"0\" data-slider-max=\"1\" data-slider-step=\"0.1\" data-slider-value=\"0.2\"/>\n        </label><br/>\n        <label for=\"haika-bgimg\">\n            背景画像:\n            <input type=\"file\" id=\"haika-bgimg\" class=\"btn btn-default\"/>\n        </label>\n        <br/>\n        <br/>\n        <span class=\"haika-map-setting btn btn-default\">\n          <i class=\"fa fa-map-marker\"></i>\n          地図設定\n        </span>\n        <br/>\n        <br/>\n        <br/>\n        <br/>\n        <span id=\"haika-bgreset\" class=\"btn btn-default\">\n          <i class=\"fa fa-trash\"></i>\n          背景リセット\n        </span>\n        <br/>\n        <br/>\n        <br/>\n        <br/>\n        <span id=\"haika-import\" class=\"btn btn-default\">\n          <i class=\"fa fa-download\"></i>\n          データのインポート\n        </span>\n      </div>\n      <div class=\"haika-object-panel\">\n        <h3>オブジェクトのプロパティ</h3>\n\n        <p>id: <span id=\"haika-object-id\"></span></p>\n\n        <p><i class=\"fa fa-trash-o haika-remove btn btn-default\"> remove</i></p>\n\n        <p><i class=\"fa fa-files-o haika-duplicate btn btn-default\"> duplicate</i></p>\n\n        <p><input type=\"button\" class=\"haika-bringtofront btn btn-default\" value=\"bringToFront \"/></p>\n\n        <div id=\"haika-object-property\"></div>\n      </div>\n      <div class=\"haika-group-panel\">\n          <h3>グループのプロパティ</h3>\n\n          <p><span id=\"haika-group-count\"></span>個のオブジェクトを選択中。</p>\n\n          <p><i class=\"fa fa-trash-o haika-remove btn btn-default\"> remove</i></p>\n\n          <p>\n\n          <div class=\"btn-group\">\n              <i class=\"fa fa-align-left haika-align-left btn btn-default\"></i>\n              <i class=\"fa fa-align-center haika-align-center btn btn-default\"></i>\n              <i class=\"fa fa-align-right haika-align-right btn btn-default\"></i>\n          </div>\n          </p>\n          <p>\n\n          <div class=\"btn-group\">\n              <i class=\"fa fa-align-left fa-rotate-90 haika-align-top btn btn-default\"></i>\n              <i class=\"fa fa-align-center fa-rotate-90 haika-align-vcenter btn btn-default\"></i>\n              <i class=\"fa fa-align-right fa-rotate-90 haika-align-bottom btn btn-default\"></i>\n          </div>\n          </p>\n      </div>\n  </div>\n</div>\n<div id=\"haika-context-menu\">\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li>\n      <a class=\"fa fa-undobtn haika-undo\"> undo</a>\n    </li>\n    <li role=\"presentation\" class=\"divider\"></li>\n    <li>\n      <a class=\"haika-zoomin\">\n        <i class=\"fa fa-plus\"></i> zoomin\n      </a>\n    </li>\n    <li>\n      <a class=\"haika-zoomout\">\n        <i class=\"fa fa-minus\"></i> zoomout\n      </a>\n    </li>\n    <li role=\"presentation\" class=\"divider\"></li>\n    <li class=\"haika-select-context-menu\">\n      <a class=\"fa fa-copy haika-copy\"> copy</a>\n    </li>\n    <li>\n      <a class=\"fa fa-paste haika-paste\"> paste</a>\n    </li>\n    <li role=\"presentation\" class=\"divider haika-select-context-menu\"></li>\n    <li class=\"haika-select-context-menu\">\n      <a class=\"haika-bringtofront\">bringToFront</a>\n    </li>\n  </ul>\n</div>");
+    return $(container).html("<div id=\"haika-canvas\">\n  <ul class=\"haika-nav\">\n      <li><a href=\"#\" class=\"floor\">床</a></li>\n      <li><a href=\"#\" class=\"wall\">壁</a></li>\n      <li><a href=\"#\" class=\"beacon\">ビーコン</a></li>\n      <li class=\"active\"><a href=\"#\" class=\"shelf\">本棚</a></li>\n  </ul>\n  <div class=\"haika-header\">\n      <div style=\"margin-top: 5px;\" class=\"pull-left\">\n        <i class=\"fa fa-copy haika-copy btn btn-default\"> copy</i>\n        <i class=\"fa fa-paste haika-paste btn btn-default\"> paste</i>\n        <i class=\"fa fa-undobtn haika-undo btn btn-default\"> undo</i>\n      </div>\n      <div class=\"pull-right\" style=\"margin-top: 2px;\">\n        <span class=\"fullscreen btn btn-default\">\n          <span class=\"glyphicon glyphicon-fullscreen\"></span>\n          fullscreen\n        </span>\n      </div>\n      <div style=\"display:none;\">\n          <input type=\"file\" id=\"file\"/>\n      </div>\n  </div>\n  <div class=\"haika-toolbar-container\">\n    <ul class=\"toolbar-menu\">\n    </ul>\n    <select id=\"fill-color\">\n        <option value=\"1\" data-color=\"#CFE2F3\" selected=\"selected\">lightblue</option>\n    </select>\n    <select id=\"stroke-color\">\n        <option value=\"1\" data-color=\"#000000\" selected=\"selected\">balck</option>\n    </select>\n  </div>\n  <div class=\"haika-buttons\">\n    <span class=\"haika-button haika-full\">\n      <i class=\"fa fa-arrows\"></i>\n    </span>\n    <span class=\"haika-button haika-zoomin\">\n      <i class=\"fa fa-plus\"></i>\n    </span>\n    <span class=\"haika-button haika-zoomout\">\n      <i class=\"fa fa-minus\"></i>\n    </span>\n  </div>\n  <div  id=\"vertical-scroller\" class=\"content-scroller\">\n    <div class=\"dragdealer\">\n      <div class=\"handle scroller-gray-bar\">\n        <span class=\"value\"><i class=\"fa fa-bars\"></i></span>\n      </div>\n    </div>\n  </div>\n  <div id=\"horizontal-scroller\" class=\"dragdealer\">\n    <div class=\"handle scroller-gray-bar\">\n      <span class=\"value\"><i class=\"fa fa-bars fa-rotate-90\"></i></span>\n    </div>\n  </div>\n  <div class=\"haika-property-panel\">\n    <div class=\"haika-canvas-panel\">\n        <h3>キャンバスのプロパティ</h3>\n        <label for=\"haika-canvas-width\">\n            width: <span id=\"haika-canvas-width\"></span>\n        </label>\n        <label for=\"haika-canvas-height\">\n            height: <span id=\"haika-canvas-height\"></span>\n        </label><br/>\n        <label for=\"haika-canvas-centerX\">\n            centerX: <span id=\"haika-canvas-centerX\"></span>\n        </label>\n        <label for=\"haika-canvas-centerY\">\n            centerY: <span id=\"haika-canvas-centerY\"></span>\n        </label><br/>\n        <label for=\"haika-canvas-bgscale\">\n            bgscale:\n            <input type=\"number\" id=\"haika-canvas-bgscale\" class=\"form-control\" value=\"0\" step=\"0.01\"/>\n        </label><br/>\n        <label for=\"haika-canvas-bgopacity\">\n            bgopacity:\n            <input type=\"number\" id=\"haika-canvas-bgopacity\" class=\"form-control\" value=\"0\" step=\"0.1\"/>\n            <input id=\"haika-bgopacity-slider\" data-slider-id='haika-bgopacity-slider' type=\"text\" data-slider-min=\"0\" data-slider-max=\"1\" data-slider-step=\"0.1\" data-slider-value=\"0.2\"/>\n        </label><br/>\n        <label for=\"haika-bgimg\">\n            背景画像:\n            <input type=\"file\" id=\"haika-bgimg\" class=\"btn btn-default\"/>\n        </label>\n        <br/>\n        <br/>\n        <span class=\"haika-map-setting btn btn-default\">\n          <i class=\"fa fa-map-marker\"></i>\n          地図設定\n        </span>\n        <br/>\n        <br/>\n        <br/>\n        <br/>\n        <span id=\"haika-bgreset\" class=\"btn btn-default\">\n          <i class=\"fa fa-trash\"></i>\n          背景リセット\n        </span>\n        <br/>\n        <br/>\n        <br/>\n        <br/>\n        <span id=\"haika-import\" class=\"btn btn-default\">\n          <i class=\"fa fa-download\"></i>\n          データのインポート\n        </span>\n      </div>\n      <div class=\"haika-object-panel\">\n        <h3>オブジェクトのプロパティ</h3>\n\n        <p>id: <span id=\"haika-object-id\"></span></p>\n\n        <p><i class=\"fa fa-trash-o haika-remove btn btn-default\"> remove</i></p>\n\n        <p><i class=\"fa fa-files-o haika-duplicate btn btn-default\"> duplicate</i></p>\n\n        <p><input type=\"button\" class=\"haika-bringtofront btn btn-default\" value=\"bringToFront \"/></p>\n\n        <div id=\"haika-object-property\"></div>\n      </div>\n      <div class=\"haika-group-panel\">\n          <h3>グループのプロパティ</h3>\n\n          <p><span id=\"haika-group-count\"></span>個のオブジェクトを選択中。</p>\n\n          <p><i class=\"fa fa-trash-o haika-remove btn btn-default\"> remove</i></p>\n\n          <p>\n\n          <div class=\"btn-group\">\n              <i class=\"fa fa-align-left haika-align-left btn btn-default\"></i>\n              <i class=\"fa fa-align-center haika-align-center btn btn-default\"></i>\n              <i class=\"fa fa-align-right haika-align-right btn btn-default\"></i>\n          </div>\n          </p>\n          <p>\n\n          <div class=\"btn-group\">\n              <i class=\"fa fa-align-left fa-rotate-90 haika-align-top btn btn-default\"></i>\n              <i class=\"fa fa-align-center fa-rotate-90 haika-align-vcenter btn btn-default\"></i>\n              <i class=\"fa fa-align-right fa-rotate-90 haika-align-bottom btn btn-default\"></i>\n          </div>\n          </p>\n      </div>\n  </div>\n</div>\n<div id=\"haika-context-menu\">\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li>\n      <a class=\"fa fa-undobtn haika-undo\"> undo</a>\n    </li>\n    <li role=\"presentation\" class=\"divider\"></li>\n    <li>\n      <a class=\"haika-zoomin\">\n        <i class=\"fa fa-plus\"></i> zoomin\n      </a>\n    </li>\n    <li>\n      <a class=\"haika-zoomout\">\n        <i class=\"fa fa-minus\"></i> zoomout\n      </a>\n    </li>\n    <li role=\"presentation\" class=\"divider\"></li>\n    <li class=\"haika-select-context-menu\">\n      <a class=\"fa fa-copy haika-copy\"> copy</a>\n    </li>\n    <li>\n      <a class=\"fa fa-paste haika-paste\"> paste</a>\n    </li>\n    <li role=\"presentation\" class=\"divider haika-select-context-menu\"></li>\n    <li class=\"haika-select-context-menu\">\n      <a class=\"haika-bringtofront\">bringToFront</a>\n    </li>\n  </ul>\n</div>");
   }
 });
 

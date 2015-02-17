@@ -5,6 +5,7 @@
     attributes.top = attributes.top or 0
     attributes
   fabric = global.fabric or (global.fabric = {})
+  degreesToRadians = fabric.util.degreesToRadians
   extend = fabric.util.object.extend
   if fabric.Shelf
     console.warn "fabric.Shelf is already defined"
@@ -44,16 +45,16 @@
         return
       ctx.scale 1 / @scaleX, 1 / @scaleY
       #スケール変更中は位置をドラックした反対側に寄せる
-      sx=0
-      if @scaleX != 0 && (@__corner=='mr' || @__corner=='tr' || @__corner=='br')
-          sx=(@count*@__eachWidth()-@width*@scaleX)/2
-      if @scaleX != 0 && (@__corner=='ml' || @__corner=='tl' || @__corner=='bl')
-          sx=-1*(@count*@__eachWidth()-@width*@scaleX)/2
-      sy=0
-      if @scaleY != 0 && (@__corner=='mb')
-          sy=(@side*@__eachHeight()-@height*@scaleY)/2
-      if @scaleY != 0 && (@__corner=='mt')
-          sy=-1*(@side*@__eachHeight()-@height*@scaleY)/2
+      sx = 0
+      if @scaleX != 0 && (@__corner == 'mr' || @__corner == 'tr' || @__corner == 'br')
+        sx = (@count * @__eachWidth() - @width * @scaleX) / 2
+      if @scaleX != 0 && (@__corner == 'ml' || @__corner == 'tl' || @__corner == 'bl')
+        sx = -1 * (@count * @__eachWidth() - @width * @scaleX) / 2
+      sy = 0
+      if @scaleY != 0 && (@__corner == 'mb')
+        sy = (@side * @__eachHeight() - @height * @scaleY) / 2
+      if @scaleY != 0 && (@__corner == 'mt')
+        sy = -1 * (@side * @__eachHeight() - @height * @scaleY) / 2
       w = @__eachWidth()
       h = @__eachHeight()
       x = -w / 2 * @count + sx
@@ -78,9 +79,9 @@
         ctx.textBaseline = "middle"
         ctx.fillStyle = 'rgba(0, 0, 0,1)';
 
-        label = if @side==1 then "単式" else "複式"
+        label = if @side == 1 then "単式" else "複式"
         label = "[" + @id + "] " + label + @count + "連"
-        ctx.fillText(label,0,(@height*@scaleY)/2+15);
+        ctx.fillText(label, 0, (@height * @scaleY) / 2 + 15);
 
       #if haika.scale > 0.5
       #  ctx.font = "30px FontAwesome";
@@ -96,9 +97,9 @@
       total_width = w * @count
       @__renderRect(ctx, x, y, total_width, h)
       @__renderPartitionLine(ctx, x, y, w, h)
-      if @side==2
-        @__renderRect(ctx, x, y+h, total_width, h)
-        @__renderPartitionLine(ctx, x, y+h, w, h)
+      if @side == 2
+        @__renderRect(ctx, x, y + h, total_width, h)
+        @__renderPartitionLine(ctx, x, y + h, w, h)
 
     __renderRect: (ctx, x, y, w, h) ->
       ctx.lineWidth = 1
@@ -113,7 +114,7 @@
       @_renderStroke ctx
 
     __renderPartitionLine: (ctx, x, y, w, h) ->
-      if @count<=1
+      if @count <= 1
         return
       ctx.lineWidth = 1
       ctx.beginPath()
@@ -135,23 +136,23 @@
       #@_renderFill ctx
       @_renderStroke ctx
 
-    # 回転角度のスナップ
-    # 90度単位でスナップ、元の角度から20度まではスナップしない
-    __rotating : ()->
+  # 回転角度のスナップ
+  # 90度単位でスナップ、元の角度から20度まではスナップしない
+    __rotating: ()->
       log '__rotating'
-      if Math.abs(@originalState.angle- @angle)>20
+      if Math.abs(@originalState.angle - @angle) > 20
         @angle = @angle % 360
-        if @angle >=350 || @angle <= 10 then @angle=0
-        if @angle >=80  && @angle <= 100 then @angle=90
-        if @angle >=170 && @angle <=190 then @angle=180
-        if @angle >=260 && @angle <=280 then @angle=270
+        if @angle >= 350 || @angle <= 10 then @angle = 0
+        if @angle >= 80 && @angle <= 100 then @angle = 90
+        if @angle >= 170 && @angle <= 190 then @angle = 180
+        if @angle >= 260 && @angle <= 280 then @angle = 270
 
-    # 移動時に10cm単位でスナップ
-    __moving : () ->
-      @left = Math.round(@left/haika.scaleFactor/10)*10*haika.scaleFactor
-      @top = Math.round(@top/haika.scaleFactor/10)*10*haika.scaleFactor
+  # 移動時に10cm単位でスナップ
+    __moving: () ->
+      @left = Math.round(@left / haika.scaleFactor / 10) * 10 * haika.scaleFactor
+      @top = Math.round(@top / haika.scaleFactor / 10) * 10 * haika.scaleFactor
 
-    # サイズ変更のスナップ
+  # サイズ変更のスナップ
     __resizeShelf: () ->
       log '__resizeShelf'
       actualWidth = @scaleX * @currentWidth
@@ -163,27 +164,27 @@
       if side < 1 then side = 1
       if side > 2 then side = 2
       @set(count: count, side: side, minScaleLimit: 0.01, flipX: false, flipY: false)
-      #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
+  #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
 
     __modifiedShelf: () ->
-      @centeredScaling=false
+      @centeredScaling = false
       log '__modifiedShelf'
-      if @scaleX != 0 && (@__corner=='mr' || @__corner=='tr' || @__corner=='br')
-         th = @angle * (Math.PI / 180)
-         @top = @top + Math.sin(th)*(@count*@__eachWidth()-@width*@scaleX)/2
-         @left = @left + Math.cos(th)*(@count*@__eachWidth()-@width*@scaleX)/2
-      if @scaleX != 0 && (@__corner=='ml' || @__corner=='tl' || @__corner=='bl')
-         th = @angle * (Math.PI / 180)
-         @top = @top - Math.sin(th)*(@count*@__eachWidth()-@width*@scaleX)/2
-         @left = @left - Math.cos(th)*(@count*@__eachWidth()-@width*@scaleX)/2
-      if @scaleY != 0 && (@__corner=='mb')
-         th = @angle * (Math.PI / 180)
-         @left = @left + Math.sin(th)*(@side*@__eachHeight()-@height*@scaleY)/2
-         @top = @top + Math.cos(th)*(@side*@__eachHeight()-@height*@scaleY)/2
-      if @scaleY != 0 && (@__corner=='mt')
-         th = @angle * (Math.PI / 180)
-         @left = @left - Math.sin(th)*(@side*@__eachHeight()-@height*@scaleY)/2
-         @top = @top - Math.cos(th)*(@side*@__eachHeight()-@height*@scaleY)/2
+      if @scaleX != 0 && (@__corner == 'mr' || @__corner == 'tr' || @__corner == 'br')
+        th = @angle * (Math.PI / 180)
+        @top = @top + Math.sin(th) * (@count * @__eachWidth() - @width * @scaleX) / 2
+        @left = @left + Math.cos(th) * (@count * @__eachWidth() - @width * @scaleX) / 2
+      if @scaleX != 0 && (@__corner == 'ml' || @__corner == 'tl' || @__corner == 'bl')
+        th = @angle * (Math.PI / 180)
+        @top = @top - Math.sin(th) * (@count * @__eachWidth() - @width * @scaleX) / 2
+        @left = @left - Math.cos(th) * (@count * @__eachWidth() - @width * @scaleX) / 2
+      if @scaleY != 0 && (@__corner == 'mb')
+        th = @angle * (Math.PI / 180)
+        @left = @left + Math.sin(th) * (@side * @__eachHeight() - @height * @scaleY) / 2
+        @top = @top + Math.cos(th) * (@side * @__eachHeight() - @height * @scaleY) / 2
+      if @scaleY != 0 && (@__corner == 'mt')
+        th = @angle * (Math.PI / 180)
+        @left = @left - Math.sin(th) * (@side * @__eachHeight() - @height * @scaleY) / 2
+        @top = @top - Math.cos(th) * (@side * @__eachHeight() - @height * @scaleY) / 2
       @scaleX = @scaleY = 1
       @width = @__width()
       @height = @__height()
@@ -211,11 +212,11 @@
 
     toObject: (propertiesToInclude) ->
       object = extend(@callSuper("toObject", propertiesToInclude),
-        count: @get("count")        
+        count: @get("count")
         side: @get("side")
       )
       if not @includeDefaultValues
-        @_removeDefaultValues object  
+        @_removeDefaultValues object
       return object
 
     toGeoJSON: ->
@@ -224,13 +225,14 @@
       x = -w / 2 + @left_cm
       y = -h / 2 + @top_cm
       coordinates = [
-        [ [x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]
+        [[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]
       ]
       new_coordinates = []
       for c in coordinates
         for coordinate in c
           # 回転の反映
-          new_coordinate =  fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(@left_cm, @top_cm), fabric.util.degreesToRadians(@angle));
+          new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]),
+            new fabric.Point(@left_cm, @top_cm), fabric.util.degreesToRadians(@angle));
           # fabricとGeoJSONではX軸が逆なので変更する
           new_coordinates.push([-new_coordinate.x, new_coordinate.y])
       data =
@@ -239,27 +241,27 @@
           "type": "Polygon"
           "coordinates": [new_coordinates]
 #          "coordinates": coordinates
-        "properties": 
-          "label" : if @label then @label else ""
-          "type"  : @type
-          "left_cm" : @left_cm
-          "top_cm"  : @top_cm
-          "eachWidth" : @eachWidth
+        "properties":
+          "label": if @label then @label else ""
+          "type": @type
+          "left_cm": @left_cm
+          "top_cm": @top_cm
+          "eachWidth": @eachWidth
           "eachHeight": @eachHeight
-          "id"    : @id
-          "count"    : @count
-          "side"    : @side
-          "angle" : @angle
-          "fill" : @fill
-          "stroke" : @stroke
-#      log data
+          "id": @id
+          "count": @count
+          "side": @side
+          "angle": @angle
+          "fill": @fill
+          "stroke": @stroke
+      #      log data
       return data
-    
+
     toSVG: (reviver) ->
       markup = @_createBaseSVGMarkup()
       markup.push("<g>")
       count = @get("count")
-      side  = @get("side")
+      side = @get("side")
       w = @eachWidth
       h = @eachHeight
       x = -w / 2 * @count
@@ -271,7 +273,7 @@
 #        markup.push """<rect x="#{x}" y="#{y}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@w}" height="#{@h}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
         markup.push """<rect x="#{(-1 * @width / 2) + @width / count * i}" y="#{(-1 * @height / 2)}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@width / count}" height="#{@height / 2}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
         i++
-      if side==2
+      if side == 2
         i = 0
         while i < count
 #          markup.push """<rect x="#{x}" y="#{y}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@w}" height="#{@h}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
@@ -281,7 +283,7 @@
 
       (if reviver then reviver(markup.join("")) else markup.join(""))
 
-    getJSONSchema : () ->
+    getJSONSchema: () ->
       schema =
         title: "基本情報"
         type: "object"
@@ -314,15 +316,15 @@
             type: "integer"
             default: 25
             minimum: 1
-#          shelfs:
-#            type: "array"
-#            uniqueItems: true
-#            items:
-#              type: "string"
-#              enum: [
-#                "value1"
-#                "value2"
-#              ]
+      #          shelfs:
+      #            type: "array"
+      #            uniqueItems: true
+      #            items:
+      #              type: "string"
+      #              enum: [
+      #                "value1"
+      #                "value2"
+      #              ]
       return schema
     complexity: ->
       1
@@ -340,4 +342,4 @@
 
   return) (if typeof exports isnt "undefined" then exports else this)
 
-  #    fabric.Shelf.async = true;
+#    fabric.Shelf.async = true;

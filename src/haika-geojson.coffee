@@ -67,7 +67,7 @@ $.extend haika,
     return data
 
 # geojsonのクローン
-  cloneGeoJSON : ->
+  cloneGeoJSON: ->
     # 参照渡し回避のためにクローンする
     geojson = $.extend(true, {}, @toGeoJSON())
     return geojson
@@ -83,7 +83,7 @@ $.extend haika,
     return geojson
 
 # 共通処理
-  changeFeatures : (geojson, func)->
+  changeFeatures: (geojson, func)->
     features = []
     for object in geojson.features
       coordinates = []
@@ -100,16 +100,17 @@ $.extend haika,
 
 # geojsonの回転
   rotateGeoJSON: (geojson)->
-    geojson = @changeFeatures(geojson,(x, y, geojson)->
+    geojson = @changeFeatures(geojson, (x, y, geojson)->
       # 回転の反映
-      cordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0),fabric.util.degreesToRadians(-geojson.haika.xyAngle))
+      cordinate = fabric.util.rotatePoint(new fabric.Point(x, y), new fabric.Point(0, 0),
+        fabric.util.degreesToRadians(-geojson.haika.xyAngle))
       return [cordinate.x, cordinate.y]
     )
     return geojson
 
 # geojson床オブジェクトのマージ
   mergeGeoJSON: (geojson) ->
-    if geojson.features.length<=0
+    if geojson.features.length <= 0
       return geojson
     features = []
     paths = []
@@ -130,7 +131,8 @@ $.extend haika,
     for path in paths
       cpr.AddPaths path, ClipperLib.PolyType.ptSubject, true # true means closed path
     solution_paths = new ClipperLib.Paths()
-    cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero,ClipperLib.PolyFillType.pftNonZero)
+    cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero,
+      ClipperLib.PolyFillType.pftNonZero)
 
     # geojsonにする
     for path in solution_paths
@@ -158,7 +160,7 @@ $.extend haika,
 
 # 倍率
   scaleGeoJSON: (geojson)->
-    geojson = @changeFeatures(geojson,(x, y, geojson)->
+    geojson = @changeFeatures(geojson, (x, y, geojson)->
       x = x * geojson.haika.xyScaleFactor
       y = y * geojson.haika.xyScaleFactor
       return [x, y]
@@ -169,10 +171,10 @@ $.extend haika,
   transformGeoJSON: (geojson)->
     ### 定数 ###
     PI = Math.PI
-    radian =  (2*PI)/360 #0.017...
+    radian = (2 * PI) / 360 #0.017...
     earthRadius = 6378150 #地球の半径
-    earthCircumference = (2*PI*earthRadius) #地球の円周 = 40054782
-    latSecPmetre = (360*60*60)/earthCircumference #1m相当の緯度秒
+    earthCircumference = (2 * PI * earthRadius) #地球の円周 = 40054782
+    latSecPmetre = (360 * 60 * 60) / earthCircumference #1m相当の緯度秒
 
     cos = Math.cos
 
@@ -182,14 +184,14 @@ $.extend haika,
 
     #メートル,緯度 -> 経度秒
     metreToLongitudeSecond = (metre, lat) ->
-      metre * ((360*60*60)/(earthCircumference*cos(lat*radian)))
+      metre * ((360 * 60 * 60) / (earthCircumference * cos(lat * radian)))
 
-    geojson = @changeFeatures(geojson,(x, y, geojson)->
-      ySecond = metreToLatitudeSecond(y/100)
+    geojson = @changeFeatures(geojson, (x, y, geojson)->
+      ySecond = metreToLatitudeSecond(y / 100)
       yHour = ySecond / 3600
-      xSecond = metreToLongitudeSecond(x/100, geojson.haika.xyLatitude+yHour)
+      xSecond = metreToLongitudeSecond(x / 100, geojson.haika.xyLatitude + yHour)
       xHour = xSecond / 3600
-      return [geojson.haika.xyLongitude+xHour, geojson.haika.xyLatitude+yHour]
+      return [geojson.haika.xyLongitude + xHour, geojson.haika.xyLatitude + yHour]
     )
     return geojson
 

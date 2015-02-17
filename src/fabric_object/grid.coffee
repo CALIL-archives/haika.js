@@ -71,10 +71,25 @@
     ctx.font = "10px Open Sans"
     if haika.cm2px(100) <= 50
       scale = 500
-      ctx.fillText("5m", 25, height - 66 + posy)
+      text = "5m"
     else
       scale = 100
-      ctx.fillText("1m", 25, height - 66 + posy)
+      text = "1m"
+
+    ctx.lineWidth = 4.0
+    ctx.strokeStyle = "rgba(255,255,255,0.8)"
+    ctx.strokeText(text, 25, height - 66 + posy)
+    ctx.fillText(text, 25, height - 66 + posy)
+
+    ctx.lineWidth = 4
+    ctx.strokeStyle = "rgba(255,255,255,0.8)"
+    ctx.beginPath()
+    ctx.moveTo(20, height - 65 + posy - 2)
+    ctx.lineTo(20, height - 60 + posy)
+    ctx.lineTo(20 + haika.cm2px(scale), height - 60 + posy)
+    ctx.lineTo(20 + haika.cm2px(scale), height - 65 + posy - 2)
+    ctx.stroke()
+
     ctx.lineWidth = 2
     ctx.strokeStyle = '#666666'
     ctx.beginPath()

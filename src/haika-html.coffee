@@ -37,7 +37,7 @@ $.extend haika,
   </div>
   <div class="haika-buttons">
     <span class="haika-button haika-full">
-      <span class="glyphicon glyphicon-resize-full"></span>
+      <i class="fa fa-arrows"></i>
     </span>
     <span class="haika-button haika-zoomin">
       <i class="fa fa-plus"></i>

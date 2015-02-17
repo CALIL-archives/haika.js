@@ -9,6 +9,7 @@ module.exports = (grunt) ->
     "vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js"
     "vendor/clipper.js"
     "vendor/dragdealer/dragdealer.min.js"
+    "vendor/graham_scan_js-1.0.2/graham_scan.min.js"
     "src/fabric_object/aligning_guidelines.js"
     "src/fabric_object/shelf.js"
     "src/fabric_object/curvedShelf.js"
@@ -44,20 +45,10 @@ module.exports = (grunt) ->
           bare: true
         expand: true,
         flatten: true,
-        cwd: 'js/',
+        cwd: 'src/',
         src: ['*.coffee'],
-        dest: 'js/',
+        dest: 'src/',
         ext: '.js'
-    fabric_object:
-      options:
-        sourceMap: true
-        bare: true
-      expand: true,
-      flatten: true,
-      cwd: 'js/fabric_object/',
-      src: ['*.coffee'],
-      dest: 'js/fabric_object/',
-      ext: '.js'
     concat:
       js:
         options:

@@ -30,16 +30,16 @@ haika =
   readOnly: false # 表示専用モード オブジェクトの移動・変更、保存を行わない [エディタステータス系変数]
   centerX: 0 # 表示位置X(画面の中央が0) [エディタステータス系変数]
   centerY: 0 # 表示位置Y(画面の中央が0) [エディタステータス系変数]
-  scaleFactor: 1 #表示倍率 [エディタステータス系変数] (このファイル外で使用禁止)
+  scaleFactor: 1 # 表示倍率 [エディタステータス系変数] (このファイル外で使用禁止)
 # 外部からこの値を変更する場合はsetScaleメソッドを使うこと
 # Todo: fabricオブジェクトからの呼び出しについて検討の必要あり
-  layer: null #現在のレイヤー(CONST_LAYERS) [エディタステータス系変数]
+  layer: null # 現在のレイヤー(CONST_LAYERS) [エディタステータス系変数]
 
   objects: []
-  _geojson: {} #編集中のデータのGeoJSON
+  _geojson: {} # 編集中のデータのGeoJSON
 
-  fillColor: "#CFE2F3"
-  strokeColor: "#000000"
+  fillColor: '#CFE2F3'
+  strokeColor: '#000000'
 
   backgroundUrl: null
   backgroundOpacity: 1
@@ -85,7 +85,7 @@ haika =
       options.canvasId = 'haika-canvas-area'
     if options.readOnly?
       @readOnly = options.readOnly
-    $(@divId).prepend("""<canvas id="#{options.canvasId}" unselectable="on"></canvas>""")
+    $(@divId).prepend """<canvas id="#{options.canvasId}" unselectable="on"></canvas>"""
     @scaleFactor = if options.scaleFactor? then options.scaleFactor else 1
     @layer = @CONST_LAYERS.SHELF
     canvas = new fabric.Canvas(options.canvasId, {
@@ -141,6 +141,26 @@ haika =
 
     canvas._renderOverlay = (ctx) =>
       haika_utils.drawScale(@, ctx)
+      convex = new ConvexHullGrahamScan()
+      for object in @canvas.getObjects()
+        geojson = object.toGeoJSON()
+        for item in geojson.geometry.coordinates[0]
+          convex.addPoint(-1 * item[0], item[1])
+      ret = convex.getHull()
+      if ret.length > 0
+        ctx.save()
+        ctx.beginPath()
+        ctx.lineWidth = 4
+        ctx.strokeStyle = "#ff0000"
+        ctx.moveTo(haika.cm2px_x(ret[0].x), haika.cm2px_y(ret[0].y))
+        for i in ret
+          ctx.lineTo(haika.cm2px_x(i.x), haika.cm2px_y(i.y))
+        ctx.lineTo(haika.cm2px_x(ret[0].x), haika.cm2px_y(ret[0].y))
+        ctx.stroke()
+        ctx.restore()
+
+    # features.push(geojson)
+    # log features
 
     if not @readOnly
       initAligningGuidelines(canvas)
@@ -213,10 +233,8 @@ haika =
 # [この関数はaddから呼ばれる以外は使用しない]
 #
   _getLatestId: ->
-    if @objects.length == 0
-      return 0
     lastId = 0
-    for object in @objects
+    for object in @canvas.getObject()
       if object.id > lastId
         lastId = object.id
     lastId += 1
@@ -357,7 +375,7 @@ haika =
   selectAll: ()->
     @canvas.discardActiveGroup()
     ids = []
-    for object in @objects
+    for object in @canvas.getObjects()
       ids.push(object.id)
     @activeGroup(ids)
 
@@ -385,9 +403,9 @@ haika =
         @canvas.renderAll()
 
     activeIds = []
-    @applyActiveObjects((object)=>
+    @applyActiveObjects (object)=>
       activeIds.push(object.id)
-    )
+
 
     @canvas.renderOnAddRemove = false
     @canvas._objects.length = 0
@@ -437,8 +455,8 @@ haika =
     object.left = @transformLeftX_cm2px(o.left_cm)
     object.selectable = o.selectable
 
-    if not object.selectable
-      object.opacity = 0.5
+    #if not object.selectable
+    #  object.opacity = 0.5
     # オブジェクトのロック
     if @readOnly
       object.lockMovementX = true
