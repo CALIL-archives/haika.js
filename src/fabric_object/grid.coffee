@@ -67,7 +67,7 @@
     ctx.save()
     ctx.opacity = 1
     height = ctx.canvas.height
-    posy = 20
+    posy = 30
     ctx.font = "10px Open Sans"
     if haika.cm2px(100) <= 50
       scale = 500
@@ -76,9 +76,10 @@
       scale = 100
       text = "1m"
 
-    ctx.lineWidth = 4.0
-    ctx.strokeStyle = "rgba(255,255,255,0.8)"
+    ctx.lineWidth = 3.0
+    ctx.strokeStyle = "rgba(255,255,255,0.9)"
     ctx.strokeText(text, 25, height - 66 + posy)
+    ctx.strokeStyle = "#333333"
     ctx.fillText(text, 25, height - 66 + posy)
 
     ctx.lineWidth = 4

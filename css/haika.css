@@ -61,8 +61,11 @@ body {
     /*width: 1200px;*/
     margin: 0 auto;
     height: 100%;
+    /*
     border-right: 1px solid #CCCCCC;
     border-left: 1px solid #CCCCCC;
+    */
+    background: #353535;
     -moz-user-select: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -75,10 +78,10 @@ body {
     position: absolute;
     left: 0;
     top: 40px;
-    padding: 10px;
-    border-right: 1px solid #CCCCCC;
+    padding: 18px;
+    /*border-right: 1px solid #CCCCCC;
     border-bottom: 1px solid #CCCCCC;
-    background-color: #FFFFFF;
+    background-color: #FFFFFF;*/
 }
 
 .haika-toolbar-container ul.toolbar-menu {
@@ -145,15 +148,21 @@ body {
 
 #vertical-scroller {
     position: absolute;
-    top: 40px;
+    top: 0px;
     right: 0;
     z-index: 1;
-    height: calc(100% - 40px - 30px);
+    height: calc(100% - 16px);
+}
+
+.dragdealer {
+    position: relative;
+    height: 16px;
+    background: #232323;
 }
 
 #vertical-scroller .dragdealer {
     height: 100%;
-    width: 30px;
+    width: 16px;
 }
 
 #vertical-scroller .dragdealer .handle {
@@ -167,21 +176,27 @@ body {
 }
 
 #horizontal-scroller {
-    width: calc(100% - 30px);
+    width: calc(100% - 16px);
     position: absolute;
     bottom: 0;
-    border-top: 1px solid #CCCCCC;
+    /*border-top: 1px solid #CCCCCC;*/
 }
 
 .scroller-gray-bar {
     width: 100px;
-    height: 30px;
-    background: #666666;
-    color: #FFF;
+    height: 16px;
+    background: #505050;
+    border:1px solid #404040;
+    /*color: #FFF;
     font-size: 14px;
     line-height: 30px;
-    text-align: center;
+    text-align: center;*/
 }
+
+.scroller-gray-bar:hover {
+    background: #707070;
+}
+
 
 /* editor */
 
@@ -199,7 +214,7 @@ body {
     height: calc(100% - 40px - 30px);
     color: #ffffff;
     padding: 10px;
-    background-color: #000000;
+    background-color: #353535;
     opacity: 0.8;
 }
 

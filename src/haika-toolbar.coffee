@@ -82,8 +82,8 @@ $.extend haika,
             key = $(e.target).attr('key')
             object = addButtons[key]
             # GeoJSONに不要なプロパティを削除
-            delete object.title
-            delete object.icon
+            #delete object.title
+            #delete object.icon
             haika.addObject(object)
       @show('shelf')
 

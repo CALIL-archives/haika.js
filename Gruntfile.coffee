@@ -6,10 +6,9 @@ module.exports = (grunt) ->
     "bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"
     "bower_components/bootstrap-contextmenu/bootstrap-contextmenu.js"
     "vendor/mousetrap.min.js"
-    "vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js"
-    "vendor/clipper.js"
     "vendor/dragdealer/dragdealer.min.js"
     "vendor/graham_scan_js-1.0.2/graham_scan.min.js"
+    "vendor/clipper_unminified.js"
     "src/fabric_object/aligning_guidelines.js"
     "src/fabric_object/shelf.js"
     "src/fabric_object/curvedShelf.js"
@@ -23,7 +22,6 @@ module.exports = (grunt) ->
     "src/haika-zoom.js"
     "src/haika-scrollbar.js"
     "src/haika-toolbar.js"
-    "src/haika-colorpicker.js"
     "src/haika-event.js"
     "src/haika-undo.js"
     "src/haika-property.js"
@@ -60,7 +58,6 @@ module.exports = (grunt) ->
       css:
         src: [
           "vendor/dragdealer/dragdealer.css"
-          "vendor/bootstrap-colorselector-0.2.0/css/bootstrap-colorselector.css"
           "bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css"
           "css/haika.css"
         ]

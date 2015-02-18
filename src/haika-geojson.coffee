@@ -110,53 +110,52 @@ $.extend haika,
 
 # geojson床オブジェクトのマージ
   mergeGeoJSON: (geojson) ->
-    if geojson.features.length <= 0
-      return geojson
-    features = []
-    paths = []
-    for object in geojson.features
-      if object.properties.type != 'floor'
-        features.push(object)
-      if object.properties.type == 'floor'
-        path = []
-        for geometry in object.geometry.coordinates[0]
-          p =
-            X: geometry[0]
-            Y: geometry[1]
-          path.push(p)
-        paths.push([path])
+    return geojson
+    #features = []
+    #paths = []
+    #for object in geojson.features
+      #if object.properties.type != 'floor'
+      #features.push(object)
+      #if object.properties.type == 'floor'
+      #  path = []
+      #  for geometry in object.geometry.coordinates[0]
+      #    p =
+      #      X: geometry[0]
+      #      Y: geometry[1]
+      #    path.push(p)
+      #  paths.push([path])
 
     # パスの結合
-    cpr = new ClipperLib.Clipper()
-    for path in paths
-      cpr.AddPaths path, ClipperLib.PolyType.ptSubject, true # true means closed path
-    solution_paths = new ClipperLib.Paths()
-    cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero,
-      ClipperLib.PolyFillType.pftNonZero)
+    #cpr = new ClipperLib.Clipper()
+    #for path in paths
+    #  cpr.AddPaths path, ClipperLib.PolyType.ptSubject, true # true means closed path
+    #solution_paths = new ClipperLib.Paths()
+    #cpr.Execute(ClipperLib.ClipType.ctUnion, solution_paths, ClipperLib.PolyFillType.pftNonZero,
+    #  ClipperLib.PolyFillType.pftNonZero)
 
     # geojsonにする
-    for path in solution_paths
-      coordinates = []
-      first = true
-      for p in path
-        if first
-          first_coordinates = [p.X, p.Y]
-          first = false
-        coordinates.push [p.X, p.Y]
-      coordinates.push first_coordinates
-      # 先頭に追加
-      features.unshift(
-        "type": "Feature"
-        "geometry":
-          "type": "Polygon",
-          "coordinates": [coordinates]
-        "properties":
-          "type": "floor",
-          "fill": "#FFFFFF",
-          "stroke": "#000000"
-      )
-    geojson.features = features
-    return geojson
+    #for path in solution_paths
+    #  coordinates = []
+    #  first = true
+    #  for p in path
+    #    if first
+    #      first_coordinates = [p.X, p.Y]
+    #      first = false
+    #    coordinates.push [p.X, p.Y]
+    #  coordinates.push first_coordinates
+    #  # 先頭に追加
+    #  features.unshift(
+    #    "type": "Feature"
+    #    "geometry":
+    #      "type": "Polygon",
+    #      "coordinates": [coordinates]
+    #    "properties":
+    #      "type": "floor",
+    #      "fill": "#FFFFFF",
+    #      "stroke": "#000000"
+    #  )
+    #geojson.features = features
+    #return geojson
 
 # 倍率
   scaleGeoJSON: (geojson)->

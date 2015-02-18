@@ -28,12 +28,6 @@ $.extend haika,
   <div class="haika-toolbar-container">
     <ul class="toolbar-menu">
     </ul>
-    <select id="fill-color">
-        <option value="1" data-color="#CFE2F3" selected="selected">lightblue</option>
-    </select>
-    <select id="stroke-color">
-        <option value="1" data-color="#000000" selected="selected">balck</option>
-    </select>
   </div>
   <div class="haika-buttons">
     <span class="haika-button haika-full">
@@ -49,15 +43,15 @@ $.extend haika,
   <div  id="vertical-scroller" class="content-scroller">
     <div class="dragdealer">
       <div class="handle scroller-gray-bar">
-        <span class="value"><i class="fa fa-bars"></i></span>
       </div>
     </div>
   </div>
   <div id="horizontal-scroller" class="dragdealer">
     <div class="handle scroller-gray-bar">
-      <span class="value"><i class="fa fa-bars fa-rotate-90"></i></span>
     </div>
   </div>
+<div style="bottom:0px;right:0px;width:16px;height:16px;background-color:#525252;position:absolute;border:1px solid #777">
+</div>
   <div class="haika-property-panel">
     <div class="haika-canvas-panel">
         <h3>キャンバスのプロパティ</h3>

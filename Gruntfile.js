@@ -2,7 +2,7 @@
 "use strict";
 module.exports = function(grunt) {
   var js_files;
-  js_files = ["bower_components/fabric/dist/fabric.js", "bower_components/Javascript-Undo-Manager/js/undomanager.js", "bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js", "bower_components/bootstrap-contextmenu/bootstrap-contextmenu.js", "vendor/mousetrap.min.js", "vendor/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js", "vendor/clipper.js", "vendor/dragdealer/dragdealer.min.js", "vendor/graham_scan_js-1.0.2/graham_scan.min.js", "src/fabric_object/aligning_guidelines.js", "src/fabric_object/shelf.js", "src/fabric_object/curvedShelf.js", "src/fabric_object/beacon.js", "src/fabric_object/wall.js", "src/fabric_object/floor.js", "src/fabric_object/grid.js", "src/haika.js", "src/haika-io.js", "src/haika-geojson.js", "src/haika-zoom.js", "src/haika-scrollbar.js", "src/haika-toolbar.js", "src/haika-colorpicker.js", "src/haika-event.js", "src/haika-undo.js", "src/haika-property.js", "src/haika-html.js"];
+  js_files = ["bower_components/fabric/dist/fabric.js", "bower_components/Javascript-Undo-Manager/js/undomanager.js", "bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js", "bower_components/bootstrap-contextmenu/bootstrap-contextmenu.js", "vendor/mousetrap.min.js", "vendor/dragdealer/dragdealer.min.js", "vendor/graham_scan_js-1.0.2/graham_scan.min.js", "vendor/clipper_unminified.js", "src/fabric_object/aligning_guidelines.js", "src/fabric_object/shelf.js", "src/fabric_object/curvedShelf.js", "src/fabric_object/beacon.js", "src/fabric_object/wall.js", "src/fabric_object/floor.js", "src/fabric_object/grid.js", "src/haika.js", "src/haika-io.js", "src/haika-geojson.js", "src/haika-zoom.js", "src/haika-scrollbar.js", "src/haika-toolbar.js", "src/haika-event.js", "src/haika-undo.js", "src/haika-property.js", "src/haika-html.js"];
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
     bower: {
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
         nonull: true
       },
       css: {
-        src: ["vendor/dragdealer/dragdealer.css", "vendor/bootstrap-colorselector-0.2.0/css/bootstrap-colorselector.css", "bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css", "css/haika.css"],
+        src: ["vendor/dragdealer/dragdealer.css", "bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css", "css/haika.css"],
         dest: "css/haika.all.css",
         nonull: true
       }

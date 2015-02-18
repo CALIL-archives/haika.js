@@ -87,7 +87,7 @@ else
     haika.event.init()
     haika.undo.init()
     initScrollBar()
-    haika.colorpicker.init()
+    #haika.colorpicker.init()
 
 
 # フルスクリーンモードボタン

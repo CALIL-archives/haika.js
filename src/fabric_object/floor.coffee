@@ -7,8 +7,8 @@
     return
   fabric.Floor = fabric.util.createClass(fabric.Rect,
     type: "floor"
-    width_cm: 1000
-    height_cm: 1000
+    width_cm: 5000
+    height_cm: 3000
     is_negative: false
     fill: '#ffffff'
     stroke: '#000000'
@@ -30,10 +30,9 @@
         return
 
       if @is_negative
-        ctx.fillStyle = 'rgba(255,255,255,1)'
+        ctx.fillStyle = '#353535'
       else
         ctx.fillStyle = 'rgba(255,0,0,0.3)'
-
 
       rx = if @rx then Math.min(@rx, @width / 2) else 0
       ry = if @ry then Math.min(@ry, @height / 2) else 0
@@ -55,22 +54,31 @@
       isRounded and ctx.bezierCurveTo(x, y + k * ry, x + k * rx, y, x + rx, y)
       ctx.closePath()
       @_renderFill ctx
-      @_renderStroke ctx
+      if @selectable
+          @_renderStroke ctx
+          ctx.save()
+          ctx.scale 1 / @scaleX, 1 / @scaleY
+          if @angle > 90 and @angle < 270
+            ctx.rotate(degreesToRadians(180))
 
-      ctx.save()
-      if @angle > 90 and @angle < 270
-        ctx.rotate(degreesToRadians(180))
-      ctx.font = "12px Arial"
-      ctx.textAlign = "center"
-      ctx.textBaseline = "middle"
+          if @is_negative
+            ctx.fillStyle = '#999999'
+            label = '吹き抜け'
+          else
+            ctx.fillStyle = '#000000'
+            label = 'フロア指定'
+          ctx.font = "12px Arial"
+          ctx.textAlign = "center"
+          ctx.textBaseline = "middle"
 
-      if @is_negative
-        ctx.fillStyle = '#000000'
-        ctx.fillText('吹き抜け指定領域', 0, 0)
-      else
-        ctx.fillStyle = '#000000'
-        ctx.fillText('フロア指定領域', 0, 0)
-      ctx.restore()
+          metrics = ctx.measureText(label)
+          if metrics.width <= @__width()
+            ctx.fillText(label, 0, 0)
+          else if metrics.width <= @__height()
+            ctx.rotate(degreesToRadians(90))
+            ctx.fillText(label, 0, 0)
+
+            ctx.restore()
       return
 
     __resizeShelf: () ->
@@ -121,6 +129,7 @@
           "width_cm": @width_cm
           "height_cm": @height_cm
           "angle": @angle
+          "is_negative": @is_negative
       return data
 
     getJSONSchema: () ->

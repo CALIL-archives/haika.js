@@ -37,7 +37,7 @@ haika =
 
   objects: []
   _geojson: {} # 編集中のデータのGeoJSON
-
+  _floor_cache: null
   fillColor: '#CFE2F3'
   strokeColor: '#000000'
 
@@ -136,31 +136,84 @@ haika =
       return action
 
     canvas._renderBackground = (ctx) =>
-      haika_utils.drawBackground(@, ctx)
-      haika_utils.drawGridLines(@, ctx)
-
-    canvas._renderOverlay = (ctx) =>
-      haika_utils.drawScale(@, ctx)
       convex = new ConvexHullGrahamScan()
       for object in @canvas.getObjects()
         geojson = object.toGeoJSON()
+        if geojson.properties.type == 'floor' and geojson.properties.is_negative
+          continue
         for item in geojson.geometry.coordinates[0]
           convex.addPoint(-1 * item[0], item[1])
       ret = convex.getHull()
       if ret.length > 0
+        convex_path = []
+        for i in ret
+          p =
+            X: i.x
+            Y: i.y
+          convex_path.push(p)
+        clipper = new ClipperLib.Clipper()
+        clipper.AddPaths [convex_path], ClipperLib.PolyType.ptSubject, true
+        for object in @canvas.getObjects()
+          geojson = object.toGeoJSON()
+          if geojson.properties.type == 'floor' and geojson.properties.is_negative
+            items = geojson.geometry.coordinates[0]
+            clip_path = []
+            for item in items
+              clip_path.push {X: item[0] * -1, Y: item[1]}
+            clipper.AddPaths [clip_path], ClipperLib.PolyType.ptClip, true
+
+        result_paths = new ClipperLib.Paths()
+        clipper.Execute ClipperLib.ClipType.ctDifference,
+          result_paths,
+          ClipperLib.PolyFillType.pftNonZero,
+          ClipperLib.PolyFillType.pftNonZero
+        @floor_cache=result_paths
+      else
+        @floor_cache=null
+
+      if @floor_cache
         ctx.save()
         ctx.beginPath()
-        ctx.lineWidth = 4
-        ctx.strokeStyle = "#ff0000"
-        ctx.moveTo(haika.cm2px_x(ret[0].x), haika.cm2px_y(ret[0].y))
-        for i in ret
-          ctx.lineTo(haika.cm2px_x(i.x), haika.cm2px_y(i.y))
-        ctx.lineTo(haika.cm2px_x(ret[0].x), haika.cm2px_y(ret[0].y))
+        ctx.lineWidth = 20
+        ctx.strokeStyle = "#525252"
+        ctx.fillStyle = "#ffffff"
+        for path in @floor_cache
+          is_first = true
+          for i in path
+            if is_first
+              ctx.moveTo(haika.cm2px_x(i.X), haika.cm2px_y(i.Y))
+              is_first = false
+            else
+              ctx.lineTo(haika.cm2px_x(i.X), haika.cm2px_y(i.Y))
+          ctx.lineTo(haika.cm2px_x(path[0].X), haika.cm2px_y(path[0].Y))
+          ctx.closePath()
         ctx.stroke()
+        ctx.fill()
+        ctx.clip()
+        haika_utils.drawBackground(@, ctx)
+        haika_utils.drawGridLines(@, ctx)
         ctx.restore()
 
-    # features.push(geojson)
-    # log features
+    canvas._renderOverlay = (ctx) =>
+      haika_utils.drawScale(@, ctx)
+      if @layer == @CONST_LAYERS.FLOOR
+        if @floor_cache
+          ctx.save()
+          ctx.beginPath()
+          ctx.lineWidth = 4
+          ctx.strokeStyle = "#ff0000"
+          for path in @floor_cache
+            is_first = true
+            for i in path
+              if is_first
+                ctx.moveTo(haika.cm2px_x(i.X), haika.cm2px_y(i.Y))
+                is_first = false
+              else
+                ctx.lineTo(haika.cm2px_x(i.X), haika.cm2px_y(i.Y))
+            ctx.lineTo(haika.cm2px_x(path[0].X), haika.cm2px_y(path[0].Y))
+            ctx.closePath()
+          ctx.stroke()
+          ctx.restore()
 
     if not @readOnly
       initAligningGuidelines(canvas)
@@ -234,7 +287,7 @@ haika =
 #
   _getLatestId: ->
     lastId = 0
-    for object in @canvas.getObject()
+    for object in @objects
       if object.id > lastId
         lastId = object.id
     lastId += 1

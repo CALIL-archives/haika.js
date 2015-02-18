@@ -9,6 +9,9 @@ $.extend haika,
       return
     geojson = @toGeoJSON()
     for object in geojson.features
+      if @layer!=@CONST_LAYERS.FLOOR and object.properties.type == 'floor' and object.properties.is_negative
+        continue
+
       for point in object.geometry.coordinates[0]
         if not left?
           left   = point[0]
@@ -37,7 +40,7 @@ $.extend haika,
     scale = if widthScale<heightScale then widthScale else heightScale
     # 1より大きい、canvasに対して小さい→拡大=1以上
     # 1より小さい、canvasに対して大きい→縮小=1以下
-    @setScale scale * 0.5
+    @setScale scale * 0.8
 
 
 # 表示時の拡大率を1ステップ拡大する (これはUI側のため将来的に移動)
