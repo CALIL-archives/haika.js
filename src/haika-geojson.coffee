@@ -44,13 +44,12 @@ $.extend haika,
 # @return [Object] GeoJSON形式のデータ
 #
   toGeoJSON: ->
-    features = []
     if @canvas
+      features = []
       for object in @canvas.getObjects()
         geojson = object.toGeoJSON()
         features.push(geojson)
-    # 地図のようにキャンバスを使わないケース
-    if not @canvas
+    else
       features = @_geojson.features
     data =
       "type": "FeatureCollection"

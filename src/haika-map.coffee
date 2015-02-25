@@ -1,11 +1,10 @@
 # haikaの地図設定
 # haikaを拡張
-$.extend haika, 
+$.extend haika,
   map:
-    map : null
-    geojson :null
+    map: null
 
-    # EPSG:3857(経度緯度)のgeojsonの作成
+  # EPSG:3857(経度緯度)のgeojsonの作成
     convertLatLon: (geojson)->
 
       ### 定数 ###
@@ -25,55 +24,52 @@ $.extend haika,
 
       features = []
       for object in geojson.features
+        if object.properties.type == 'floor' or object.properties.type == 'beacon'
+          continue
         coordinates = []
         for geometry in object.geometry.coordinates[0]
           x = geometry[0]
           y = geometry[1]
           # 回転
-          sin = Math.sin(fabric.util.degreesToRadians(-geojson.haika.xyAngle))
-          cos = Math.cos(fabric.util.degreesToRadians(-geojson.haika.xyAngle))
+          sin = Math.sin(fabric.util.degreesToRadians(-haika.xyAngle))
+          cos = Math.cos(fabric.util.degreesToRadians(-haika.xyAngle))
           rx = x * cos - y * sin
           ry = x * sin + y * cos
           x = rx
           y = ry
           # 拡大・縮小
-          x = x * geojson.haika.xyScaleFactor
-          y = y * geojson.haika.xyScaleFactor
+          x = x * haika.xyScaleFactor
+          y = y * haika.xyScaleFactor
           # 経緯度に変換
           ySecond = metreToLatitudeSecond(y / 100)
           yHour = ySecond / 3600
-          xSecond = metreToLongitudeSecond(x / 100, geojson.haika.xyLatitude + yHour)
+          xSecond = metreToLongitudeSecond(x / 100, haika.xyLatitude + yHour)
           xHour = xSecond / 3600
-          coordinates.push([geojson.haika.xyLongitude + xHour, geojson.haika.xyLatitude + yHour])
+          coordinates.push([haika.xyLongitude + xHour, haika.xyLatitude + yHour])
         object.geometry.coordinates = [coordinates]
         features.push(object)
       geojson.features = features
       return geojson
-    draw : ->
-      # log 'map.draw'
-      layer = new google.maps.Data()
-      layer.addGeoJson @convertLatLon($.extend(true, {},@geojson))
-      layer.setMap(@map)
-      #$@map.data.forEach (feature)=>
-      #  @map.data.remove feature
-      #@map.data.addGeoJson @convertLatLon($.extend(true, {},@geojson))
+    draw: ->
+      @map.data.forEach (feature) =>
+        @map.data.remove feature
+        return
+      @map.data.addGeoJson @convertLatLon($.extend(true, {}, haika._geojson))
 
-    save : ->
+    save: ->
       log 'map.save'
-      haika._geojson=@geojson
       haika.saveDelay()
 
-    init : ()->
+    init: ()->
       log 'map.init'
-      @geojson=haika._geojson
       centerLatLng =
-        lat: if @geojson.haika.xyLatitude then @geojson.haika.xyLatitude else 0
-        lng: if @geojson.haika.xyLongitude then @geojson.haika.xyLongitude else 0
+        lat: if haika.xyLatitude then haika.xyLatitude else 0
+        lng: if haika.xyLongitude then haika.xyLongitude else 0
       @map = new google.maps.Map document.getElementById('haika-map'),
         zoom: 20
         maxZoom: 28
         scaleControl: true,
-        center:centerLatLng
+        center: centerLatLng
       featureStyle =
         fillColor: 'orange',
         strokeWeight: 1
@@ -84,15 +80,15 @@ $.extend haika,
         new google.maps.Point(0, 0),
         new google.maps.Point(25, 25))
       centerMarker = new google.maps.Marker
-        position:centerLatLng
+        position: centerLatLng
         map: @map
         icon: markerImage # アイコン画像を指定
         draggable: true
       google.maps.event.addListener centerMarker, "dragend", =>
         log 'centerMarker'
         position = centerMarker.getPosition()
-        @geojson.haika.xyLongitude = position.lng()
-        @geojson.haika.xyLatitude = position.lat()
+        haika.xyLongitude = position.lng()
+        haika.xyLatitude = position.lat()
         @draw()
         @save()
       $('#haika-map-search').submit =>
@@ -101,10 +97,10 @@ $.extend haika,
         geocoder.geocode
           address: address
         , (results, status) =>
-          if status==google.maps.GeocoderStatus.OK
+          if status == google.maps.GeocoderStatus.OK
             @map.setCenter results[0].geometry.location
-            @geojson.haika.xyLongitude = results[0].geometry.location.lng()
-            @geojson.haika.xyLatitude = results[0].geometry.location.lat()
+            haika.xyLongitude = results[0].geometry.location.lng()
+            haika.xyLatitude = results[0].geometry.location.lat()
             @draw()
             @save()
           else
@@ -117,24 +113,24 @@ $.extend haika,
         min: -180
         max: 180
         natural_arrow_keys: true
-        value: @geojson.haika.xyAngle
+        value: haika.xyAngle
         formatter: (value) =>
           $('#haika-canvas-angle').find('.slider-handle').focus()
-          if @geojson.haika.xyAngle!=value
-            @geojson.haika.xyAngle = value
+          if haika.xyAngle != value
+            haika.xyAngle = value
             @draw()
             @save()
-          return value+'度'
+          return value + '度'
       $('#haika-geojson-scale').slider
         tooltip: 'always'
         step: 1
         min: 80
         max: 120
-        value: @geojson.haika.xyScaleFactor * 100
+        value: haika.xyScaleFactor * 100
         formatter: (value) =>
           $('#haika-geojson-scale').find('.slider-handle').focus()
-          if @geojson.haika.xyScaleFactor!= value / 100
-            @geojson.haika.xyScaleFactor = value / 100
+          if haika.xyScaleFactor != value / 100
+            haika.xyScaleFactor = value / 100
             @draw()
             @save()
-          return value+'%'
+          return value + '%'
