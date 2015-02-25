@@ -5,11 +5,58 @@ $.extend haika,
     map : null
     geojson :null
 
+    # EPSG:3857(経度緯度)のgeojsonの作成
+    convertLatLon: (geojson)->
+
+      ### 定数 ###
+      PI = Math.PI
+      radian = (2 * PI) / 360 #0.017...
+      earthRadius = 6378150 #地球の半径
+      earthCircumference = (2 * PI * earthRadius) #地球の円周 = 40054782
+      latSecPmetre = (360 * 60 * 60) / earthCircumference #1m相当の緯度秒
+
+      #メートル -> 緯度秒
+      metreToLatitudeSecond = (metre) ->
+        metre * latSecPmetre
+
+      #メートル,緯度 -> 経度秒
+      metreToLongitudeSecond = (metre, lat) ->
+        metre * ((360 * 60 * 60) / (earthCircumference * Math.cos(lat * radian)))
+
+      features = []
+      for object in geojson.features
+        coordinates = []
+        for geometry in object.geometry.coordinates[0]
+          x = geometry[0]
+          y = geometry[1]
+          # 回転
+          sin = Math.sin(fabric.util.degreesToRadians(-geojson.haika.xyAngle))
+          cos = Math.cos(fabric.util.degreesToRadians(-geojson.haika.xyAngle))
+          rx = x * cos - y * sin
+          ry = x * sin + y * cos
+          x = rx
+          y = ry
+          # 拡大・縮小
+          x = x * geojson.haika.xyScaleFactor
+          y = y * geojson.haika.xyScaleFactor
+          # 経緯度に変換
+          ySecond = metreToLatitudeSecond(y / 100)
+          yHour = ySecond / 3600
+          xSecond = metreToLongitudeSecond(x / 100, geojson.haika.xyLatitude + yHour)
+          xHour = xSecond / 3600
+          coordinates.push([geojson.haika.xyLongitude + xHour, geojson.haika.xyLatitude + yHour])
+        object.geometry.coordinates = [coordinates]
+        features.push(object)
+      geojson.features = features
+      return geojson
     draw : ->
-      log 'map.draw'
-      @map.data.forEach (feature)=>
-        @map.data.remove feature
-      @map.data.addGeoJson haika.createGeoJSON($.extend(true, {},@geojson))
+      # log 'map.draw'
+      layer = new google.maps.Data()
+      layer.addGeoJson @convertLatLon($.extend(true, {},@geojson))
+      layer.setMap(@map)
+      #$@map.data.forEach (feature)=>
+      #  @map.data.remove feature
+      #@map.data.addGeoJson @convertLatLon($.extend(true, {},@geojson))
 
     save : ->
       log 'map.save'
