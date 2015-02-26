@@ -17,8 +17,8 @@
     "bootstrap": "~3.3.2",
     "fabric": "~1.4.13",
     "Javascript-Undo-Manager": "*",
-    "seiyria-bootstrap-slider": "~4.0.1",
-    "bootstrap-contextmenu": "~0.2.0"
+    "bootstrap-contextmenu": "0.3.2",
+    "seiyria-bootstrap-slider": "4.5.1"
   },
   "devDependencies": {
     "jsonform": "*"

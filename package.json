@@ -34,7 +34,9 @@
     "grunt-este-watch": "^0.1.18",
     "grunt-newer": "^0.7.0",
     "grunt-notify": "^0.3.1",
-    "grunt-open": "^0.2.3",
-    "load-grunt-tasks": "^0.6.0"
+    "grunt-open": "^0.2.3"
+  },
+  "dependencies": {
+    "load-grunt-tasks": "^3.1.0"
   }
 }
