@@ -30,16 +30,13 @@ haika =
   readOnly: false # 表示専用モード オブジェクトの移動・変更、保存を行わない [エディタステータス系変数]
   centerX: 0 # 表示位置X(画面の中央が0) [エディタステータス系変数]
   centerY: 0 # 表示位置Y(画面の中央が0) [エディタステータス系変数]
+  layer: null # 現在のレイヤー(CONST_LAYERS) [エディタステータス系変数]
   scaleFactor: 1 # 表示倍率 [エディタステータス系変数] (このファイル外で使用禁止)
 # 外部からこの値を変更する場合はsetScaleメソッドを使うこと
 # Todo: fabricオブジェクトからの呼び出しについて検討の必要あり
-  layer: null # 現在のレイヤー(CONST_LAYERS) [エディタステータス系変数]
 
   objects: []
   _geojson: {} # 編集中のデータのGeoJSON
-  _floor_cache: null
-  fillColor: '#CFE2F3'
-  strokeColor: '#000000'
 
   backgroundUrl: null
   backgroundOpacity: 1
@@ -290,8 +287,7 @@ haika =
     for object in @objects
       if object.id > lastId
         lastId = object.id
-    lastId += 1
-    return lastId
+    return lastId + 1
 
 # idからオブジェクトの配列番号を取得
   getCountFindById: (id)->
@@ -322,10 +318,6 @@ haika =
     object.id = @_getLatestId()
     object.top_cm = @centerY
     object.left_cm = @centerX
-    if not object.fill?
-      object.fill = @fillColor
-    if not object.stroke?
-      object.stroke = @strokeColor
     if not object.angle?
       object.angle = 0
     @objects.push(object)

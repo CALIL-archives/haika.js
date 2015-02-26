@@ -32577,8 +32577,6 @@ haika = {
   objects: [],
   _geojson: {},
   _floor_cache: null,
-  fillColor: '#CFE2F3',
-  strokeColor: '#000000',
   backgroundUrl: null,
   backgroundOpacity: 1,
   backgroundScaleFactor: 1,
@@ -32923,12 +32921,6 @@ haika = {
     object.id = this._getLatestId();
     object.top_cm = this.centerY;
     object.left_cm = this.centerX;
-    if (object.fill == null) {
-      object.fill = this.fillColor;
-    }
-    if (object.stroke == null) {
-      object.stroke = this.strokeColor;
-    }
     if (object.angle == null) {
       object.angle = 0;
     }
