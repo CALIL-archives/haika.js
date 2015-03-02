@@ -66,24 +66,43 @@ $.extend haika,
         lat: if haika.xyLatitude then haika.xyLatitude else 0
         lng: if haika.xyLongitude then haika.xyLongitude else 0
       @map = new google.maps.Map document.getElementById('haika-map'),
-        zoom: 20
+        zoom: 19
         maxZoom: 28
-        scaleControl: true,
+        scaleControl: true
+        panControl: false
+        streetViewControl: false
         center: centerLatLng
       featureStyle =
-        fillColor: 'orange',
+        fillColor: 'orange'
         strokeWeight: 1
       @map.data.setStyle(featureStyle)
       @draw()
-      markerImage = new google.maps.MarkerImage('img/mapCenterMarker.png',
-        new google.maps.Size(50, 50),
-        new google.maps.Point(0, 0),
-        new google.maps.Point(25, 25))
+
       centerMarker = new google.maps.Marker
         position: centerLatLng
         map: @map
-        icon: markerImage # アイコン画像を指定
+        opacity:0.8
+        title: '中心点(ドラッグで移動)'
         draggable: true
+        icon:
+          path: google.maps.SymbolPath.CIRCLE
+          scale: 10
+          strokeWeight : 5
+          strokeColor : '#ff3333'
+
+      rotateMarker = new google.maps.Marker
+        position: centerLatLng
+        map: @map
+        opacity:0.8
+        title: '回転角度'
+        draggable: true
+        icon:
+          path: google.maps.SymbolPath.CIRCLE
+          scale: 6
+          strokeWeight : 3
+          strokeColor : '#3333ff'
+
+
       google.maps.event.addListener centerMarker, "dragend", =>
         log 'centerMarker'
         position = centerMarker.getPosition()
