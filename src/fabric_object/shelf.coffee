@@ -5,7 +5,6 @@
     attributes.top = attributes.top or 0
     attributes
   fabric = global.fabric or (global.fabric = {})
-  degreesToRadians = fabric.util.degreesToRadians
   extend = fabric.util.object.extend
   if fabric.Shelf
     console.warn "fabric.Shelf is already defined"
@@ -28,23 +27,42 @@
       @eachHeight * haika.scaleFactor
     count: 1
     side: 1
-    label: ''
     minScaleLimit: 1
     strokeDashArray: null
+    fill: '#ffffff'
+    stroke: '#afafaf'
     initialize: (options) ->
       options = options or {}
       @callSuper "initialize", options
       @width = @__width()
       @height = @__height()
+      @transparentCorners=false
+      @cornerColor='#ffffff'
       return
 
     _render: (ctx) ->
-      #log '_render'
+      if @selectable
+        if @active
+          @fill = 'rgba(255,77,77,1)'
+          @stroke = 'rgba(255,255,255,1)'
+          @strokeWidth = 2
+        else
+          @fill = 'rgba(255,77,77,1)'
+          @stroke = 'rgba(255,255,255,1)'
+          @strokeWidth = 2
+      else
+        @fill = '#ffffff'
+        @stroke = '#afafaf'
+      ctx.strokeStyle = @stroke
+      ctx.fillStyle = @fill
       if @width is 1 and @height is 1
         ctx.fillRect 0, 0, 1, 1
         return
+      ctx.save()
+
+      # スケール関係の処理
+
       ctx.scale 1 / @scaleX, 1 / @scaleY
-      #スケール変更中は位置をドラックした反対側に寄せる
       sx = 0
       if @scaleX != 0 && (@__corner == 'mr' || @__corner == 'tr' || @__corner == 'br')
         sx = (@count * @__eachWidth() - @width * @scaleX) / 2
@@ -66,6 +84,8 @@
       if not @transformMatrix and isInPathGroup
         ctx.translate -@group.width / 2 + @width / 2 + @x, -@group.height / 2 + @height / 2 + @y
 
+      # 棚の描画
+
       if @side is 1
         @__renderShelf ctx, x, y, w, h
         if haika.scaleFactor > 0.5
@@ -73,36 +93,26 @@
       if @side is 2
         @__renderShelf ctx, x, y, w, h
 
-      if @active
-        ctx.font = "13.5px Arial";
+      if @active and not @isMoving
+        ctx.font = "12px Arial";
         ctx.textAlign = "center"
         ctx.textBaseline = "middle"
         ctx.fillStyle = 'rgba(0, 0, 0,1)';
-
         label = if @side == 1 then "単式" else "複式"
         label = "[" + @id + "] " + label + @count + "連"
         ctx.fillText(label, 0, (@height * @scaleY) / 2 + 15);
-
-      #if haika.scale > 0.5
-      #  ctx.font = "30px FontAwesome";
-      #  ctx.textAlign = "right"
-      #  ctx.textBaseline = "middle"
-      #  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-      #  ctx.fillText("\uf177", @width - @width / 2 - 10, -@height / 2 + @height / 2 / @side);
-
-      ctx.scale @scaleX, @scaleY
+      ctx.restore()
       return
 
     __renderShelf: (ctx, x, y, w, h) ->
-      total_width = w * @count
-      @__renderRect(ctx, x, y, total_width, h)
+      @__renderRect(ctx, x, y, w * @count, h)
       @__renderPartitionLine(ctx, x, y, w, h)
       if @side == 2
-        @__renderRect(ctx, x, y + h, total_width, h)
+        @__renderRect(ctx, x, y + h, w * @count, h)
         @__renderPartitionLine(ctx, x, y + h, w, h)
 
     __renderRect: (ctx, x, y, w, h) ->
-      ctx.lineWidth = 1
+      ctx.lineWidth = 2
       ctx.beginPath()
       ctx.moveTo x, y
       ctx.lineTo x + w, y
@@ -114,9 +124,9 @@
       @_renderStroke ctx
 
     __renderPartitionLine: (ctx, x, y, w, h) ->
-      if @count <= 1
+      if @count == 1
         return
-      ctx.lineWidth = 1
+      ctx.lineWidth = 2
       ctx.beginPath()
       i = 1
       while i < @count
@@ -124,7 +134,6 @@
         ctx.lineTo x + w * i, y + h
         i++
       ctx.closePath()
-      #@_renderFill ctx
       @_renderStroke ctx
 
     __renderSide: (ctx, x, y, w, h) ->
@@ -133,7 +142,6 @@
       ctx.moveTo x, y + h - 1
       ctx.lineTo x + w * @count, y + h - 1
       ctx.closePath()
-      #@_renderFill ctx
       @_renderStroke ctx
 
   # 回転角度のスナップ
@@ -159,12 +167,11 @@
       actualHeight = @scaleY * @currentHeight
       count = Math.floor(actualWidth / @__eachWidth())
       if count < 1 then count = 1
-      if count > 10 then count = 10
+      if count > 15 then count = 15
       side = Math.round(actualHeight / @__eachHeight())
       if side < 1 then side = 1
       if side > 2 then side = 2
       @set(count: count, side: side, minScaleLimit: 0.01, flipX: false, flipY: false)
-  #console.log "width:" + (@width * @scaleX) + " height:" + (@height * @scaleY)
 
     __modifiedShelf: () ->
       @centeredScaling = false
@@ -224,25 +231,17 @@
       h = @eachHeight * @side
       x = -w / 2 + @left_cm
       y = -h / 2 + @top_cm
-      coordinates = [
-        [[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]
-      ]
       new_coordinates = []
-      for c in coordinates
-        for coordinate in c
-          # 回転の反映
-          new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]),
-            new fabric.Point(@left_cm, @top_cm), fabric.util.degreesToRadians(@angle));
-          # fabricとGeoJSONではX軸が逆なので変更する
-          new_coordinates.push([-new_coordinate.x, new_coordinate.y])
+      for coordinate in [[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]
+        new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]),
+          new fabric.Point(@left_cm, @top_cm), fabric.util.degreesToRadians(@angle))
+        new_coordinates.push([-new_coordinate.x, new_coordinate.y]) # GeoJSONはXが逆
       data =
         "type": "Feature"
         "geometry":
           "type": "Polygon"
           "coordinates": [new_coordinates]
-#          "coordinates": coordinates
         "properties":
-          "label": if @label then @label else ""
           "type": @type
           "left_cm": @left_cm
           "top_cm": @top_cm
@@ -252,46 +251,14 @@
           "count": @count
           "side": @side
           "angle": @angle
-          "fill": @fill
-          "stroke": @stroke
-      #      log data
       return data
 
-    toSVG: (reviver) ->
-      markup = @_createBaseSVGMarkup()
-      markup.push("<g>")
-      count = @get("count")
-      side = @get("side")
-      w = @eachWidth
-      h = @eachHeight
-      x = -w / 2 * @count
-      y = -h / 2 * @side
-      i = 0
-      k = 0
-      while i < count
-#        while k < row
-#        markup.push """<rect x="#{x}" y="#{y}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@w}" height="#{@h}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
-        markup.push """<rect x="#{(-1 * @width / 2) + @width / count * i}" y="#{(-1 * @height / 2)}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@width / count}" height="#{@height / 2}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
-        i++
-      if side == 2
-        i = 0
-        while i < count
-#          markup.push """<rect x="#{x}" y="#{y}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@w}" height="#{@h}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
-          markup.push """<rect x="#{(-1 * @width / 2) + @width / count * i}" y="#{(-1 * @height / 2) + @eachHeight}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@width / count}" height="#{@height / 2}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
-          i++
-      markup.push "</g>"
-
-      (if reviver then reviver(markup.join("")) else markup.join(""))
 
     getJSONSchema: () ->
       schema =
         title: "基本情報"
         type: "object"
         properties:
-#          label:
-#            title: "ラベル"
-#            type: "string"
-#            default: ""
           count:
             title: "連数"
             type: "integer"
@@ -316,15 +283,6 @@
             type: "integer"
             default: 25
             minimum: 1
-      #          shelfs:
-      #            type: "array"
-      #            uniqueItems: true
-      #            items:
-      #              type: "string"
-      #              enum: [
-      #                "value1"
-      #                "value2"
-      #              ]
       return schema
     complexity: ->
       1
@@ -339,7 +297,4 @@
     shelf
   fabric.Shelf.fromObject = (object) ->
     new fabric.Shelf(object)
-
   return) (if typeof exports isnt "undefined" then exports else this)
-
-#    fabric.Shelf.async = true;

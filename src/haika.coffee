@@ -55,6 +55,10 @@ haika =
     return @canvas.getHeight() / 2 + (@centerY - cm) * @scaleFactor
   cm2px: (cm)->
     return cm * @scaleFactor
+  px2cm_x: (px)->
+    return @centerX - (px - @canvas.getWidth() / 2) / @scaleFactor
+  px2cm_y: (px)->
+    return @centerY - (px - @canvas.getHeight() / 2) / @scaleFactor
 
   transformLeftX_cm2px: (cm)->
     return @canvas.getWidth() / 2 + (@centerX - cm) * @scaleFactor
@@ -171,7 +175,8 @@ haika =
       if @floor_cache
         ctx.save()
         ctx.beginPath()
-        ctx.lineWidth = 20
+        ctx.lineWidth = Math.floor(Math.min(20,Math.max(3,200*@scaleFactor)))
+        log Math.floor(Math.min(20,Math.max(5,20*@scaleFactor)))
         ctx.strokeStyle = "#525252"
         ctx.fillStyle = "#ffffff"
         for path in @floor_cache
@@ -473,15 +478,26 @@ haika =
         floors.push(o)
       if o.type == 'shelf' or o.type == 'curved_shelf'
         shelfs.push(o)
-    # レイヤーの順序で描く
-    for o in floors
-      @addObjectToCanvas(o)
-    for o in walls
-      @addObjectToCanvas(o)
-    for o in shelfs
-      @addObjectToCanvas(o)
-    for o in beacons
-      @addObjectToCanvas(o)
+
+    if @layer == @CONST_LAYERS.FLOOR
+      for o in walls
+        @addObjectToCanvas(o)
+      for o in shelfs
+        @addObjectToCanvas(o)
+      for o in beacons
+        @addObjectToCanvas(o)
+      for o in floors
+        @addObjectToCanvas(o)
+    else
+      for o in floors
+        @addObjectToCanvas(o)
+      for o in walls
+        @addObjectToCanvas(o)
+      for o in shelfs
+        @addObjectToCanvas(o)
+      for o in beacons
+        @addObjectToCanvas(o)
+
     if activeIds.length > 0
       @activeGroup(activeIds)
     @canvas.renderAll()

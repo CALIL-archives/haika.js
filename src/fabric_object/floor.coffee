@@ -5,6 +5,7 @@
   if fabric.Floor
     console.warn "fabric.Floor is already defined"
     return
+
   fabric.Floor = fabric.util.createClass(fabric.Rect,
     type: "floor"
     width_cm: 5000
@@ -28,57 +29,46 @@
     _render: (ctx, noTransform) ->
       if not @selectable
         return
-
-      if @is_negative
-        ctx.fillStyle = '#353535'
-      else
-        ctx.fillStyle = 'rgba(255,0,0,0.3)'
-
       rx = if @rx then Math.min(@rx, @width / 2) else 0
       ry = if @ry then Math.min(@ry, @height / 2) else 0
       w = @width
       h = @height
       x = if noTransform then @left else -@width / 2
       y = if noTransform then @top else -@height / 2
-      isRounded = rx != 0 or ry != 0
-      k = 1 - 0.5522847498
+      ctx.save()
+      if @is_negative
+        ctx.fillStyle = '#353535'
+      else
+        ctx.fillStyle = 'rgba(255,0,0,0.3)'
       ctx.beginPath()
       ctx.moveTo x + rx, y
       ctx.lineTo x + w - rx, y
-      isRounded and ctx.bezierCurveTo(x + w - k * rx, y, x + w, y + k * ry, x + w, y + ry)
       ctx.lineTo x + w, y + h - ry
-      isRounded and ctx.bezierCurveTo(x + w, y + h - k * ry, x + w - k * rx, y + h, x + w - rx, y + h)
       ctx.lineTo x + rx, y + h
-      isRounded and ctx.bezierCurveTo(x + k * rx, y + h, x, y + h - k * ry, x, y + h - ry)
       ctx.lineTo x, y + ry
-      isRounded and ctx.bezierCurveTo(x, y + k * ry, x + k * rx, y, x + rx, y)
       ctx.closePath()
       @_renderFill ctx
       if @selectable
-          @_renderStroke ctx
-          ctx.save()
-          ctx.scale 1 / @scaleX, 1 / @scaleY
-          if @angle > 90 and @angle < 270
-            ctx.rotate(degreesToRadians(180))
-
-          if @is_negative
-            ctx.fillStyle = '#999999'
-            label = '吹き抜け'
-          else
-            ctx.fillStyle = '#000000'
-            label = 'フロア指定'
-          ctx.font = "12px Arial"
-          ctx.textAlign = "center"
-          ctx.textBaseline = "middle"
-
-          metrics = ctx.measureText(label)
-          if metrics.width <= @__width()
-            ctx.fillText(label, 0, 0)
-          else if metrics.width <= @__height()
-            ctx.rotate(degreesToRadians(90))
-            ctx.fillText(label, 0, 0)
-
-            ctx.restore()
+        @_renderStroke ctx
+        ctx.scale 1 / @scaleX, 1 / @scaleY
+        if @angle > 90 and @angle < 270
+          ctx.rotate(degreesToRadians(180))
+        if @is_negative
+          ctx.fillStyle = '#999999'
+          label = '吹き抜け'
+        else
+          ctx.fillStyle = '#000000'
+          label = 'フロア指定'
+        ctx.font = "12px Arial"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        metrics = ctx.measureText(label)
+        if metrics.width <= @__width()
+          ctx.fillText(label, 0, 0)
+        else if metrics.width <= @__height()
+          ctx.rotate(degreesToRadians(90))
+          ctx.fillText(label, 0, 0)
+      ctx.restore()
       return
 
     __resizeShelf: () ->
@@ -103,19 +93,15 @@
     toGeoJSON: ->
       w = @width_cm
       h = @height_cm
-      x = -w / 2 + @left_cm
-      y = -h / 2 + @top_cm
-      coordinates = [
-        [[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]
-      ]
+      left_cm = @left_cm
+      top_cm = @top_cm
+      x = -w / 2 + left_cm
+      y = -h / 2 + top_cm
       new_coordinates = []
-      for c in coordinates
-        for coordinate in c
-          # 回転の反映
-          new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]),
-            new fabric.Point(@left_cm, @top_cm), fabric.util.degreesToRadians(@angle));
-          # fabricとGeoJSONではX軸が逆なので変更する
-          new_coordinates.push([-new_coordinate.x, new_coordinate.y])
+      for coordinate in [[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]
+        new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]),
+          new fabric.Point(left_cm, top_cm), fabric.util.degreesToRadians(@angle))
+        new_coordinates.push([-new_coordinate.x, new_coordinate.y]) # GeoJSONはXが逆
       data =
         "type": "Feature"
         "geometry":
@@ -124,8 +110,8 @@
         "properties":
           "id": @id
           "type": @type
-          "left_cm": @left_cm
-          "top_cm": @top_cm
+          "left_cm": left_cm
+          "top_cm": top_cm
           "width_cm": @width_cm
           "height_cm": @height_cm
           "angle": @angle

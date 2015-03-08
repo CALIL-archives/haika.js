@@ -27,12 +27,32 @@
     _render: (ctx) ->
 #      console.log @
       ctx.beginPath()
-      if @width is 1 and @height is 1
-        ctx.fillRect 0, 0, 1, 1
-        return
       ctx.fillRect @width / 2 * (-1), @height / 2 * (-1), @width, @height
       @_renderFill ctx
       @_renderStroke ctx
+
+      ctx.save()
+      ctx.fillStyle='rgba(255,0,0,0.02)'
+      ctx.beginPath()
+      ctx.arc(0,0, 2000*haika.scaleFactor, 0, Math.PI*2, false);
+      ctx.fill()
+
+
+
+      ctx.fillStyle='rgba(255,0,0,0.08)'
+      ctx.beginPath()
+      ctx.arc(0,0, 500*haika.scaleFactor, 0, Math.PI*2, false);
+      ctx.fill()
+
+
+      ctx.font = "12px Arial";
+      ctx.textAlign = "center"
+      ctx.textBaseline = "middle"
+      ctx.fillStyle = 'rgba(0, 0, 0,1)';
+      label = @minor
+      ctx.fillText(label, 0, (@height * @scaleY) / 2 + 15);
+      ctx.restore()
+
       return
 
     __resizeShelf: () ->

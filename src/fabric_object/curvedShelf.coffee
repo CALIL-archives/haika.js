@@ -130,46 +130,29 @@
     toGeoJSON: ->
       w = @__eachWidth() * @count
       h = @__eachHeight() * @side
-      center = @getCenterPoint()
-#      log center
-      x = -w / 2 + center.x
-      y = -h / 2 + center.y
-      x = haika.transformLeftX_px2cm(x)
-      y = haika.transformTopY_px2cm(y)
+      x = -w / 2 + @left_cm
+      y = -h / 2 + @top_cm
+      new_coordinates = []
+      for coordinate in [[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]
+        new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]),
+          new fabric.Point(@left_cm, @top_cm), fabric.util.degreesToRadians(@angle))
+        new_coordinates.push([-new_coordinate.x, new_coordinate.y]) # GeoJSONはXが逆
       data =
         "type": "Feature"
         "geometry":
-          "type": "Polygon",
-          "coordinates": [
-            [ [-x, y], [-(x + w), y], [-(x + w), y + h], [-x, y + h], [-x, y]]
-          ]
+          "type": "Polygon"
+          "coordinates": [new_coordinates]
         "properties":
-          "type"  : @type
-          "left_cm" : @left_cm
-          "top_cm"  : @top_cm
-          "id"    : @id
-          "count"    : @count
-          "side"    : @side
-          "angle" : @angle
-          "fill" : @fill
-          "stroke" : @stroke
+          "type": @type
+          "left_cm": @left_cm
+          "top_cm": @top_cm
+          #"eachWidth": @eachWidth
+          #"eachHeight": @eachHeight
+          "id": @id
+          "count": @count
+          "side": @side
+          "angle": @angle
       return data
-
-    toSVG: (reviver) ->
-      markup = @_createBaseSVGMarkup()
-      markup.push("<g>")
-      i = 0
-      k = 0
-      count = @get("count")
-      row = if @get("row") == 'one' then 1 else 2
-      while i < count
-#        while k < row
-        markup.push """<rect x="#{(-1 * @width / 2) + @width / count * i}" y="#{(-1 * @height / 2)}" rx="#{@get("rx")}" ry="#{@get("ry")}" width="#{@width / count}" height="#{@height}" style="#{@getSvgStyles()}" transform="#{@getSvgTransform()}"/>"""
-        #  k++
-        i++
-      markup.push "</g>"
-
-      (if reviver then reviver(markup.join("")) else markup.join(""))
 
     getJSONSchema : () ->
       schema =
@@ -192,23 +175,6 @@
             default: 0
             minimum: 0
             maximum: 360
-#          eachWidth:
-#            type: "integer"
-#            default: 90
-#            minimum: 1
-#          eachHeight:
-#            type: "integer"
-#            default: 25
-#            minimum: 1
-#          shelfs:
-#            type: "array"
-#            uniqueItems: true
-#            items:
-#              type: "string"
-#              enum: [
-#                "value1"
-#                "value2"
-#              ]
       return schema
 
     complexity: ->

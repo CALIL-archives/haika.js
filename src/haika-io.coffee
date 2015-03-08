@@ -116,6 +116,18 @@ $.extend haika,
       clearTimeout(@_autoSaveTimerId)
       @_autoSaveTimerId = null
     @_autoSaveTimerId = setTimeout =>
-      @_autoSaveTimerId = null
-      @save()
+      @saveDelayExec()
     , delay
+
+  saveDelayExec: () ->
+    @_autoSaveTimerId = null
+    active = @canvas.getActiveObject()
+    group = @canvas.getActiveGroup()
+    if (active? and active.isMoving) or (group? and group.isMoving)
+      log 'save-delay-exec-deffer'
+      @_autoSaveTimerId = setTimeout =>
+        @saveDelayExec()
+      , 1000
+    else
+      log 'save-delay-exec'
+      @save()
