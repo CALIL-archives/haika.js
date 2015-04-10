@@ -121,8 +121,12 @@ $.extend haika,
 
   saveDelayExec: () ->
     @_autoSaveTimerId = null
-    active = @canvas.getActiveObject()
-    group = @canvas.getActiveGroup()
+    if not @canvas
+      active = null
+      group = null
+    else
+      active = @canvas.getActiveObject()
+      group = @canvas.getActiveGroup()
     if (active? and active.isMoving) or (group? and group.isMoving)
       log 'save-delay-exec-deffer'
       @_autoSaveTimerId = setTimeout =>
