@@ -49,16 +49,16 @@ haika =
   clipboard: []
 
 # 座標変換関数
-  cm2px_x: (cm)->
-    return @canvas.getWidth() / 2 + (@centerX - cm) * @scaleFactor
-  cm2px_y: (cm)->
-    return @canvas.getHeight() / 2 + (@centerY - cm) * @scaleFactor
   cm2px: (cm)->
     return cm * @scaleFactor
+  cm2px_x: (cm)->
+    return @canvas.getWidth() / 2 + (cm + @centerX) * @scaleFactor
+  cm2px_y: (cm)->
+    return @canvas.getHeight() / 2 + (cm + @centerY) * @scaleFactor
   px2cm_x: (px)->
-    return @centerX - (px - @canvas.getWidth() / 2) / @scaleFactor
+    return Math.floor((px - @canvas.getWidth() / 2) / @scaleFactor - @centerX)
   px2cm_y: (px)->
-    return @centerY - (px - @canvas.getHeight() / 2) / @scaleFactor
+    return Math.floor((px - @canvas.getHeight() / 2) / @scaleFactor - @centerY)
 
 
 #初期化
@@ -134,7 +134,7 @@ haika =
         if geojson.properties.type == 'floor' and geojson.properties.is_negative
           continue
         for item in geojson.geometry.coordinates[0]
-          convex.addPoint(-1 * item[0], item[1])
+          convex.addPoint(item[0], -item[1])
       ret = convex.getHull()
       if ret.length > 0
         convex_path = []
@@ -151,7 +151,7 @@ haika =
             items = geojson.geometry.coordinates[0]
             clip_path = []
             for item in items
-              clip_path.push {X: item[0] * -1, Y: item[1]}
+              clip_path.push {X: item[0], Y: -item[1]}
             clipper.AddPaths [clip_path], ClipperLib.PolyType.ptClip, true
 
         result_paths = new ClipperLib.Paths()

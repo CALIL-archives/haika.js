@@ -31229,7 +31229,7 @@ initAligningGuidelines = function(canvas) {
       for (j = 0, len = ref.length; j < len; j++) {
         coordinate = ref[j];
         new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(this.left_cm, this.top_cm), fabric.util.degreesToRadians(this.angle));
-        new_coordinates.push([-new_coordinate.x, new_coordinate.y]);
+        new_coordinates.push([new_coordinate.x, -new_coordinate.y]);
       }
       data = {
         "type": "Feature",
@@ -31480,7 +31480,7 @@ initAligningGuidelines = function(canvas) {
       for (i = 0, len = ref.length; i < len; i++) {
         coordinate = ref[i];
         new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(this.left_cm, this.top_cm), fabric.util.degreesToRadians(this.angle));
-        new_coordinates.push([-new_coordinate.x, new_coordinate.y]);
+        new_coordinates.push([new_coordinate.x, -new_coordinate.y]);
       }
       data = {
         "type": "Feature",
@@ -31659,7 +31659,7 @@ initAligningGuidelines = function(canvas) {
         "type": "Feature",
         "geometry": {
           "type": "Point",
-          "coordinates": [-this.left_cm, this.top_cm]
+          "coordinates": [this.left_cm, -this.top_cm]
         },
         "properties": {
           "type": this.type,
@@ -31774,7 +31774,7 @@ initAligningGuidelines = function(canvas) {
         for (j = 0, len1 = c.length; j < len1; j++) {
           coordinate = c[j];
           new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(this.left_cm, this.top_cm), fabric.util.degreesToRadians(this.angle));
-          new_coordinates.push([-new_coordinate.x, new_coordinate.y]);
+          new_coordinates.push([new_coordinate.x, -new_coordinate.y]);
         }
       }
       data = {
@@ -31840,8 +31840,8 @@ initAligningGuidelines = function(canvas) {
   }
   fabric.Floor = fabric.util.createClass(fabric.Rect, {
     type: "floor",
-    width_cm: 3000,
-    height_cm: 3000,
+    width_cm: 1000,
+    height_cm: 1000,
     is_negative: false,
     fill: '#ffffff',
     stroke: '#000000',
@@ -31853,7 +31853,9 @@ initAligningGuidelines = function(canvas) {
       return this.height_cm * haika.scaleFactor;
     },
     initialize: function(options) {
-      options = options || {};
+      if (options == null) {
+        options = {};
+      }
       this.callSuper("initialize", options);
       this.width = this.__width();
       this.height = this.__height();
@@ -31953,7 +31955,7 @@ initAligningGuidelines = function(canvas) {
       for (i = 0, len = ref.length; i < len; i++) {
         coordinate = ref[i];
         new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(left_cm, top_cm), fabric.util.degreesToRadians(this.angle));
-        new_coordinates.push([-new_coordinate.x, new_coordinate.y]);
+        new_coordinates.push([new_coordinate.x, -new_coordinate.y]);
       }
       data = {
         "type": "Feature",
@@ -32174,20 +32176,20 @@ haika = {
   xyAngle: 0,
   xyScaleFactor: 1,
   clipboard: [],
-  cm2px_x: function(cm) {
-    return this.canvas.getWidth() / 2 + (this.centerX - cm) * this.scaleFactor;
-  },
-  cm2px_y: function(cm) {
-    return this.canvas.getHeight() / 2 + (this.centerY - cm) * this.scaleFactor;
-  },
   cm2px: function(cm) {
     return cm * this.scaleFactor;
   },
+  cm2px_x: function(cm) {
+    return this.canvas.getWidth() / 2 + (cm + this.centerX) * this.scaleFactor;
+  },
+  cm2px_y: function(cm) {
+    return this.canvas.getHeight() / 2 + (cm + this.centerY) * this.scaleFactor;
+  },
   px2cm_x: function(px) {
-    return this.centerX - (px - this.canvas.getWidth() / 2) / this.scaleFactor;
+    return Math.floor((px - this.canvas.getWidth() / 2) / this.scaleFactor - this.centerX);
   },
   px2cm_y: function(px) {
-    return this.centerY - (px - this.canvas.getHeight() / 2) / this.scaleFactor;
+    return Math.floor((px - this.canvas.getHeight() / 2) / this.scaleFactor - this.centerY);
   },
   init: function(options) {
     var canvas, timeout;
@@ -32265,7 +32267,7 @@ haika = {
           _ref1 = geojson.geometry.coordinates[0];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             item = _ref1[_j];
-            convex.addPoint(-1 * item[0], item[1]);
+            convex.addPoint(item[0], -item[1]);
           }
         }
         ret = convex.getHull();
@@ -32291,8 +32293,8 @@ haika = {
               for (_m = 0, _len4 = items.length; _m < _len4; _m++) {
                 item = items[_m];
                 clip_path.push({
-                  X: item[0] * -1,
-                  Y: item[1]
+                  X: item[0],
+                  Y: -item[1]
                 });
               }
               clipper.AddPaths([clip_path], ClipperLib.PolyType.ptClip, true);

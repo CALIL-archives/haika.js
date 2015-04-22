@@ -1,5 +1,3 @@
-# haikaの地図設定
-# haikaを拡張
 $.extend haika,
   map:
     map: null
@@ -81,26 +79,26 @@ $.extend haika,
       centerMarker = new google.maps.Marker
         position: centerLatLng
         map: @map
-        opacity:0.8
+        opacity: 0.8
         title: '中心点(ドラッグで移動)'
         draggable: true
         icon:
           path: google.maps.SymbolPath.CIRCLE
           scale: 10
-          strokeWeight : 5
-          strokeColor : '#ff3333'
+          strokeWeight: 5
+          strokeColor: '#ff3333'
 
       rotateMarker = new google.maps.Marker
         position: centerLatLng
         map: @map
-        opacity:0.8
+        opacity: 0.8
         title: '回転角度'
         draggable: true
         icon:
           path: google.maps.SymbolPath.CIRCLE
           scale: 6
-          strokeWeight : 3
-          strokeColor : '#3333ff'
+          strokeWeight: 3
+          strokeColor: '#3333ff'
 
 
       google.maps.event.addListener centerMarker, "dragend", =>

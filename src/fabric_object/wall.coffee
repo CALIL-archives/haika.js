@@ -56,8 +56,7 @@
         for coordinate in c
           # 回転の反映
           new_coordinate =  fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]), new fabric.Point(@left_cm, @top_cm), fabric.util.degreesToRadians(@angle));
-          # fabricとGeoJSONではX軸が逆なので変更する
-          new_coordinates.push([-new_coordinate.x, new_coordinate.y])
+          new_coordinates.push([new_coordinate.x, -new_coordinate.y])
       data =
         "type": "Feature"
         "geometry":

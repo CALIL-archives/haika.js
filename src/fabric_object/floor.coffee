@@ -8,19 +8,19 @@
 
   fabric.Floor = fabric.util.createClass(fabric.Rect,
     type: "floor"
-    width_cm: 3000
-    height_cm: 3000
+    width_cm: 1000
+    height_cm: 1000
     is_negative: false
     fill: '#ffffff'
     stroke: '#000000'
     strokeDashArray: [2, 2]
+
     __width: ->
       @width_cm * haika.scaleFactor
     __height: ->
       @height_cm * haika.scaleFactor
 
-    initialize: (options) ->
-      options = options or {}
+    initialize: (options = {}) ->
       @callSuper "initialize", options
       @width = @__width()
       @height = @__height()
@@ -101,7 +101,7 @@
       for coordinate in [[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]
         new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]),
           new fabric.Point(left_cm, top_cm), fabric.util.degreesToRadians(@angle))
-        new_coordinates.push([-new_coordinate.x, new_coordinate.y]) # GeoJSONはXが逆
+        new_coordinates.push([new_coordinate.x, -new_coordinate.y])
       data =
         "type": "Feature"
         "geometry":

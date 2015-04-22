@@ -100,7 +100,7 @@
         "type": "Feature"
         "geometry":
           "type": "Point",
-          "coordinates": [-@left_cm, @top_cm]
+          "coordinates": [@left_cm, -@top_cm]
         "properties":
           "type": @type
           "id": @id
