@@ -15,10 +15,11 @@
     eachWidth: 10
     eachHeight: 10
     hasControls: false
-    padding : 10
-    lane : "main"
-    index : 0
+    padding: 10
+    lane: "main"
+    index: 0
     minor: 0
+
     __width: ->
       @eachWidth * haika.scaleFactor
     __height: ->
@@ -32,7 +33,6 @@
       return
 
     _render: (ctx) ->
-#      console.log @
       ctx.beginPath()
       ctx.fillRect @width / 2 * (-1), @height / 2 * (-1), @width, @height
       @_renderFill ctx
@@ -100,7 +100,7 @@
         "type": "Feature"
         "geometry":
           "type": "Point",
-          "coordinates": [-@left_cm,@top_cm]
+          "coordinates": [-@left_cm, @top_cm]
         "properties":
           "type": @type
           "id": @id
@@ -110,9 +110,6 @@
           "lane": @lane
           "index": @index
       return data
-
-    toSVG: (reviver) ->
-      ""
 
     getJSONSchema: () ->
       schema =

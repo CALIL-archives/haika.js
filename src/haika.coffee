@@ -60,15 +60,6 @@ haika =
   px2cm_y: (px)->
     return @centerY - (px - @canvas.getHeight() / 2) / @scaleFactor
 
-  transformLeftX_cm2px: (cm)->
-    return @canvas.getWidth() / 2 + (@centerX - cm) * @scaleFactor
-  transformTopY_cm2px: (cm)->
-    return @canvas.getHeight() / 2 + (@centerY - cm) * @scaleFactor
-  transformLeftX_px2cm: (px)->
-    return @centerX - (px - @canvas.getWidth() / 2) / @scaleFactor
-  transformTopY_px2cm: (px)->
-    return @centerY - (px - @canvas.getHeight() / 2) / @scaleFactor
-
 
 #初期化
 #
@@ -168,15 +159,15 @@ haika =
           result_paths,
           ClipperLib.PolyFillType.pftNonZero,
           ClipperLib.PolyFillType.pftNonZero
-        @floor_cache=result_paths
+        @floor_cache = result_paths
       else
-        @floor_cache=null
+        @floor_cache = null
 
       if @floor_cache
         ctx.save()
         ctx.beginPath()
-        ctx.lineWidth = Math.floor(Math.min(20,Math.max(3,200*@scaleFactor)))
-        log Math.floor(Math.min(20,Math.max(5,20*@scaleFactor)))
+        ctx.lineWidth = Math.floor(Math.min(20, Math.max(3, 200 * @scaleFactor)))
+        log Math.floor(Math.min(20, Math.max(5, 20 * @scaleFactor)))
         ctx.strokeStyle = "#525252"
         ctx.fillStyle = "#ffffff"
         for path in @floor_cache
@@ -244,8 +235,8 @@ haika =
       object = e.target
       if object.__modifiedShelf?
         object.__modifiedShelf()
-      object.top_cm = @transformTopY_px2cm(object.top)
-      object.left_cm = @transformLeftX_px2cm(object.left)
+      object.top_cm = @px2cm_y(object.top)
+      object.left_cm = @px2cm_x(object.left)
       @saveDelay()
     # マウスホイール
     timeout = false
@@ -512,8 +503,8 @@ haika =
     #    log object.toObject()
     object.width = object.__width()
     object.height = object.__height()
-    object.top = @transformTopY_cm2px(o.top_cm)
-    object.left = @transformLeftX_cm2px(o.left_cm)
+    object.top = @cm2px_y(o.top_cm)
+    object.left = @cm2px_x(o.left_cm)
     object.selectable = o.selectable
 
     #if not object.selectable

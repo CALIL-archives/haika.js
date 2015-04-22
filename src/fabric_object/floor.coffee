@@ -8,7 +8,7 @@
 
   fabric.Floor = fabric.util.createClass(fabric.Rect,
     type: "floor"
-    width_cm: 5000
+    width_cm: 3000
     height_cm: 3000
     is_negative: false
     fill: '#ffffff'
@@ -81,10 +81,10 @@
       if @angle >= 80 && @angle <= 100 then @angle = 90
       if @angle >= 170 && @angle <= 190 then @angle = 180
       if @angle >= 260 && @angle <= 280 then @angle = 270
-      if @sacleX != 1
+      if @scaleX != 1
         @width = @width * @scaleX
         @width_cm = Math.floor(@width / haika.scaleFactor)
-      if @sacleY != 1
+      if @scaleY != 1
         @height = @height * @scaleY
         @height_cm = Math.floor(@height / haika.scaleFactor)
       @scaleX = @scaleY = 1
@@ -99,7 +99,8 @@
       y = -h / 2 + top_cm
       new_coordinates = []
       for coordinate in [[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]
-        new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]),new fabric.Point(left_cm, top_cm), fabric.util.degreesToRadians(@angle))
+        new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]),
+          new fabric.Point(left_cm, top_cm), fabric.util.degreesToRadians(@angle))
         new_coordinates.push([-new_coordinate.x, new_coordinate.y]) # GeoJSONはXが逆
       data =
         "type": "Feature"

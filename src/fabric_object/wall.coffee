@@ -75,15 +75,6 @@
           "height_scale" : @height_scale
 #          "height": @height
       return data
-    toSVG : (reviver) ->
-      markup = @_createBaseSVGMarkup()
-      x = @left
-      y = @top
-      unless @group and @group.type is "path-group"
-        x = -@width / 2
-        y = -@height / 2
-      markup.push "<rect ", "x=\"", x, "\" y=\"", y, "\" rx=\"", @get("rx"), "\" ry=\"", @get("ry"), "\" width=\"", @width, "\" height=\"", @height, "\" style=\"", @getSvgStyles(), "\" transform=\"", @getSvgTransform(),  "\"/>\n"
-      (if reviver then reviver(markup.join("")) else markup.join(""))
     getJSONSchema : () ->
       schema =
         title: "基本情報"
