@@ -99,8 +99,7 @@
       y = -h / 2 + top_cm
       new_coordinates = []
       for coordinate in [[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]
-        new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]),
-          new fabric.Point(left_cm, top_cm), fabric.util.degreesToRadians(@angle))
+        new_coordinate = fabric.util.rotatePoint(new fabric.Point(coordinate[0], coordinate[1]),new fabric.Point(left_cm, top_cm), fabric.util.degreesToRadians(@angle))
         new_coordinates.push([-new_coordinate.x, new_coordinate.y]) # GeoJSONはXが逆
       data =
         "type": "Feature"

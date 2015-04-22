@@ -37,7 +37,7 @@
       ctx.fillRect @width / 2 * (-1), @height / 2 * (-1), @width, @height
       @_renderFill ctx
       @_renderStroke ctx
-      ctx.save()
+      #ctx.save()
 
       """
       ctx.fillStyle='rgba(255,0,0,0.02)'
@@ -58,7 +58,7 @@
       ctx.fillStyle = 'rgba(0, 0, 0,1)'
       label = @minor + '(' + @lane + ')'
       ctx.fillText(label, 0, (@height * @scaleY) / 2 + 15)
-      ctx.restore()
+      #ctx.restore()
       return
 
     __resizeShelf: () ->
@@ -100,7 +100,7 @@
         "type": "Feature"
         "geometry":
           "type": "Point",
-          "coordinates": [@left_cm,@top_cm]
+          "coordinates": [-@left_cm,@top_cm]
         "properties":
           "type": @type
           "id": @id

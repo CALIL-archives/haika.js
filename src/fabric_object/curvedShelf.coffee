@@ -87,12 +87,13 @@
       return
 
     __resizeShelf: () ->
-      actualWidth = @scaleX * @currentWidth
-      actualHeight = @scaleY * @currentHeight
-      count = Math.floor(actualWidth / @__eachWidth())
+      p = @_calculateCurrentDimensions(false)
+      currentWidth = p.x
+      currentHeight = p.y
+      count = Math.floor(currentWidth / @__eachWidth())
       if count < 1 then count = 1
       if count > 20 then count = 20
-      side = Math.round(actualHeight / @__eachHeight())
+      side = Math.round(currentHeight / @__eachHeight())
       if side < 1 then side = 1
       if side > 2 then side = 2
       @set(count: count, side: side, minScaleLimit: 0.01, flipX: false, flipY: false)

@@ -14,8 +14,8 @@
   ],
   "dependencies": {
     "jquery": "~2.1.3",
-    "bootstrap": "~3.3.2",
-    "fabric": "~1.4.13",
+    "bootstrap": "~3.3.4",
+    "fabric": "~1.5.0",
     "Javascript-Undo-Manager": "*",
     "bootstrap-contextmenu": "0.3.2",
     "seiyria-bootstrap-slider": "4.5.1"

@@ -1,9 +1,9 @@
 ((global) ->
   "use strict"
-  _setDefaultLeftTopValues = (attributes) ->
-    attributes.left = attributes.left or 0
-    attributes.top = attributes.top or 0
-    attributes
+  #_setDefaultLeftTopValues = (attributes) ->
+  #  attributes.left = attributes.left or 0
+  #  attributes.top = attributes.top or 0
+  #  attributes
   fabric = global.fabric or (global.fabric = {})
   extend = fabric.util.object.extend
   if fabric.Shelf
@@ -36,8 +36,8 @@
       @callSuper "initialize", options
       @width = @__width()
       @height = @__height()
-      @transparentCorners=false
-      @cornerColor='#ffffff'
+      @transparentCorners = false
+      @cornerColor = '#ffffff'
       return
 
     _render: (ctx) ->
@@ -53,11 +53,12 @@
       else
         @fill = '#ffffff'
         @stroke = '#afafaf'
+        @strokeWidth = 1
       ctx.strokeStyle = @stroke
       ctx.fillStyle = @fill
-      if @width is 1 and @height is 1
-        ctx.fillRect 0, 0, 1, 1
-        return
+      #if @width is 1 and @height is 1
+      #  ctx.fillRect 0, 0, 1, 1
+      #  return
       ctx.save()
 
       # スケール関係の処理
@@ -163,12 +164,13 @@
   # サイズ変更のスナップ
     __resizeShelf: () ->
       log '__resizeShelf'
-      actualWidth = @scaleX * @currentWidth
-      actualHeight = @scaleY * @currentHeight
-      count = Math.floor(actualWidth / @__eachWidth())
+      p = @_calculateCurrentDimensions(false)
+      currentWidth = p.x
+      currentHeight = p.y
+      count = Math.floor(currentWidth / @__eachWidth())
       if count < 1 then count = 1
       if count > 15 then count = 15
-      side = Math.round(actualHeight / @__eachHeight())
+      side = Math.round(currentHeight / @__eachHeight())
       if side < 1 then side = 1
       if side > 2 then side = 2
       @set(count: count, side: side, minScaleLimit: 0.01, flipX: false, flipY: false)
@@ -287,14 +289,14 @@
     complexity: ->
       1
   )
-  fabric.Shelf.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat("width height count side".split(" "))
-  fabric.Shelf.fromElement = (element, options) ->
-    return null  unless element
-    parsedAttributes = fabric.parseAttributes(element, fabric.Shelf.ATTRIBUTE_NAMES)
-    parsedAttributes = _setDefaultLeftTopValues(parsedAttributes)
-    shelf = new fabric.Shelf(extend(((if options then fabric.util.object.clone(options) else {})), parsedAttributes))
-    shelf._normalizeLeftTopProperties parsedAttributes
-    shelf
+  #fabric.Shelf.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat("width height count side".split(" "))
+  #fabric.Shelf.fromElement = (element, options) ->
+  #  return null  unless element
+  #  parsedAttributes = fabric.parseAttributes(element, fabric.Shelf.ATTRIBUTE_NAMES)
+  #  parsedAttributes = _setDefaultLeftTopValues(parsedAttributes)
+  #  shelf = new fabric.Shelf(extend(((if options then fabric.util.object.clone(options) else {})), parsedAttributes))
+  #  shelf._normalizeLeftTopProperties parsedAttributes
+  #  shelf
   fabric.Shelf.fromObject = (object) ->
     new fabric.Shelf(object)
   return) (if typeof exports isnt "undefined" then exports else this)
