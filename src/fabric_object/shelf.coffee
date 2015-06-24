@@ -1,9 +1,4 @@
 ((global) ->
-  "use strict"
-  #_setDefaultLeftTopValues = (attributes) ->
-  #  attributes.left = attributes.left or 0
-  #  attributes.top = attributes.top or 0
-  #  attributes
   fabric = global.fabric or (global.fabric = {})
   extend = fabric.util.object.extend
   if fabric.Shelf
@@ -17,6 +12,10 @@
     type: "shelf"
     eachWidth: 90
     eachHeight: 25
+    count: 1
+    side: 1
+    label: ''
+
     __width: ->
       @__eachWidth() * @count
     __height: ->
@@ -25,12 +24,12 @@
       @eachWidth * haika.scaleFactor
     __eachHeight: ->
       @eachHeight * haika.scaleFactor
-    count: 1
-    side: 1
+
     minScaleLimit: 1
     strokeDashArray: null
     fill: '#ffffff'
     stroke: '#afafaf'
+
     initialize: (options) ->
       options = options or {}
       @callSuper "initialize", options
@@ -41,25 +40,24 @@
       return
 
     _render: (ctx) ->
+
+      ctx.save()
+
+      @lineWidth = 1
       if @selectable
         if @active
           @fill = 'rgba(255,77,77,1)'
-          @stroke = 'rgba(255,255,255,1)'
-          @strokeWidth = 2
+          @stroke = 'rgba(0,0,0,1)'
         else
           @fill = 'rgba(255,77,77,1)'
-          @stroke = 'rgba(255,255,255,1)'
-          @strokeWidth = 2
+          @stroke = 'rgba(50,50,50,1)'
       else
         @fill = '#ffffff'
         @stroke = '#afafaf'
-        @strokeWidth = 1
+
+      ctx.strokeWidth = 1
       ctx.strokeStyle = @stroke
       ctx.fillStyle = @fill
-      #if @width is 1 and @height is 1
-      #  ctx.fillRect 0, 0, 1, 1
-      #  return
-      ctx.save()
 
       # スケール関係の処理
 
@@ -98,10 +96,25 @@
         ctx.font = "12px Arial";
         ctx.textAlign = "center"
         ctx.textBaseline = "middle"
-        ctx.fillStyle = 'rgba(0, 0, 0,1)';
+        ctx.fillStyle = 'rgba(0, 0, 0,1)'
         label = if @side == 1 then "単式" else "複式"
         label = "[" + @id + "] " + label + @count + "連"
-        ctx.fillText(label, 0, (@height * @scaleY) / 2 + 15);
+        ctx.fillText(label, 0, (@height * @scaleY) / 2 + 15)
+
+      # 棚ラベルの表示
+      if @label
+        ctx.font = "14px Arial"
+        ctx.textBaseline = "middle"
+        ctx.fillStyle = 'rgba(0, 0, 0,1)'
+        if @top_cm > 0
+            ctx.textAlign = "right"
+            ctx.fillText(@label,-(@width * @scaleX) / 2 - 5, 0);
+        else
+            ctx.textAlign = "left"
+            ctx.fillText(@label,(@width * @scaleX) / 2 + 5, 0);
+
+
+
       ctx.restore()
       return
 
@@ -113,7 +126,7 @@
         @__renderPartitionLine(ctx, x, y + h, w, h)
 
     __renderRect: (ctx, x, y, w, h) ->
-      ctx.lineWidth = 2
+      ctx.lineWidth = 1
       ctx.beginPath()
       ctx.moveTo x, y
       ctx.lineTo x + w, y
@@ -127,7 +140,7 @@
     __renderPartitionLine: (ctx, x, y, w, h) ->
       if @count == 1
         return
-      ctx.lineWidth = 2
+      ctx.lineWidth = 1
       ctx.beginPath()
       i = 1
       while i < @count
@@ -149,7 +162,8 @@
   # 90度単位でスナップ、元の角度から20度まではスナップしない
     __rotating: ()->
       log '__rotating'
-      if Math.abs(@originalState.angle - @angle) > 20
+      if (Math.abs(@originalState.angle - @angle) > 20 ||
+          Math.abs(@originalState.angle - @angle) < 5 )
         @angle = @angle % 360
         if @angle >= 350 || @angle <= 10 then @angle = 0
         if @angle >= 80 && @angle <= 100 then @angle = 90
@@ -223,6 +237,7 @@
       object = extend(@callSuper("toObject", propertiesToInclude),
         count: @get("count")
         side: @get("side")
+        label: @get("label")
       )
       if not @includeDefaultValues
         @_removeDefaultValues object
@@ -253,6 +268,7 @@
           "count": @count
           "side": @side
           "angle": @angle
+          "label": @label
       return data
 
 
@@ -285,18 +301,14 @@
             type: "integer"
             default: 25
             minimum: 1
+          label:
+            type: "string"
+
       return schema
     complexity: ->
       1
   )
-  #fabric.Shelf.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat("width height count side".split(" "))
-  #fabric.Shelf.fromElement = (element, options) ->
-  #  return null  unless element
-  #  parsedAttributes = fabric.parseAttributes(element, fabric.Shelf.ATTRIBUTE_NAMES)
-  #  parsedAttributes = _setDefaultLeftTopValues(parsedAttributes)
-  #  shelf = new fabric.Shelf(extend(((if options then fabric.util.object.clone(options) else {})), parsedAttributes))
-  #  shelf._normalizeLeftTopProperties parsedAttributes
-  #  shelf
+
   fabric.Shelf.fromObject = (object) ->
     new fabric.Shelf(object)
   return) (if typeof exports isnt "undefined" then exports else this)

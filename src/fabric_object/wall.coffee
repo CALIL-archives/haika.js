@@ -1,5 +1,4 @@
 ((global) ->
-  "use strict"
   fabric = global.fabric or (global.fabric = {})
   extend = fabric.util.object.extend
   if fabric.Wall

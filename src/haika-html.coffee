@@ -108,12 +108,9 @@ $.extend haika,
 
         <p>id: <span id="haika-object-id"></span></p>
 
-        <p><i class="fa fa-trash-o haika-remove btn btn-default"> remove</i></p>
-
-        <p><i class="fa fa-files-o haika-duplicate btn btn-default"> duplicate</i></p>
-
-        <p><input type="button" class="haika-bringtofront btn btn-default" value="bringToFront "/></p>
-
+        <i class="fa fa-trash-o haika-remove btn btn-default"> remove</i>
+        <i class="fa fa-files-o haika-duplicate btn btn-default"> duplicate</i>
+        <input type="button" class="haika-bringtofront btn btn-default" value="bringToFront "/>
         <div id="haika-object-property"></div>
       </div>
       <div class="haika-group-panel">
