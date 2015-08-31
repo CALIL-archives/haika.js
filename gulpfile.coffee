@@ -3,6 +3,7 @@ coffee = require 'gulp-coffee'
 uglify = require 'gulp-uglify'
 concat = require 'gulp-concat'
 rename = require 'gulp-rename'
+cssmin = require　'gulp-cssmin'
 
 # CofeeScriptのコンパイル
 gulp.task 'compile-coffee', () ->
@@ -35,4 +36,24 @@ gulp.task 'uglify-js', () ->
         .pipe rename extname: '.min.js'
         .pipe gulp.dest 'dist/'
 
-gulp.task 'default', ['compile-coffee', 'concat-js', 'uglify-js']
+# Javascriptの結合
+gulp.task 'concat-css', () ->
+    gulp.src [
+          "vendor/dragdealer/dragdealer.css"
+          "bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css"
+          "css/haika.css"
+        ]
+        .pipe concat('css/haika.all.css')
+        .pipe gulp.dest 'dist/'
+
+# CSSの圧縮
+gulp.task 'minify-css', () ->
+    gulp.src 'css/haika.all.css'
+        .pipe cssmin()
+        .pipe rename extname: '.min.css'
+        .pipe gulp.dest 'css/'
+
+
+
+
+gulp.task 'default', ['compile-coffee', 'concat-js', 'uglify-js', 'concat-css', 'minify-css']
