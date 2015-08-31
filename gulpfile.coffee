@@ -1,9 +1,10 @@
-gulp   = require 'gulp'
-coffee = require 'gulp-coffee'
-uglify = require 'gulp-uglify'
-concat = require 'gulp-concat'
-rename = require 'gulp-rename'
-cssmin = require　'gulp-cssmin'
+gulp        = require 'gulp'
+coffee      = require 'gulp-coffee'
+uglify      = require 'gulp-uglify'
+concat      = require 'gulp-concat'
+rename      = require 'gulp-rename'
+cssmin      = require 'gulp-cssmin'
+browserSync = require 'browser-sync'
 
 # CofeeScriptのコンパイル
 gulp.task 'compile-coffee', () ->
@@ -35,14 +36,17 @@ gulp.task 'uglify-js', () ->
         .pipe uglify preserveComments:'some'
         .pipe rename extname: '.min.js'
         .pipe gulp.dest 'dist/'
+        .pipe browserSync.reload(stream: true, once: true)
 
-# Javascriptの結合
+css_files = [
+  "vendor/dragdealer/dragdealer.css"
+  "bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css"
+  "css/haika.css"
+]
+
+# CSSの結合
 gulp.task 'concat-css', () ->
-    gulp.src [
-          "vendor/dragdealer/dragdealer.css"
-          "bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css"
-          "css/haika.css"
-        ]
+    gulp.src css_files
         .pipe concat('css/haika.all.css')
         .pipe gulp.dest 'dist/'
 
@@ -52,8 +56,38 @@ gulp.task 'minify-css', () ->
         .pipe cssmin()
         .pipe rename extname: '.min.css'
         .pipe gulp.dest 'css/'
+        .pipe browserSync.reload(stream: true, once: true)
 
 
+# BrowserSync
+# http://www.browsersync.io/docs/options/
+gulp.task 'browserSync', ->
+  browserSync.init(null, {
+    notify: true,
+#    proxy: 'localhost:8888'
+    server:
+      baseDir: 'demo/'
+    port: 3000
+  })
+
+# リロード
+gulp.task 'browserSync-reload', ->
+  browserSync.reload()
 
 
-gulp.task 'default', ['compile-coffee', 'concat-js', 'uglify-js', 'concat-css', 'minify-css']
+# JS, CSSのタスクをまとめる
+gulp.task 'build-js',  ['compile-coffee', 'concat-js', 'uglify-js']
+gulp.task 'build-css', ['concat-css', 'minify-css']
+
+# gulpコマンドの設定
+gulp.task 'default', [
+  'build-js'
+  'build-css'
+  'browserSync'
+], ->
+  # ファイル変更でタスクを実行
+  gulp.watch 'demo/*.html', ['browserSync-reload']
+  gulp.watch 'src/**/*.coffee', ['build-js']
+  gulp.watch css_files, ['build-css']
+
+
