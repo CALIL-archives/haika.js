@@ -9,6 +9,9 @@ browserSync = require 'browser-sync'
 plumber     = require 'gulp-plumber'
 notify      = require 'gulp-notify'
 
+url         = require 'url'
+proxy       = require 'proxy-middleware'
+
 # CofeeScriptのコンパイル
 gulp.task 'compile-coffee', () ->
     gulp.src 'src/**/*.coffee'
@@ -91,12 +94,15 @@ gulp.task 'minify-css', () ->
 # BrowserSync
 # http://www.browsersync.io/docs/options/
 gulp.task 'browserSync', ->
+  proxyOptions = url.parse 'https://app.haika.io/api'
+  proxyOptions.route = '/api'
   browserSync.init(null, {
     notify: true,
 #    proxy: 'localhost:8888'
     server:
       baseDir: './'
       index  : 'demo/index.html'
+      middleware: [proxy(proxyOptions)]
     port: 3000
   })
 
