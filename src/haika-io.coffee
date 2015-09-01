@@ -36,7 +36,7 @@ $.extend haika,
       option.error and option.error('保存処理中のため読み込めませんでした')
     $.ajax
       url: @_api_load_endpoint
-      type: 'POST'
+      type: 'GET'
       cache: false
       dataType: 'json'
       data:
