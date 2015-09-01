@@ -5,6 +5,8 @@ concat      = require 'gulp-concat'
 rename      = require 'gulp-rename'
 cssmin      = require 'gulp-cssmin'
 browserSync = require 'browser-sync'
+open        = require 'gulp-open'
+
 # gulp-plumber コンパイルエラーによる強制停止を防止する
 plumber     = require 'gulp-plumber'
 notify      = require 'gulp-notify'
@@ -20,13 +22,16 @@ gulp.task 'compile-coffee', () ->
         }))
         .pipe coffee({bare: true})
         .pipe gulp.dest 'src/'
-    # デモ用
+
+# デモ用 CofeeScriptのコンパイル
+gulp.task 'compile-coffee-demo', () ->
     gulp.src 'demo/**/*.coffee'
         .pipe(plumber({
           errorHandler: notify.onError "Error: <%= error.message %>"
         }))
         .pipe coffee({bare: true})
         .pipe gulp.dest 'demo/'
+        .pipe browserSync.reload(stream: true, once: true)
 
 js_files = [
   "bower_components/fabric/dist/fabric.js"
@@ -35,8 +40,8 @@ js_files = [
   "bower_components/bootstrap-contextmenu/bootstrap-contextmenu.js"
   "vendor/mousetrap.min.js"
   "vendor/dragdealer/dragdealer.min.js"
-#  "vendor/graham_scan_js-1.0.2/graham_scan.min.js"
   "vendor/clipper_unminified.js"
+  "vendor/graham_scan_js-1.0.2/graham_scan.min.js"
   "src/fabric_object/aligning_guidelines.js"
   "src/fabric_object/shelf.js"
   "src/fabric_object/curvedShelf.js"
@@ -44,6 +49,9 @@ js_files = [
   "src/fabric_object/wall.js"
   "src/fabric_object/floor.js"
   "src/fabric_object/grid.js"
+]
+
+haika_js_files = [
   "src/haika.js"
   "src/haika-io.js"
   "src/haika-geojson.js"
@@ -58,9 +66,16 @@ js_files = [
 
 # Javascriptの結合
 gulp.task 'concat-js', () ->
-    gulp.src js_files
+    gulp.src js_files.concat(haika_js_files)
         .pipe concat('haika.all.js')
         .pipe gulp.dest 'dist/'
+
+
+# Javascriptライブラリの結合
+gulp.task 'concat-js-lib', () ->
+    gulp.src js_files
+        .pipe concat('haika.require.js')
+        .pipe gulp.dest 'demo/'
 
 # Javascriptの圧縮
 gulp.task 'uglify-js', () ->
@@ -96,15 +111,23 @@ gulp.task 'minify-css', () ->
 gulp.task 'browserSync', ->
   proxyOptions = url.parse 'https://app.haika.io/api'
   proxyOptions.route = '/api'
-  browserSync.init(null, {
-    notify: true,
+  browserSync.init({
+    notify: true
+    port: 3000
+    open: false
 #    proxy: 'localhost:8888'
     server:
       baseDir: './'
-      index  : 'demo/index.html'
+#      index  : 'demo/index.html'
+      routes:
+        '/demo': 'demo'
       middleware: [proxy(proxyOptions)]
     port: 3000
-  })
+  }, ->
+    # ローカルのデモを開く
+    gulp.src　__filename
+      .pipe　open　uri: 'http://localhost:3000/demo/index.html'
+  )
 
 # リロード
 gulp.task 'browserSync-reload', ->
@@ -122,8 +145,10 @@ gulp.task 'default', [
   'browserSync'
 ], ->
   # ファイル変更でタスクを実行
-  gulp.watch 'demo/*.html', ['browserSync-reload']
-  gulp.watch ['src/**/*.coffee', 'demo/**/*.coffee'], ['build-js']
+  gulp.watch 'src/**/*.coffee', ['build-js']
   gulp.watch css_files, ['build-css']
+  # デモ用の設定
+  gulp.watch 'demo/*.html', ['browserSync-reload']
+  gulp.watch 'demo/**/*.coffee', ['compile-coffee-demo']
 
 
