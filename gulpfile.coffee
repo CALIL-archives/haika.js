@@ -9,9 +9,12 @@ browserSync = require 'browser-sync'
 # CofeeScriptのコンパイル
 gulp.task 'compile-coffee', () ->
     gulp.src 'src/**/*.coffee'
-        .pipe coffee()
+        .pipe coffee({bare: true})
         .pipe gulp.dest 'src/'
-
+    # デモ用
+    gulp.src 'demo/**/*.coffee'
+        .pipe coffee({bare: true})
+        .pipe gulp.dest 'demo/'
 
 js_files = [
   "bower_components/fabric/dist/fabric.js"
@@ -19,14 +22,31 @@ js_files = [
   "bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"
   "bower_components/bootstrap-contextmenu/bootstrap-contextmenu.js"
   "vendor/mousetrap.min.js"
-  "vendor/dragdealer/dragdealer.js"
-  "vendor/graham_scan_js-1.0.2/src/graham_scan.js"
+  "vendor/dragdealer/dragdealer.min.js"
+#  "vendor/graham_scan_js-1.0.2/graham_scan.min.js"
   "vendor/clipper_unminified.js"
+  "src/fabric_object/aligning_guidelines.js"
+  "src/fabric_object/shelf.js"
+  "src/fabric_object/curvedShelf.js"
+  "src/fabric_object/beacon.js"
+  "src/fabric_object/wall.js"
+  "src/fabric_object/floor.js"
+  "src/fabric_object/grid.js"
+  "src/haika.js"
+  "src/haika-io.js"
+  "src/haika-geojson.js"
+  "src/haika-zoom.js"
+  "src/haika-scrollbar.js"
+  "src/haika-toolbar.js"
+  "src/haika-event.js"
+  "src/haika-undo.js"
+  "src/haika-property.js"
+  "src/haika-html.js"
 ]
 
 # Javascriptの結合
 gulp.task 'concat-js', () ->
-    gulp.src js_files.concat ['src/**/*.js', '!src/extra/']
+    gulp.src js_files
         .pipe concat('haika.all.js')
         .pipe gulp.dest 'dist/'
 
@@ -66,7 +86,8 @@ gulp.task 'browserSync', ->
     notify: true,
 #    proxy: 'localhost:8888'
     server:
-      baseDir: 'demo/'
+      baseDir: './'
+      index  : 'demo/index.html'
     port: 3000
   })
 
