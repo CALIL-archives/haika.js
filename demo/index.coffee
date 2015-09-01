@@ -30,7 +30,7 @@ $(haika).on 'haika:initialized', ->
         haika.loadFromGeoJson()
         $(haika).trigger('haika:load')
         haika.render()
-        haika.property.init()
+        new Property()
         haika.zoomFull()
 
 # 初期設定

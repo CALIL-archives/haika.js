@@ -1,0 +1,38 @@
+/* property_panel */
+.haika-property-panel {
+    position: absolute;
+    top: 40px;
+    right: 30px;
+    width: 240px;
+    height: calc(100% - 40px - 30px);
+    color: #ffffff;
+    padding: 10px;
+    background-color: #353535;
+    opacity: 0.8;
+}
+
+.haika-property-panel h3 {
+    font-size: 16px;
+}
+
+.haika-canvas-panel {
+}
+
+.haika-object-panel {
+    display: none;
+}
+
+.haika-group-panel {
+    display: none;
+}
+
+#haika-object-property {
+
+}
+
+#haika-object-property input {
+    color: #000000;
+}
+
+#haika-object-property input.integer {
+}

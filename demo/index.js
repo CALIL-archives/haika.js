@@ -33,7 +33,7 @@ $(haika).on('haika:initialized', function() {
         haika.loadFromGeoJson();
         $(haika).trigger('haika:load');
         haika.render();
-        haika.property.init();
+        new Property();
         return haika.zoomFull();
       };
     })(this)

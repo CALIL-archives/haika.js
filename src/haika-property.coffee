@@ -57,43 +57,132 @@ fabric.Object.prototype.savePropetyPanel = (propertyPanel)->
 #    log json
   haika.changeObject(this.id, json)
 
-$.extend haika,
 
-  property:
+# プロパティ用のHTML
+haika.htmlStack.push("""
+<div class="haika-property-panel">
+  <div class="haika-canvas-panel">
+      <h3>キャンバスのプロパティ</h3>
+      <label for="haika-canvas-width">
+          width: <span id="haika-canvas-width"></span>
+      </label>
+      <label for="haika-canvas-height">
+          height: <span id="haika-canvas-height"></span>
+      </label><br/>
+      <label for="haika-canvas-centerX">
+          centerX: <span id="haika-canvas-centerX"></span>
+      </label>
+      <label for="haika-canvas-centerY">
+          centerY: <span id="haika-canvas-centerY"></span>
+      </label><br/>
+      <label for="haika-canvas-bgscale">
+          bgscale:
+          <input type="number" id="haika-canvas-bgscale" class="form-control" value="0" step="0.01"/>
+      </label><br/>
+      <label for="haika-canvas-bgopacity">
+          bgopacity:
+          <input type="number" id="haika-canvas-bgopacity" class="form-control" value="0" step="0.1"/>
+          <input id="haika-bgopacity-slider" data-slider-id='haika-bgopacity-slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
+      </label><br/>
+      <label for="haika-bgimg">
+          背景画像:
+          <input type="file" id="haika-bgimg" class="btn btn-default"/>
+      </label>
+      <br/>
+      <br/>
+      <span class="haika-map-setting btn btn-default">
+        <i class="fa fa-map-marker"></i>
+        地図設定
+      </span>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <span id="haika-bgreset" class="btn btn-default">
+        <i class="fa fa-trash"></i>
+        背景リセット
+      </span>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <span id="haika-import" class="btn btn-default">
+        <i class="fa fa-download"></i>
+        データのインポート
+      </span>
+    </div>
+    <div class="haika-object-panel">
+      <h3>オブジェクトのプロパティ</h3>
+
+      <p>id: <span id="haika-object-id"></span></p>
+
+      <i class="fa fa-trash-o haika-remove btn btn-default"> remove</i>
+      <i class="fa fa-files-o haika-duplicate btn btn-default"> duplicate</i>
+      <input type="button" class="haika-bringtofront btn btn-default" value="bringToFront "/>
+      <div id="haika-object-property"></div>
+    </div>
+    <div class="haika-group-panel">
+        <h3>グループのプロパティ</h3>
+
+        <p><span id="haika-group-count"></span>個のオブジェクトを選択中。</p>
+
+        <p><i class="fa fa-trash-o haika-remove btn btn-default"> remove</i></p>
+
+        <p>
+
+        <div class="btn-group">
+            <i class="fa fa-align-left haika-align-left btn btn-default"></i>
+            <i class="fa fa-align-center haika-align-center btn btn-default"></i>
+            <i class="fa fa-align-right haika-align-right btn btn-default"></i>
+        </div>
+        </p>
+        <p>
+
+        <div class="btn-group">
+            <i class="fa fa-align-left fa-rotate-90 haika-align-top btn btn-default"></i>
+            <i class="fa fa-align-center fa-rotate-90 haika-align-vcenter btn btn-default"></i>
+            <i class="fa fa-align-right fa-rotate-90 haika-align-bottom btn btn-default"></i>
+        </div>
+        </p>
+    </div>
+</div>
+""")
+
+class Property
   # 初期設定
-    init: ->
-      haika.canvas.on 'object:selected', (e)=>
-        @setPropetyPanel()
-      haika.canvas.on 'selection:cleared', (e)=>
-        $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide()
-        $('.haika-canvas-panel').show()
+  constructor: ->
+    haika.canvas.on 'object:selected', (e)=>
+      @setPropetyPanel()
+    haika.canvas.on 'selection:cleared', (e)=>
+      $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide()
+      $('.haika-canvas-panel').show()
 #      haika.canvas.on 'object:modified', (e)=>
 #        @setPropetyPanel()
-  # プロパティパネルの作成
-    createPanel : (object)->
-      log 'createPanel'
-      $('#haika-object-property').html(object.createPropetyPanel())
-      $('#haika-object-property').find('input, select, option').change =>
-        @savePanel(object)
-  # プロパティパネルの値を保存
-    savePanel : (object)->
-      log 'savePanel'
-      object.savePropetyPanel($('#haika-object-property'))
-  # プロパティパネルの設定
-    setPropetyPanel: (object)->
-      log 'setPropetyPanel'
-      $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide()
-      # 単体のオブジェクトを選択した場合
-      object = haika.canvas.getActiveObject()
-      if object
-        $('.haika-object-panel').show()
-        $('#haika-object-id').html(object.id)
-        @createPanel(object)
-        return
-      # グループ選択の場合
-      group = haika.canvas.getActiveGroup()
-      if group
-        objects = group._objects
-        $('#haika-group-count').html(objects.length)
-        $('.haika-group-panel').show()
-        return
+# プロパティパネルの作成
+  createPanel : (object)->
+    log 'createPanel'
+    $('#haika-object-property').html(object.createPropetyPanel())
+    $('#haika-object-property').find('input, select, option').change =>
+      @savePanel(object)
+# プロパティパネルの値を保存
+  savePanel : (object)->
+    log 'savePanel'
+    object.savePropetyPanel($('#haika-object-property'))
+# プロパティパネルの設定
+  setPropetyPanel: (object)->
+    log 'setPropetyPanel'
+    $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide()
+    # 単体のオブジェクトを選択した場合
+    object = haika.canvas.getActiveObject()
+    if object
+      $('.haika-object-panel').show()
+      $('#haika-object-id').html(object.id)
+      @createPanel(object)
+      return
+    # グループ選択の場合
+    group = haika.canvas.getActiveGroup()
+    if group
+      objects = group._objects
+      $('#haika-group-count').html(objects.length)
+      $('.haika-group-panel').show()
+      return

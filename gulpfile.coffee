@@ -55,13 +55,13 @@ haika_js_files = [
   "src/haika.js"
   "src/haika-io.js"
   "src/haika-geojson.js"
+  "src/haika-html.js"
   "src/haika-zoom.js"
   "src/haika-scrollbar.js"
   "src/haika-toolbar.js"
   "src/haika-event.js"
   "src/haika-undo.js"
   "src/haika-property.js"
-  "src/haika-html.js"
 ]
 
 # Javascriptの結合
@@ -89,13 +89,14 @@ css_files = [
   "vendor/dragdealer/dragdealer.css"
   "bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css"
   "css/haika.css"
+  "css/property.css"
 ]
 
 # CSSの結合
 gulp.task 'concat-css', () ->
     gulp.src css_files
-        .pipe concat('css/haika.all.css')
-        .pipe gulp.dest 'dist/'
+        .pipe concat('haika.all.css')
+        .pipe gulp.dest 'css/'
 
 # CSSの圧縮
 gulp.task 'minify-css', () ->
