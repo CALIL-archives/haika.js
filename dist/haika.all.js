@@ -32972,7 +32972,7 @@ $.extend(haika, {
     }
     return $.ajax({
       url: this._api_load_endpoint,
-      type: 'POST',
+      type: 'GET',
       cache: false,
       dataType: 'json',
       data: {

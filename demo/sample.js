@@ -9,7 +9,7 @@ $(haika).on('haika:render', function() {
   return $('#haika-canvas-bgopacity').val(haika.backgroundOpacity);
 });
 
-haikaId = 1000;
+haikaId = 15;
 
 haika.html('.haika-container');
 

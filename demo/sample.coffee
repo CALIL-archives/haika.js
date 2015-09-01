@@ -10,8 +10,7 @@ $(haika).on 'haika:render', ->
     $('#haika-canvas-bgopacity').val(haika.backgroundOpacity)
 
 
-
-haikaId = 1000
+haikaId = 15
 haika.html('.haika-container')
 $(haika).on 'haika:initialized', ->
   haika.openFromApi(haikaId,{
