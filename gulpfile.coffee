@@ -5,14 +5,23 @@ concat      = require 'gulp-concat'
 rename      = require 'gulp-rename'
 cssmin      = require 'gulp-cssmin'
 browserSync = require 'browser-sync'
+# gulp-plumber コンパイルエラーによる強制停止を防止する
+plumber     = require 'gulp-plumber'
+notify      = require 'gulp-notify'
 
 # CofeeScriptのコンパイル
 gulp.task 'compile-coffee', () ->
     gulp.src 'src/**/*.coffee'
+        .pipe(plumber({
+          errorHandler: notify.onError "Error: <%= error.message %>"
+        }))
         .pipe coffee({bare: true})
         .pipe gulp.dest 'src/'
     # デモ用
     gulp.src 'demo/**/*.coffee'
+        .pipe(plumber({
+          errorHandler: notify.onError "Error: <%= error.message %>"
+        }))
         .pipe coffee({bare: true})
         .pipe gulp.dest 'demo/'
 
@@ -108,7 +117,7 @@ gulp.task 'default', [
 ], ->
   # ファイル変更でタスクを実行
   gulp.watch 'demo/*.html', ['browserSync-reload']
-  gulp.watch 'src/**/*.coffee', ['build-js']
+  gulp.watch ['src/**/*.coffee', 'demo/**/*.coffee'], ['build-js']
   gulp.watch css_files, ['build-css']
 
 
