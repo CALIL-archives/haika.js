@@ -15,3 +15,16 @@ initScrollBar = () ->
       viewHeight = haika.canvas.getHeight() * haika.scaleFactor
       haika.centerY = ((y - 0.5) * ((maxHeight - viewHeight) / 2)).toFixed(0) * -1
       haika.render()
+
+haika.htmlStack.push """
+<div  id="vertical-scroller" class="content-scroller">
+  <div class="dragdealer">
+    <div class="handle scroller-gray-bar">
+    </div>
+  </div>
+</div>
+<div id="horizontal-scroller" class="dragdealer">
+  <div class="handle scroller-gray-bar">
+  </div>
+</div>
+"""

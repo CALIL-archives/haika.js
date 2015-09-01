@@ -107,3 +107,5 @@ $.extend(haika, {
     }
   }
 });
+
+haika.htmlStack.push("<div class=\"haika-toolbar-container\">\n  <ul class=\"toolbar-menu\">\n  </ul>\n</div>");

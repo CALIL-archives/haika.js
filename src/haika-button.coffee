@@ -60,3 +60,28 @@ $.extend haika,
     if prevScale > 1 and newScale < 1
       newScale = 1
     @setScale newScale
+
+
+haika.htmlStack.push """
+<div class="haika-buttons">
+  <span class="haika-button haika-full">
+    <i class="fa fa-arrows"></i>
+  </span>
+  <span class="haika-button haika-zoomin">
+    <i class="fa fa-plus"></i>
+  </span>
+  <span class="haika-button haika-zoomout">
+    <i class="fa fa-minus"></i>
+  </span>
+</div>
+"""
+
+haika.eventStack.push ->
+  $('.haika-full').click ->
+    haika.zoomFull()
+  $('.haika-zoomin').click ->
+    haika.zoomIn()
+  $('.haika-zoomout').click ->
+    haika.zoomOut()
+  $('.zoomreset').click ->
+    haika.setScale 1

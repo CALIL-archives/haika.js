@@ -56,12 +56,15 @@ haika_js_files = [
   "src/haika-io.js"
   "src/haika-geojson.js"
   "src/haika-html.js"
-  "src/haika-zoom.js"
+  "src/haika-event.js"
+  "src/haika-header.js"
+  "src/haika-nav.js"
+  "src/haika-button.js"
   "src/haika-scrollbar.js"
   "src/haika-toolbar.js"
-  "src/haika-event.js"
   "src/haika-undo.js"
   "src/haika-property.js"
+  "src/haika-contextmenu.js"
 ]
 
 # Javascriptの結合
@@ -89,7 +92,12 @@ css_files = [
   "vendor/dragdealer/dragdealer.css"
   "bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css"
   "css/haika.css"
-  "css/property.css"
+  "css/haika-header.css"
+  "css/haika-toolbar.css"
+  "css/haika-button.css"
+  "css/haika-nav.css"
+  "css/haika-scrollbar.css"
+  "css/haika-property.css"
 ]
 
 # CSSの結合

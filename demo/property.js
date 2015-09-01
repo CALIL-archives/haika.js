@@ -1,5 +1,3 @@
-haika.html('.haika-container');
-
 $(haika).on('haika:initialized', function() {
   return $.ajax({
     url: 'sabae.json',
@@ -30,6 +28,8 @@ $(haika).on('haika:initialized', function() {
   });
 });
 
+haika.html('.haika-container');
+
 haika.init({
   divId: 'haika-canvas'
 });
@@ -37,5 +37,5 @@ haika.init({
 if (haika.readOnly) {
   haika.event.zoom();
 } else {
-
+  haika.event.init();
 }

@@ -1,0 +1,37 @@
+/* toolbar */
+.haika-toolbar-container {
+    display: none;
+    width: 156px;
+    position: absolute;
+    left: 0;
+    top: 40px;
+    padding: 18px;
+    /*border-right: 1px solid #CCCCCC;
+    border-bottom: 1px solid #CCCCCC;
+    background-color: #FFFFFF;*/
+}
+
+.haika-toolbar-container ul.toolbar-menu {
+    margin-left: 0;
+    padding-left: 0;
+    /* height: 302px; */
+}
+
+.haika-toolbar-container ul.toolbar-menu > li {
+    display: block;
+    list-style: none;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #CCCCCC;
+    background-color: #FFFFFF;
+}
+
+.haika-toolbar-container ul.toolbar-menu > li:hover {
+    background-color: lightpink;
+}
+
+.dropdown-colorselector > .dropdown-menu {
+    min-width: 730px;
+    max-width: 730px;
+    width: 730px;
+}

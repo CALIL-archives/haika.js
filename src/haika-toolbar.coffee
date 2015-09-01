@@ -93,3 +93,10 @@ $.extend haika,
           $(button).show()
         else
           $(button).hide()
+
+haika.htmlStack.push """
+<div class="haika-toolbar-container">
+  <ul class="toolbar-menu">
+  </ul>
+</div>
+"""

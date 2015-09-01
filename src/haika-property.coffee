@@ -7,7 +7,7 @@ class Property
     haika.canvas.on 'selection:cleared', (e)=>
       $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide()
       $('.haika-canvas-panel').show()
-#      haika.canvas.on 'object:modified', (e)=>
+    haika.canvas.on 'object:modified', (e)=>
 #        @setPropetyPanel()
 # プロパティパネルの作成
   createPanel : (object)->
@@ -127,6 +127,80 @@ haika.htmlStack.push("""
     </div>
 </div>
 """)
+
+haika.eventStack.push ->
+    # プロパティパネルの表示
+    $(haika).on 'haika:render', ->
+        $('#haika-canvas-width').html(haika.canvas.getWidth())
+        $('#haika-canvas-height').html(haika.canvas.getHeight())
+        $('#haika-canvas-centerX').html(haika.centerX.toFixed(0))
+        $('#haika-canvas-centerY').html(haika.centerY.toFixed(0))
+        $('#haika-canvas-bgscale').val(haika.backgroundScaleFactor)
+        $('#haika-canvas-bgopacity').val(haika.backgroundOpacity)
+
+  $('.haika-map-setting').click ->
+    location.href = 'map.html'+location.hash
+  $('.haika-remove').click ->
+    object = haika.canvas.getActiveObject()
+    haika.remove()
+    if object
+      haika.undo.remove(object)
+  $('.haika-bringtofront').click ->
+    haika.bringToFront()
+  $('.haika-duplicate').click ->
+    haika.duplicate()
+  $('.haika-align-left').click ->
+    haika.alignLeft()
+  $('.haika-align-center').click ->
+    haika.alignCenter()
+  $('.haika-align-right').click ->
+    haika.alignRight()
+  $('.haika-align-top').click ->
+    haika.alignTop()
+  $('.haika-align-vcenter').click ->
+    haika.alignVcenter()
+  $('.haika-align-bottom').click ->
+    haika.alignBottom()
+
+  $('#haika-canvas-bgscale').change ->
+    haika.backgroundScaleFactor = parseFloat($(this).val())
+    haika.render()
+  #    haika.save()
+
+  $('#haika-bgreset').click ->
+    haika.setBackgroundUrl('')
+
+  $('#haika-bgopacity-slider').slider
+    step: 1
+    min: 1
+    max: 100
+    value: haika.backgroundOpacity * 100
+    formatter: (value) ->
+      haika.backgroundOpacity = value / 100
+      haika.render()
+  #      haika.save()
+      return value / 100
+
+  #背景画像ボタンクリック時
+  $('#haika-bgimg').change (e)->
+    files = e.target.files
+    if files.length==0
+      return
+    # IE10以降のみ対応
+    data = new FormData()
+    data.append 'id', haika._dataId
+    data.append 'userfile', files[0]
+    $.ajax
+      url: 'http://lab.calil.jp/haika_store/upload.php'
+      data: data
+      cache: false
+      contentType: false
+      processData: false
+      type: 'POST'
+      success: (data) ->
+        url = 'http://lab.calil.jp/haika_store/image/'+haika._dataId+'_'+files[0].name
+        haika.setBackgroundUrl(url)
+
 
 # fabricオブジェクトを拡張する
 

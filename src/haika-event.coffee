@@ -1,83 +1,11 @@
 $.extend haika,
+  eventStack: []
   event:
     init: ->
       @shortcut()
-      @button()
-      @zoom()
-      @contextMenu()
       @etc()
-
-    # ボタン類のイベントバインド
-    button: ->
-      $('.haika-map-setting').click ->
-        location.href = 'map.html'+location.hash
-      $('.haika-remove').click ->
-        object = haika.canvas.getActiveObject()
-        haika.remove()
-        if object
-          haika.undo.remove(object)
-      $('.haika-bringtofront').click ->
-        haika.bringToFront()
-      $('.haika-duplicate').click ->
-        haika.duplicate()
-      $('.haika-copy').click ->
-        haika.copy()
-      $('.haika-paste').click ->
-        haika.paste()
-      $('.haika-align-left').click ->
-        haika.alignLeft()
-      $('.haika-align-center').click ->
-        haika.alignCenter()
-      $('.haika-align-right').click ->
-        haika.alignRight()
-      $('.haika-align-top').click ->
-        haika.alignTop()
-      $('.haika-align-vcenter').click ->
-        haika.alignVcenter()
-      $('.haika-align-bottom').click ->
-        haika.alignBottom()
-
-      $('#haika-canvas-bgscale').change ->
-        haika.backgroundScaleFactor = parseFloat($(this).val())
-        haika.render()
-    #    haika.save()
-
-      $('#haika-bgreset').click ->
-        haika.setBackgroundUrl('')
-
-      $('#haika-bgopacity-slider').slider
-        step: 1
-        min: 1
-        max: 100
-        value: haika.backgroundOpacity * 100
-        formatter: (value) ->
-          haika.backgroundOpacity = value / 100
-          haika.render()
-    #      haika.save()
-          return value / 100
-
-      #背景画像ボタンクリック時
-      $('#haika-bgimg').change (e)->
-        files = e.target.files
-        if files.length==0
-          return
-        # IE10以降のみ対応
-        data = new FormData()
-        data.append 'id', haika._dataId
-        data.append 'userfile', files[0]
-        $.ajax
-          url: 'http://lab.calil.jp/haika_store/upload.php'
-          data: data
-          cache: false
-          contentType: false
-          processData: false
-          type: 'POST'
-          success: (data) ->
-            url = 'http://lab.calil.jp/haika_store/image/'+haika._dataId+'_'+files[0].name
-            haika.setBackgroundUrl(url)
-
-      $('.haika-undo').click ->
-        haika.undo.undoManager.undo()
+      for func in haika.eventStack
+        func()
 
     # ショートカットキー
     shortcut: ->
@@ -142,60 +70,11 @@ $.extend haika,
           haika.remove()
         return
 
-    # ズーム関連
-    zoom: ->
-      $('.haika-full').click ->
-        haika.zoomFull()
-      $('.haika-zoomin').click ->
-        haika.zoomIn()
-      $('.haika-zoomout').click ->
-        haika.zoomOut()
-      $('.zoomreset').click ->
-        haika.setScale 1
-
-    # 右クリックメニュー
-    contextMenu : ->
-      $('#haika-canvas').contextmenu(
-        target: '#haika-context-menu'
-        before: (e, element, target) ->
-          e.preventDefault()
-          # Canvas上か？
-          if e.target.tagName != 'CANVAS'
-            @closemenu()
-            return false
-          # 選択中か？
-          if haika.canvas.getActiveObject()
-            log 'selected'
-            $('#haika-context-menu').find('.haika-select-context-menu').show()
-          else
-            log 'nonselect'
-            $('#haika-context-menu').find('.haika-select-context-menu').hide()
-          return true
-        onItem: (context, e) ->
-          return
-      )
     # その他
     etc: ->
-            # 画面遷移時に保存
+      # 画面遷移時に保存
       $(window).on 'beforeunload', (event)=>
         haika.render()
         haika.save()
         return
-
-      # レイヤータブ
-      $('.haika-nav a').click (e)->
-        e.preventDefault()
-        tabName= $(e.target).attr('class')
-        haika.toolbar.show(tabName)
-        if tabName=='beacon'
-            haika.layer=haika.CONST_LAYERS.BEACON
-        if tabName=='wall'
-            haika.layer=haika.CONST_LAYERS.WALL
-        if tabName=='floor'
-            haika.layer=haika.CONST_LAYERS.FLOOR
-        if tabName=='shelf'
-            haika.layer=haika.CONST_LAYERS.SHELF
-        haika.render()
-        $('.haika-nav li').removeClass('active')
-        $(this).closest('li').addClass('active')
 

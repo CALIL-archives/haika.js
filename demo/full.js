@@ -39,18 +39,6 @@ if (haika.readOnly) {
   initScrollBar();
 }
 
-$('.fullscreen').click(function() {
-  if ($('.haika-container')[0].requestFullScreen) {
-    $('.haika-container')[0].requestFullScreen();
-  }
-  if ($('.haika-container')[0].webkitRequestFullScreen) {
-    $('.haika-container')[0].webkitRequestFullScreen();
-  }
-  if ($('.haika-container')[0].mozRequestFullScreen) {
-    return $('.haika-container')[0].mozRequestFullScreen();
-  }
-});
-
 $('#haika-import').click(function() {
   var id;
   id = prompt('インポートするデータのIDを6桁で指定して下さい。');

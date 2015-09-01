@@ -37,14 +37,6 @@ else
   #haika.colorpicker.init()
 
 
-# フルスクリーンモードボタン
-$('.fullscreen').click ->
-  if $('.haika-container')[0].requestFullScreen
-    $('.haika-container')[0].requestFullScreen()
-  if $('.haika-container')[0].webkitRequestFullScreen
-    $('.haika-container')[0].webkitRequestFullScreen()
-  if $('.haika-container')[0].mozRequestFullScreen
-    $('.haika-container')[0].mozRequestFullScreen()
 
 # データのインポートボタン
 $('#haika-import').click ->

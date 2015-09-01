@@ -24,3 +24,5 @@ initScrollBar = function() {
     }
   });
 };
+
+haika.htmlStack.push("<div  id=\"vertical-scroller\" class=\"content-scroller\">\n  <div class=\"dragdealer\">\n    <div class=\"handle scroller-gray-bar\">\n    </div>\n  </div>\n</div>\n<div id=\"horizontal-scroller\" class=\"dragdealer\">\n  <div class=\"handle scroller-gray-bar\">\n  </div>\n</div>");

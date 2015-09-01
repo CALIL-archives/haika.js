@@ -57,3 +57,20 @@ $.extend(haika, {
     return this.setScale(newScale);
   }
 });
+
+haika.htmlStack.push("<div class=\"haika-buttons\">\n  <span class=\"haika-button haika-full\">\n    <i class=\"fa fa-arrows\"></i>\n  </span>\n  <span class=\"haika-button haika-zoomin\">\n    <i class=\"fa fa-plus\"></i>\n  </span>\n  <span class=\"haika-button haika-zoomout\">\n    <i class=\"fa fa-minus\"></i>\n  </span>\n</div>");
+
+haika.eventStack.push(function() {
+  $('.haika-full').click(function() {
+    return haika.zoomFull();
+  });
+  $('.haika-zoomin').click(function() {
+    return haika.zoomIn();
+  });
+  $('.haika-zoomout').click(function() {
+    return haika.zoomOut();
+  });
+  return $('.zoomreset').click(function() {
+    return haika.setScale(1);
+  });
+});

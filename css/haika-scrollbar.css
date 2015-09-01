@@ -1,0 +1,52 @@
+/* scrollbar */
+
+#vertical-scroller {
+    position: absolute;
+    top: 0px;
+    right: 0;
+    z-index: 1;
+    height: calc(100% - 16px);
+}
+
+.dragdealer {
+    position: relative;
+    height: 16px;
+    background: #232323;
+}
+
+#vertical-scroller .dragdealer {
+    height: 100%;
+    width: 16px;
+}
+
+#vertical-scroller .dragdealer .handle {
+    width: 30px;
+    height: 60px;
+    text-align: center;
+}
+
+#vertical-scroller .dragdealer .handle i {
+    line-height: 60px;
+}
+
+#horizontal-scroller {
+    width: calc(100% - 16px);
+    position: absolute;
+    bottom: 0;
+    /*border-top: 1px solid #CCCCCC;*/
+}
+
+.scroller-gray-bar {
+    width: 100px;
+    height: 16px;
+    background: #505050;
+    border:1px solid #404040;
+    /*color: #FFF;
+    font-size: 14px;
+    line-height: 30px;
+    text-align: center;*/
+}
+
+.scroller-gray-bar:hover {
+    background: #707070;
+}

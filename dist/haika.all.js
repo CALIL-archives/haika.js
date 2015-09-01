@@ -33188,10 +33188,165 @@ $.extend(haika, {
 });
 
 $.extend(haika, {
-  htmlStack: ["<ul class=\"haika-nav\">\n    <li><a href=\"#\" class=\"floor\">床</a></li>\n    <li><a href=\"#\" class=\"wall\">壁</a></li>\n    <li><a href=\"#\" class=\"beacon\">ビーコン</a></li>\n    <li class=\"active\"><a href=\"#\" class=\"shelf\">本棚</a></li>\n</ul>", "<div class=\"haika-header\">\n    <div style=\"margin-top: 5px;\" class=\"pull-left\">\n      <i class=\"fa fa-copy haika-copy btn btn-default\"> copy</i>\n      <i class=\"fa fa-paste haika-paste btn btn-default\"> paste</i>\n      <i class=\"fa fa-undobtn haika-undo btn btn-default\"> undo</i>\n    </div>\n    <div class=\"pull-right\" style=\"margin-top: 2px;\">\n      <span class=\"fullscreen btn btn-default\">\n        <span class=\"glyphicon glyphicon-fullscreen\"></span>\n        fullscreen\n      </span>\n    </div>\n    <div style=\"display:none;\">\n        <input type=\"file\" id=\"file\"/>\n    </div>\n</div>", "<div class=\"haika-toolbar-container\">\n  <ul class=\"toolbar-menu\">\n  </ul>\n</div>", "<div class=\"haika-buttons\">\n  <span class=\"haika-button haika-full\">\n    <i class=\"fa fa-arrows\"></i>\n  </span>\n  <span class=\"haika-button haika-zoomin\">\n    <i class=\"fa fa-plus\"></i>\n  </span>\n  <span class=\"haika-button haika-zoomout\">\n    <i class=\"fa fa-minus\"></i>\n  </span>\n</div>", "<div  id=\"vertical-scroller\" class=\"content-scroller\">\n  <div class=\"dragdealer\">\n    <div class=\"handle scroller-gray-bar\">\n    </div>\n  </div>\n</div>\n<div id=\"horizontal-scroller\" class=\"dragdealer\">\n  <div class=\"handle scroller-gray-bar\">\n  </div>\n</div>", "<div style=\"bottom:0px;right:0px;width:16px;height:16px;background-color:#525252;position:absolute;border:1px solid #777\">\n</div>", "<div id=\"haika-context-menu\">\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li>\n      <a class=\"fa fa-undobtn haika-undo\"> undo</a>\n    </li>\n    <li role=\"presentation\" class=\"divider\"></li>\n    <li>\n      <a class=\"haika-zoomin\">\n        <i class=\"fa fa-plus\"></i> zoomin\n      </a>\n    </li>\n    <li>\n      <a class=\"haika-zoomout\">\n        <i class=\"fa fa-minus\"></i> zoomout\n      </a>\n    </li>\n    <li role=\"presentation\" class=\"divider\"></li>\n    <li class=\"haika-select-context-menu\">\n      <a class=\"fa fa-copy haika-copy\"> copy</a>\n    </li>\n    <li>\n      <a class=\"fa fa-paste haika-paste\"> paste</a>\n    </li>\n    <li role=\"presentation\" class=\"divider haika-select-context-menu\"></li>\n    <li class=\"haika-select-context-menu\">\n      <a class=\"haika-bringtofront\">bringToFront</a>\n    </li>\n  </ul>\n</div>"],
+  htmlStack: [],
   html: function(container) {
     return $(container).html("<div id=\"haika-canvas\">" + (this.htmlStack.join('\n')) + "</div>");
   }
+});
+
+$.extend(haika, {
+  eventStack: [],
+  event: {
+    init: function() {
+      var func, i, len, ref, results;
+      this.shortcut();
+      this.etc();
+      ref = haika.eventStack;
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        func = ref[i];
+        results.push(func());
+      }
+      return results;
+    },
+    shortcut: function() {
+      var cancel_default;
+      cancel_default = function(e) {
+        if (e.preventDefault) {
+          return e.preventDefault();
+        } else {
+          return e.returnValue = false;
+        }
+      };
+      Mousetrap.bind('mod+o', function() {
+        $('#file').trigger('click');
+        return false;
+      });
+      Mousetrap.bind('mod+c', function() {
+        haika.copy();
+        return false;
+      });
+      Mousetrap.bind('mod+v', function() {
+        haika.paste();
+        return false;
+      });
+      Mousetrap.bind('mod+d', function(e) {
+        cancel_default(e);
+        haika.duplicate();
+        return false;
+      });
+      Mousetrap.bind('mod+a', function(e) {
+        cancel_default(e);
+        haika.selectAll();
+        return false;
+      });
+      Mousetrap.bind('mod+z', function(e) {
+        cancel_default(e);
+        haika.undo.undoManager.undo();
+        return false;
+      });
+      Mousetrap.bind(['esc', 'escape'], function(e) {
+        cancel_default(e);
+        haika.unselectAll();
+        return false;
+      });
+      Mousetrap.bind(['up', 'shift+up'], function(e) {
+        cancel_default(e);
+        haika.up(e);
+        return false;
+      });
+      Mousetrap.bind(['down', 'shift+down'], function(e) {
+        cancel_default(e);
+        haika.down(e);
+        return false;
+      });
+      Mousetrap.bind(['left', 'shift+left'], function(e) {
+        cancel_default(e);
+        haika.left(e);
+        return false;
+      });
+      Mousetrap.bind(['right', 'shift+right'], function(e) {
+        cancel_default(e);
+        haika.right(e);
+        return false;
+      });
+      return $(document).unbind('keydown').bind('keydown', function(event) {
+        var d, doPrevent;
+        doPrevent = false;
+        if (event.keyCode === 8 || event.keyCode === 46) {
+          d = event.srcElement || event.target;
+          if ((d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE' || d.type.toUpperCase() === 'EMAIL')) || d.tagName.toUpperCase() === 'TEXTAREA') {
+            doPrevent = d.readOnly || d.disabled;
+          } else {
+            doPrevent = true;
+          }
+        }
+        if (doPrevent) {
+          event.preventDefault();
+          haika.remove();
+        }
+      });
+    },
+    etc: function() {
+      return $(window).on('beforeunload', (function(_this) {
+        return function(event) {
+          haika.render();
+          haika.save();
+        };
+      })(this));
+    }
+  }
+});
+
+haika.htmlStack.push("<div class=\"haika-header\">\n    <div style=\"margin-top: 5px;\" class=\"pull-left\">\n      <i class=\"fa fa-copy haika-copy btn btn-default\"> copy</i>\n      <i class=\"fa fa-paste haika-paste btn btn-default\"> paste</i>\n      <i class=\"fa fa-undobtn haika-undo btn btn-default\"> undo</i>\n    </div>\n    <div class=\"pull-right\" style=\"margin-top: 2px;\">\n      <span class=\"fullscreen btn btn-default\">\n        <span class=\"glyphicon glyphicon-fullscreen\"></span>\n        fullscreen\n      </span>\n    </div>\n    <div style=\"display:none;\">\n        <input type=\"file\" id=\"file\"/>\n    </div>\n</div>");
+
+haika.eventStack.push(function() {
+  $('.haika-copy').click(function() {
+    return haika.copy();
+  });
+  $('.haika-paste').click(function() {
+    return haika.paste();
+  });
+  $('.haika-undo').click(function() {
+    return haika.undo.undoManager.undo();
+  });
+  return $('.fullscreen').click(function() {
+    if ($('.haika-container')[0].requestFullScreen) {
+      $('.haika-container')[0].requestFullScreen();
+    }
+    if ($('.haika-container')[0].webkitRequestFullScreen) {
+      $('.haika-container')[0].webkitRequestFullScreen();
+    }
+    if ($('.haika-container')[0].mozRequestFullScreen) {
+      return $('.haika-container')[0].mozRequestFullScreen();
+    }
+  });
+});
+
+haika.htmlStack.push("<ul class=\"haika-nav\">\n    <li><a href=\"#\" class=\"floor\">床</a></li>\n    <li><a href=\"#\" class=\"wall\">壁</a></li>\n    <li><a href=\"#\" class=\"beacon\">ビーコン</a></li>\n    <li class=\"active\"><a href=\"#\" class=\"shelf\">本棚</a></li>\n</ul>");
+
+haika.eventStack.push(function() {
+  return $('.haika-nav a').click(function(e) {
+    var tabName;
+    e.preventDefault();
+    tabName = $(e.target).attr('class');
+    haika.toolbar.show(tabName);
+    if (tabName === 'beacon') {
+      haika.layer = haika.CONST_LAYERS.BEACON;
+    }
+    if (tabName === 'wall') {
+      haika.layer = haika.CONST_LAYERS.WALL;
+    }
+    if (tabName === 'floor') {
+      haika.layer = haika.CONST_LAYERS.FLOOR;
+    }
+    if (tabName === 'shelf') {
+      haika.layer = haika.CONST_LAYERS.SHELF;
+    }
+    haika.render();
+    $('.haika-nav li').removeClass('active');
+    return $(this).closest('li').addClass('active');
+  });
 });
 
 $.extend(haika, {
@@ -33254,6 +33409,23 @@ $.extend(haika, {
   }
 });
 
+haika.htmlStack.push("<div class=\"haika-buttons\">\n  <span class=\"haika-button haika-full\">\n    <i class=\"fa fa-arrows\"></i>\n  </span>\n  <span class=\"haika-button haika-zoomin\">\n    <i class=\"fa fa-plus\"></i>\n  </span>\n  <span class=\"haika-button haika-zoomout\">\n    <i class=\"fa fa-minus\"></i>\n  </span>\n</div>");
+
+haika.eventStack.push(function() {
+  $('.haika-full').click(function() {
+    return haika.zoomFull();
+  });
+  $('.haika-zoomin').click(function() {
+    return haika.zoomIn();
+  });
+  $('.haika-zoomout').click(function() {
+    return haika.zoomOut();
+  });
+  return $('.zoomreset').click(function() {
+    return haika.setScale(1);
+  });
+});
+
 var initScrollBar;
 
 initScrollBar = function() {
@@ -33280,6 +33452,8 @@ initScrollBar = function() {
     }
   });
 };
+
+haika.htmlStack.push("<div  id=\"vertical-scroller\" class=\"content-scroller\">\n  <div class=\"dragdealer\">\n    <div class=\"handle scroller-gray-bar\">\n    </div>\n  </div>\n</div>\n<div id=\"horizontal-scroller\" class=\"dragdealer\">\n  <div class=\"handle scroller-gray-bar\">\n  </div>\n</div>");
 
 $.extend(haika, {
   toolbar: {
@@ -33391,246 +33565,7 @@ $.extend(haika, {
   }
 });
 
-$.extend(haika, {
-  event: {
-    init: function() {
-      this.shortcut();
-      this.button();
-      this.zoom();
-      this.contextMenu();
-      return this.etc();
-    },
-    button: function() {
-      $('.haika-map-setting').click(function() {
-        return location.href = 'map.html' + location.hash;
-      });
-      $('.haika-remove').click(function() {
-        var object;
-        object = haika.canvas.getActiveObject();
-        haika.remove();
-        if (object) {
-          return haika.undo.remove(object);
-        }
-      });
-      $('.haika-bringtofront').click(function() {
-        return haika.bringToFront();
-      });
-      $('.haika-duplicate').click(function() {
-        return haika.duplicate();
-      });
-      $('.haika-copy').click(function() {
-        return haika.copy();
-      });
-      $('.haika-paste').click(function() {
-        return haika.paste();
-      });
-      $('.haika-align-left').click(function() {
-        return haika.alignLeft();
-      });
-      $('.haika-align-center').click(function() {
-        return haika.alignCenter();
-      });
-      $('.haika-align-right').click(function() {
-        return haika.alignRight();
-      });
-      $('.haika-align-top').click(function() {
-        return haika.alignTop();
-      });
-      $('.haika-align-vcenter').click(function() {
-        return haika.alignVcenter();
-      });
-      $('.haika-align-bottom').click(function() {
-        return haika.alignBottom();
-      });
-      $('#haika-canvas-bgscale').change(function() {
-        haika.backgroundScaleFactor = parseFloat($(this).val());
-        return haika.render();
-      });
-      $('#haika-bgreset').click(function() {
-        return haika.setBackgroundUrl('');
-      });
-      $('#haika-bgopacity-slider').slider({
-        step: 1,
-        min: 1,
-        max: 100,
-        value: haika.backgroundOpacity * 100,
-        formatter: function(value) {
-          haika.backgroundOpacity = value / 100;
-          haika.render();
-          return value / 100;
-        }
-      });
-      $('#haika-bgimg').change(function(e) {
-        var data, files;
-        files = e.target.files;
-        if (files.length === 0) {
-          return;
-        }
-        data = new FormData();
-        data.append('id', haika._dataId);
-        data.append('userfile', files[0]);
-        return $.ajax({
-          url: 'http://lab.calil.jp/haika_store/upload.php',
-          data: data,
-          cache: false,
-          contentType: false,
-          processData: false,
-          type: 'POST',
-          success: function(data) {
-            var url;
-            url = 'http://lab.calil.jp/haika_store/image/' + haika._dataId + '_' + files[0].name;
-            return haika.setBackgroundUrl(url);
-          }
-        });
-      });
-      return $('.haika-undo').click(function() {
-        return haika.undo.undoManager.undo();
-      });
-    },
-    shortcut: function() {
-      var cancel_default;
-      cancel_default = function(e) {
-        if (e.preventDefault) {
-          return e.preventDefault();
-        } else {
-          return e.returnValue = false;
-        }
-      };
-      Mousetrap.bind('mod+o', function() {
-        $('#file').trigger('click');
-        return false;
-      });
-      Mousetrap.bind('mod+c', function() {
-        haika.copy();
-        return false;
-      });
-      Mousetrap.bind('mod+v', function() {
-        haika.paste();
-        return false;
-      });
-      Mousetrap.bind('mod+d', function(e) {
-        cancel_default(e);
-        haika.duplicate();
-        return false;
-      });
-      Mousetrap.bind('mod+a', function(e) {
-        cancel_default(e);
-        haika.selectAll();
-        return false;
-      });
-      Mousetrap.bind('mod+z', function(e) {
-        cancel_default(e);
-        haika.undo.undoManager.undo();
-        return false;
-      });
-      Mousetrap.bind(['esc', 'escape'], function(e) {
-        cancel_default(e);
-        haika.unselectAll();
-        return false;
-      });
-      Mousetrap.bind(['up', 'shift+up'], function(e) {
-        cancel_default(e);
-        haika.up(e);
-        return false;
-      });
-      Mousetrap.bind(['down', 'shift+down'], function(e) {
-        cancel_default(e);
-        haika.down(e);
-        return false;
-      });
-      Mousetrap.bind(['left', 'shift+left'], function(e) {
-        cancel_default(e);
-        haika.left(e);
-        return false;
-      });
-      Mousetrap.bind(['right', 'shift+right'], function(e) {
-        cancel_default(e);
-        haika.right(e);
-        return false;
-      });
-      return $(document).unbind('keydown').bind('keydown', function(event) {
-        var d, doPrevent;
-        doPrevent = false;
-        if (event.keyCode === 8 || event.keyCode === 46) {
-          d = event.srcElement || event.target;
-          if ((d.tagName.toUpperCase() === 'INPUT' && (d.type.toUpperCase() === 'TEXT' || d.type.toUpperCase() === 'PASSWORD' || d.type.toUpperCase() === 'FILE' || d.type.toUpperCase() === 'EMAIL')) || d.tagName.toUpperCase() === 'TEXTAREA') {
-            doPrevent = d.readOnly || d.disabled;
-          } else {
-            doPrevent = true;
-          }
-        }
-        if (doPrevent) {
-          event.preventDefault();
-          haika.remove();
-        }
-      });
-    },
-    zoom: function() {
-      $('.haika-full').click(function() {
-        return haika.zoomFull();
-      });
-      $('.haika-zoomin').click(function() {
-        return haika.zoomIn();
-      });
-      $('.haika-zoomout').click(function() {
-        return haika.zoomOut();
-      });
-      return $('.zoomreset').click(function() {
-        return haika.setScale(1);
-      });
-    },
-    contextMenu: function() {
-      return $('#haika-canvas').contextmenu({
-        target: '#haika-context-menu',
-        before: function(e, element, target) {
-          e.preventDefault();
-          if (e.target.tagName !== 'CANVAS') {
-            this.closemenu();
-            return false;
-          }
-          if (haika.canvas.getActiveObject()) {
-            log('selected');
-            $('#haika-context-menu').find('.haika-select-context-menu').show();
-          } else {
-            log('nonselect');
-            $('#haika-context-menu').find('.haika-select-context-menu').hide();
-          }
-          return true;
-        },
-        onItem: function(context, e) {}
-      });
-    },
-    etc: function() {
-      $(window).on('beforeunload', (function(_this) {
-        return function(event) {
-          haika.render();
-          haika.save();
-        };
-      })(this));
-      return $('.haika-nav a').click(function(e) {
-        var tabName;
-        e.preventDefault();
-        tabName = $(e.target).attr('class');
-        haika.toolbar.show(tabName);
-        if (tabName === 'beacon') {
-          haika.layer = haika.CONST_LAYERS.BEACON;
-        }
-        if (tabName === 'wall') {
-          haika.layer = haika.CONST_LAYERS.WALL;
-        }
-        if (tabName === 'floor') {
-          haika.layer = haika.CONST_LAYERS.FLOOR;
-        }
-        if (tabName === 'shelf') {
-          haika.layer = haika.CONST_LAYERS.SHELF;
-        }
-        haika.render();
-        $('.haika-nav li').removeClass('active');
-        return $(this).closest('li').addClass('active');
-      });
-    }
-  }
-});
+haika.htmlStack.push("<div class=\"haika-toolbar-container\">\n  <ul class=\"toolbar-menu\">\n  </ul>\n</div>");
 
 $.extend(haika, {
   undo: {
@@ -33760,6 +33695,9 @@ Property = (function() {
         return $('.haika-canvas-panel').show();
       };
     })(this));
+    haika.canvas.on('object:modified', (function(_this) {
+      return function(e) {};
+    })(this));
   }
 
   Property.prototype.createPanel = function(object) {
@@ -33801,6 +33739,107 @@ Property = (function() {
 })();
 
 haika.htmlStack.push("<div class=\"haika-property-panel\">\n  <div class=\"haika-canvas-panel\">\n      <h3>キャンバスのプロパティ</h3>\n      <label for=\"haika-canvas-width\">\n          width: <span id=\"haika-canvas-width\"></span>\n      </label>\n      <label for=\"haika-canvas-height\">\n          height: <span id=\"haika-canvas-height\"></span>\n      </label><br/>\n      <label for=\"haika-canvas-centerX\">\n          centerX: <span id=\"haika-canvas-centerX\"></span>\n      </label>\n      <label for=\"haika-canvas-centerY\">\n          centerY: <span id=\"haika-canvas-centerY\"></span>\n      </label><br/>\n      <label for=\"haika-canvas-bgscale\">\n          bgscale:\n          <input type=\"number\" id=\"haika-canvas-bgscale\" class=\"form-control\" value=\"0\" step=\"0.01\"/>\n      </label><br/>\n      <label for=\"haika-canvas-bgopacity\">\n          bgopacity:\n          <input type=\"number\" id=\"haika-canvas-bgopacity\" class=\"form-control\" value=\"0\" step=\"0.1\"/>\n          <input id=\"haika-bgopacity-slider\" data-slider-id='haika-bgopacity-slider' type=\"text\" data-slider-min=\"0\" data-slider-max=\"1\" data-slider-step=\"0.1\" data-slider-value=\"0.2\"/>\n      </label><br/>\n      <label for=\"haika-bgimg\">\n          背景画像:\n          <input type=\"file\" id=\"haika-bgimg\" class=\"btn btn-default\"/>\n      </label>\n      <br/>\n      <br/>\n      <span class=\"haika-map-setting btn btn-default\">\n        <i class=\"fa fa-map-marker\"></i>\n        地図設定\n      </span>\n      <br/>\n      <br/>\n      <br/>\n      <br/>\n      <span id=\"haika-bgreset\" class=\"btn btn-default\">\n        <i class=\"fa fa-trash\"></i>\n        背景リセット\n      </span>\n      <br/>\n      <br/>\n      <br/>\n      <br/>\n      <span id=\"haika-import\" class=\"btn btn-default\">\n        <i class=\"fa fa-download\"></i>\n        データのインポート\n      </span>\n    </div>\n    <div class=\"haika-object-panel\">\n      <h3>オブジェクトのプロパティ</h3>\n\n      <p>id: <span id=\"haika-object-id\"></span></p>\n\n      <i class=\"fa fa-trash-o haika-remove btn btn-default\"> remove</i>\n      <i class=\"fa fa-files-o haika-duplicate btn btn-default\"> duplicate</i>\n      <input type=\"button\" class=\"haika-bringtofront btn btn-default\" value=\"bringToFront \"/>\n      <div id=\"haika-object-property\"></div>\n    </div>\n    <div class=\"haika-group-panel\">\n        <h3>グループのプロパティ</h3>\n\n        <p><span id=\"haika-group-count\"></span>個のオブジェクトを選択中。</p>\n\n        <p><i class=\"fa fa-trash-o haika-remove btn btn-default\"> remove</i></p>\n\n        <p>\n\n        <div class=\"btn-group\">\n            <i class=\"fa fa-align-left haika-align-left btn btn-default\"></i>\n            <i class=\"fa fa-align-center haika-align-center btn btn-default\"></i>\n            <i class=\"fa fa-align-right haika-align-right btn btn-default\"></i>\n        </div>\n        </p>\n        <p>\n\n        <div class=\"btn-group\">\n            <i class=\"fa fa-align-left fa-rotate-90 haika-align-top btn btn-default\"></i>\n            <i class=\"fa fa-align-center fa-rotate-90 haika-align-vcenter btn btn-default\"></i>\n            <i class=\"fa fa-align-right fa-rotate-90 haika-align-bottom btn btn-default\"></i>\n        </div>\n        </p>\n    </div>\n</div>");
+
+haika.eventStack.push(function() {
+  return $(haika).on('haika:render', function() {
+    $('#haika-canvas-width').html(haika.canvas.getWidth());
+    $('#haika-canvas-height').html(haika.canvas.getHeight());
+    $('#haika-canvas-centerX').html(haika.centerX.toFixed(0));
+    $('#haika-canvas-centerY').html(haika.centerY.toFixed(0));
+    $('#haika-canvas-bgscale').val(haika.backgroundScaleFactor);
+    return $('#haika-canvas-bgopacity').val(haika.backgroundOpacity);
+  });
+});
+
+$('.haika-map-setting').click(function() {
+  return location.href = 'map.html' + location.hash;
+});
+
+$('.haika-remove').click(function() {
+  var object;
+  object = haika.canvas.getActiveObject();
+  haika.remove();
+  if (object) {
+    return haika.undo.remove(object);
+  }
+});
+
+$('.haika-bringtofront').click(function() {
+  return haika.bringToFront();
+});
+
+$('.haika-duplicate').click(function() {
+  return haika.duplicate();
+});
+
+$('.haika-align-left').click(function() {
+  return haika.alignLeft();
+});
+
+$('.haika-align-center').click(function() {
+  return haika.alignCenter();
+});
+
+$('.haika-align-right').click(function() {
+  return haika.alignRight();
+});
+
+$('.haika-align-top').click(function() {
+  return haika.alignTop();
+});
+
+$('.haika-align-vcenter').click(function() {
+  return haika.alignVcenter();
+});
+
+$('.haika-align-bottom').click(function() {
+  return haika.alignBottom();
+});
+
+$('#haika-canvas-bgscale').change(function() {
+  haika.backgroundScaleFactor = parseFloat($(this).val());
+  return haika.render();
+});
+
+$('#haika-bgreset').click(function() {
+  return haika.setBackgroundUrl('');
+});
+
+$('#haika-bgopacity-slider').slider({
+  step: 1,
+  min: 1,
+  max: 100,
+  value: haika.backgroundOpacity * 100,
+  formatter: function(value) {
+    haika.backgroundOpacity = value / 100;
+    haika.render();
+    return value / 100;
+  }
+});
+
+$('#haika-bgimg').change(function(e) {
+  var data, files;
+  files = e.target.files;
+  if (files.length === 0) {
+    return;
+  }
+  data = new FormData();
+  data.append('id', haika._dataId);
+  data.append('userfile', files[0]);
+  return $.ajax({
+    url: 'http://lab.calil.jp/haika_store/upload.php',
+    data: data,
+    cache: false,
+    contentType: false,
+    processData: false,
+    type: 'POST',
+    success: function(data) {
+      var url;
+      url = 'http://lab.calil.jp/haika_store/image/' + haika._dataId + '_' + files[0].name;
+      return haika.setBackgroundUrl(url);
+    }
+  });
+});
 
 fabric.Object.prototype.createPropetyPanel = function() {
   var PropetyPanelHTML, json, prop, ref, val;
@@ -33858,3 +33897,27 @@ fabric.Object.prototype.savePropetyPanel = function(propertyPanel) {
   }
   return haika.changeObject(this.id, json);
 };
+
+haika.htmlStack.push("<div id=\"haika-context-menu\">\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li>\n      <a class=\"fa fa-undobtn haika-undo\"> undo</a>\n    </li>\n    <li role=\"presentation\" class=\"divider\"></li>\n    <li>\n      <a class=\"haika-zoomin\">\n        <i class=\"fa fa-plus\"></i> zoomin\n      </a>\n    </li>\n    <li>\n      <a class=\"haika-zoomout\">\n        <i class=\"fa fa-minus\"></i> zoomout\n      </a>\n    </li>\n    <li role=\"presentation\" class=\"divider\"></li>\n    <li class=\"haika-select-context-menu\">\n      <a class=\"fa fa-copy haika-copy\"> copy</a>\n    </li>\n    <li>\n      <a class=\"fa fa-paste haika-paste\"> paste</a>\n    </li>\n    <li role=\"presentation\" class=\"divider haika-select-context-menu\"></li>\n    <li class=\"haika-select-context-menu\">\n      <a class=\"haika-bringtofront\">bringToFront</a>\n    </li>\n  </ul>\n</div>");
+
+haika.eventStack.push(function() {
+  return $('#haika-canvas').contextmenu({
+    target: '#haika-context-menu',
+    before: function(e, element, target) {
+      e.preventDefault();
+      if (e.target.tagName !== 'CANVAS') {
+        this.closemenu();
+        return false;
+      }
+      if (haika.canvas.getActiveObject()) {
+        log('selected');
+        $('#haika-context-menu').find('.haika-select-context-menu').show();
+      } else {
+        log('nonselect');
+        $('#haika-context-menu').find('.haika-select-context-menu').hide();
+      }
+      return true;
+    },
+    onItem: function(context, e) {}
+  });
+});
