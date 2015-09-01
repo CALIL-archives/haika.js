@@ -29,7 +29,7 @@ grunt esteWatch
 
 ### Dependencies
 - `node.js` >= 11.0
-- `npm install -g grunt-cli`
+- `npm install -g gulp`
 
 ### Deploy
 
@@ -38,15 +38,16 @@ $ git clone git@github.com:CALIL/haika.js.git
 $ cd haika
 $ bower install
 $ npm install
-$ grunt
+$ gulp
 ```
 
 ### Commands
 
-- `grunt` concats all files for test.
-- `grunt watch` executes `grunt` each time at updating JavaScript files.
+- `gulp` concats all files for test.
 
 
-### Testing
+### Demo
 
-Open `test/index.html`.
+Open `demo/index.html`.
+
+[https://s3-ap-northeast-1.amazonaws.com/haika/demo/index.html](https://s3-ap-northeast-1.amazonaws.com/haika/demo/index.html)
