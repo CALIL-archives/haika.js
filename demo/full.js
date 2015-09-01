@@ -1,3 +1,5 @@
+var haikaId;
+
 $(haika).on('haika:render', function() {
   $('#haika-canvas-width').html(haika.canvas.getWidth());
   $('#haika-canvas-height').html(haika.canvas.getHeight());
@@ -7,36 +9,20 @@ $(haika).on('haika:render', function() {
   return $('#haika-canvas-bgopacity').val(haika.backgroundOpacity);
 });
 
+haikaId = 15;
+
 haika.html('.haika-container');
 
 $(haika).on('haika:initialized', function() {
-  return $.ajax({
-    url: 'sabae.json',
-    type: 'GET',
-    cache: false,
-    dataType: 'json',
-    error: (function(_this) {
-      return function() {
-        return option.error && option.error('データが読み込めませんでした');
-      };
-    })(this),
-    success: (function(_this) {
-      return function(json) {
-        if (json.locked) {
-          _this.readOnly = true;
-          return option.error && option.error('データはロックされています');
-        }
-        haika._dataId = json.id;
-        haika._revision = json.revision;
-        haika._collision = json.collision;
-        haika._geojson = json.data;
-        haika.loadFromGeoJson();
-        $(haika).trigger('haika:load');
-        haika.render();
-        haika.property.init();
-        return haika.zoomFull();
-      };
-    })(this)
+  return haika.openFromApi(haikaId, {
+    success: function() {
+      haika.render();
+      haika.property.init();
+      return haika.zoomFull();
+    },
+    error: function(message) {
+      return alert(message);
+    }
   });
 });
 
