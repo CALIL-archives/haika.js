@@ -69,7 +69,7 @@ haika = {
   init: function(options) {
     var canvas, timeout;
     if (!options || (options.divId == null)) {
-      alert('CanvasのIDが未定義です5');
+      alert('CanvasのIDが未定義です');
     }
     this.divId = '#' + options.divId;
     if (options.canvasId == null) {

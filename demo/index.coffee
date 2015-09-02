@@ -1,16 +1,3 @@
-
-
-# プロパティパネルの表示
-$(haika).on 'haika:render', ->
-    $('#haika-canvas-width').html(haika.canvas.getWidth())
-    $('#haika-canvas-height').html(haika.canvas.getHeight())
-    $('#haika-canvas-centerX').html(haika.centerX.toFixed(0))
-    $('#haika-canvas-centerY').html(haika.centerY.toFixed(0))
-    $('#haika-canvas-bgscale').val(haika.backgroundScaleFactor)
-    $('#haika-canvas-bgopacity').val(haika.backgroundOpacity)
-
-
-haika.html('.haika-container')
 $(haika).on 'haika:initialized', ->
   $.ajax
       url: 'data/sabae.json'
@@ -48,6 +35,8 @@ $(haika).on 'haika:initialized', ->
           #haika.colorpicker.init()
 
 # 初期設定
-haika.init()
-#  divId : 'haika-canvas'
+haika.html('.haika-container')
+haika.init
+  divId : 'haika-canvas'
 #  readOnly: true
+

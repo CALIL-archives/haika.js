@@ -71,9 +71,7 @@ haika =
 #
   init: (options)->
     if not options or not options.divId?
-      alert 'CanvasのIDが未定義です5'
-
-
+      alert 'CanvasのIDが未定義です'
     @divId = '#' + options.divId
     if not options.canvasId?
       options.canvasId = 'haika-canvas-area'

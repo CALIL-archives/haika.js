@@ -160,7 +160,7 @@ gulp.task 'build-css', ->
 
 # gulpコマンドの設定
 gulp.task 'default', ->
-  runSequence 'build-js', 'build-css', 'browserSync', ->
+  runSequence ['build-js', 'build-css'], 'browserSync', ->
     # ファイル変更でタスクを実行
     gulp.watch 'src/**/*.coffee', ->
       runSequence　'compile-coffee', 'concat-js'

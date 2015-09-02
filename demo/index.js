@@ -1,14 +1,3 @@
-$(haika).on('haika:render', function() {
-  $('#haika-canvas-width').html(haika.canvas.getWidth());
-  $('#haika-canvas-height').html(haika.canvas.getHeight());
-  $('#haika-canvas-centerX').html(haika.centerX.toFixed(0));
-  $('#haika-canvas-centerY').html(haika.centerY.toFixed(0));
-  $('#haika-canvas-bgscale').val(haika.backgroundScaleFactor);
-  return $('#haika-canvas-bgopacity').val(haika.backgroundOpacity);
-});
-
-haika.html('.haika-container');
-
 $(haika).on('haika:initialized', function() {
   return $.ajax({
     url: 'data/sabae.json',
@@ -60,4 +49,8 @@ $(haika).on('haika:initialized', function() {
   });
 });
 
-haika.init();
+haika.html('.haika-container');
+
+haika.init({
+  divId: 'haika-canvas'
+});

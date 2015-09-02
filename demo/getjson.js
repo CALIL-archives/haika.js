@@ -2,8 +2,6 @@ var haikaId;
 
 haikaId = 15;
 
-haika.html('.haika-container');
-
 $(haika).on('haika:initialized', function() {
   return haika.openFromApi(haikaId, {
     success: function() {
@@ -24,6 +22,8 @@ $(haika).on('haika:initialized', function() {
     }
   });
 });
+
+haika.html('.haika-container');
 
 haika.init({
   divId: 'haika-canvas'

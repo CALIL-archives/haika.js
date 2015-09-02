@@ -1,6 +1,5 @@
 # gulpでapp.haika.ioをプロキシーしてJSON取得
 haikaId = 15
-haika.html('.haika-container')
 $(haika).on 'haika:initialized', ->
   haika.openFromApi(haikaId,{
     success: ->
@@ -20,5 +19,6 @@ $(haika).on 'haika:initialized', ->
   })
 
 # 初期設定
+haika.html('.haika-container')
 haika.init
   divId : 'haika-canvas'
