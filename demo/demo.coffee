@@ -30,10 +30,13 @@ haika.init
 if haika.readOnly
   haika.event.zoom()
 else
-#  haika.toolbar.init()
   haika.event.init()
-#  haika.undo.init()
-#  initScrollBar()
+  if haika.toolbar?
+    haika.toolbar.init()
+  if haika.undo?
+    haika.undo.init()
+  if initScrollBar?
+    initScrollBar()
   #haika.colorpicker.init()
 
 

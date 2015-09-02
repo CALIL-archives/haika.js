@@ -38,4 +38,13 @@ if (haika.readOnly) {
   haika.event.zoom();
 } else {
   haika.event.init();
+  if (haika.toolbar != null) {
+    haika.toolbar.init();
+  }
+  if (haika.undo != null) {
+    haika.undo.init();
+  }
+  if (typeof initScrollBar !== "undefined" && initScrollBar !== null) {
+    initScrollBar();
+  }
 }
