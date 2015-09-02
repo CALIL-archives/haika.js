@@ -106,15 +106,15 @@ css_files = [
 gulp.task 'concat-css', () ->
     gulp.src css_files
         .pipe concat('haika.all.css')
-        .pipe gulp.dest 'css/'
+        .pipe gulp.dest 'dist/'
 
 # CSSの圧縮
 gulp.task 'minify-css', () ->
-    gulp.src 'css/haika.all.css'
+    gulp.src 'dist/haika.all.css'
       .pipe changed 'css/'
       .pipe cssmin()
       .pipe rename extname: '.min.css'
-      .pipe gulp.dest 'css/'
+      .pipe gulp.dest 'dist/'
       .pipe browserSync.reload(stream: true, once: true)
 
 
