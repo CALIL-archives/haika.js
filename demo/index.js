@@ -23,25 +23,17 @@ $(haika).on('haika:initialized', function() {
         haika.loadFromGeoJson();
         $(haika).trigger('haika:load');
         haika.render();
-        log('plugin');
-        log(haika.plugins);
-        ref = haika.plugins;
-        for (i = 0, len = ref.length; i < len; i++) {
-          plugin = ref[i];
-          log(plugin);
-          new plugin();
-        }
         if (haika.zoomFull != null) {
           haika.zoomFull();
         }
         if (haika.readOnly) {
           haika.event.zoom();
         } else {
-          if (haika.toolbar != null) {
-            haika.toolbar.init();
-          }
-          if (haika.event != null) {
-            haika.event.init();
+          haika.event.init();
+          ref = haika.plugins;
+          for (i = 0, len = ref.length; i < len; i++) {
+            plugin = ref[i];
+            new plugin();
           }
           if (haika.undo != null) {
             haika.undo.init();

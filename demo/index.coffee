@@ -17,20 +17,14 @@ $(haika).on 'haika:initialized', ->
         haika.loadFromGeoJson()
         $(haika).trigger('haika:load')
         haika.render()
-        log('plugin')
-        log(haika.plugins)
-        for plugin in haika.plugins
-          log plugin
-          new plugin()
         if haika.zoomFull?
           haika.zoomFull()
         if haika.readOnly
           haika.event.zoom()
         else
-          if haika.toolbar?
-            haika.toolbar.init()
-          if haika.event?
-            haika.event.init()
+          haika.event.init()
+          for plugin in haika.plugins
+            new plugin()
           if haika.undo?
             haika.undo.init()
         if initScrollBar?
