@@ -13,7 +13,7 @@ $(haika).on 'haika:render', ->
 haika.html('.haika-container')
 $(haika).on 'haika:initialized', ->
   $.ajax
-      url: 'sabae.json'
+      url: 'data/sabae.json'
       type: 'GET'
       cache: false
       dataType: 'json'
@@ -30,22 +30,28 @@ $(haika).on 'haika:initialized', ->
         haika.loadFromGeoJson()
         $(haika).trigger('haika:load')
         haika.render()
-        new Property()
-        haika.zoomFull()
+        if Property?
+         new Property()
+        if haika.zoomFull?
+          haika.zoomFull()
+        if haika.readOnly
+          haika.event.zoom()
+        else
+          if haika.toolbar?
+            haika.toolbar.init()
+          if haika.event?
+            haika.event.init()
+          if haika.undo?
+            haika.undo.init()
+        if initScrollBar?
+          initScrollBar()
+          #haika.colorpicker.init()
 
 # 初期設定
 haika.init
   divId : 'haika-canvas'
 #  readOnly: true
 
-if haika.readOnly
-  haika.event.zoom()
-else
-  haika.toolbar.init()
-  haika.event.init()
-  haika.undo.init()
-  initScrollBar()
-  #haika.colorpicker.init()
 
 
 # フルスクリーンモードボタン

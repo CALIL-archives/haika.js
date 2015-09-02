@@ -18,9 +18,21 @@ $(haika).on 'haika:initialized', ->
         $(haika).trigger('haika:load')
         haika.render()
         if Property?
-          new Property()
+         new Property()
         if haika.zoomFull?
           haika.zoomFull()
+        if haika.readOnly
+          haika.event.zoom()
+        else
+          if haika.toolbar?
+            haika.toolbar.init()
+          if haika.event?
+            haika.event.init()
+          if haika.undo?
+            haika.undo.init()
+          if initScrollBar?
+            initScrollBar()
+          #haika.colorpicker.init()
 
 
 # 初期設定
@@ -28,17 +40,3 @@ haika.html('.haika-container')
 haika.init
   divId : 'haika-canvas'
 #  readOnly: true
-
-if haika.readOnly
-  haika.event.zoom()
-else
-  haika.event.init()
-  if haika.toolbar?
-    haika.toolbar.init()
-  if haika.undo?
-    haika.undo.init()
-  if initScrollBar?
-    initScrollBar()
-  #haika.colorpicker.init()
-
-

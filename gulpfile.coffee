@@ -75,7 +75,7 @@ gulp.task 'concat-js', () ->
         .pipe gulp.dest 'dist/'
 
 
-# Javascriptライブラリの結合
+# Javascriptライブラリの結合 デモ用
 gulp.task 'concat-js-lib', () ->
     gulp.src js_files
         .pipe concat('haika.require.js')

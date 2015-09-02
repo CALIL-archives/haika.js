@@ -11,7 +11,7 @@ haika.html('.haika-container');
 
 $(haika).on('haika:initialized', function() {
   return $.ajax({
-    url: 'sabae.json',
+    url: 'data/sabae.json',
     type: 'GET',
     cache: false,
     dataType: 'json',
@@ -33,8 +33,28 @@ $(haika).on('haika:initialized', function() {
         haika.loadFromGeoJson();
         $(haika).trigger('haika:load');
         haika.render();
-        new Property();
-        return haika.zoomFull();
+        if (typeof Property !== "undefined" && Property !== null) {
+          new Property();
+        }
+        if (haika.zoomFull != null) {
+          haika.zoomFull();
+        }
+        if (haika.readOnly) {
+          haika.event.zoom();
+        } else {
+          if (haika.toolbar != null) {
+            haika.toolbar.init();
+          }
+          if (haika.event != null) {
+            haika.event.init();
+          }
+          if (haika.undo != null) {
+            haika.undo.init();
+          }
+        }
+        if (typeof initScrollBar !== "undefined" && initScrollBar !== null) {
+          return initScrollBar();
+        }
       };
     })(this)
   });
@@ -43,15 +63,6 @@ $(haika).on('haika:initialized', function() {
 haika.init({
   divId: 'haika-canvas'
 });
-
-if (haika.readOnly) {
-  haika.event.zoom();
-} else {
-  haika.toolbar.init();
-  haika.event.init();
-  haika.undo.init();
-  initScrollBar();
-}
 
 $('.fullscreen').click(function() {
   if ($('.haika-container')[0].requestFullScreen) {

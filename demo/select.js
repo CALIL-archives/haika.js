@@ -26,7 +26,23 @@ $(haika).on('haika:initialized', function() {
           new Property();
         }
         if (haika.zoomFull != null) {
-          return haika.zoomFull();
+          haika.zoomFull();
+        }
+        if (haika.readOnly) {
+          return haika.event.zoom();
+        } else {
+          if (haika.toolbar != null) {
+            haika.toolbar.init();
+          }
+          if (haika.event != null) {
+            haika.event.init();
+          }
+          if (haika.undo != null) {
+            haika.undo.init();
+          }
+          if (typeof initScrollBar !== "undefined" && initScrollBar !== null) {
+            return initScrollBar();
+          }
         }
       };
     })(this)
@@ -38,18 +54,3 @@ haika.html('.haika-container');
 haika.init({
   divId: 'haika-canvas'
 });
-
-if (haika.readOnly) {
-  haika.event.zoom();
-} else {
-  haika.event.init();
-  if (haika.toolbar != null) {
-    haika.toolbar.init();
-  }
-  if (haika.undo != null) {
-    haika.undo.init();
-  }
-  if (typeof initScrollBar !== "undefined" && initScrollBar !== null) {
-    initScrollBar();
-  }
-}
