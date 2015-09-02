@@ -6,6 +6,7 @@ rename      = require 'gulp-rename'
 cssmin      = require 'gulp-cssmin'
 browserSync = require 'browser-sync'
 open        = require 'gulp-open'
+changed　　　= require 'gulp-changed'
 
 # gulp-plumber コンパイルエラーによる強制停止を防止する
 plumber     = require 'gulp-plumber'
@@ -83,6 +84,7 @@ gulp.task 'concat-js-lib', () ->
 # Javascriptの圧縮
 gulp.task 'uglify-js', () ->
     gulp.src 'dist/haika.all.js'
+        .pipe changed 'dist/'
         .pipe uglify preserveComments:'some'
         .pipe rename extname: '.min.js'
         .pipe gulp.dest 'dist/'
@@ -109,10 +111,11 @@ gulp.task 'concat-css', () ->
 # CSSの圧縮
 gulp.task 'minify-css', () ->
     gulp.src 'css/haika.all.css'
-        .pipe cssmin()
-        .pipe rename extname: '.min.css'
-        .pipe gulp.dest 'css/'
-        .pipe browserSync.reload(stream: true, once: true)
+      .pipe changed 'css/'
+      .pipe cssmin()
+      .pipe rename extname: '.min.css'
+      .pipe gulp.dest 'css/'
+      .pipe browserSync.reload(stream: true, once: true)
 
 
 # BrowserSync
@@ -154,7 +157,7 @@ gulp.task 'default', [
   'browserSync'
 ], ->
   # ファイル変更でタスクを実行
-  gulp.watch 'src/**/*.coffee', ['build-js']
+  gulp.watch 'src/**/*.coffee', ['build-js', 'browserSync-reload']
   gulp.watch css_files, ['build-css']
   # デモ用の設定
   gulp.watch 'demo/*.html', ['browserSync-reload']
