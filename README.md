@@ -14,11 +14,6 @@ haika.js
 - Google Chrome 36+
 - Safari 7+
 
-## Licence
-
-MIT
-
-
 ## Development
 
 
@@ -38,11 +33,14 @@ $ gulp
 
 ### Commands
 
-- `gulp` concats all files for test.
+- `gulp`
 
 
 ### Demo
 
-Open `demo/index.html`.
-
 <a href="https://s3-ap-northeast-1.amazonaws.com/haika/demo/index.html" target="_blank">https://s3-ap-northeast-1.amazonaws.com/haika/demo/index.html</a>
+
+
+## Licence
+
+MIT
