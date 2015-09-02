@@ -32231,8 +32231,8 @@ haika = {
   },
   init: function(options) {
     var canvas, timeout;
-    if (options.divId == null) {
-      throw 'CanvasのIDが未定義です';
+    if (!options || (options.divId == null)) {
+      alert('CanvasのIDが未定義です5');
     }
     this.divId = '#' + options.divId;
     if (options.canvasId == null) {

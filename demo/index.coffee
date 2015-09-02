@@ -48,29 +48,6 @@ $(haika).on 'haika:initialized', ->
           #haika.colorpicker.init()
 
 # 初期設定
-haika.init
-  divId : 'haika-canvas'
+haika.init()
+#  divId : 'haika-canvas'
 #  readOnly: true
-
-
-
-# フルスクリーンモードボタン
-$('.fullscreen').click ->
-  if $('.haika-container')[0].requestFullScreen
-    $('.haika-container')[0].requestFullScreen()
-  if $('.haika-container')[0].webkitRequestFullScreen
-    $('.haika-container')[0].webkitRequestFullScreen()
-  if $('.haika-container')[0].mozRequestFullScreen
-    $('.haika-container')[0].mozRequestFullScreen()
-
-# データのインポートボタン
-$('#haika-import').click ->
-  id = prompt('インポートするデータのIDを6桁で指定して下さい。')
-  if id
-    haika.import(id, {
-      success: ->
-        haika.render()
-        haika.save()
-      error: (message) ->
-        alert(message)
-    })

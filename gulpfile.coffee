@@ -15,6 +15,9 @@ notify      = require 'gulp-notify'
 url         = require 'url'
 proxy       = require 'proxy-middleware'
 
+# 並列、直列処理
+runSequence = require 'run-sequence'
+
 # CofeeScriptのコンパイル
 gulp.task 'compile-coffee', () ->
     gulp.src 'src/**/*.coffee'
@@ -24,15 +27,6 @@ gulp.task 'compile-coffee', () ->
         .pipe coffee({bare: true})
         .pipe gulp.dest 'src/'
 
-# デモ用 CofeeScriptのコンパイル
-gulp.task 'compile-coffee-demo', () ->
-    gulp.src 'demo/**/*.coffee'
-        .pipe(plumber({
-          errorHandler: notify.onError "Error: <%= error.message %>"
-        }))
-        .pipe coffee({bare: true})
-        .pipe gulp.dest 'demo/'
-        .pipe browserSync.reload(stream: true, once: true)
 
 js_files = [
   "bower_components/fabric/dist/fabric.js"
@@ -71,20 +65,15 @@ haika_js_files = [
 # Javascriptの結合
 gulp.task 'concat-js', () ->
     gulp.src js_files.concat(haika_js_files)
+        .pipe changed 'dist/'
         .pipe concat('haika.all.js')
         .pipe gulp.dest 'dist/'
+        .pipe browserSync.reload(stream: true, once: true)
 
-
-# Javascriptライブラリの結合 デモ用
-gulp.task 'concat-js-lib', () ->
-    gulp.src js_files
-        .pipe concat('haika.require.js')
-        .pipe gulp.dest 'demo/'
 
 # Javascriptの圧縮
 gulp.task 'uglify-js', () ->
     gulp.src 'dist/haika.all.js'
-        .pipe changed 'dist/'
         .pipe uglify preserveComments:'some'
         .pipe rename extname: '.min.js'
         .pipe gulp.dest 'dist/'
@@ -105,13 +94,13 @@ css_files = [
 # CSSの結合
 gulp.task 'concat-css', () ->
     gulp.src css_files
+        .pipe changed 'dist/'
         .pipe concat('haika.all.css')
         .pipe gulp.dest 'dist/'
 
 # CSSの圧縮
 gulp.task 'minify-css', () ->
     gulp.src 'dist/haika.all.css'
-      .pipe changed 'css/'
       .pipe cssmin()
       .pipe rename extname: '.min.css'
       .pipe gulp.dest 'dist/'
@@ -145,22 +134,39 @@ gulp.task 'browserSync', ->
 gulp.task 'browserSync-reload', ->
   browserSync.reload()
 
+# Javascriptライブラリの結合 デモ用
+gulp.task 'concat-js-lib', () ->
+    gulp.src js_files
+        .pipe concat('haika.require.js')
+        .pipe gulp.dest 'demo/'
+
+# デモ用 CofeeScriptのコンパイル
+gulp.task 'compile-coffee-demo', () ->
+    gulp.src 'demo/**/*.coffee'
+        .pipe(plumber({
+          errorHandler: notify.onError "Error: <%= error.message %>"
+        }))
+        .pipe coffee({bare: true})
+        .pipe gulp.dest 'demo/'
+        .pipe browserSync.reload(stream: true, once: true)
+
+
 
 # JS, CSSのタスクをまとめる
-gulp.task 'build-js',  ['compile-coffee', 'concat-js', 'uglify-js', 'browserSync-reload']
-gulp.task 'build-css', ['concat-css', 'minify-css', 'browserSync-reload']
+gulp.task 'build-js',  ->
+  runSequence 'compile-coffee', 'concat-js', 'uglify-js'
+gulp.task 'build-css', ->
+  runSequence 'concat-css', 'minify-css'
 
 # gulpコマンドの設定
-gulp.task 'default', [
-  'build-js'
-  'build-css'
-  'browserSync'
-], ->
-  # ファイル変更でタスクを実行
-  gulp.watch 'src/**/*.coffee', ['build-js']
-  gulp.watch css_files, ['build-css']
-  # デモ用の設定
-  gulp.watch 'demo/*.html', ['browserSync-reload']
-  gulp.watch 'demo/**/*.coffee', ['compile-coffee-demo']
+gulp.task 'default', ->
+  runSequence 'build-js', 'build-css', 'browserSync', ->
+    # ファイル変更でタスクを実行
+    gulp.watch 'src/**/*.coffee', ->
+      runSequence　'compile-coffee', 'concat-js'
+    gulp.watch css_files, ['build-css']
+    # デモ用の設定
+    gulp.watch 'demo/*.html', ['browserSync-reload']
+    gulp.watch 'demo/**/*.coffee', ['compile-coffee-demo']
 
 

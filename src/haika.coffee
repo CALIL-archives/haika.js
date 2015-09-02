@@ -70,8 +70,10 @@ haika =
 # @option options [Number] scaleFactor 表示倍率
 #
   init: (options)->
-    if not options.divId?
-      throw 'CanvasのIDが未定義です'
+    if not options or not options.divId?
+      alert 'CanvasのIDが未定義です5'
+
+
     @divId = '#' + options.divId
     if not options.canvasId?
       options.canvasId = 'haika-canvas-area'

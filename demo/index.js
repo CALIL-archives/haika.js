@@ -60,34 +60,4 @@ $(haika).on('haika:initialized', function() {
   });
 });
 
-haika.init({
-  divId: 'haika-canvas'
-});
-
-$('.fullscreen').click(function() {
-  if ($('.haika-container')[0].requestFullScreen) {
-    $('.haika-container')[0].requestFullScreen();
-  }
-  if ($('.haika-container')[0].webkitRequestFullScreen) {
-    $('.haika-container')[0].webkitRequestFullScreen();
-  }
-  if ($('.haika-container')[0].mozRequestFullScreen) {
-    return $('.haika-container')[0].mozRequestFullScreen();
-  }
-});
-
-$('#haika-import').click(function() {
-  var id;
-  id = prompt('インポートするデータのIDを6桁で指定して下さい。');
-  if (id) {
-    return haika["import"](id, {
-      success: function() {
-        haika.render();
-        return haika.save();
-      },
-      error: function(message) {
-        return alert(message);
-      }
-    });
-  }
-});
+haika.init();
