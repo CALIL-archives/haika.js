@@ -1,6 +1,6 @@
 $(haika).on('haika:initialized', function() {
   return $.ajax({
-    url: 'sabae.json',
+    url: 'data/sabae.json',
     type: 'GET',
     cache: false,
     dataType: 'json',
@@ -22,7 +22,12 @@ $(haika).on('haika:initialized', function() {
         haika.loadFromGeoJson();
         $(haika).trigger('haika:load');
         haika.render();
-        return new Property();
+        if (typeof Property !== "undefined" && Property !== null) {
+          new Property();
+        }
+        if (haika.zoomFull != null) {
+          return haika.zoomFull();
+        }
       };
     })(this)
   });

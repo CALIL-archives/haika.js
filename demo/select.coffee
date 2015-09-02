@@ -1,6 +1,6 @@
 $(haika).on 'haika:initialized', ->
   $.ajax
-      url: 'sabae.json'
+      url: 'data/sabae.json'
       type: 'GET'
       cache: false
       dataType: 'json'
@@ -17,8 +17,10 @@ $(haika).on 'haika:initialized', ->
         haika.loadFromGeoJson()
         $(haika).trigger('haika:load')
         haika.render()
-        new Property()
-#        haika.zoomFull()
+        if Property?
+          new Property()
+        if haika.zoomFull?
+          haika.zoomFull()
 
 
 # 初期設定

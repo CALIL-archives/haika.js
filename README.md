@@ -40,6 +40,9 @@ $ gulp
 
 <a href="https://s3-ap-northeast-1.amazonaws.com/haika/demo/index.html" target="_blank">https://s3-ap-northeast-1.amazonaws.com/haika/demo/index.html</a>
 
+<a href="https://s3-ap-northeast-1.amazonaws.com/haika/demo/plugin.html" target="_blank">https://s3-ap-northeast-1.amazonaws.com/haika/demo/plugin.html</a>
+
+
 
 ## Licence
 
