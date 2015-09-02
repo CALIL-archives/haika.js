@@ -32,7 +32,6 @@ gulp.task 'compile-coffee-demo', () ->
         }))
         .pipe coffee({bare: true})
         .pipe gulp.dest 'demo/'
-        .pipe browserSync.reload(stream: true, once: true)
 
 js_files = [
   "bower_components/fabric/dist/fabric.js"
@@ -88,7 +87,6 @@ gulp.task 'uglify-js', () ->
         .pipe uglify preserveComments:'some'
         .pipe rename extname: '.min.js'
         .pipe gulp.dest 'dist/'
-        .pipe browserSync.reload(stream: true, once: true)
 
 css_files = [
   "vendor/dragdealer/dragdealer.css"
@@ -115,7 +113,6 @@ gulp.task 'minify-css', () ->
       .pipe cssmin()
       .pipe rename extname: '.min.css'
       .pipe gulp.dest 'css/'
-      .pipe browserSync.reload(stream: true, once: true)
 
 
 # BrowserSync
@@ -158,9 +155,9 @@ gulp.task 'default', [
 ], ->
   # ファイル変更でタスクを実行
   gulp.watch 'src/**/*.coffee', ['build-js', 'browserSync-reload']
-  gulp.watch css_files, ['build-css']
+  gulp.watch css_files, ['build-css', 'browserSync-reload']
   # デモ用の設定
   gulp.watch 'demo/*.html', ['browserSync-reload']
-  gulp.watch 'demo/**/*.coffee', ['compile-coffee-demo']
+  gulp.watch 'demo/**/*.coffee', ['compile-coffee-demo', 'browserSync-reload']
 
 
