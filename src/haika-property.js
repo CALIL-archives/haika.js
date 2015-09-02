@@ -56,10 +56,12 @@ Property = (function() {
 
 })();
 
+haika.plugins.push(Property);
+
 haika.htmlStack.push("<div class=\"haika-property-panel\">\n  <div class=\"haika-canvas-panel\">\n      <h3>キャンバスのプロパティ</h3>\n      <label for=\"haika-canvas-width\">\n          width: <span id=\"haika-canvas-width\"></span>\n      </label>\n      <label for=\"haika-canvas-height\">\n          height: <span id=\"haika-canvas-height\"></span>\n      </label><br/>\n      <label for=\"haika-canvas-centerX\">\n          centerX: <span id=\"haika-canvas-centerX\"></span>\n      </label>\n      <label for=\"haika-canvas-centerY\">\n          centerY: <span id=\"haika-canvas-centerY\"></span>\n      </label><br/>\n      <label for=\"haika-canvas-bgscale\">\n          bgscale:\n          <input type=\"number\" id=\"haika-canvas-bgscale\" class=\"form-control\" value=\"0\" step=\"0.01\"/>\n      </label><br/>\n      <label for=\"haika-canvas-bgopacity\">\n          bgopacity:\n          <input type=\"number\" id=\"haika-canvas-bgopacity\" class=\"form-control\" value=\"0\" step=\"0.1\"/>\n          <input id=\"haika-bgopacity-slider\" data-slider-id='haika-bgopacity-slider' type=\"text\" data-slider-min=\"0\" data-slider-max=\"1\" data-slider-step=\"0.1\" data-slider-value=\"0.2\"/>\n      </label><br/>\n      <label for=\"haika-bgimg\">\n          背景画像:\n          <input type=\"file\" id=\"haika-bgimg\" class=\"btn btn-default\"/>\n      </label>\n      <br/>\n      <br/>\n      <span class=\"haika-map-setting btn btn-default\">\n        <i class=\"fa fa-map-marker\"></i>\n        地図設定\n      </span>\n      <br/>\n      <br/>\n      <br/>\n      <br/>\n      <span id=\"haika-bgreset\" class=\"btn btn-default\">\n        <i class=\"fa fa-trash\"></i>\n        背景リセット\n      </span>\n      <br/>\n      <br/>\n      <br/>\n      <br/>\n      <span id=\"haika-import\" class=\"btn btn-default\">\n        <i class=\"fa fa-download\"></i>\n        データのインポート\n      </span>\n    </div>\n    <div class=\"haika-object-panel\">\n      <h3>オブジェクトのプロパティ</h3>\n\n      <p>id: <span id=\"haika-object-id\"></span></p>\n\n      <i class=\"fa fa-trash-o haika-remove btn btn-default\"> remove</i>\n      <i class=\"fa fa-files-o haika-duplicate btn btn-default\"> duplicate</i>\n      <input type=\"button\" class=\"haika-bringtofront btn btn-default\" value=\"bringToFront \"/>\n      <div id=\"haika-object-property\"></div>\n    </div>\n    <div class=\"haika-group-panel\">\n        <h3>グループのプロパティ</h3>\n\n        <p><span id=\"haika-group-count\"></span>個のオブジェクトを選択中。</p>\n\n        <p><i class=\"fa fa-trash-o haika-remove btn btn-default\"> remove</i></p>\n\n        <p>\n\n        <div class=\"btn-group\">\n            <i class=\"fa fa-align-left haika-align-left btn btn-default\"></i>\n            <i class=\"fa fa-align-center haika-align-center btn btn-default\"></i>\n            <i class=\"fa fa-align-right haika-align-right btn btn-default\"></i>\n        </div>\n        </p>\n        <p>\n\n        <div class=\"btn-group\">\n            <i class=\"fa fa-align-left fa-rotate-90 haika-align-top btn btn-default\"></i>\n            <i class=\"fa fa-align-center fa-rotate-90 haika-align-vcenter btn btn-default\"></i>\n            <i class=\"fa fa-align-right fa-rotate-90 haika-align-bottom btn btn-default\"></i>\n        </div>\n        </p>\n    </div>\n</div>");
 
 haika.eventStack.push(function() {
-  return $(haika).on('haika:render', function() {
+  $(haika).on('haika:render', function() {
     $('#haika-canvas-width').html(haika.canvas.getWidth());
     $('#haika-canvas-height').html(haika.canvas.getHeight());
     $('#haika-canvas-centerX').html(haika.centerX.toFixed(0));
@@ -67,95 +69,81 @@ haika.eventStack.push(function() {
     $('#haika-canvas-bgscale').val(haika.backgroundScaleFactor);
     return $('#haika-canvas-bgopacity').val(haika.backgroundOpacity);
   });
-});
-
-$('.haika-map-setting').click(function() {
-  return location.href = 'map.html' + location.hash;
-});
-
-$('.haika-remove').click(function() {
-  var object;
-  object = haika.canvas.getActiveObject();
-  haika.remove();
-  if (object) {
-    return haika.undo.remove(object);
-  }
-});
-
-$('.haika-bringtofront').click(function() {
-  return haika.bringToFront();
-});
-
-$('.haika-duplicate').click(function() {
-  return haika.duplicate();
-});
-
-$('.haika-align-left').click(function() {
-  return haika.alignLeft();
-});
-
-$('.haika-align-center').click(function() {
-  return haika.alignCenter();
-});
-
-$('.haika-align-right').click(function() {
-  return haika.alignRight();
-});
-
-$('.haika-align-top').click(function() {
-  return haika.alignTop();
-});
-
-$('.haika-align-vcenter').click(function() {
-  return haika.alignVcenter();
-});
-
-$('.haika-align-bottom').click(function() {
-  return haika.alignBottom();
-});
-
-$('#haika-canvas-bgscale').change(function() {
-  haika.backgroundScaleFactor = parseFloat($(this).val());
-  return haika.render();
-});
-
-$('#haika-bgreset').click(function() {
-  return haika.setBackgroundUrl('');
-});
-
-$('#haika-bgopacity-slider').slider({
-  step: 1,
-  min: 1,
-  max: 100,
-  value: haika.backgroundOpacity * 100,
-  formatter: function(value) {
-    haika.backgroundOpacity = value / 100;
-    haika.render();
-    return value / 100;
-  }
-});
-
-$('#haika-bgimg').change(function(e) {
-  var data, files;
-  files = e.target.files;
-  if (files.length === 0) {
-    return;
-  }
-  data = new FormData();
-  data.append('id', haika._dataId);
-  data.append('userfile', files[0]);
-  return $.ajax({
-    url: 'http://lab.calil.jp/haika_store/upload.php',
-    data: data,
-    cache: false,
-    contentType: false,
-    processData: false,
-    type: 'POST',
-    success: function(data) {
-      var url;
-      url = 'http://lab.calil.jp/haika_store/image/' + haika._dataId + '_' + files[0].name;
-      return haika.setBackgroundUrl(url);
+  $('.haika-map-setting').click(function() {
+    return location.href = 'map.html' + location.hash;
+  });
+  $('.haika-remove').click(function() {
+    var object;
+    object = haika.canvas.getActiveObject();
+    haika.remove();
+    if (object) {
+      return haika.undo.remove(object);
     }
+  });
+  $('.haika-bringtofront').click(function() {
+    return haika.bringToFront();
+  });
+  $('.haika-duplicate').click(function() {
+    return haika.duplicate();
+  });
+  $('.haika-align-left').click(function() {
+    return haika.alignLeft();
+  });
+  $('.haika-align-center').click(function() {
+    return haika.alignCenter();
+  });
+  $('.haika-align-right').click(function() {
+    return haika.alignRight();
+  });
+  $('.haika-align-top').click(function() {
+    return haika.alignTop();
+  });
+  $('.haika-align-vcenter').click(function() {
+    return haika.alignVcenter();
+  });
+  $('.haika-align-bottom').click(function() {
+    return haika.alignBottom();
+  });
+  $('#haika-canvas-bgscale').change(function() {
+    haika.backgroundScaleFactor = parseFloat($(this).val());
+    return haika.render();
+  });
+  $('#haika-bgreset').click(function() {
+    return haika.setBackgroundUrl('');
+  });
+  $('#haika-bgopacity-slider').slider({
+    step: 1,
+    min: 1,
+    max: 100,
+    value: haika.backgroundOpacity * 100,
+    formatter: function(value) {
+      haika.backgroundOpacity = value / 100;
+      haika.render();
+      return value / 100;
+    }
+  });
+  return $('#haika-bgimg').change(function(e) {
+    var data, files;
+    files = e.target.files;
+    if (files.length === 0) {
+      return;
+    }
+    data = new FormData();
+    data.append('id', haika._dataId);
+    data.append('userfile', files[0]);
+    return $.ajax({
+      url: 'http://lab.calil.jp/haika_store/upload.php',
+      data: data,
+      cache: false,
+      contentType: false,
+      processData: false,
+      type: 'POST',
+      success: function(data) {
+        var url;
+        url = 'http://lab.calil.jp/haika_store/image/' + haika._dataId + '_' + files[0].name;
+        return haika.setBackgroundUrl(url);
+      }
+    });
   });
 });
 

@@ -66,6 +66,7 @@ haika = {
   px2cm_y: function(px) {
     return Math.floor((px - this.canvas.getHeight() / 2) / this.scaleFactor - this.centerY);
   },
+  plugins: [],
   options: {
     containerSelector: '.haika-container',
     divId: 'haika-canvas',

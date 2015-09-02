@@ -60,6 +60,8 @@ haika =
   px2cm_y: (px)->
     return Math.floor((px - @canvas.getHeight() / 2) / @scaleFactor - @centerY)
 
+# プラグインのクラスを格納する配列
+  plugins: []
 
 #初期化
 #

@@ -37,6 +37,11 @@ class Property
       $('#haika-group-count').html(objects.length)
       $('.haika-group-panel').show()
       return
+# pluginに登録
+haika.plugins.push(Property)
+
+
+
 
 # プロパティ用のHTML
 haika.htmlStack.push("""
@@ -129,14 +134,14 @@ haika.htmlStack.push("""
 """)
 
 haika.eventStack.push ->
-    # プロパティパネルの表示
-    $(haika).on 'haika:render', ->
-        $('#haika-canvas-width').html(haika.canvas.getWidth())
-        $('#haika-canvas-height').html(haika.canvas.getHeight())
-        $('#haika-canvas-centerX').html(haika.centerX.toFixed(0))
-        $('#haika-canvas-centerY').html(haika.centerY.toFixed(0))
-        $('#haika-canvas-bgscale').val(haika.backgroundScaleFactor)
-        $('#haika-canvas-bgopacity').val(haika.backgroundOpacity)
+  # プロパティパネルの表示
+  $(haika).on 'haika:render', ->
+      $('#haika-canvas-width').html(haika.canvas.getWidth())
+      $('#haika-canvas-height').html(haika.canvas.getHeight())
+      $('#haika-canvas-centerX').html(haika.centerX.toFixed(0))
+      $('#haika-canvas-centerY').html(haika.centerY.toFixed(0))
+      $('#haika-canvas-bgscale').val(haika.backgroundScaleFactor)
+      $('#haika-canvas-bgopacity').val(haika.backgroundOpacity)
 
   $('.haika-map-setting').click ->
     location.href = 'map.html'+location.hash

@@ -11,6 +11,7 @@ $(haika).on('haika:initialized', function() {
     })(this),
     success: (function(_this) {
       return function(json) {
+        var i, len, plugin, ref;
         if (json.locked) {
           _this.readOnly = true;
           return option.error && option.error('データはロックされています');
@@ -22,8 +23,13 @@ $(haika).on('haika:initialized', function() {
         haika.loadFromGeoJson();
         $(haika).trigger('haika:load');
         haika.render();
-        if (typeof Property !== "undefined" && Property !== null) {
-          new Property();
+        log('plugin');
+        log(haika.plugins);
+        ref = haika.plugins;
+        for (i = 0, len = ref.length; i < len; i++) {
+          plugin = ref[i];
+          log(plugin);
+          new plugin();
         }
         if (haika.zoomFull != null) {
           haika.zoomFull();

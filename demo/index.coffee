@@ -17,8 +17,11 @@ $(haika).on 'haika:initialized', ->
         haika.loadFromGeoJson()
         $(haika).trigger('haika:load')
         haika.render()
-        if Property?
-         new Property()
+        log('plugin')
+        log(haika.plugins)
+        for plugin in haika.plugins
+          log plugin
+          new plugin()
         if haika.zoomFull?
           haika.zoomFull()
         if haika.readOnly
