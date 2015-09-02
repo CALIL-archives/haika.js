@@ -32,6 +32,7 @@ gulp.task 'compile-coffee-demo', () ->
         }))
         .pipe coffee({bare: true})
         .pipe gulp.dest 'demo/'
+        .pipe browserSync.reload(stream: true, once: true)
 
 js_files = [
   "bower_components/fabric/dist/fabric.js"
@@ -87,6 +88,7 @@ gulp.task 'uglify-js', () ->
         .pipe uglify preserveComments:'some'
         .pipe rename extname: '.min.js'
         .pipe gulp.dest 'dist/'
+        .pipe browserSync.reload(stream: true, once: true)
 
 css_files = [
   "vendor/dragdealer/dragdealer.css"
@@ -113,6 +115,7 @@ gulp.task 'minify-css', () ->
       .pipe cssmin()
       .pipe rename extname: '.min.css'
       .pipe gulp.dest 'css/'
+      .pipe browserSync.reload(stream: true, once: true)
 
 
 # BrowserSync
@@ -144,8 +147,8 @@ gulp.task 'browserSync-reload', ->
 
 
 # JS, CSSのタスクをまとめる
-gulp.task 'build-js',  ['compile-coffee', 'concat-js', 'uglify-js']
-gulp.task 'build-css', ['concat-css', 'minify-css']
+gulp.task 'build-js',  ['compile-coffee', 'concat-js', 'uglify-js', 'browserSync-reload']
+gulp.task 'build-css', ['concat-css', 'minify-css', 'browserSync-reload']
 
 # gulpコマンドの設定
 gulp.task 'default', [
@@ -154,10 +157,10 @@ gulp.task 'default', [
   'browserSync'
 ], ->
   # ファイル変更でタスクを実行
-  gulp.watch 'src/**/*.coffee', ['build-js', 'browserSync-reload']
-  gulp.watch css_files, ['build-css', 'browserSync-reload']
+  gulp.watch 'src/**/*.coffee', ['build-js']
+  gulp.watch css_files, ['build-css']
   # デモ用の設定
   gulp.watch 'demo/*.html', ['browserSync-reload']
-  gulp.watch 'demo/**/*.coffee', ['compile-coffee-demo', 'browserSync-reload']
+  gulp.watch 'demo/**/*.coffee', ['compile-coffee-demo']
 
 
