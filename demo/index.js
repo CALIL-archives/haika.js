@@ -49,8 +49,6 @@ $(haika).on('haika:initialized', function() {
   });
 });
 
-haika.html('.haika-container');
-
 haika.init({
   divId: 'haika-canvas'
 });

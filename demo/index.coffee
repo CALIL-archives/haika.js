@@ -35,8 +35,6 @@ $(haika).on 'haika:initialized', ->
           #haika.colorpicker.init()
 
 # 初期設定
-haika.html('.haika-container')
 haika.init
   divId : 'haika-canvas'
-#  readOnly: true
 

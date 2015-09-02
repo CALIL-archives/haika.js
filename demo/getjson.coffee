@@ -19,6 +19,5 @@ $(haika).on 'haika:initialized', ->
   })
 
 # 初期設定
-haika.html('.haika-container')
 haika.init
   divId : 'haika-canvas'

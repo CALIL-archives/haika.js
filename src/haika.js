@@ -66,24 +66,25 @@ haika = {
   px2cm_y: function(px) {
     return Math.floor((px - this.canvas.getHeight() / 2) / this.scaleFactor - this.centerY);
   },
+  options: {
+    containerSelector: '.haika-container',
+    divId: 'haika-canvas',
+    canvasId: 'haika-canvas-area',
+    scaleFactor: 1,
+    readOnly: false
+  },
   init: function(options) {
-    var canvas, timeout;
-    if (!options || (options.divId == null)) {
-      alert('CanvasのIDが未定義です');
-    }
-    this.divId = '#' + options.divId;
-    if (options.canvasId == null) {
-      options.canvasId = 'haika-canvas-area';
-    }
-    if (options.readOnly != null) {
-      this.readOnly = options.readOnly;
-    }
-    $(this.divId).prepend("<canvas id=\"" + options.canvasId + "\" unselectable=\"on\"></canvas>");
-    this.scaleFactor = options.scaleFactor != null ? options.scaleFactor : 1;
+    var $hikaDiv, canvas, timeout;
+    options = $.extend(this.options, options);
+    this.html(options.containerSelector);
+    $hikaDiv = $('#' + options.divId);
+    this.readOnly = options.readOnly;
+    $hikaDiv.prepend("<canvas id=\"" + options.canvasId + "\" unselectable=\"on\"></canvas>");
+    this.scaleFactor = options.scaleFactor;
     this.layer = this.CONST_LAYERS.SHELF;
     canvas = new fabric.Canvas(options.canvasId, {
-      width: $(this.divId).width(),
-      height: $(this.divId).height(),
+      width: $hikaDiv.width(),
+      height: $hikaDiv.height(),
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     });
     canvas.selectionBorderColor = 'black';
@@ -91,8 +92,8 @@ haika = {
     canvas.selectionDashArray = [2, 2];
     $(window).resize((function(_this) {
       return function() {
-        _this.canvas.setWidth($(_this.divId).width());
-        _this.canvas.setHeight($(_this.divId).height());
+        _this.canvas.setWidth($hikaDiv.width());
+        _this.canvas.setHeight($hikaDiv.height());
         return _this.render();
       };
     })(this));

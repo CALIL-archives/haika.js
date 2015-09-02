@@ -69,20 +69,23 @@ haika =
 # @option options [Number] height Canvasの高さ
 # @option options [Number] scaleFactor 表示倍率
 #
+  options:
+    containerSelector  : '.haika-container'
+    divId      : 'haika-canvas'
+    canvasId   : 'haika-canvas-area'
+    scaleFactor: 1
+    readOnly   : false
   init: (options)->
-    if not options or not options.divId?
-      alert 'CanvasのIDが未定義です'
-    @divId = '#' + options.divId
-    if not options.canvasId?
-      options.canvasId = 'haika-canvas-area'
-    if options.readOnly?
-      @readOnly = options.readOnly
-    $(@divId).prepend """<canvas id="#{options.canvasId}" unselectable="on"></canvas>"""
-    @scaleFactor = if options.scaleFactor? then options.scaleFactor else 1
+    options = $.extend(@options, options)
+    @html(options.containerSelector)
+    $hikaDiv = $('#'+options.divId)
+    @readOnly = options.readOnly
+    $hikaDiv.prepend """<canvas id="#{options.canvasId}" unselectable="on"></canvas>"""
+    @scaleFactor = options.scaleFactor
     @layer = @CONST_LAYERS.SHELF
     canvas = new fabric.Canvas(options.canvasId, {
-      width: $(@divId).width()
-      height: $(@divId).height()
+      width: $hikaDiv.width()
+      height: $hikaDiv.height()
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
 
@@ -92,8 +95,8 @@ haika =
     canvas.selectionDashArray = [2, 2]
 
     $(window).resize =>
-      @canvas.setWidth($(@divId).width())
-      @canvas.setHeight($(@divId).height())
+      @canvas.setWidth($hikaDiv.width())
+      @canvas.setHeight($hikaDiv.height())
       @render()
 
     # fabricオブジェクトの共通設定
