@@ -64,6 +64,8 @@ haika =
 #初期化
 #
 # @param [Object] options 初期化オプション
+# @param options [String] containerSelector 各プラグインのHTMLを流し込むDIVのセレクター
+# @param options [String] divId HTML上のCanvasのID
 # @param options [String] canvasId HTML上のCanvasのID
 # @option options [Number] width Canvasの幅
 # @option options [Number] height Canvasの高さ
