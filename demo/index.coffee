@@ -27,8 +27,6 @@ $(haika).on 'haika:initialized', ->
             new plugin()
           if haika.undo?
             haika.undo.init()
-        if initScrollBar?
-          initScrollBar()
           #haika.colorpicker.init()
 
 # 初期設定

@@ -80,16 +80,20 @@ haika =
     scaleFactor: 1
     readOnly   : false
   init: (options)->
+    # オプションのマージ
     options = $.extend(@options, options)
-    @html(options.containerSelector)
-    $hikaDiv = $('#'+options.divId)
+    # HTMLの描画
+    if @html?
+      @html(options.containerSelector)
     @readOnly = options.readOnly
-    $hikaDiv.prepend """<canvas id="#{options.canvasId}" unselectable="on"></canvas>"""
     @scaleFactor = options.scaleFactor
     @layer = @CONST_LAYERS.SHELF
+    $haikaDiv = $('#'+options.divId)
+    # キャンバスを一番上に挿入
+    $haikaDiv.prepend """<canvas id="#{options.canvasId}" unselectable="on"></canvas>"""
     canvas = new fabric.Canvas(options.canvasId, {
-      width: $hikaDiv.width()
-      height: $hikaDiv.height()
+      width: $haikaDiv.width()
+      height: $haikaDiv.height()
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
 
@@ -99,8 +103,8 @@ haika =
     canvas.selectionDashArray = [2, 2]
 
     $(window).resize =>
-      @canvas.setWidth($hikaDiv.width())
-      @canvas.setHeight($hikaDiv.height())
+      @canvas.setWidth($haikaDiv.width())
+      @canvas.setHeight($haikaDiv.height())
       @render()
 
     # fabricオブジェクトの共通設定

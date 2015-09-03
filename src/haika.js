@@ -75,17 +75,19 @@ haika = {
     readOnly: false
   },
   init: function(options) {
-    var $hikaDiv, canvas, timeout;
+    var $haikaDiv, canvas, timeout;
     options = $.extend(this.options, options);
-    this.html(options.containerSelector);
-    $hikaDiv = $('#' + options.divId);
+    if (this.html != null) {
+      this.html(options.containerSelector);
+    }
     this.readOnly = options.readOnly;
-    $hikaDiv.prepend("<canvas id=\"" + options.canvasId + "\" unselectable=\"on\"></canvas>");
     this.scaleFactor = options.scaleFactor;
     this.layer = this.CONST_LAYERS.SHELF;
+    $haikaDiv = $('#' + options.divId);
+    $haikaDiv.prepend("<canvas id=\"" + options.canvasId + "\" unselectable=\"on\"></canvas>");
     canvas = new fabric.Canvas(options.canvasId, {
-      width: $hikaDiv.width(),
-      height: $hikaDiv.height(),
+      width: $haikaDiv.width(),
+      height: $haikaDiv.height(),
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     });
     canvas.selectionBorderColor = 'black';
@@ -93,8 +95,8 @@ haika = {
     canvas.selectionDashArray = [2, 2];
     $(window).resize((function(_this) {
       return function() {
-        _this.canvas.setWidth($hikaDiv.width());
-        _this.canvas.setHeight($hikaDiv.height());
+        _this.canvas.setWidth($haikaDiv.width());
+        _this.canvas.setHeight($haikaDiv.height());
         return _this.render();
       };
     })(this));

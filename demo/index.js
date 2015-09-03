@@ -27,7 +27,7 @@ $(haika).on('haika:initialized', function() {
           haika.zoomFull();
         }
         if (haika.readOnly) {
-          haika.event.zoom();
+          return haika.event.zoom();
         } else {
           haika.event.init();
           ref = haika.plugins;
@@ -36,11 +36,8 @@ $(haika).on('haika:initialized', function() {
             new plugin();
           }
           if (haika.undo != null) {
-            haika.undo.init();
+            return haika.undo.init();
           }
-        }
-        if (typeof initScrollBar !== "undefined" && initScrollBar !== null) {
-          return initScrollBar();
         }
       };
     })(this)

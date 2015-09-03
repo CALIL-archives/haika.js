@@ -9,8 +9,10 @@
     <link href="../bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css" rel="stylesheet">
     <link href="../css/haika.css" rel="stylesheet">
     <script>
-    var plugin = location.hash.split('#')[1];
-    document.write('<link href="../css/haika-'+plugin+'.css" rel="stylesheet">');
+    var plugins = location.hash.split('#')[1].split(',');
+    for(var i= 0,l=plugins.length;i<l;i++){
+        document.write('<link href="../css/haika-'+plugins[i]+'.css" rel="stylesheet">');
+    }
     </script>
 </head>
 <body>
@@ -28,7 +30,9 @@
     <script type="text/javascript" src="../src/haika-html.js"></script>
     <script type="text/javascript" src="../src/haika-event.js"></script>
     <script>
-    document.write('<scri'+'pt type="text/javascript" src="../src/haika-'+plugin+'.js"></scri'+'pt>');
+    for(var i= 0,l=plugins.length;i<l;i++){
+        document.write('<scri'+'pt type="text/javascript" src="../src/haika-'+plugins[i]+'.js"></scri'+'pt>');
+    }
     document.write('<scri'+'pt type="text/javascript" src="index.js"></scri'+'pt>');
     </script>
   </body>
