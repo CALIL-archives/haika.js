@@ -13,27 +13,12 @@ haika = {
     WALL: 2,
     FLOOR: 3
   },
-  INSTALLED_OBJECTS: {
-    'shelf': {
-      'layer': 0,
-      'class': fabric.Shelf
-    },
-    'curved_shelf': {
-      'layer': 0,
-      'class': fabric.curvedShelf
-    },
-    'beacon': {
-      'layer': 1,
-      'class': fabric.Beacon
-    },
-    'wall': {
-      'layer': 2,
-      'class': fabric.Wall
-    },
-    'floor': {
-      'layer': 3,
-      'class': fabric.Floor
-    }
+  INSTALLED_OBJECTS: {},
+  addObject: function(name, layer, klass) {
+    return this.INSTALLED_OBJECTS[name] = {
+      'layer': layer,
+      'class': klass
+    };
   },
   canvas: null,
   centerX: 0,
@@ -131,7 +116,7 @@ haika = {
     if (this.INSTALLED_OBJECTS[type] != null) {
       return this.INSTALLED_OBJECTS[type]["class"];
     } else {
-      throw '認識できないオブジェクトが含まれています';
+      return '認識できないオブジェクトが含まれています';
     }
   },
   render: function() {
@@ -150,6 +135,9 @@ haika = {
   addObjectToCanvas: function(o) {
     var klass, object;
     klass = this.getClass(o.type);
+    if (typeof klass !== 'function') {
+      return log(klass);
+    }
     object = new klass(o);
     object.width = object.__width();
     object.height = object.__height();

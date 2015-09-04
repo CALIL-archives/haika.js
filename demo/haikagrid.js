@@ -191,35 +191,39 @@ Haikagrid = (function(superClass) {
     context.fillText("建物方向", b.x, b.y);
     context.restore();
     "debugText = \"[Gridlines]\"\ncontext.save()\ncontext.fillStyle = \"rgba(255, 255, 255, 0.6)\"\ncontext.fillRect(0, context.canvas.height - 20, context.canvas.width, 20)\ncontext.font = \"10px\"\ncontext.fillStyle = \"black\"\ncontext.fillText(debugText, 10, context.canvas.height - 7)\ncontext.restore()";
-    haika.init({
-      'canvasId': context.canvas
-    });
-    return $.ajax({
-      url: 'data/sabae.json',
-      type: 'GET',
-      cache: false,
-      dataType: 'json',
-      error: (function(_this) {
-        return function() {
-          return option.error && option.error('データが読み込めませんでした');
-        };
-      })(this),
-      success: (function(_this) {
-        return function(json) {
-          if (json.locked) {
-            _this.readOnly = true;
-            return option.error && option.error('データはロックされています');
-          }
-          haika._dataId = json.id;
-          haika._revision = json.revision;
-          haika._collision = json.collision;
-          haika._geojson = json.data;
-          haika.loadFromGeoJson();
-          $(haika).trigger('haika:load');
-          return haika.render();
-        };
-      })(this)
-    });
+    if (haika.canvas != null) {
+      return haika.render();
+    } else {
+      haika.init({
+        'canvasId': context.canvas
+      });
+      return $.ajax({
+        url: 'data/sabae.json',
+        type: 'GET',
+        cache: false,
+        dataType: 'json',
+        error: (function(_this) {
+          return function() {
+            return option.error && option.error('データが読み込めませんでした');
+          };
+        })(this),
+        success: (function(_this) {
+          return function(json) {
+            if (json.locked) {
+              _this.readOnly = true;
+              return option.error && option.error('データはロックされています');
+            }
+            haika._dataId = json.id;
+            haika._revision = json.revision;
+            haika._collision = json.collision;
+            haika._geojson = json.data;
+            haika.loadFromGeoJson();
+            $(haika).trigger('haika:load');
+            return haika.render();
+          };
+        })(this)
+      });
+    }
   };
 
   return Haikagrid;

@@ -12,22 +12,12 @@ haika =
     WALL: 2
     FLOOR: 3
 
-  INSTALLED_OBJECTS: # インストールされたオブジェクト
-    'shelf':
-      'layer': 0
-      'class': fabric.Shelf
-    'curved_shelf':
-      'layer': 0
-      'class': fabric.curvedShelf
-    'beacon':
-      'layer': 1
-      'class': fabric.Beacon
-    'wall':
-      'layer': 2
-      'class': fabric.Wall
-    'floor':
-      'layer': 3
-      'class': fabric.Floor
+  INSTALLED_OBJECTS: {} # インストールされたオブジェクト
+  addObject: (name, layer, klass)->
+    @INSTALLED_OBJECTS[name] =
+      'layer': layer
+      'class': klass
+
 
   canvas: null # fabricのCanvasオブジェクト
   centerX: 0 # 表示位置X(画面の中央が0) [エディタステータス系変数]
@@ -136,7 +126,7 @@ haika =
     if @INSTALLED_OBJECTS[type]?
       return @INSTALLED_OBJECTS[type].class
     else
-      throw '認識できないオブジェクトが含まれています'
+      return '認識できないオブジェクトが含まれています'
 
 # canvasの描画
   render: ->
@@ -153,6 +143,8 @@ haika =
 # canvasにオブジェクトを追加
   addObjectToCanvas: (o)->
     klass = @getClass(o.type)
+    if typeof(klass)!='function'
+      return log(klass)
     object = new klass(o)
     #    log object.toObject()
     object.width = object.__width()
