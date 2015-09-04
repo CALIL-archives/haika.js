@@ -4,7 +4,7 @@ haika.addObject('beacon'      , 1, fabric.Beacon)
 haika.addObject('wall'        , 2, fabric.Wall)
 haika.addObject('floor'       , 3, fabric.Floor)
 hash = location.hash.split('#')[1]
-if hash!=''
+if hash
   layer = hash*1
 else
   0
