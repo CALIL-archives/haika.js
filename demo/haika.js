@@ -135,13 +135,8 @@ haika = {
   },
   _save: function() {
     var group, i, len, object, ref;
-    if (!this.canvas) {
-      object = null;
-      group = null;
-    } else {
-      object = this.canvas.getActiveObject();
-      group = this.canvas.getActiveGroup();
-    }
+    object = this.canvas.getActiveObject();
+    group = this.canvas.getActiveGroup();
     if (group) {
       log(group);
       ref = group._objects;

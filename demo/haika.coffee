@@ -128,12 +128,8 @@ haika =
       @_save()
 
   _save: ()->
-    if not @canvas
-      object = null
-      group = null
-    else
-      object = @canvas.getActiveObject()
-      group = @canvas.getActiveGroup()
+    object = @canvas.getActiveObject()
+    group = @canvas.getActiveGroup()
     if group
       # グループ選択の場合
       log(group)
