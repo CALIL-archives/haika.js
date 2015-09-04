@@ -6,13 +6,8 @@ log = (obj) ->
     console.log obj
 
 haika =
-  CONST_LAYERS: #現在のステータス [オプション定数]
-    SHELF: 0
-    BEACON: 1
-    WALL: 2
-    FLOOR: 3
-
   INSTALLED_OBJECTS: {} # インストールされたオブジェクト
+  # オブジェクト、レイヤーの追加
   addObject: (name, layer, klass)->
     @INSTALLED_OBJECTS[name] =
       'layer': layer
@@ -70,13 +65,15 @@ haika =
     divId      : 'haika-canvas'
     canvasId   : 'haika-canvas-area'
     scaleFactor: 0.1
+    layer      : 0
   init: (options)->
     # オプションのマージ
     options = $.extend(@options, options)
     @scaleFactor = options.scaleFactor
+    @layer = options.layer
     $haikaDiv = $('#'+options.divId)
-#    canvas = new fabric.Canvas(options.canvasId, {
-    canvas = new fabric.StaticCanvas(options.canvasId, {
+    canvas = new fabric.Canvas(options.canvasId, {
+#    canvas = new fabric.StaticCanvas(options.canvasId, {
       width: $haikaDiv.width()
       height: $haikaDiv.height()
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
@@ -126,13 +123,19 @@ haika =
     if @INSTALLED_OBJECTS[type]?
       return @INSTALLED_OBJECTS[type].class
     else
-      return '認識できないオブジェクトが含まれています'
+      return '認識できないオブジェクト('+type+')が含まれています'
 
 # canvasの描画
   render: ->
     @canvas.renderOnAddRemove = false
     @canvas._objects.length = 0
     for o in @objects
+      # 現在のレイヤーなら選択可能に
+      if @layer == @INSTALLED_OBJECTS[o.type].layer
+        log('selectable')
+        o.selectable = true
+      else
+        o.selectable = false
       @addObjectToCanvas(o)
 
     @canvas.renderAll()

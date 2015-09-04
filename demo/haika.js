@@ -7,12 +7,6 @@ log = function(obj) {
 };
 
 haika = {
-  CONST_LAYERS: {
-    SHELF: 0,
-    BEACON: 1,
-    WALL: 2,
-    FLOOR: 3
-  },
   INSTALLED_OBJECTS: {},
   addObject: function(name, layer, klass) {
     return this.INSTALLED_OBJECTS[name] = {
@@ -55,14 +49,16 @@ haika = {
     containerSelector: '.haika-container',
     divId: 'haika-canvas',
     canvasId: 'haika-canvas-area',
-    scaleFactor: 0.1
+    scaleFactor: 0.1,
+    layer: 0
   },
   init: function(options) {
     var $haikaDiv, canvas;
     options = $.extend(this.options, options);
     this.scaleFactor = options.scaleFactor;
+    this.layer = options.layer;
     $haikaDiv = $('#' + options.divId);
-    canvas = new fabric.StaticCanvas(options.canvasId, {
+    canvas = new fabric.Canvas(options.canvasId, {
       width: $haikaDiv.width(),
       height: $haikaDiv.height(),
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
@@ -116,7 +112,7 @@ haika = {
     if (this.INSTALLED_OBJECTS[type] != null) {
       return this.INSTALLED_OBJECTS[type]["class"];
     } else {
-      return '認識できないオブジェクトが含まれています';
+      return '認識できないオブジェクト(' + type + ')が含まれています';
     }
   },
   render: function() {
@@ -126,6 +122,12 @@ haika = {
     ref = this.objects;
     for (i = 0, len = ref.length; i < len; i++) {
       o = ref[i];
+      if (this.layer === this.INSTALLED_OBJECTS[o.type].layer) {
+        log('selectable');
+        o.selectable = true;
+      } else {
+        o.selectable = false;
+      }
       this.addObjectToCanvas(o);
     }
     this.canvas.renderAll();

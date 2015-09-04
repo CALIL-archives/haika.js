@@ -3,8 +3,9 @@ haika.addObject('curved_shelf', 0, fabric.curvedShelf)
 haika.addObject('beacon'      , 1, fabric.Beacon)
 haika.addObject('wall'        , 2, fabric.Wall)
 haika.addObject('floor'       , 3, fabric.Floor)
-haika.init()
-
+haika.init(
+  layer: 0
+)
 
 $.ajax
     url: 'data/sabae.json'

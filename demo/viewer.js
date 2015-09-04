@@ -8,7 +8,9 @@ haika.addObject('wall', 2, fabric.Wall);
 
 haika.addObject('floor', 3, fabric.Floor);
 
-haika.init();
+haika.init({
+  layer: 0
+});
 
 $.ajax({
   url: 'data/sabae.json',
