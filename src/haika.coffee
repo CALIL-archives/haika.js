@@ -94,7 +94,6 @@ haika =
     canvas = new fabric.Canvas(options.canvasId, {
       width: $haikaDiv.width()
       height: $haikaDiv.height()
-      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
 
     #    canvas.selectionColor = 'rgba(0,0,0,0)'

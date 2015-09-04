@@ -87,8 +87,7 @@ haika = {
     $haikaDiv.prepend("<canvas id=\"" + options.canvasId + "\" unselectable=\"on\"></canvas>");
     canvas = new fabric.Canvas(options.canvasId, {
       width: $haikaDiv.width(),
-      height: $haikaDiv.height(),
-      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
+      height: $haikaDiv.height()
     });
     canvas.selectionBorderColor = 'black';
     canvas.selectionLineWidth = 1;
