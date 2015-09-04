@@ -1,8 +1,11 @@
+# fabricObjectの追加
 haika.addObject('shelf'       , 0, fabric.Shelf)
 haika.addObject('curved_shelf', 0, fabric.curvedShelf)
 haika.addObject('beacon'      , 1, fabric.Beacon)
 haika.addObject('wall'        , 2, fabric.Wall)
 haika.addObject('floor'       , 3, fabric.Floor)
+
+# レイヤーの設定
 hash = location.hash.split('#')[1]
 if hash
   layer = hash*1
@@ -12,6 +15,7 @@ haika.init(
   layer: layer
 )
 
+# ローカルストレージに保存
 haika.save = ->
   # GeoJSONを保存
   log(haika._geojson)
@@ -26,7 +30,7 @@ haikaStart = ->
   haika.render()
 
 
-# ローカルストレージに保存
+# ローカルストレージから読み込み
 if localStorage.getItem('haika')
   log 'load local storage'
   haika._geojson = JSON.parse(localStorage.getItem('haika'))
