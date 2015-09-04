@@ -64,7 +64,7 @@ haika =
     containerSelector  : '.haika-container'
     divId      : 'haika-canvas'
     canvasId   : 'haika-canvas-area'
-    scaleFactor: 0.1
+    scaleFactor: 1
     layer      : 0
   init: (options)->
     # オプションのマージ
@@ -100,6 +100,74 @@ haika =
 
     @canvas = canvas
 
+    # オブジェクトのイベント設定
+    @canvas.on 'object:selected', (e)=>
+      object = e.target
+      if object._objects?
+        object.lockScalingX = true
+        object.lockScalingY = true
+
+    @canvas.on 'object:rotating', (e) =>
+      object = e.target
+      if object.__rotating?
+        object.__rotating()
+    @canvas.on 'object:moving', (e) =>
+      object = e.target
+      if @readOnly
+        return
+      if object.__moving?
+        object.__moving()
+    @canvas.on 'object:scaling', (e) =>
+      object = e.target
+      if object.__resizeShelf?
+        object.__resizeShelf()
+    @canvas.on 'object:modified', (e)=>
+      object = e.target
+      if object.__modifiedShelf?
+        object.__modifiedShelf()
+      @_save()
+
+  _save: ()->
+    if not @canvas
+      object = null
+      group = null
+    else
+      object = @canvas.getActiveObject()
+      group = @canvas.getActiveGroup()
+    if group
+      # グループ選択の場合
+      log(group)
+      for object in group._objects
+        log(object)
+        object.top_cm = @px2cm_y(object.top + group.top)
+        object.left_cm = @px2cm_x(object.left + group.left)
+        @setGeoJSONFromObject(object)
+    else
+      # 単体選択の場合
+      object.top_cm = @px2cm_y(object.top)
+      object.left_cm = @px2cm_x(object.left)
+      @setGeoJSONFromObject(object)
+
+    if @save?
+      @save()
+
+  # GeoJSONを更新する
+  setGeoJSONFromObject: (object)->
+    o = @locateObjectFromId(object.id)
+    # オブジェクトをGeoJSONに変換
+    feature = object.toGeoJSON()
+    # プロパティを更新
+    $.extend(o.geometry, feature.geometry)
+    $.extend(o.properties, feature.properties)
+
+  # 該当するオブジェクトをJSONから探す
+  locateObjectFromId: (id)->
+    for o in @_geojson.features
+      if o.properties.id==id
+        log(o)
+        return o
+    return false
+
   loadFromGeoJson: ()->
     if @_geojson.haika?
       header = @_geojson.haika
@@ -132,7 +200,6 @@ haika =
     for o in @objects
       # 現在のレイヤーなら選択可能に
       if @layer == @INSTALLED_OBJECTS[o.type].layer
-        log('selectable')
         o.selectable = true
       else
         o.selectable = false

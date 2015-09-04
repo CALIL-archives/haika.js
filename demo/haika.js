@@ -49,7 +49,7 @@ haika = {
     containerSelector: '.haika-container',
     divId: 'haika-canvas',
     canvasId: 'haika-canvas-area',
-    scaleFactor: 0.1,
+    scaleFactor: 1,
     layer: 0
   },
   init: function(options) {
@@ -81,7 +81,104 @@ haika = {
     fabric.Object.prototype.cornerColor = "#488BD4";
     fabric.Object.prototype.borderOpacityWhenMoving = 0.8;
     fabric.Object.prototype.cornerSize = 10;
-    return this.canvas = canvas;
+    this.canvas = canvas;
+    this.canvas.on('object:selected', (function(_this) {
+      return function(e) {
+        var object;
+        object = e.target;
+        if (object._objects != null) {
+          object.lockScalingX = true;
+          return object.lockScalingY = true;
+        }
+      };
+    })(this));
+    this.canvas.on('object:rotating', (function(_this) {
+      return function(e) {
+        var object;
+        object = e.target;
+        if (object.__rotating != null) {
+          return object.__rotating();
+        }
+      };
+    })(this));
+    this.canvas.on('object:moving', (function(_this) {
+      return function(e) {
+        var object;
+        object = e.target;
+        if (_this.readOnly) {
+          return;
+        }
+        if (object.__moving != null) {
+          return object.__moving();
+        }
+      };
+    })(this));
+    this.canvas.on('object:scaling', (function(_this) {
+      return function(e) {
+        var object;
+        object = e.target;
+        if (object.__resizeShelf != null) {
+          return object.__resizeShelf();
+        }
+      };
+    })(this));
+    return this.canvas.on('object:modified', (function(_this) {
+      return function(e) {
+        var object;
+        object = e.target;
+        if (object.__modifiedShelf != null) {
+          object.__modifiedShelf();
+        }
+        return _this._save();
+      };
+    })(this));
+  },
+  _save: function() {
+    var group, i, len, object, ref;
+    if (!this.canvas) {
+      object = null;
+      group = null;
+    } else {
+      object = this.canvas.getActiveObject();
+      group = this.canvas.getActiveGroup();
+    }
+    if (group) {
+      log(group);
+      ref = group._objects;
+      for (i = 0, len = ref.length; i < len; i++) {
+        object = ref[i];
+        log(object);
+        object.top_cm = this.px2cm_y(object.top + group.top);
+        object.left_cm = this.px2cm_x(object.left + group.left);
+        this.setGeoJSONFromObject(object);
+      }
+    } else {
+      object.top_cm = this.px2cm_y(object.top);
+      object.left_cm = this.px2cm_x(object.left);
+      this.setGeoJSONFromObject(object);
+    }
+    if (this.save != null) {
+      return this.save();
+    }
+  },
+  setGeoJSONFromObject: function(object) {
+    var feature, o;
+    o = this.locateObjectFromId(object.id);
+    feature = object.toGeoJSON();
+    $.extend(o.geometry, feature.geometry);
+    return $.extend(o.properties, feature.properties);
+  },
+  locateObjectFromId: function(id) {
+    var i, len, o, ref;
+    ref = this._geojson.features;
+    for (i = 0, len = ref.length; i < len; i++) {
+      o = ref[i];
+      if (o.properties.id === id) {
+        log(o);
+        return o;
+      }
+    }
+    return false;
   },
   loadFromGeoJson: function() {
     var header, i, len, object, ref, results;
@@ -123,7 +220,6 @@ haika = {
     for (i = 0, len = ref.length; i < len; i++) {
       o = ref[i];
       if (this.layer === this.INSTALLED_OBJECTS[o.type].layer) {
-        log('selectable');
         o.selectable = true;
       } else {
         o.selectable = false;

@@ -1,0 +1,4 @@
+{"id": 15, "revision": 26, "collision": "5c65904f-c57c-42f2-a14e-c5beb2611a33", "locked": false, "data": {"haika": {"xyAngle": 0, "xyLatitude": null, "xyScaleFactor": 1, "backgroundUrl": "", "version": 1, "backgroundScaleFactor": 1, "xyLongitude": null, "backgroundOpacity": 1}, "type": "FeatureCollection", "features": [
+  {"geometry": {"type": "Polygon", "coordinates": [[[-213, 123], [147, 123], [147, 71], [-213, 71], [-213, 123]]]}, "type": "Feature", "properties": {"count": 4, "angle": 0, "top_cm": -97, "side": 2, "eachHeight": 26, "left_cm": -33, "eachWidth": 90, "label": "\u68da\u756a\u53f7\u3075", "type": "shelf", "id": 1}},
+  {"geometry": {"type": "Polygon", "coordinates": [[[-213, 123], [147, 123], [147, 71], [-213, 71], [-213, 123]]]}, "type": "Feature", "properties": {"count": 4, "angle": 0, "top_cm": 97, "side": 2, "eachHeight": 26, "left_cm": -33, "eachWidth": 90, "label": "\u68da\u756a\u53f7\u3076", "type": "shelf", "id": 2, "original":"calil"}}
+]}}
