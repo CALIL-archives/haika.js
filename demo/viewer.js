@@ -77,7 +77,7 @@ haika = {
     options = $.extend(this.options, options);
     this.scaleFactor = options.scaleFactor;
     $haikaDiv = $('#' + options.divId);
-    canvas = new fabric.Canvas(options.canvasId, {
+    canvas = new fabric.StaticCanvas(options.canvasId, {
       width: $haikaDiv.width(),
       height: $haikaDiv.height(),
       rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
