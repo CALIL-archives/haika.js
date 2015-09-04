@@ -1,0 +1,113 @@
+
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>HaikaGrid Demonstration</title>
+    <link rel="stylesheet" href="http://openlayers.org/en/v3.8.2/css/ol.css" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.8.2/ol.min.js" type="text/javascript"></script>
+    <style>
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #control {
+            width: 600px;
+            background-color: rgba(255, 255, 255, 0.6);
+            top: 10px;
+            left: 60px;
+            padding: 20px;
+            position: absolute;
+            z-index: 100;
+        }
+
+        .ol-scale-line {
+            background-color: rgba(255, 255, 255, 0.5);
+            bottom: 30px;
+            border-radius: 2px;
+            padding: 4px;
+        }
+
+        .ol-scale-line-inner {
+            color: #050505;
+            border: 1px solid #565656;
+            border-top: none;
+            margin: 0px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="control">
+    グリッドのサンプル<br>
+
+    建物方向
+    <button onclick="grid.setRotation(0);">0°</button>
+    <button onclick="grid.setRotation(90);">90°</button>
+    <button onclick="grid.setRotation(120);">120°</button>
+
+</div>
+<div id="map" class="map"></div>
+<!-- External script dependencies  -->
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript" src="../bower_components/fabric.min.js"></script>
+<script type="text/javascript" src="../src/fabric_object/beacon.js"></script>
+<script type="text/javascript" src="../src/fabric_object/floor.js"></script>
+<script type="text/javascript" src="../src/fabric_object/shelf.js"></script>
+<script type="text/javascript" src="../src/fabric_object/wall.js"></script>
+<script type="text/javascript" src="haika.js"></script>
+<script type="text/javascript" src="viewer.js"></script>
+<script type="text/javascript" src="haikagrid.js"></script>
+<script type="text/javascript">
+    var map, view;
+
+    var proj = new ol.proj.Projection({
+        code: 'HAIKA-XY',
+        units: 'm',
+        extent: [-50, -50, 50, 50]
+    });
+
+    var grid = new Haikagrid({});
+    var extent = [0, 0, 1024, 968];
+    var projection = new ol.proj.Projection({
+        code: 'xkcd-image',
+        units: 'pixels',
+        extent: extent
+    });
+
+    view = new ol.View({
+        center: ol.proj.transform([137.528032, 35.573162], 'EPSG:4326', 'EPSG:3857'),
+        zoom: 22,
+        rotation: 0
+        //projection: proj
+    });
+    osm = new ol.layer.Tile({
+        source: new ol.source.XYZ({
+            url: 'http://api.tiles.mapbox.com/v4/caliljp.ihofg5ie/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiY2FsaWxqcCIsImEiOiJxZmNyWmdFIn0.hgdNoXE7D6i7SrEo6niG0w',
+            maxZoom: 20
+        })
+    });
+
+
+    map = new ol.Map({
+        layers: [osm, grid],
+        target: 'map',
+        maxZoom: 26,
+        minZoom: 18,
+        logo: false,
+        view: view,
+        controls: ol.control.defaults().extend([
+            new ol.control.ScaleLine()
+        ])
+    });
+
+    grid.origin = ol.proj.transform([137.528032, 35.573162], 'EPSG:4326', 'EPSG:3857');
+    grid.map = map;
+
+
+</script>
+</body>
+</html>
