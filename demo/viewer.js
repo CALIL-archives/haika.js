@@ -1,3 +1,5 @@
+var hash, layer;
+
 haika.addObject('shelf', 0, fabric.Shelf);
 
 haika.addObject('curved_shelf', 0, fabric.curvedShelf);
@@ -8,8 +10,16 @@ haika.addObject('wall', 2, fabric.Wall);
 
 haika.addObject('floor', 3, fabric.Floor);
 
+hash = location.hash.split('#')[1];
+
+if (hash !== '') {
+  layer = hash * 1;
+} else {
+  0;
+}
+
 haika.init({
-  layer: 0
+  layer: layer
 });
 
 $.ajax({
