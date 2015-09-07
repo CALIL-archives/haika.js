@@ -23,10 +23,8 @@ haika.init({
 });
 
 haika.save = function() {
-  log(haika._geojson);
   localStorage.setItem('haika', JSON.stringify(haika._geojson));
-  log('save local storage');
-  return view_log(haika._geojson);
+  return log('save local storage');
 };
 
 haikaStart = function() {

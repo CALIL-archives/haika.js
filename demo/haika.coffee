@@ -76,7 +76,7 @@ haika =
 #    canvas = new fabric.StaticCanvas(options.canvasId, {
       width: $haikaDiv.width()
       height: $haikaDiv.height()
-      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
+#      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
 
     canvas.selectionBorderColor = 'black'
@@ -128,28 +128,28 @@ haika =
         object.__modifiedShelf()
       @_save()
 
-  _save: ()->
+  _save: (object)->
+    log('save')
     object = @canvas.getActiveObject()
-    group = @canvas.getActiveGroup()
+    group  = @canvas.getActiveGroup()
     if group
       # グループ選択の場合
-      log(group)
-      for object in group._objects
-        log(object)
-        object.top_cm = @px2cm_y(object.top + group.top)
-        object.left_cm = @px2cm_x(object.left + group.left)
-        @setGeoJSONFromObject(object)
+      # グループで回転した場合、group.objectsには回転する前のオブジェクトが入っているため
+      # objectを複製して、group._setObjectPositionを適用する
+      for object in group.objects
+        o = $.extend({}, object)
+        group._setObjectPosition(o)
+        @setGeoJSONFromObject(o)
     else
       # 単体選択の場合
-      object.top_cm = @px2cm_y(object.top)
-      object.left_cm = @px2cm_x(object.left)
       @setGeoJSONFromObject(object)
-
     if @save?
       @save()
 
   # GeoJSONを更新する
   setGeoJSONFromObject: (object)->
+    object.top_cm = @px2cm_y(object.top)
+    object.left_cm = @px2cm_x(object.left)
     o = @locateObjectFromId(object.id)
     # オブジェクトをGeoJSONに変換
     feature = object.toGeoJSON()

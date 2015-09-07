@@ -60,8 +60,7 @@ haika = {
     $haikaDiv = $('#' + options.divId);
     canvas = new fabric.Canvas(options.canvasId, {
       width: $haikaDiv.width(),
-      height: $haikaDiv.height(),
-      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
+      height: $haikaDiv.height()
     });
     canvas.selectionBorderColor = 'black';
     canvas.selectionLineWidth = 1;
@@ -133,23 +132,20 @@ haika = {
       };
     })(this));
   },
-  _save: function() {
-    var group, i, len, object, ref;
+  _save: function(object) {
+    var group, i, len, o, ref;
+    log('save');
     object = this.canvas.getActiveObject();
     group = this.canvas.getActiveGroup();
     if (group) {
-      log(group);
-      ref = group._objects;
+      ref = group.objects;
       for (i = 0, len = ref.length; i < len; i++) {
         object = ref[i];
-        log(object);
-        object.top_cm = this.px2cm_y(object.top + group.top);
-        object.left_cm = this.px2cm_x(object.left + group.left);
-        this.setGeoJSONFromObject(object);
+        o = $.extend({}, object);
+        group._setObjectPosition(o);
+        this.setGeoJSONFromObject(o);
       }
     } else {
-      object.top_cm = this.px2cm_y(object.top);
-      object.left_cm = this.px2cm_x(object.left);
       this.setGeoJSONFromObject(object);
     }
     if (this.save != null) {
@@ -158,6 +154,8 @@ haika = {
   },
   setGeoJSONFromObject: function(object) {
     var feature, o;
+    object.top_cm = this.px2cm_y(object.top);
+    object.left_cm = this.px2cm_x(object.left);
     o = this.locateObjectFromId(object.id);
     feature = object.toGeoJSON();
     $.extend(o.geometry, feature.geometry);
