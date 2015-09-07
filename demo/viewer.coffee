@@ -19,7 +19,7 @@ haika.init(
 haika.save = ->
   # GeoJSONを保存
 #  log(haika._geojson)
-  localStorage.setItem('haika', JSON.stringify(haika._geojson))
+  localStorage.setItem('haika2', JSON.stringify(haika._geojson))
   log('save local storage')
 #  view_log(haika._geojson)
 
@@ -31,7 +31,7 @@ haikaStart = ->
 
 
 # ローカルストレージから読み込み
-if localStorage.getItem('haika')
+if localStorage.getItem('haika2')
   log 'load local storage'
   haika._geojson = JSON.parse(localStorage.getItem('haika'))
   haikaStart()
