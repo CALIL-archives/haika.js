@@ -78,7 +78,6 @@ haika =
       height: $haikaDiv.height()
 #      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
-
     canvas.selectionBorderColor = 'black'
     canvas.selectionLineWidth = 1
     canvas.selectionDashArray = [2, 2]

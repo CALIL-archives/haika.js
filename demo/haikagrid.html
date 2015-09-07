@@ -56,6 +56,7 @@
 <script type="text/javascript" src="haika.require.js"></script>
 <script type="text/javascript" src="haika.js"></script>
 <script type="text/javascript" src="haikagrid.js"></script>
+<script type="text/javascript" src="haikalayer.js"></script>
 <script type="text/javascript">
     var map, view;
 
@@ -66,6 +67,7 @@
     });
 
     var grid = new Haikagrid({});
+    var haikalayer = new Haikalayer({});
     var extent = [0, 0, 1024, 968];
     var projection = new ol.proj.Projection({
         code: 'xkcd-image',
@@ -88,7 +90,7 @@
 
 
     map = new ol.Map({
-        layers: [osm, grid],
+        layers: [osm, grid, haikalayer],
         target: 'map',
         maxZoom: 26,
         minZoom: 18,
