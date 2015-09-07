@@ -33,7 +33,7 @@ haikaStart = ->
 # ローカルストレージから読み込み
 if localStorage.getItem('haika2')
   log 'load local storage'
-  haika._geojson = JSON.parse(localStorage.getItem('haika'))
+  haika._geojson = JSON.parse(localStorage.getItem('haika2'))
   haikaStart()
 else
   $.ajax

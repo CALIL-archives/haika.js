@@ -35,7 +35,7 @@ haikaStart = function() {
 
 if (localStorage.getItem('haika2')) {
   log('load local storage');
-  haika._geojson = JSON.parse(localStorage.getItem('haika'));
+  haika._geojson = JSON.parse(localStorage.getItem('haika2'));
   haikaStart();
 } else {
   $.ajax({
