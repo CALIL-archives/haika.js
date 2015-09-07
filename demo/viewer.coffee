@@ -21,7 +21,7 @@ haika.save = ->
 #  log(haika._geojson)
   localStorage.setItem('haika2', JSON.stringify(haika._geojson))
   log('save local storage')
-#  view_log(haika._geojson)
+  view_log(haika._geojson)
 
 
 haikaStart = ->
