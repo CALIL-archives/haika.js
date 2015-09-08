@@ -83,10 +83,11 @@
     }else{
         setting = {
             haika : {
+                xyAngle    : 0,
                 xyLatitude : latitudelongitude[0],
                 xyLongitude: latitudelongitude[1]
             }
-        }
+        };
         localStorage.setItem('haika2', JSON.stringify(setting));
     }
 
@@ -118,19 +119,31 @@
     });
 
     map.on('moveend', function(){
-       console.log('moveend')
-       var latitudelongitude = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
-       console.log(latitudelongitude)
-       if(setting){
-           setting.haika.xyLatitude  = latitudelongitude[0];
-           setting.haika.xyLongitude = latitudelongitude[1]
-       }
-       localStorage.setItem('haika2', JSON.stringify(setting));
+        console.log('moveend')
+        var latitudelongitude = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
+        console.log(latitudelongitude)
+        if(setting){
+            setting.haika.xyAngle     = grid.rotation;
+            setting.haika.xyLatitude  = latitudelongitude[0];
+            setting.haika.xyLongitude = latitudelongitude[1]
+            localStorage.setItem('haika2', JSON.stringify(setting));
+        }
         console.log('save')
     });
 
     grid.origin = projection;
     grid.map = map;
+    grid.on('change', function(){
+        console.log('change')
+        if(setting){
+            setting.haika.xyAngle = grid.rotation;
+            localStorage.setItem('haika2', JSON.stringify(setting));
+        }
+        console.log('save')
+    });
+    if(setting.haika.xyAngle && setting.haika.xyAngle!=0){
+        grid.setRotation(setting.haika.xyAngle);
+    }
 
 </script>
 </body>
