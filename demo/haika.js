@@ -67,11 +67,19 @@ haika = {
     }
     canvas = new fabricCanvasClass(options.canvasId, {
       width: $haikaDiv.width(),
-      height: $haikaDiv.height()
+      height: $haikaDiv.height(),
+      renderOnAddRemove: true
     });
     canvas.selectionBorderColor = 'black';
     canvas.selectionLineWidth = 1;
     canvas.selectionDashArray = [2, 2];
+    $(window).resize((function(_this) {
+      return function() {
+        _this.canvas.setWidth($haikaDiv.width());
+        _this.canvas.setHeight($haikaDiv.height());
+        return _this.render();
+      };
+    })(this));
     fabric.Object.prototype.scaleX = 1;
     fabric.Object.prototype.scaleY = 1;
     fabric.Object.prototype.originX = 'center';
@@ -220,7 +228,6 @@ haika = {
       this.addObjectToCanvas(o);
     }
     this.canvas.renderAll(true);
-    this.canvas.renderOnAddRemove = true;
     return $(this).trigger('haika:render');
   },
   addObjectToCanvas: function(o) {

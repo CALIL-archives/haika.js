@@ -36,43 +36,28 @@ Haikalayer = (function(superClass) {
       return haika.render();
     } else {
       haika.init({
-        'canvasId': context.canvas,
-        'readOnly': true
+        'divId': 'map',
+        'canvasId': context.canvas
       });
-      return $.ajax({
-        url: 'data/calil.json',
-        type: 'GET',
-        cache: false,
-        dataType: 'json',
-        error: (function(_this) {
-          return function() {
-            return option.error && option.error('データが読み込めませんでした');
-          };
-        })(this),
-        success: (function(_this) {
-          return function(json) {
-            if (json.locked) {
-              _this.readOnly = true;
-              return option.error && option.error('データはロックされています');
-            }
-            haika._dataId = json.id;
-            haika._revision = json.revision;
-            haika._collision = json.collision;
-            haika._geojson = json.data;
-            haika.loadFromGeoJson();
-            $(haika).trigger('haika:load');
-            return haika.render();
-          };
-        })(this)
-      });
+      haika.load();
+      haika.canvas.on('mouse:up', (function(_this) {
+        return function(e) {
+          if (!haika.canvas.getActiveObject() && !haika.canvas.getActiveGroup()) {
+            return _this.changed();
+          }
+        };
+      })(this));
+      return haika.canvas.on('selection:cleared', (function(_this) {
+        return function(e) {
+          return _this.changed();
+        };
+      })(this));
     }
   };
 
   return Haikalayer;
 
 })(ol.layer.Vector);
-
-fabric.Object.prototype.globalCompositeOperation = 'darker';
 
 haika.addObject('shelf', 0, fabric.Shelf);
 
@@ -83,3 +68,45 @@ haika.addObject('beacon', 1, fabric.Beacon);
 haika.addObject('wall', 2, fabric.Wall);
 
 haika.addObject('floor', 3, fabric.Floor);
+
+haika.save = function() {
+  localStorage.setItem('haika2', JSON.stringify(haika._geojson));
+  return log('save local storage');
+};
+
+haika.load = function() {
+  if (localStorage.getItem('haika2')) {
+    log('load local storage');
+    haika._geojson = JSON.parse(localStorage.getItem('haika2'));
+    haika.loadFromGeoJson();
+    $(haika).trigger('haika:load');
+    return haika.render();
+  } else {
+    return $.ajax({
+      url: 'data/calil.json',
+      type: 'GET',
+      cache: false,
+      dataType: 'json',
+      error: (function(_this) {
+        return function() {
+          return option.error && option.error('データが読み込めませんでした');
+        };
+      })(this),
+      success: (function(_this) {
+        return function(json) {
+          if (json.locked) {
+            _this.readOnly = true;
+            return option.error && option.error('データはロックされています');
+          }
+          haika._dataId = json.id;
+          haika._revision = json.revision;
+          haika._collision = json.collision;
+          haika._geojson = json.data;
+          haika.loadFromGeoJson();
+          $(haika).trigger('haika:load');
+          return haika.render();
+        };
+      })(this)
+    });
+  }
+};

@@ -78,16 +78,18 @@ haika =
     canvas = new fabricCanvasClass(options.canvasId, {
       width: $haikaDiv.width()
       height: $haikaDiv.height()
+      renderOnAddRemove: true
+#      stateful: false
 #      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
     })
     canvas.selectionBorderColor = 'black'
     canvas.selectionLineWidth = 1
     canvas.selectionDashArray = [2, 2]
 
-#    $(window).resize =>
-#      @canvas.setWidth($haikaDiv.width())
-#      @canvas.setHeight($haikaDiv.height())
-#      @render()
+    $(window).resize =>
+      @canvas.setWidth($haikaDiv.width())
+      @canvas.setHeight($haikaDiv.height())
+      @render()
 
     # fabricオブジェクトの共通設定
     fabric.Object.prototype.scaleX = 1
@@ -204,7 +206,7 @@ haika =
       @addObjectToCanvas(o)
 
     @canvas.renderAll(true)
-    @canvas.renderOnAddRemove = true
+#    @canvas.renderOnAddRemove = true
     $(@).trigger('haika:render')
 
 

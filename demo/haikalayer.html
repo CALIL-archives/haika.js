@@ -41,21 +41,11 @@
     </style>
 </head>
 <body>
-<div id="control">
-    グリッドのサンプル<br>
-
-    建物方向
-    <button onclick="grid.setRotation(0);">0°</button>
-    <button onclick="grid.setRotation(90);">90°</button>
-    <button onclick="grid.setRotation(120);">120°</button>
-
-</div>
 <div id="map" class="map"></div>
 <!-- External script dependencies  -->
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script type="text/javascript" src="haika.require.js"></script>
 <script type="text/javascript" src="haika.js"></script>
-<script type="text/javascript" src="haikagrid.js"></script>
 <script type="text/javascript" src="haikalayer.js"></script>
 <script type="text/javascript">
     var map, view;
@@ -66,14 +56,7 @@
         extent: [-50, -50, 50, 50]
     });
 
-    var grid = new Haikagrid({});
     var haikalayer = new Haikalayer({});
-    var extent = [0, 0, 1024, 968];
-//    var projection = new ol.proj.Projection({
-//        code: 'xkcd-image',
-//        units: 'pixels',
-//        extent: extent
-//    });
 
     var projection = ol.proj.transform([137.528032, 35.573162], 'EPSG:4326', 'EPSG:3857');
     view = new ol.View({
@@ -91,7 +74,7 @@
 
 
     map = new ol.Map({
-        layers: [osm, grid, haikalayer],
+        layers: [osm, haikalayer],
         target: 'map',
         maxZoom: 26,
         minZoom: 18,
@@ -102,8 +85,16 @@
         ])
     });
 
-    grid.origin = projection;
-    grid.map = map;
+    var dragPan;
+    map.getInteractions().forEach(function(interaction, i) {
+      if (interaction instanceof ol.interaction.DragPan) {
+        dragPan = interaction;
+      }
+    }, this);
+    if (dragPan) {
+      map.removeInteraction(dragPan);
+    }
+
     haikalayer.origin = projection;
     haikalayer.map = map;
 
