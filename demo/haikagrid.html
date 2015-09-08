@@ -52,11 +52,7 @@
 </div>
 <div id="map" class="map"></div>
 <!-- External script dependencies  -->
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script type="text/javascript" src="haika.require.js"></script>
-<script type="text/javascript" src="haika.js"></script>
 <script type="text/javascript" src="haikagrid.js"></script>
-<script type="text/javascript" src="haikalayer.js"></script>
 <script type="text/javascript">
     var map, view;
 
@@ -67,15 +63,34 @@
     });
 
     var grid = new Haikagrid({});
-    var haikalayer = new Haikalayer({});
     var extent = [0, 0, 1024, 968];
 //    var projection = new ol.proj.Projection({
 //        code: 'xkcd-image',
 //        units: 'pixels',
 //        extent: extent
 //    });
+    var latitudelongitude = [137.528032, 35.573162];
 
-    var projection = ol.proj.transform([137.528032, 35.573162], 'EPSG:4326', 'EPSG:3857');
+    var setting = localStorage.getItem('haika2');
+    if(setting){
+        setting = JSON.parse(setting);
+        console.log(setting)
+        if(setting.haika){
+            if(setting.haika.xyLatitude && setting.haika.xyLongitude){
+                latitudelongitude = [setting.haika.xyLatitude, setting.haika.xyLongitude];
+            }
+        }
+    }else{
+        setting = {
+            haika : {
+                xyLatitude : latitudelongitude[0],
+                xyLongitude: latitudelongitude[1]
+            }
+        }
+        localStorage.setItem('haika2', JSON.stringify(setting));
+    }
+
+    var projection = ol.proj.transform(latitudelongitude, 'EPSG:4326', 'EPSG:3857');
     view = new ol.View({
         center: projection,
         zoom: 22,
@@ -91,7 +106,7 @@
 
 
     map = new ol.Map({
-        layers: [osm, grid, haikalayer],
+        layers: [osm, grid],
         target: 'map',
         maxZoom: 26,
         minZoom: 18,
@@ -102,18 +117,20 @@
         ])
     });
 
+    map.on('moveend', function(){
+       console.log('moveend')
+       var latitudelongitude = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
+       console.log(latitudelongitude)
+       if(setting){
+           setting.haika.xyLatitude  = latitudelongitude[0];
+           setting.haika.xyLongitude = latitudelongitude[1]
+       }
+       localStorage.setItem('haika2', JSON.stringify(setting));
+        console.log('save')
+    });
+
     grid.origin = projection;
     grid.map = map;
-    haikalayer.origin = projection;
-    haikalayer.map = map;
-
-
-    map.on('postrender', function(){
-//    haikalayer.on('postrender', function(){
-//      console.log('frame rendered');
-//        log(view.getZoom())
-//        haikalayer.changed()
-    });
 
 </script>
 </body>
