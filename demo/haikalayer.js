@@ -70,14 +70,14 @@ haika.addObject('wall', 2, fabric.Wall);
 haika.addObject('floor', 3, fabric.Floor);
 
 haika.save = function() {
-  localStorage.setItem('haika2', JSON.stringify(haika._geojson));
+  localStorage.setItem('haika3', JSON.stringify(haika._geojson));
   return log('save local storage');
 };
 
 haika.load = function() {
-  if (localStorage.getItem('haika2')) {
+  if (localStorage.getItem('haika3')) {
     log('load local storage');
-    haika._geojson = JSON.parse(localStorage.getItem('haika2'));
+    haika._geojson = JSON.parse(localStorage.getItem('haika3'));
     haika.loadFromGeoJson();
     $(haika).trigger('haika:load');
     return haika.render();

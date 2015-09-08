@@ -88,15 +88,15 @@ haika.addObject('floor'       , 3, fabric.Floor)
 haika.save = ->
   # GeoJSONを保存
 #  log(haika._geojson)
-  localStorage.setItem('haika2', JSON.stringify(haika._geojson))
+  localStorage.setItem('haika3', JSON.stringify(haika._geojson))
   log('save local storage')
 
 # ローカルストレージからロード
 haika.load = ->
   # ローカルストレージから読み込み
-  if localStorage.getItem('haika2')
+  if localStorage.getItem('haika3')
     log 'load local storage'
-    haika._geojson = JSON.parse(localStorage.getItem('haika2'))
+    haika._geojson = JSON.parse(localStorage.getItem('haika3'))
     haika.loadFromGeoJson()
     $(haika).trigger('haika:load')
     haika.render()
