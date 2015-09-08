@@ -167,6 +167,6 @@ gulp.task 'default', ->
     gulp.watch css_files, ['build-css']
     # デモ用の設定
     gulp.watch 'demo/*.html', ['browserSync-reload']
-    gulp.watch 'demo/**/*.coffee', ['compile-coffee-demo']
+    gulp.watch ['demo/**/*.coffee', 'demo/**/*.js'], ['compile-coffee-demo']
 
 
