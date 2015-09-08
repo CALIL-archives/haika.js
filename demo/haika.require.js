@@ -6473,9 +6473,9 @@ fabric.Pattern = fabric.util.createClass(/** @lends fabric.Pattern.prototype */ 
         this.clearContext(this.contextTop);
       }
 
-      //if (!allOnTop) {
-      //  this.clearContext(canvasToDrawOn);
-      //}
+      if (!allOnTop) {
+        this.clearContext(canvasToDrawOn);
+      }
 
       this.fire('before:render');
 

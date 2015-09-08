@@ -219,7 +219,7 @@ haika = {
       }
       this.addObjectToCanvas(o);
     }
-    this.canvas.renderAll();
+    this.canvas.renderAll(true);
     this.canvas.renderOnAddRemove = true;
     return $(this).trigger('haika:render');
   },

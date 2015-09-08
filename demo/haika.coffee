@@ -201,7 +201,7 @@ haika =
         o.selectable = false
       @addObjectToCanvas(o)
 
-    @canvas.renderAll()
+    @canvas.renderAll(true)
     @canvas.renderOnAddRemove = true
     $(@).trigger('haika:render')
 
