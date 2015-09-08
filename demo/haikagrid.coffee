@@ -40,7 +40,8 @@ class Haikagrid extends ol.layer.Vector
 
     cx = width / 2
     cy = height / 2
-    origin_xy = @map.getPixelFromCoordinate(@origin)
+#    origin_xy = @map.getPixelFromCoordinate(@origin)
+    origin_xy = @map.getPixelFromCoordinate(@map.getView().getCenter())
     origin = matrix(origin_xy[0], origin_xy[1], cx, cy, -r)
 
     context.save()

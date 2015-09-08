@@ -27,16 +27,17 @@ Haikalayer = (function(superClass) {
   };
 
   Haikalayer.prototype.postcompose_ = function(event) {
-    var context, height, pixelRatio, width;
+    var context;
+    if (this.map == null) {
+      return;
+    }
     context = event.context;
-    pixelRatio = event.frameState.pixelRatio;
-    width = context.canvas.width;
-    height = context.canvas.height;
     if (haika.canvas != null) {
       return haika.render();
     } else {
       haika.init({
-        'canvasId': context.canvas
+        'canvasId': context.canvas,
+        'readOnly': true
       });
       return $.ajax({
         url: 'data/calil.json',

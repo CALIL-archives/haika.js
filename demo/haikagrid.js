@@ -50,7 +50,7 @@ Haikagrid = (function(superClass) {
     };
     cx = width / 2;
     cy = height / 2;
-    origin_xy = this.map.getPixelFromCoordinate(this.origin);
+    origin_xy = this.map.getPixelFromCoordinate(this.map.getView().getCenter());
     origin = matrix(origin_xy[0], origin_xy[1], cx, cy, -r);
     context.save();
     a = matrix(origin.x, origin.y, cx, cy, r);

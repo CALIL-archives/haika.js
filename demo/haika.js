@@ -50,28 +50,28 @@ haika = {
     divId: 'haika-canvas',
     canvasId: 'haika-canvas-area',
     scaleFactor: 1,
-    layer: 0
+    layer: 0,
+    readOnly: false
   },
   init: function(options) {
-    var $haikaDiv, canvas;
+    var $haikaDiv, canvas, fabricCanvasClass;
     options = $.extend(this.options, options);
     this.scaleFactor = options.scaleFactor;
     this.layer = options.layer;
+    this.readOnly = options.readOnly;
     $haikaDiv = $('#' + options.divId);
-    canvas = new fabric.Canvas(options.canvasId, {
+    if (this.readOnly) {
+      fabricCanvasClass = fabric.StaticCanvas;
+    } else {
+      fabricCanvasClass = fabric.Canvas;
+    }
+    canvas = new fabricCanvasClass(options.canvasId, {
       width: $haikaDiv.width(),
       height: $haikaDiv.height()
     });
     canvas.selectionBorderColor = 'black';
     canvas.selectionLineWidth = 1;
     canvas.selectionDashArray = [2, 2];
-    $(window).resize((function(_this) {
-      return function() {
-        _this.canvas.setWidth($haikaDiv.width());
-        _this.canvas.setHeight($haikaDiv.height());
-        return _this.render();
-      };
-    })(this));
     fabric.Object.prototype.scaleX = 1;
     fabric.Object.prototype.scaleY = 1;
     fabric.Object.prototype.originX = 'center';

@@ -1,6 +1,3 @@
-#new fabric.StaticCanvas
-
-
 log = (obj) ->
   try
     console.log obj
@@ -66,14 +63,19 @@ haika =
     canvasId   : 'haika-canvas-area'
     scaleFactor: 1
     layer      : 0
+    readOnly   : false
   init: (options)->
     # オプションのマージ
     options = $.extend(@options, options)
     @scaleFactor = options.scaleFactor
     @layer = options.layer
+    @readOnly = options.readOnly
     $haikaDiv = $('#'+options.divId)
-    canvas = new fabric.Canvas(options.canvasId, {
-#    canvas = new fabric.StaticCanvas(options.canvasId, {
+    if @readOnly
+      fabricCanvasClass = fabric.StaticCanvas
+    else
+      fabricCanvasClass = fabric.Canvas
+    canvas = new fabricCanvasClass(options.canvasId, {
       width: $haikaDiv.width()
       height: $haikaDiv.height()
 #      rotationCursor: 'url("img/rotate.cur") 10 10, crosshair'
@@ -82,10 +84,10 @@ haika =
     canvas.selectionLineWidth = 1
     canvas.selectionDashArray = [2, 2]
 
-    $(window).resize =>
-      @canvas.setWidth($haikaDiv.width())
-      @canvas.setHeight($haikaDiv.height())
-      @render()
+#    $(window).resize =>
+#      @canvas.setWidth($haikaDiv.width())
+#      @canvas.setHeight($haikaDiv.height())
+#      @render()
 
     # fabricオブジェクトの共通設定
     fabric.Object.prototype.scaleX = 1

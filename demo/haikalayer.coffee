@@ -8,23 +8,28 @@ class Haikalayer extends ol.layer.Vector
     log super
     super(options)
     @on 'postcompose', @postcompose_, @
+#    @on 'change', @change_, @
     @setSource(new ol.source.Vector())
 #    @img = new Image()
 #    @img.src = "demo.jpg"
   setRotation: (r) ->
     @rotation = r
     @changed()
+#  change_: ->
+#    log 'change'
+#    if haika.canvas?
+#      haika.render()
 
   postcompose_: (event)->
-#    if not @map?
-#      return
+    if not @map?
+      return
 
     context = event.context
-    pixelRatio = event.frameState.pixelRatio
-
-    width = context.canvas.width
-    height = context.canvas.height
-
+#    pixelRatio = event.frameState.pixelRatio
+#
+#    width = context.canvas.width
+#    height = context.canvas.height
+#
 #    resolutionAtCoords = @map.getView().getProjection().getPointResolution(event.frameState.viewState.resolution,
 #      @origin)
 #    r = event.frameState.viewState.rotation
@@ -51,7 +56,7 @@ class Haikalayer extends ol.layer.Vector
 #    context.translate(a.x, a.y)
 #    context.rotate(r2)
 #    context.rotate(r)
-
+#
 #    context.drawImage(@img, -((@img.width / 50 / resolutionAtCoords) * pixelRatio / 2),
 #      -( (@img.height / 50 / resolutionAtCoords) * pixelRatio / 2), (@img.width / 50 / resolutionAtCoords) * pixelRatio,
 #      (@img.height / 50 / resolutionAtCoords) * pixelRatio)
@@ -62,6 +67,7 @@ class Haikalayer extends ol.layer.Vector
     else
       haika.init({
         'canvasId' : context.canvas
+        'readOnly' : true
       })
       $.ajax
           url: 'data/calil.json'
