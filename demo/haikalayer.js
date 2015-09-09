@@ -14,8 +14,6 @@ Haikalayer = (function(superClass) {
   Haikalayer.prototype.rotation = 0;
 
   function Haikalayer(options) {
-    log(options);
-    log(Haikalayer.__super__.constructor.apply(this, arguments));
     Haikalayer.__super__.constructor.call(this, options);
     this.on('postcompose', this.postcompose_, this);
     this.setSource(new ol.source.Vector());
@@ -27,86 +25,42 @@ Haikalayer = (function(superClass) {
   };
 
   Haikalayer.prototype.postcompose_ = function(event) {
-    var context;
+    var context, log;
     if (this.map == null) {
       return;
     }
     context = event.context;
-    if (haika.canvas != null) {
-      return haika.render();
+    log = function(obj) {
+      try {
+        return console.log(obj);
+      } catch (_error) {}
+    };
+    if (window.canvas != null) {
+      if (window.rect) {
+        rect.fill = 'blue';
+      }
     } else {
-      haika.init({
-        'divId': 'map',
-        'canvasId': context.canvas
-      });
-      haika.load();
-      haika.canvas.on('mouse:up', (function(_this) {
-        return function(e) {
-          if (!haika.canvas.getActiveObject() && !haika.canvas.getActiveGroup()) {
-            return _this.changed();
-          }
-        };
-      })(this));
-      return haika.canvas.on('selection:cleared', (function(_this) {
-        return function(e) {
+      window.canvas = new fabric.Canvas(context.canvas);
+      canvas._renderAll = canvas.renderAll;
+      canvas.renderAll = (function(_this) {
+        return function() {
           return _this.changed();
         };
-      })(this));
+      })(this);
+      window.rect = new fabric.Rect({
+        left: 400,
+        top: 100,
+        fill: 'red',
+        width: 400,
+        height: 400,
+        angle: 45
+      });
+      canvas.renderOnAddRemove = true;
+      canvas.add(rect);
     }
+    return canvas._renderAll(true);
   };
 
   return Haikalayer;
 
 })(ol.layer.Vector);
-
-haika.addObject('shelf', 0, fabric.Shelf);
-
-haika.addObject('curved_shelf', 0, fabric.curvedShelf);
-
-haika.addObject('beacon', 1, fabric.Beacon);
-
-haika.addObject('wall', 2, fabric.Wall);
-
-haika.addObject('floor', 3, fabric.Floor);
-
-haika.save = function() {
-  localStorage.setItem('haika3', JSON.stringify(haika._geojson));
-  return log('save local storage');
-};
-
-haika.load = function() {
-  if (localStorage.getItem('haika3')) {
-    log('load local storage');
-    haika._geojson = JSON.parse(localStorage.getItem('haika3'));
-    haika.loadFromGeoJson();
-    $(haika).trigger('haika:load');
-    return haika.render();
-  } else {
-    return $.ajax({
-      url: 'data/calil.json',
-      type: 'GET',
-      cache: false,
-      dataType: 'json',
-      error: (function(_this) {
-        return function() {
-          return option.error && option.error('データが読み込めませんでした');
-        };
-      })(this),
-      success: (function(_this) {
-        return function(json) {
-          if (json.locked) {
-            _this.readOnly = true;
-            return option.error && option.error('データはロックされています');
-          }
-          haika._dataId = json.id;
-          haika._revision = json.revision;
-          haika._collision = json.collision;
-          haika._geojson = json.data;
-          haika.loadFromGeoJson();
-          $(haika).trigger('haika:load');
-          return haika.render();
-        };
-      })(this)
-    });
-  }
-};

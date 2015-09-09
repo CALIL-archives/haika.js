@@ -4,8 +4,6 @@ class Haikalayer extends ol.layer.Vector
   img: null
   rotation: 0
   constructor: (options) ->
-    log options
-    log super
     super(options)
     @on 'postcompose', @postcompose_, @
     @setSource(new ol.source.Vector())
@@ -57,65 +55,93 @@ class Haikalayer extends ol.layer.Vector
 #      (@img.height / 50 / resolutionAtCoords) * pixelRatio)
 #    context.restore()
 #    context.save()
-    if haika.canvas?
-      haika.render()
-#      @changed()
-#      @map.updateSize()
+#    if haika.canvas?
+#      haika.render()
+##      osm.changed()
+##      @changed()
+##      @map.updateSize()
+#    else
+#      # haika.jsの初期化処理
+#      haika.init({
+#        'divId'    : 'map'
+#        'canvasId' : context.canvas
+##        'readOnly' : true
+#      })
+#      haika.load()
+##      haika.canvas.clearContext = =>
+##        fabric.Canvas.prototype.clearContext()
+##        osm.changed()
+##      haika.canvas.on 'after:render', (e)=>
+##        @changed()
+##      haika.canvas.on 'mouse:up', (e)=>
+##        if not haika.canvas.getActiveObject() and not haika.canvas.getActiveGroup()
+##          @changed()
+##      haika.canvas.on 'selection:cleared', (e)=>
+##        @changed()
+    log = (obj) ->
+      try
+        console.log obj
+    # postrender changed postcompose
+    if window.canvas?
+      if window.rect
+        rect.fill = 'blue'
     else
-      # haika.jsの初期化処理
-      haika.init({
-        'divId'    : 'map'
-        'canvasId' : context.canvas
-#        'readOnly' : true
-      })
-      haika.load()
-      haika.canvas.on 'mouse:up', (e)=>
-        if not haika.canvas.getActiveObject() and not haika.canvas.getActiveGroup()
-          @changed()
-      haika.canvas.on 'selection:cleared', (e)=>
+      window.canvas = new fabric.Canvas(context.canvas)
+      canvas._renderAll = canvas.renderAll
+      canvas.renderAll = =>
         @changed()
+      window.rect = new fabric.Rect({
+        left: 400,
+        top: 100,
+        fill: 'red',
+        width: 400,
+        height: 400,
+        angle: 45
+      });
 
+      canvas.renderOnAddRemove = true
+      canvas.add(rect)
+    canvas._renderAll(true)
 
-
-# fabricObjectの追加
-haika.addObject('shelf'       , 0, fabric.Shelf)
-haika.addObject('curved_shelf', 0, fabric.curvedShelf)
-haika.addObject('beacon'      , 1, fabric.Beacon)
-haika.addObject('wall'        , 2, fabric.Wall)
-haika.addObject('floor'       , 3, fabric.Floor)
-
-# ローカルストレージに保存
-haika.save = ->
-  # GeoJSONを保存
-#  log(haika._geojson)
-  localStorage.setItem('haika3', JSON.stringify(haika._geojson))
-  log('save local storage')
-
-# ローカルストレージからロード
-haika.load = ->
-  # ローカルストレージから読み込み
-  if localStorage.getItem('haika3')
-    log 'load local storage'
-    haika._geojson = JSON.parse(localStorage.getItem('haika3'))
-    haika.loadFromGeoJson()
-    $(haika).trigger('haika:load')
-    haika.render()
-  else
-    $.ajax
-        url: 'data/calil.json'
-        type: 'GET'
-        cache: false
-        dataType: 'json'
-        error: ()=>
-          option.error and option.error('データが読み込めませんでした')
-        success: (json)=>
-          if json.locked
-            @readOnly = true
-            return option.error and option.error('データはロックされています')
-          haika._dataId = json.id
-          haika._revision = json.revision
-          haika._collision = json.collision
-          haika._geojson = json.data
-          haika.loadFromGeoJson()
-          $(haika).trigger('haika:load')
-          haika.render()
+## fabricObjectの追加
+#haika.addObject('shelf'       , 0, fabric.Shelf)
+#haika.addObject('curved_shelf', 0, fabric.curvedShelf)
+#haika.addObject('beacon'      , 1, fabric.Beacon)
+#haika.addObject('wall'        , 2, fabric.Wall)
+#haika.addObject('floor'       , 3, fabric.Floor)
+#
+## ローカルストレージに保存
+#haika.save = ->
+#  # GeoJSONを保存
+##  log(haika._geojson)
+#  localStorage.setItem('haika3', JSON.stringify(haika._geojson))
+#  log('save local storage')
+#
+## ローカルストレージからロード
+#haika.load = ->
+#  # ローカルストレージから読み込み
+#  if localStorage.getItem('haika3')
+#    log 'load local storage'
+#    haika._geojson = JSON.parse(localStorage.getItem('haika3'))
+#    haika.loadFromGeoJson()
+#    $(haika).trigger('haika:load')
+#    haika.render()
+#  else
+#    $.ajax
+#        url: 'data/calil.json'
+#        type: 'GET'
+#        cache: false
+#        dataType: 'json'
+#        error: ()=>
+#          option.error and option.error('データが読み込めませんでした')
+#        success: (json)=>
+#          if json.locked
+#            @readOnly = true
+#            return option.error and option.error('データはロックされています')
+#          haika._dataId = json.id
+#          haika._revision = json.revision
+#          haika._collision = json.collision
+#          haika._geojson = json.data
+#          haika.loadFromGeoJson()
+#          $(haika).trigger('haika:load')
+#          haikalayer.changed()

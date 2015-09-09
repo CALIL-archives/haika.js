@@ -104,7 +104,6 @@ haika =
     @canvas = canvas
 
     # オブジェクトのイベント設定
-    # Todo: 複数選択して回転した場合が保存されない
     @canvas.on 'object:selected', (e)=>
       object = e.target
       if object._objects?
