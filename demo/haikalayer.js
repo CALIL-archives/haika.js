@@ -35,26 +35,46 @@ Haikalayer = (function(superClass) {
         return console.log(obj);
       } catch (_error) {}
     };
-    log(event);
     if (window.canvas != null) {
 
     } else {
       window.canvas = new fabric.Canvas(context.canvas);
       canvas._renderAll = canvas.renderAll;
-      event.frameState.fabricRenderMode = 'renderAll';
       canvas.renderAll = (function(_this) {
         return function() {
-          event.frameState.fabricRenderMode = 'renderAll';
           return _this.changed();
         };
       })(this);
-      canvas._renderTop = canvas.renderTop;
       canvas.renderTop = (function(_this) {
         return function() {
-          event.frameState.fabricRenderMode = 'renderTop';
           return _this.changed();
         };
       })(this);
+      canvas._renderAllFix = function() {
+        var activeGroup, canvasToDrawOn;
+        canvasToDrawOn = this.contextTop;
+        activeGroup = this.getActiveGroup();
+        this.clearContext(this.contextTop);
+        this.fire('before:render');
+        if (this.clipTo) {
+          fabric.util.clipContext(this, canvasToDrawOn);
+        }
+        this._renderBackground(canvasToDrawOn);
+        this._renderObjects(canvasToDrawOn, activeGroup);
+        this._renderActiveGroup(canvasToDrawOn, activeGroup);
+        if (this.selection && this._groupSelector) {
+          this._drawSelection();
+        }
+        if (this.clipTo) {
+          canvasToDrawOn.restore();
+        }
+        this._renderOverlay(canvasToDrawOn);
+        if (this.controlsAboveOverlay && this.interactive) {
+          this.drawControls(canvasToDrawOn);
+        }
+        this.fire('after:render');
+        return this;
+      };
       red = new fabric.Rect({
         left: 400,
         top: 100,
@@ -75,9 +95,7 @@ Haikalayer = (function(superClass) {
       canvas.add(red);
       canvas.add(blue);
     }
-    log(event.frameState);
-    canvas._renderTop();
-    return canvas._renderAll(true);
+    return canvas._renderAllFix();
   };
 
   return Haikalayer;

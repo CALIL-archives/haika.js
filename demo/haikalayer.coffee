@@ -82,19 +82,46 @@ class Haikalayer extends ol.layer.Vector
       try
         console.log obj
     # postrender changed postcompose
-    log event
     if window.canvas?
     else
       window.canvas = new fabric.Canvas(context.canvas)
       canvas._renderAll = canvas.renderAll
-      event.frameState.viewState..fabricRenderMode = 'renderAll'
       canvas.renderAll = =>
-        event.frameState.viewState.fabricRenderMode = 'renderAll'
         @changed()
-      canvas._renderTop = canvas.renderTop
       canvas.renderTop = =>
-        event.frameState.viewState.fabricRenderMode = 'renderTop'
         @changed()
+      canvas._renderAllFix = ->
+        canvasToDrawOn = this.contextTop
+        activeGroup = this.getActiveGroup()
+
+        this.clearContext(this.contextTop)
+
+        this.fire('before:render')
+
+        if this.clipTo
+          fabric.util.clipContext(this, canvasToDrawOn)
+
+        this._renderBackground(canvasToDrawOn)
+        this._renderObjects(canvasToDrawOn, activeGroup)
+        this._renderActiveGroup(canvasToDrawOn, activeGroup)
+
+
+        # we render the top context - last object
+        if this.selection and this._groupSelector
+          this._drawSelection()
+
+        if this.clipTo
+          canvasToDrawOn.restore()
+
+        this._renderOverlay(canvasToDrawOn);
+
+        if this.controlsAboveOverlay && this.interactive
+          this.drawControls(canvasToDrawOn)
+
+        this.fire('after:render');
+
+        return this;
+
       red = new fabric.Rect({
         left: 400,
         top: 100,
@@ -115,9 +142,7 @@ class Haikalayer extends ol.layer.Vector
       canvas.renderOnAddRemove = true
       canvas.add(red)
       canvas.add(blue)
-    log(event.frameState)
-    canvas._renderTop()
-    canvas._renderAll(true)
+    canvas._renderAllFix()
 
 ## fabricObjectの追加
 #haika.addObject('shelf'       , 0, fabric.Shelf)
