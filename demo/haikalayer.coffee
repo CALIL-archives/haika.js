@@ -82,15 +82,20 @@ class Haikalayer extends ol.layer.Vector
       try
         console.log obj
     # postrender changed postcompose
+    log event
     if window.canvas?
-      if window.rect
-        rect.fill = 'blue'
     else
       window.canvas = new fabric.Canvas(context.canvas)
       canvas._renderAll = canvas.renderAll
+      event.frameState.viewState..fabricRenderMode = 'renderAll'
       canvas.renderAll = =>
+        event.frameState.viewState.fabricRenderMode = 'renderAll'
         @changed()
-      window.rect = new fabric.Rect({
+      canvas._renderTop = canvas.renderTop
+      canvas.renderTop = =>
+        event.frameState.viewState.fabricRenderMode = 'renderTop'
+        @changed()
+      red = new fabric.Rect({
         left: 400,
         top: 100,
         fill: 'red',
@@ -98,9 +103,20 @@ class Haikalayer extends ol.layer.Vector
         height: 400,
         angle: 45
       });
+      blue = new fabric.Rect({
+        left: 800,
+        top: 100,
+        fill: 'blue',
+        width: 400,
+        height: 400,
+        angle: 45
+      });
 
       canvas.renderOnAddRemove = true
-      canvas.add(rect)
+      canvas.add(red)
+      canvas.add(blue)
+    log(event.frameState)
+    canvas._renderTop()
     canvas._renderAll(true)
 
 ## fabricObjectの追加

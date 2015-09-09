@@ -25,7 +25,7 @@ Haikalayer = (function(superClass) {
   };
 
   Haikalayer.prototype.postcompose_ = function(event) {
-    var context, log;
+    var blue, context, log, red;
     if (this.map == null) {
       return;
     }
@@ -35,19 +35,27 @@ Haikalayer = (function(superClass) {
         return console.log(obj);
       } catch (_error) {}
     };
+    log(event);
     if (window.canvas != null) {
-      if (window.rect) {
-        rect.fill = 'blue';
-      }
+
     } else {
       window.canvas = new fabric.Canvas(context.canvas);
       canvas._renderAll = canvas.renderAll;
+      event.frameState.fabricRenderMode = 'renderAll';
       canvas.renderAll = (function(_this) {
         return function() {
+          event.frameState.fabricRenderMode = 'renderAll';
           return _this.changed();
         };
       })(this);
-      window.rect = new fabric.Rect({
+      canvas._renderTop = canvas.renderTop;
+      canvas.renderTop = (function(_this) {
+        return function() {
+          event.frameState.fabricRenderMode = 'renderTop';
+          return _this.changed();
+        };
+      })(this);
+      red = new fabric.Rect({
         left: 400,
         top: 100,
         fill: 'red',
@@ -55,9 +63,20 @@ Haikalayer = (function(superClass) {
         height: 400,
         angle: 45
       });
+      blue = new fabric.Rect({
+        left: 800,
+        top: 100,
+        fill: 'blue',
+        width: 400,
+        height: 400,
+        angle: 45
+      });
       canvas.renderOnAddRemove = true;
-      canvas.add(rect);
+      canvas.add(red);
+      canvas.add(blue);
     }
+    log(event.frameState);
+    canvas._renderTop();
     return canvas._renderAll(true);
   };
 
