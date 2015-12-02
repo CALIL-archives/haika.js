@@ -3,7 +3,7 @@ var haika, log;
 log = function(obj) {
   try {
     return console.log(obj);
-  } catch (_error) {}
+  } catch (undefined) {}
 };
 
 haika = {
