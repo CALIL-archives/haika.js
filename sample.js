@@ -92,7 +92,7 @@ if (!haikaId) {
     haika.event.init();
     haika.undo.init();
     haika.plugins[0]();
-    haika.plugins[1]();
+    haika.toolbar=toolbar=haika.plugins[1]();
     haika.plugins[2]();
   }
 }
