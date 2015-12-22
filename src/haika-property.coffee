@@ -2,12 +2,12 @@
 class Property
   # 初期設定
   constructor: ->
-    haika.canvas.on 'object:selected', (e)=>
-      @setPropetyPanel()
-    haika.canvas.on 'selection:cleared', (e)=>
-      $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide()
-      $('.haika-canvas-panel').show()
-    haika.canvas.on 'object:modified', (e)=>
+    #haika.canvas.on 'object:selected', (e)=>
+    #  @setPropetyPanel(e)
+    #haika.canvas.on 'selection:cleared', (e)=>
+    #  $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide()
+    #  $('.haika-canvas-panel').show()
+    #haika.canvas.on 'object:modified', (e)=>
 #        @setPropetyPanel()
 # プロパティパネルの作成
   createPanel : (object)->

@@ -93,7 +93,19 @@ if (!haikaId) {
     haika.undo.init();
     haika.plugins[0]();
     haika.toolbar=toolbar=haika.plugins[1]();
-    haika.plugins[2]();
+    haika.property=haika.plugins[2]();
+    haika.canvas.on('object:selected', (function(_this) {
+      return function(e) {
+        return  haika.property.setPropetyPanel(e);
+      };
+    })(this));
+    haika.canvas.on('selection:cleared', (function(_this) {
+      return function(e) {
+        $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide();
+        return $('.haika-canvas-panel').show();
+      };
+    })(this));
+
   }
 }
 

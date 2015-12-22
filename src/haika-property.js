@@ -1,22 +1,7 @@
 var Property;
 
 Property = (function() {
-  function Property() {
-    haika.canvas.on('object:selected', (function(_this) {
-      return function(e) {
-        return _this.setPropetyPanel();
-      };
-    })(this));
-    haika.canvas.on('selection:cleared', (function(_this) {
-      return function(e) {
-        $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide();
-        return $('.haika-canvas-panel').show();
-      };
-    })(this));
-    haika.canvas.on('object:modified', (function(_this) {
-      return function(e) {};
-    })(this));
-  }
+  function Property() {}
 
   Property.prototype.createPanel = function(object) {
     log('createPanel');
