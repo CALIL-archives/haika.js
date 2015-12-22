@@ -2,135 +2,157 @@
 var haikaId;
 
 $.extend(haika, {
-  "import": function(id, option) {
-    var collision, dataId, revision;
-    if (id.length !== 6) {
-      alert('指定されたIDの形式が違います。6桁で指定して下さい。');
-      return;
+    "import": function (id, option) {
+        var collision, dataId, revision;
+        if (id.length !== 6) {
+            alert('指定されたIDの形式が違います。6桁で指定して下さい。');
+            return;
+        }
+        dataId = this._dataId;
+        collision = this._collision;
+        revision = this._revision;
+        if (this._dataId) {
+            this.close();
+        }
+        return $.ajax({
+            url: 'https://app.haika.io/js/haika_json/' + id + '.json',
+            type: 'POST',
+            cache: false,
+            dataType: 'json',
+            error: (function (_this) {
+                return function () {
+                    return option.error && option.error('データが読み込めませんでした');
+                };
+            })(this),
+            success: (function (_this) {
+                return function (data) {
+                    var geojson;
+                    log(data);
+                    geojson = _this.changeFeatures(data.geojson, function (x, y) {
+                        return [x * 100, y * 100];
+                    });
+                    geojson.haika = {
+                        backgroundScaleFactor: data.canvas.bgscale,
+                        backgroundOpacity: parseFloat(data.canvas.bgopacity),
+                        backgroundUrl: 'http://lab.calil.jp' + data.canvas.bgurl,
+                        backgroundScaleFactor: data.canvas.bgscale,
+                        xyAngle: data.canvas.angle,
+                        xyScaleFactor: data.canvas.scale,
+                        xyLongitude: data.canvas.lon,
+                        xyLatitude: data.canvas.lat
+                    };
+                    log(geojson);
+                    _this._dataId = dataId;
+                    _this._revision = revision;
+                    _this._collision = collision;
+                    _this._geojson = geojson;
+                    _this.loadFromGeoJson();
+                    $(_this).trigger('haika:load');
+                    option.success && option.success();
+                    $('#haika-canvas-bgscale').val(data.canvas.bgscale);
+                    return $('#haika-canvas-bgopacity').val(data.canvas.bgopacity);
+                };
+            })(this)
+        });
     }
-    dataId = this._dataId;
-    collision = this._collision;
-    revision = this._revision;
-    if (this._dataId) {
-      this.close();
-    }
-    return $.ajax({
-      url: 'https://app.haika.io/js/haika_json/' + id + '.json',
-      type: 'POST',
-      cache: false,
-      dataType: 'json',
-      error: (function(_this) {
-        return function() {
-          return option.error && option.error('データが読み込めませんでした');
-        };
-      })(this),
-      success: (function(_this) {
-        return function(data) {
-          var geojson;
-          log(data);
-          geojson = _this.changeFeatures(data.geojson, function(x, y) {
-            return [x * 100, y * 100];
-          });
-          geojson.haika = {
-            backgroundScaleFactor: data.canvas.bgscale,
-            backgroundOpacity: parseFloat(data.canvas.bgopacity),
-            backgroundUrl: 'http://lab.calil.jp' + data.canvas.bgurl,
-            backgroundScaleFactor: data.canvas.bgscale,
-            xyAngle: data.canvas.angle,
-            xyScaleFactor: data.canvas.scale,
-            xyLongitude: data.canvas.lon,
-            xyLatitude: data.canvas.lat
-          };
-          log(geojson);
-          _this._dataId = dataId;
-          _this._revision = revision;
-          _this._collision = collision;
-          _this._geojson = geojson;
-          _this.loadFromGeoJson();
-          $(_this).trigger('haika:load');
-          option.success && option.success();
-          $('#haika-canvas-bgscale').val(data.canvas.bgscale);
-          return $('#haika-canvas-bgopacity').val(data.canvas.bgopacity);
-        };
-      })(this)
-    });
-  }
 });
 
-$(haika).on('haika:render', function() {
-  $('#haika-canvas-width').html(haika.canvas.getWidth());
-  $('#haika-canvas-height').html(haika.canvas.getHeight());
-  $('#haika-canvas-centerX').html(haika.centerX.toFixed(0));
-  $('#haika-canvas-centerY').html(haika.centerY.toFixed(0));
-  $('#haika-canvas-bgscale').val(haika.backgroundScaleFactor);
-  return $('#haika-canvas-bgopacity').val(haika.backgroundOpacity);
+$(haika).on('haika:render', function () {
+    $('#haika-canvas-width').html(haika.canvas.getWidth());
+    $('#haika-canvas-height').html(haika.canvas.getHeight());
+    $('#haika-canvas-centerX').html(haika.centerX.toFixed(0));
+    $('#haika-canvas-centerY').html(haika.centerY.toFixed(0));
+    $('#haika-canvas-bgscale').val(haika.backgroundScaleFactor);
+    return $('#haika-canvas-bgopacity').val(haika.backgroundOpacity);
 });
 
 haikaId = location.hash.split('#')[1];
 
 if (!haikaId) {
-  alert('HaikaIDを指定して下さい');
+    alert('HaikaIDを指定して下さい');
 } else {
-  haika.html('.haika-container');
-  $(haika).on('haika:initialized', function() {
-    return haika.openFromApi(haikaId, {
-      success: function() {
-        haika.render();
-        return haika.zoomFull();
-      },
-      error: function(message) {
-        return alert(message);
-      }
+    haika.html('.haika-container');
+    $(haika).on('haika:initialized', function () {
+        return haika.openFromApi(haikaId, {
+            success: function () {
+                haika.render();
+                return haika.zoomFull();
+            },
+            error: function (message) {
+                return alert(message);
+            }
+        });
     });
-  });
-  haika.init({
-    divId: 'haika-canvas'
-  });
-  if (haika.readOnly) {
-    haika.event.zoom();
-  } else {
-    haika.event.init();
-    haika.undo.init();
-    haika.plugins[0]();
-    haika.toolbar=haika.plugins[1]();
-    haika.property=haika.plugins[2]();
-    haika.canvas.on('object:selected', (function(e) {
-    //    return  haika.property.setPropetyPanel(e);
-      }));
+    haika.init({
+        divId: 'haika-canvas'
+    });
+    if (haika.readOnly) {
+        haika.event.zoom();
+    } else {
+        haika.event.init();
+        haika.undo.init();
+        haika.plugins[0]();
+        haika.toolbar = haika.plugins[1]();
+        haika.property = haika.plugins[2]();
+        haika.canvas.on('object:selected', (function (e) {
+            //    return  haika.property.setPropetyPanel(e);
+        }));
 
-    haika.canvas.on('selection:cleared', (function() {
-        $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide();
-        return $('.haika-canvas-panel').show();
-    }));
-  }
+        haika.canvas.on('selection:cleared', (function () {
+            $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide();
+            return $('.haika-canvas-panel').show();
+        }));
+
+        $('.haika-nav a').click(function (e) {
+
+            e.preventDefault();
+            tabName = $(e.target).attr('class');
+            if (tabName == 'beacon') {
+                haika.layer = haika.CONST_LAYERS.BEACON;
+            }
+            if (tabName == 'wall') {
+                haika.layer = haika.CONST_LAYERS.WALL;
+            }
+            if (tabName == 'floor') {
+                haika.layer = haika.CONST_LAYERS.FLOOR;
+            }
+            if (tabName == 'shelf') {
+                haika.layer = haika.CONST_LAYERS.SHELF;
+            }
+            haika.render();
+            $('.haika-nav li').removeClass('active');
+            $(this).closest('li').addClass('active');
+        });
+
+    }
 }
 
-$('.fullscreen').click(function() {
-  if ($('.haika-container')[0].requestFullScreen) {
-    $('.haika-container')[0].requestFullScreen();
-  }
-  if ($('.haika-container')[0].webkitRequestFullScreen) {
-    $('.haika-container')[0].webkitRequestFullScreen();
-  }
-  if ($('.haika-container')[0].mozRequestFullScreen) {
-    return $('.haika-container')[0].mozRequestFullScreen();
-  }
+$('.fullscreen').click(function () {
+    if ($('.haika-container')[0].requestFullScreen) {
+        $('.haika-container')[0].requestFullScreen();
+    }
+    if ($('.haika-container')[0].webkitRequestFullScreen) {
+        $('.haika-container')[0].webkitRequestFullScreen();
+    }
+    if ($('.haika-container')[0].mozRequestFullScreen) {
+        return $('.haika-container')[0].mozRequestFullScreen();
+    }
 });
 
-$('#haika-import').click(function() {
-  var id;
-  id = prompt('インポートするデータのIDを6桁で指定して下さい。');
-  if (id) {
-    return haika["import"](id, {
-      success: function() {
-        haika.render();
-        return haika.save();
-      },
-      error: function(message) {
-        return alert(message);
-      }
-    });
-  }
+$('#haika-import').click(function () {
+    var id;
+    id = prompt('インポートするデータのIDを6桁で指定して下さい。');
+    if (id) {
+        return haika["import"](id, {
+            success: function () {
+                haika.render();
+                return haika.save();
+            },
+            error: function (message) {
+                return alert(message);
+            }
+        });
+    }
 });
 
 //# sourceMappingURL=sample.js.map

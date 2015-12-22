@@ -80,9 +80,6 @@ class ToolBar
         $('#add_' + key).click (e)->
           key = $(e.target).attr('key')
           object = addButtons[key]
-          # GeoJSONに不要なプロパティを削除
-          #delete object.title
-          #delete object.icon
           haika.addObject(object)
     $('.haika-toolbar-container ul:first>li').each (i, button)->
       if $(button).attr('type').match('shelf')
@@ -100,6 +97,12 @@ class ToolBar
 haika.plugins.push(ToolBar)
 
 haika.htmlStack.push """
+<ul class="haika-nav">
+    <li><a href="#" class="floor">床</a></li>
+    <li><a href="#" class="wall">壁</a></li>
+    <li><a href="#" class="beacon">ビーコン</a></li>
+    <li class="active"><a href="#" class="shelf">本棚</a></li>
+</ul>
 <div class="haika-toolbar-container">
   <ul class="toolbar-menu">
   </ul>

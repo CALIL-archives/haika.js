@@ -25,7 +25,7 @@ gulp.task 'compile-coffee', () ->
           errorHandler: notify.onError "Error: <%= error.message %>"
         }))
         .pipe coffee({bare: true})
-        .pipe gulp.dest 'src/'
+        .pipe gulp.dest 'compiled'
 
 
 js_files = [
@@ -37,29 +37,29 @@ js_files = [
   "vendor/dragdealer/dragdealer.min.js"
   "vendor/clipper_unminified.js"
   "vendor/graham_scan_js-1.0.2/graham_scan.min.js"
-  "src/fabric_object/aligning_guidelines.js"
-  "src/fabric_object/shelf.js"
-  "src/fabric_object/curvedShelf.js"
-  "src/fabric_object/beacon.js"
-  "src/fabric_object/wall.js"
-  "src/fabric_object/floor.js"
-  "src/fabric_object/grid.js"
+  "compiled/fabric_object/aligning_guidelines.js"
+  "compiled/fabric_object/shelf.js"
+  "compiled/fabric_object/curvedShelf.js"
+  "compiled/fabric_object/beacon.js"
+  "compiled/fabric_object/wall.js"
+  "compiled/fabric_object/floor.js"
+  "compiled/fabric_object/grid.js"
 ]
 
 haika_js_files = [
-  "src/haika.js"
-  "src/haika-io.js"
-  "src/haika-geojson.js"
-  "src/haika-html.js"
-  "src/haika-event.js"
-  "src/haika-header.js"
-  "src/haika-nav.js"
-  "src/haika-zoom.js"
-  "src/haika-scrollbar.js"
-  "src/haika-toolbar.js"
-  "src/haika-undo.js"
-  "src/haika-property.js"
-  "src/haika-contextmenu.js"
+  "compiled/haika.js"
+  "compiled/haika-io.js"
+  "compiled/haika-geojson.js"
+  "compiled/haika-html.js"
+  "compiled/haika-event.js"
+  "compiled/haika-header.js"
+  "compiled/haika-nav.js"
+  "compiled/haika-zoom.js"
+  "compiled/haika-scrollbar.js"
+  "compiled/haika-toolbar.js"
+  "compiled/haika-undo.js"
+  "compiled/haika-property.js"
+  "compiled/haika-contextmenu.js"
 ]
 
 # Javascriptの結合
