@@ -33563,7 +33563,7 @@ ToolBar = (function() {
 
 haika.plugins.push(ToolBar);
 
-haika.htmlStack.push("<ul class=\"haika-nav\">\n    <li><a href=\"#\" class=\"floor\">床</a></li>\n    <li><a href=\"#\" class=\"wall\">壁</a></li>\n    <li><a href=\"#\" class=\"beacon\">ビーコン</a></li>\n    <li class=\"active\"><a href=\"#\" class=\"shelf\">本棚</a></li>\n</ul>\n<div class=\"haika-toolbar-container\">\n  <ul class=\"toolbar-menu\">\n  </ul>\n</div>");
+haika.htmlStack.push("  <ul class=\"haika-nav\">\n      <li><a href=\"#\" class=\"floor\">床</a></li>\n      <li><a href=\"#\" class=\"wall\">壁</a></li>\n      <li><a href=\"#\" class=\"beacon\">ビーコン</a></li>\n      <li class=\"active\"><a href=\"#\" class=\"shelf\">本棚</a></li>\n  </ul>\n\n<div class=\"haika-toolbar-container\">\n<ul class=\"toolbar-menu\">\n</ul>\n</div>");
 
 $.extend(haika, {
   undo: {

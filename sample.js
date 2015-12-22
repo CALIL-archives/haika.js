@@ -71,8 +71,52 @@ haikaId = location.hash.split('#')[1];
 if (!haikaId) {
     alert('HaikaIDを指定して下さい');
 } else {
-    haika.html('.haika-container');
+    console.log('.haika-nav click2');
     $(haika).on('haika:initialized', function () {
+        haika.html('.haika-container');
+        console.log('.haika-nav click2');
+        setTimeout(function() {
+            console.log('.haika-nav click');
+            $('.haika-nav a').click(function (e) {
+                e.preventDefault();
+                console.log('test');
+                tabName = $(e.target).attr('class');
+                if (tabName == 'beacon') {
+                    haika.layer = haika.CONST_LAYERS.BEACON;
+                }
+                if (tabName == 'wall') {
+                    haika.layer = haika.CONST_LAYERS.WALL;
+                }
+                if (tabName == 'floor') {
+                    haika.layer = haika.CONST_LAYERS.FLOOR;
+                }
+                if (tabName == 'shelf') {
+                    haika.layer = haika.CONST_LAYERS.SHELF;
+                }
+                haika.render();
+                $('.haika-nav li').removeClass('active');
+                $(this).closest('li').addClass('active');
+            });
+        },100);
+        if (haika.readOnly) {
+            haika.event.zoom();
+        } else {
+            haika.event.init();
+            haika.undo.init();
+            haika.plugins[0]();
+            haika.toolbar = haika.plugins[1]();
+            haika.property = haika.plugins[2]();
+
+            haika.canvas.on('object:selected', (function (e) {
+                //    return  haika.property.setPropetyPanel(e);
+            }));
+
+            haika.canvas.on('selection:cleared', (function () {
+                $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide();
+                return $('.haika-canvas-panel').show();
+            }));
+
+        }
         return haika.openFromApi(haikaId, {
             success: function () {
                 haika.render();
@@ -86,45 +130,6 @@ if (!haikaId) {
     haika.init({
         divId: 'haika-canvas'
     });
-    if (haika.readOnly) {
-        haika.event.zoom();
-    } else {
-        haika.event.init();
-        haika.undo.init();
-        haika.plugins[0]();
-        haika.toolbar = haika.plugins[1]();
-        haika.property = haika.plugins[2]();
-        haika.canvas.on('object:selected', (function (e) {
-            //    return  haika.property.setPropetyPanel(e);
-        }));
-
-        haika.canvas.on('selection:cleared', (function () {
-            $('.haika-canvas-panel, .haika-object-panel, .haika-group-panel').hide();
-            return $('.haika-canvas-panel').show();
-        }));
-
-        $('.haika-nav a').click(function (e) {
-
-            e.preventDefault();
-            tabName = $(e.target).attr('class');
-            if (tabName == 'beacon') {
-                haika.layer = haika.CONST_LAYERS.BEACON;
-            }
-            if (tabName == 'wall') {
-                haika.layer = haika.CONST_LAYERS.WALL;
-            }
-            if (tabName == 'floor') {
-                haika.layer = haika.CONST_LAYERS.FLOOR;
-            }
-            if (tabName == 'shelf') {
-                haika.layer = haika.CONST_LAYERS.SHELF;
-            }
-            haika.render();
-            $('.haika-nav li').removeClass('active');
-            $(this).closest('li').addClass('active');
-        });
-
-    }
 }
 
 $('.fullscreen').click(function () {
@@ -154,5 +159,3 @@ $('#haika-import').click(function () {
         });
     }
 });
-
-//# sourceMappingURL=sample.js.map

@@ -97,12 +97,13 @@ class ToolBar
 haika.plugins.push(ToolBar)
 
 haika.htmlStack.push """
-<ul class="haika-nav">
-    <li><a href="#" class="floor">床</a></li>
-    <li><a href="#" class="wall">壁</a></li>
-    <li><a href="#" class="beacon">ビーコン</a></li>
-    <li class="active"><a href="#" class="shelf">本棚</a></li>
-</ul>
+    <ul class="haika-nav">
+        <li><a href="#" class="floor">床</a></li>
+        <li><a href="#" class="wall">壁</a></li>
+        <li><a href="#" class="beacon">ビーコン</a></li>
+        <li class="active"><a href="#" class="shelf">本棚</a></li>
+    </ul>
+
 <div class="haika-toolbar-container">
   <ul class="toolbar-menu">
   </ul>
