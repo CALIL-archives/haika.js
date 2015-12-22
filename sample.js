@@ -76,7 +76,6 @@ if (!haikaId) {
     return haika.openFromApi(haikaId, {
       success: function() {
         haika.render();
-        haika.property.init();
         return haika.zoomFull();
       },
       error: function(message) {
@@ -90,7 +89,6 @@ if (!haikaId) {
   if (haika.readOnly) {
     haika.event.zoom();
   } else {
-    haika.toolbar.init();
     haika.event.init();
     haika.undo.init();
     initScrollBar();
