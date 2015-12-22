@@ -95,7 +95,13 @@ ToolBar = (function() {
         });
       }
     }
-    this.show('shelf');
+    $('.haika-toolbar-container ul:first>li').each(function(i, button) {
+      if ($(button).attr('type').match('shelf')) {
+        return $(button).show();
+      } else {
+        return $(button).hide();
+      }
+    });
   }
 
   ToolBar.prototype.show = function(type) {

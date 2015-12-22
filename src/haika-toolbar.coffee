@@ -84,7 +84,11 @@ class ToolBar
           #delete object.title
           #delete object.icon
           haika.addObject(object)
-    @show('shelf')
+    $('.haika-toolbar-container ul:first>li').each (i, button)->
+      if $(button).attr('type').match('shelf')
+        $(button).show()
+      else
+        $(button).hide()
 
   show: (type)->
     $('.haika-toolbar-container ul:first>li').each (i, button)->
