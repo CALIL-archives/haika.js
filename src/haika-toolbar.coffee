@@ -55,8 +55,8 @@ class ToolBar
         type: 'beacon'
         icon: 'square'
         title: 'ビーコン'
-        fill : '#000000'
-        stroke : '#0000ee'
+        fill: '#000000'
+        stroke: '#0000ee'
       wall:
         type: 'wall'
         icon: 'square'
@@ -70,7 +70,7 @@ class ToolBar
         title: '床'
         height_scale: 1
         width_scale: 1
-        fill : ''
+        fill: ''
     if not @readOnly
       for key, val of addButtons
         # オブジェクト追加ボタンを生成
@@ -89,14 +89,14 @@ class ToolBar
         $(button).show()
       else
         $(button).hide()
-
   show: (type)->
     $('.haika-toolbar-container ul:first>li').each (i, button)->
       if $(button).attr('type').match(type)
         $(button).show()
       else
         $(button).hide()
-# pluginに登録
+
+
 haika.plugins.push(ToolBar)
 
 haika.htmlStack.push """
