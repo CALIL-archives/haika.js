@@ -75,6 +75,11 @@ if (!haikaId) {
   $(haika).on('haika:initialized', function() {
     return haika.openFromApi(haikaId, {
       success: function() {
+        var bgurl = 'img/'+haikaId+'.png';
+        $.get(bgurl, function(){
+          haika.setBackgroundUrl(bgurl);
+          haika.render();
+        });
         haika.render();
         haika.property.init();
         return haika.zoomFull();
