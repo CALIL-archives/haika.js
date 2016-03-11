@@ -119,6 +119,7 @@ if (!haikaId) {
         }
         return haika.openFromApi(haikaId, {
             success: function () {
+                haika.setBackgroundUrl('img/'+haikaId+'.png')
                 haika.render();
                 return haika.zoomFull();
             },
