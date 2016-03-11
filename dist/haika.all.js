@@ -32126,8 +32126,8 @@ initAligningGuidelines = function(canvas) {
   haika_utils.drawBackground = function(haika, ctx) {
     if (haika.canvas.backgroundImage) {
       ctx.mozImageSmoothingEnabled = false;
-      haika.canvas.backgroundImage.left = -Math.floor(haika.cm2px_x(haika.canvas.backgroundImage._originalElement.width / 2 * haika.backgroundScaleFactor));
-      haika.canvas.backgroundImage.top = -Math.floor(haika.cm2px_y(haika.canvas.backgroundImage._originalElement.height / 2 * haika.backgroundScaleFactor));
+      haika.canvas.backgroundImage.left = -Math.floor(haika.cm2px_x(0));
+      haika.canvas.backgroundImage.top = -Math.floor(haika.cm2px_y(0));
       haika.canvas.backgroundImage.width = Math.floor(haika.cm2px(haika.canvas.backgroundImage._originalElement.width * haika.backgroundScaleFactor));
       haika.canvas.backgroundImage.height = Math.floor(haika.cm2px(haika.canvas.backgroundImage._originalElement.height * haika.backgroundScaleFactor));
       haika.canvas.backgroundImage.opacity = haika.backgroundOpacity;
