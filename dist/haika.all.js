@@ -32131,6 +32131,8 @@ initAligningGuidelines = function(canvas) {
       haika.canvas.backgroundImage.width = Math.floor(haika.cm2px(haika.canvas.backgroundImage._originalElement.width * haika.backgroundScaleFactor));
       haika.canvas.backgroundImage.height = Math.floor(haika.cm2px(haika.canvas.backgroundImage._originalElement.height * haika.backgroundScaleFactor));
       haika.canvas.backgroundImage.opacity = haika.backgroundOpacity;
+      haika.canvas.backgroundImage.originX = 'center';
+      haika.canvas.backgroundImage.originY = 'center';
       haika.canvas.backgroundImage.render(ctx);
       ctx.mozImageSmoothingEnabled = true;
     }
