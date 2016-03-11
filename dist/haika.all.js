@@ -32126,7 +32126,7 @@ initAligningGuidelines = function(canvas) {
   haika_utils.drawBackground = function(haika, ctx) {
     if (haika.canvas.backgroundImage) {
       ctx.mozImageSmoothingEnabled = false;
-      center = haika.canvas.getCenter();
+      var center = haika.canvas.getCenter();
       haika.canvas.backgroundImage.left = center.left;
       haika.canvas.backgroundImage.top = center.top;
       //haika.canvas.backgroundImage.left = Math.floor(haika.cm2px_x(haika.canvas.backgroundImage._originalElement.width / 2 * haika.backgroundScaleFactor));
