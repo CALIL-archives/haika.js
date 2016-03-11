@@ -4,7 +4,7 @@
 .brackets.json
 node_modules/
 bower_components/
-#src/*.js
+src/*.js
 src/fabric_object/*.js
 src/extras/*.js
 compiled
