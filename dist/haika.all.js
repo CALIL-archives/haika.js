@@ -32148,10 +32148,13 @@ initAligningGuidelines = function(canvas) {
     ctx.restore();
   };
   haika_utils.drawBackground = function(haika, ctx) {
+    var center;
     if (haika.canvas.backgroundImage) {
       ctx.mozImageSmoothingEnabled = false;
-      haika.canvas.backgroundImage.left = Math.floor(haika.cm2px_x(haika.canvas.backgroundImage._originalElement.width / 2 * haika.backgroundScaleFactor));
-      haika.canvas.backgroundImage.top = Math.floor(haika.cm2px_y(haika.canvas.backgroundImage._originalElement.height / 2 * haika.backgroundScaleFactor));
+      center = haika.canvas.getCenter();
+      console.log(center);
+      haika.canvas.backgroundImage.left = center.left;
+      haika.canvas.backgroundImage.top = center.top;
       haika.canvas.backgroundImage.width = Math.floor(haika.cm2px(haika.canvas.backgroundImage._originalElement.width * haika.backgroundScaleFactor));
       haika.canvas.backgroundImage.height = Math.floor(haika.cm2px(haika.canvas.backgroundImage._originalElement.height * haika.backgroundScaleFactor));
       haika.canvas.backgroundImage.opacity = haika.backgroundOpacity;
@@ -32166,7 +32169,7 @@ var haika, log;
 log = function(obj) {
   try {
     return console.log(obj);
-  } catch (undefined) {}
+  } catch (_error) {}
 };
 
 haika = {
@@ -32698,8 +32701,8 @@ haika = {
       fabric.Image.fromURL(this.backgroundUrl, (function(_this) {
         return function(img) {
           img.set({
-            originX: 'left',
-            originY: 'top'
+            originX: 'center',
+            originY: 'center'
           });
           _this.canvas.backgroundImage = img;
           return _this.canvas.renderAll();

@@ -447,8 +447,8 @@ haika =
       fabric.Image.fromURL @backgroundUrl, (img)=>
         # 中心に表示
         img.set(
-          originX: 'left'
-          originY: 'top'
+          originX: 'center'
+          originY: 'center'
         )
         @canvas.backgroundImage = img
         @canvas.renderAll()
